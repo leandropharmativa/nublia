@@ -1,7 +1,10 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom' // Importação do useNavigate para navegação SPA
 import axios from 'axios'
 
 export default function Login({ onLogin }) {
+  const navigate = useNavigate() // Hook para redirecionar entre páginas sem recarregar
+
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
@@ -9,7 +12,8 @@ export default function Login({ onLogin }) {
   const handleLogin = async (e) => {
     e.preventDefault()
     try {
-      const response = await axios.post('https://nublia-backend.onrender.com/login', 
+      const response = await axios.post(
+        'https://nublia-backend.onrender.com/login',
         new URLSearchParams({
           username: email,
           password: senha
@@ -63,17 +67,16 @@ export default function Login({ onLogin }) {
         <button type="submit" className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 w-full">
           Entrar
         </button>
+
         <div className="text-center mt-4">
-        <button
-        type="button"
-        className="text-blue-600 hover:underline text-sm"
-        onClick={() => window.location.href = '/register'}
-        >
-        Não tem conta? Registre-se
-        </button>
+          <button
+            type="button"
+            className="text-blue-600 hover:underline text-sm"
+            onClick={() => navigate('/register')} // Uso correto do navigate
+          >
+            Não tem conta? Registre-se
+          </button>
         </div>
-
-
       </form>
     </div>
   )
