@@ -4,3 +4,5 @@ sqlmodel  # ORM para acessar o banco de dados de forma fácil
 psycopg2-binary  # Driver para conectar ao banco PostgreSQL
 python-jose[cryptography]  # Biblioteca para trabalhar com autenticação JWT
 passlib[bcrypt]  # Biblioteca para fazer hash seguro das senhas
+python-multipart
+
