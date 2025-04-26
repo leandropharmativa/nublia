@@ -9,17 +9,22 @@ export default function Admin() {
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState('')
 
-  // Hook para navegar entre páginas
   const navigate = useNavigate()
 
   // Função para gerar um novo código de ativação
   const gerarCodigo = async () => {
     try {
-      const token = localStorage.getItem('token') // Recupera token do localStorage
+      const token = localStorage.getItem('token')
+
+      if (!token) {
+        setErro('Token não encontrado. Faça login novamente.')
+        setSucesso('')
+        return
+      }
 
       const response = await axios.post(
         'https://nublia-backend.onrender.com/generate_code',
-        {}, // corpo vazio, pois o backend só precisa do token
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -28,22 +33,22 @@ export default function Admin() {
         }
       )
 
-      // Se deu certo, atualiza o estado
+      // Atualiza o estado com o código gerado
       setCodigo(response.data.codigo)
       setErro('')
       setSucesso('Código gerado com sucesso!')
     } catch (error) {
       console.error(error)
-      // Se deu erro, exibe mensagem
       setErro('Erro ao gerar código. Verifique se você está autenticado.')
       setSucesso('')
     }
   }
 
-  // Função para fazer logout
+  // Função de logout
   const logout = () => {
-    localStorage.clear() // Limpa o localStorage
-    navigate('/') // Redireciona para login
+    localStorage.clear() // Limpa tudo
+    navigate('/')        // Navega para login
+    window.location.reload() // Força recarregar a página para resetar estado do React
   }
 
   return (
@@ -60,7 +65,7 @@ export default function Admin() {
         </button>
       </header>
 
-      {/* Conteúdo principal da página */}
+      {/* Conteúdo principal */}
       <div className="flex flex-col items-center justify-center flex-1 p-6">
         <div className="bg-white p-8 rounded shadow-md w-full max-w-md space-y-6">
 
