@@ -22,22 +22,17 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
     numeros = numeros.slice(2);
   }
 
-  // Limita para no máximo 11 dígitos
-  if (numeros.length > 11) {
-    numeros = numeros.slice(0, 11);
-  }
-
-  // Se ainda não tem 11 números, retorna o que deu até agora (sem inventar)
-  if (numeros.length < 10) {
-    return numeros; // Não formata ainda se não tiver completo
+  // Precisa ter 11 dígitos (2 DDD + 9 Número)
+  if (numeros.length !== 11) {
+    return ""; // Retorna vazio se não for 11 dígitos
   }
 
   const ddd = numeros.slice(0, 2);
-  const primeiroBloco = numeros.length === 11 ? numeros.slice(2, 7) : numeros.slice(2, 6);
-  const segundoBloco = numeros.length === 11 ? numeros.slice(7) : numeros.slice(6);
+  const primeiroBloco = numeros.slice(2, 7);
+  const segundoBloco = numeros.slice(7);
 
   return `+55 (${ddd}) ${primeiroBloco}-${segundoBloco}`;
-}
+  }
 
   // Atualiza os campos do formulário
   const handleChange = (e) => {
@@ -71,10 +66,15 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
         body: JSON.stringify(form)
       })
 
+      if (form.telefone && form.telefone.length < 19) {
+      setErro("Telefone inválido. Verifique o número digitado.");
+      return;
+      }
+
       if (!response.ok) {
         throw new Error('Erro ao cadastrar paciente')
       }
-
+      
       const paciente = await response.json()
       setSucesso(true)
       setErro('')
