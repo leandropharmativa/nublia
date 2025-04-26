@@ -14,33 +14,36 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState(false)
 
-// Formatar telefone de maneira inteligente
-const formatarTelefone = (valor) => {
-  // Remove tudo que não for número
-  let numeros = valor.replace(/\D/g, "");
+  const formatarTelefone = (valor) => {
+  // Se já começa com "+55", remove só os parênteses, espaços e traços para reorganizar
+  let numeros = valor.replace(/[^\d]/g, ""); // Remove tudo que não for número
 
-  // Limita o número máximo de dígitos
+  // Se o valor já começa com 55, remove ele para não duplicar
+  if (numeros.startsWith("55")) {
+    numeros = numeros.slice(2)
+  }
+
   if (numeros.length > 11) {
-    numeros = numeros.slice(0, 11);
+    numeros = numeros.slice(0, 11)
   }
 
-  // Formata corretamente
-  if (numeros.length === 0) return "";
-  
-  let resultado = "+55 ";
+  let resultado = "+55 "
 
-  if (numeros.length <= 2) {
-    resultado += `(${numeros}`;
-  } else if (numeros.length <= 6) {
-    resultado += `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
-  } else if (numeros.length <= 10) {
-    resultado += `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
-  } else {
-    resultado += `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+  if (numeros.length >= 2) {
+    resultado += `(${numeros.slice(0, 2)}) `
+  }
+  if (numeros.length >= 3 && numeros.length <= 6) {
+    resultado += `${numeros.slice(2)}`
+  }
+  if (numeros.length >= 7 && numeros.length <= 10) {
+    resultado += `${numeros.slice(2, 6)}-${numeros.slice(6)}`
+  }
+  if (numeros.length === 11) {
+    resultado += `${numeros.slice(2, 7)}-${numeros.slice(7)}`
   }
 
-  return resultado.trim();
-};
+  return resultado.trim()
+}
 
   // Atualiza os campos do formulário
   const handleChange = (e) => {
