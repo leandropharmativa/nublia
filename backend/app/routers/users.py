@@ -61,7 +61,9 @@ def register_user(user: UserCreate, codigo_ativacao: Optional[str] = Body(None))
 
         # Cria novo usuário com senha criptografada
         hashed_password = hash_password(user.password)
-        new_user = User(**user.dict(), password=hashed_password)
+        user_data = user.dict()
+        user_data['password'] = hashed_password
+        new_user = User(**user_data)
 
         session.add(new_user)
         session.commit()
