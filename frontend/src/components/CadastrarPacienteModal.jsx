@@ -14,31 +14,33 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState(false)
 
-// Função para formatar o telefone corretamente
+// Formatar telefone de maneira inteligente
 const formatarTelefone = (valor) => {
-  valor = valor.replace(/\D/g, "") // Remove tudo que não for número
+  // Remove tudo que não for número
+  let numeros = valor.replace(/\D/g, "");
 
-  if (valor.length > 11) {
-    valor = valor.slice(0, 11)
-  }
-
-  let formatado = ""
-
-  if (valor.length > 0) {
-    formatado = "+55 "
-  }
-  if (valor.length >= 2) {
-    formatado += `(${valor.slice(0, 2)}) `
-  }
-  if (valor.length >= 3) {
-    formatado += `${valor.slice(2, 7)}`
-  }
-  if (valor.length >= 8) {
-    formatado += `-${valor.slice(7, 11)}`
+  // Limita o número máximo de dígitos
+  if (numeros.length > 11) {
+    numeros = numeros.slice(0, 11);
   }
 
-  return formatado
-}
+  // Formata corretamente
+  if (numeros.length === 0) return "";
+  
+  let resultado = "+55 ";
+
+  if (numeros.length <= 2) {
+    resultado += `(${numeros}`;
+  } else if (numeros.length <= 6) {
+    resultado += `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
+  } else if (numeros.length <= 10) {
+    resultado += `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
+  } else {
+    resultado += `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+  }
+
+  return resultado.trim();
+};
 
   // Atualiza os campos do formulário
   const handleChange = (e) => {
