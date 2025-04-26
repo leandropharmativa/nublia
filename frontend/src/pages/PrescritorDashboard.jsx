@@ -47,11 +47,14 @@ export default function PrescritorDashboard() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
 
-      {/* Topo */}
+      {/* Topo - agora com Nublia + Painel */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Painel do Prescritor</h1>
+        <div>
+          <div className="text-sm font-semibold">Nublia</div>
+          <h1 className="text-xl font-bold">Painel do Prescritor</h1>
+        </div>
 
-        {/* Nome + botão sair */}
+        {/* Nome do usuário e botão sair */}
         <div className="flex items-center gap-4">
           <span className="text-sm italic">{user?.name}</span>
           <button
@@ -63,27 +66,20 @@ export default function PrescritorDashboard() {
         </div>
       </header>
 
-      {/* Navegação de funções - agora alinhada à direita */}
+      {/* Navegação de funções - direita */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
-        {/* Botão Agenda */}
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <CalendarDays size={32} />
           <span className="text-xs mt-1">Agenda</span>
         </button>
-
-        {/* Botão Fórmulas */}
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <BookOpenText size={32} />
           <span className="text-xs mt-1">Fórmulas</span>
         </button>
-
-        {/* Botão Dietas */}
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <Leaf size={32} />
           <span className="text-xs mt-1">Dietas</span>
         </button>
-
-        {/* Botão Configurações */}
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <Settings size={32} />
           <span className="text-xs mt-1">Configurações</span>
@@ -93,12 +89,12 @@ export default function PrescritorDashboard() {
       {/* Conteúdo principal */}
       <div className="flex flex-1">
 
-        {/* Sidebar esquerda: Atendimentos Recentes */}
-        <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
+        {/* Sidebar esquerda */}
+        <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
           <h2 className="font-semibold mb-4">Atendimentos Recentes</h2>
 
           {/* Lista de atendimentos */}
-          <ul className="space-y-4">
+          <ul className="flex-1 space-y-4">
             {atendimentosFiltrados.map((item) => (
               <li key={item.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                 <span className="text-sm font-medium">{item.nome}</span>
@@ -114,7 +110,7 @@ export default function PrescritorDashboard() {
             ))}
           </ul>
 
-          {/* Campo de pesquisa com ícone de lupa */}
+          {/* Campo de pesquisa agora embaixo */}
           <div className="mt-6 relative">
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             <input
@@ -127,7 +123,7 @@ export default function PrescritorDashboard() {
           </div>
         </aside>
 
-        {/* Centro: Botão de iniciar atendimento */}
+        {/* Centro: botão de iniciar atendimento */}
         <main className="flex-1 flex items-center justify-center">
           <button className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg">
             <PlusCircle size={28} /> Iniciar Atendimento
