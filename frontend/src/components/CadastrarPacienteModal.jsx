@@ -53,6 +53,9 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   // Envia os dados para o backend
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    console.log("Dados que serão enviados:", form);
+
     try {
       const token = localStorage.getItem('token')
       if (!token) {
