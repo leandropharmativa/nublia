@@ -14,20 +14,55 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState(false)
 
-  // Atualiza o estado conforme o usuário digita
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+  // Função para formatar telefone no padrão Brasil
+  const formatarTelefone = (valor) => {
+    valor = valor.replace(/\D/g, "") // Remove tudo que não for número
+
+    if (valor.length > 11) {
+      valor = valor.slice(0, 11)
+    }
+
+    if (valor.length >= 2) {
+      valor = "+55 " + valor
+    }
+    if (valor.length >= 7) {
+      valor = valor.slice(0, 6) + " (" + valor.slice(6, 8) + ") " + valor.slice(8)
+    }
+    if (valor.length >= 13) {
+      valor = valor.slice(0, 12) + " " + valor.slice(12)
+    }
+    if (valor.length >= 18) {
+      valor = valor.slice(0, 17) + "-" + valor.slice(17)
+    }
+
+    return valor
   }
 
-  // Função para enviar o paciente para o backend
+  // Atualiza os campos do formulário
+  const handleChange = (e) => {
+    const { name, value } = e.target
+
+    if (name === 'telefone') {
+      setForm({ ...form, telefone: formatarTelefone(value) })
+    } else {
+      setForm({ ...form, [name]: value })
+    }
+  }
+
+  // Envia os dados para o backend
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        throw new Error('Usuário não autenticado.')
+      }
+
       const response = await fetch('https://nublia-backend.onrender.com/pacientes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(form)
       })
@@ -39,11 +74,9 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
       const paciente = await response.json()
       setSucesso(true)
       setErro('')
-      
-      // Chama a função para informar que um novo paciente foi criado
+
       onPacienteCadastrado(paciente)
 
-      // Fecha o modal depois de 1 segundo
       setTimeout(() => {
         onClose()
       }, 1000)
@@ -66,7 +99,8 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
 
         {/* Formulário */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Campo: Nome */}
+          
+          {/* Nome */}
           <input
             type="text"
             name="nome"
@@ -77,7 +111,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             className="border px-3 py-2 w-full rounded"
           />
 
-          {/* Campo: Data de Nascimento */}
+          {/* Data de nascimento */}
           <input
             type="date"
             name="data_nascimento"
@@ -87,7 +121,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             className="border px-3 py-2 w-full rounded"
           />
 
-          {/* Campo: Sexo */}
+          {/* Sexo */}
           <select
             name="sexo"
             value={form.sexo}
@@ -101,7 +135,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             <option value="Outro">Outro</option>
           </select>
 
-          {/* Campo: Telefone */}
+          {/* Telefone com formatação */}
           <input
             type="text"
             name="telefone"
@@ -111,7 +145,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             className="border px-3 py-2 w-full rounded"
           />
 
-          {/* Campo: Email */}
+          {/* Email */}
           <input
             type="email"
             name="email"
@@ -121,7 +155,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             className="border px-3 py-2 w-full rounded"
           />
 
-          {/* Mensagem de erro */}
+          {/* Mensagens de sucesso/erro */}
           {erro && <p className="text-red-500 text-sm">{erro}</p>}
           {sucesso && <p className="text-green-500 text-sm">Paciente cadastrado com sucesso!</p>}
 
@@ -141,6 +175,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
               Salvar
             </button>
           </div>
+
         </form>
 
       </div>
