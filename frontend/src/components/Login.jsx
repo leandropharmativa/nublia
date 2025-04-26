@@ -63,6 +63,17 @@ export default function Login({ onLogin }) {
         <button type="submit" className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 w-full">
           Entrar
         </button>
+        <div className="text-center mt-4">
+        <button
+        type="button"
+        className="text-blue-600 hover:underline text-sm"
+        onClick={() => window.location.href = '/register'}
+        >
+        Não tem conta? Registre-se
+        </button>
+        </div>
+
+
       </form>
     </div>
   )
