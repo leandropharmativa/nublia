@@ -1,16 +1,21 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true,
-    strictPort: true,
-    port: 5173,
     watch: {
       usePolling: true
-    },
-    allowedHosts: 'all'  // Permite o Vercel, Render, etc
-  }
+    }
+  },
+  build: {
+    outDir: 'dist'
+  },
+  resolve: {
+    alias: {
+      '@': '/src'
+    }
+  },
+  // ESSENCIAL para funcionar no Vercel:
+  appType: 'spa'
 })
