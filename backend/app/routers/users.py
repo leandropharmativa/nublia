@@ -1,3 +1,4 @@
+# Importações principais
 from fastapi import APIRouter, HTTPException, Depends, Body
 from sqlmodel import Session, select
 from app.models import User, UserCreate, CodigoAtivacao
@@ -6,6 +7,8 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt
 from typing import Optional
+import random
+import string
 
 router = APIRouter()
 
@@ -13,7 +16,7 @@ router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Configurações de autenticação JWT
-SECRET_KEY = "chave-secreta-do-nublia"  # Depois podemos deixar isso em variável de ambiente
+SECRET_KEY = "chave-secreta-do-nublia"  # Ideal deixar em variável de ambiente depois
 ALGORITHM = "HS256"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -25,6 +28,10 @@ def hash_password(password: str) -> str:
 # Função para criar token JWT
 def create_access_token(data: dict):
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+
+# Função para gerar código aleatório único
+def gerar_codigo_unico():
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
 # 🛠 ROTA: Registrar novo usuário
 @router.post("/register")
@@ -102,8 +109,45 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
             }
         }
 
-# 🛠 ROTA: Listar todos os usuários (apenas para debug ou administração futura)
+# 🛠 ROTA: Listar todos os usuários
 @router.get("/users/all")
 def list_users():
     with Session(engine) as session:
         return session.exec(select(User)).all()
+
+# 🛠 ROTA NOVA: Gerar código de ativação
+@router.post("/generate_code")
+def generate_activation_code(
+    tipo_usuario: str = Body(...),
+    email_usuario: str = Body(...),
+    token: str = Depends(oauth2_scheme)
+):
+    # Decodifica o token JWT para garantir que é admin
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+    except Exception:
+        raise HTTPException(status_code=401, detail="Token inválido")
+
+    with Session(engine) as session:
+        user = session.exec(select(User).where(User.id == int(user_id))).first()
+
+        if not user or user.role != "admin":
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Gera código novo
+        novo_codigo = gerar_codigo_unico()
+
+        # Cria o registro no banco
+        codigo_registro = CodigoAtivacao(
+            codigo=novo_codigo,
+            tipo=tipo_usuario,
+            email=email_usuario,
+            ativo=True
+        )
+
+        session.add(codigo_registro)
+        session.commit()
+        session.refresh(codigo_registro)
+
+        return {"codigo": codigo_registro.codigo}
