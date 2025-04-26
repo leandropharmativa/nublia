@@ -9,7 +9,7 @@ export default function Login({ onLogin }) {
   const handleLogin = async (e) => {
     e.preventDefault()
     try {
-      const response = await axios.post('https://SEU-BACKEND.onrender.com/login', 
+      const response = await axios.post('https://nublia-backend.onrender.com/login', 
         new URLSearchParams({
           username: email,
           password: senha
