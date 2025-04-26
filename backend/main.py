@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import create_db_and_tables
 from app.routers import root, users, pacientes, agenda
+from app.routers import codigos
 
 app = FastAPI()
 
@@ -19,6 +20,7 @@ app.include_router(root.router)
 app.include_router(users.router)
 app.include_router(pacientes.router)
 app.include_router(agenda.router)
+app.include_router(codigos.router)
 
 # Evento que roda no início para criar o banco de dados (se não existir)
 @app.on_event("startup")
