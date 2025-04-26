@@ -17,7 +17,7 @@ class User(SQLModel, table=True):
 
 # Modelo usado apenas para criação de usuários (sem o ID)
 class UserCreate(SQLModel):
-    role: Literal["prescritor", "paciente", "farmacia", "academia", "clinica"]
+    role: Literal["admin", "prescritor", "paciente", "farmacia", "academia", "clinica"]
     name: str
     email: str
     password: str
@@ -58,3 +58,17 @@ class AgendamentoCreate(SQLModel):
     prescritor_id: int
     paciente_id: int
     observacoes: Optional[str] = None
+
+from datetime import datetime
+
+# Modelo usado apenas para criação de códigos de ativação de contas
+class CodigoAtivacao(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    codigo: str
+    tipo: str  # Tipo de usuário para o qual o código é válido
+    ativo: bool = True
+    criado_em: datetime = Field(default_factory=datetime.utcnow)
+
+class CodigoAtivacaoCreate(SQLModel):
+    tipo: str
+
