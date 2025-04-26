@@ -29,13 +29,15 @@ class UserCreate(SQLModel):
 
 # 🛠 Modelo completo de paciente (salvo no banco de dados)
 class Paciente(SQLModel, table=True):
+    __tablename__ = "paciente_novo"  # <<< ADICIONAR ESSA LINHA
     id: Optional[int] = Field(default=None, primary_key=True)
     nome: str
     data_nascimento: date
     sexo: str
     telefone: str
     email: Optional[str] = None
-    observacoes: Optional[str] = None  # Aqui você pode anotar observações do paciente
+    observacoes: Optional[str] = None
+  # Aqui você pode anotar observações do paciente
 
 # 🛠 Modelo apenas para criação de paciente (sem o ID)
 class PacienteCreate(SQLModel):
