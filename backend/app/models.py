@@ -27,20 +27,24 @@ class UserCreate(SQLModel):
     personal_address: Optional[str] = None
     crn: Optional[str] = None
 
-# Modelo de pacientes (mais específico para os pacientes mesmo)
+# 🛠 Modelo completo de paciente (salvo no banco de dados)
 class Paciente(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str
-    birth_date: date
-    phone: str
-    notes: Optional[str] = None  # Observações médicas
+    nome: str
+    data_nascimento: date
+    sexo: str
+    telefone: str
+    email: Optional[str] = None
+    observacoes: Optional[str] = None  # Aqui você pode anotar observações do paciente
 
-# Modelo usado apenas para criação de pacientes (sem o ID)
+# 🛠 Modelo apenas para criação de paciente (sem o ID)
 class PacienteCreate(SQLModel):
-    name: str
-    birth_date: date
-    phone: str
-    notes: Optional[str] = None
+    nome: str
+    data_nascimento: date
+    sexo: str
+    telefone: str
+    email: Optional[str] = None
+    observacoes: Optional[str] = None
 
 # Modelo de agendamento de consultas/atendimentos
 class Agendamento(SQLModel, table=True):
