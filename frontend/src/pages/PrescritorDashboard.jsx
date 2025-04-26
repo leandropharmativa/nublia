@@ -6,8 +6,9 @@ import axios from 'axios'
 // Importação dos ícones
 import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, Search, PlusCircle } from 'lucide-react'
 
-// Importação do componente de Modal
+// Importação dos componentes
 import IniciarAtendimentoModal from '../components/IniciarAtendimentoModal'
+import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
@@ -15,8 +16,9 @@ export default function PrescritorDashboard() {
   const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
 
-  // Estado para controlar se o modal está aberto
-  const [abrirModal, setAbrirModal] = useState(false)
+  // Estados de controle de modais
+  const [abrirModalAtendimento, setAbrirModalAtendimento] = useState(false)
+  const [abrirModalCadastroPaciente, setAbrirModalCadastroPaciente] = useState(false)
 
   // Carrega o usuário logado
   useEffect(() => {
@@ -50,19 +52,24 @@ export default function PrescritorDashboard() {
     item.nome.toLowerCase().includes(pesquisa.toLowerCase())
   )
 
-  // Quando um paciente é selecionado
+  // Quando seleciona um paciente da lista
   const handleSelecionarPaciente = (paciente) => {
     console.log("Paciente selecionado:", paciente)
-    setAbrirModal(false)
+    setAbrirModalAtendimento(false)
     // 🔵 Aqui depois levamos para a página de atendimento
-    // Ex: navigate(`/atendimento/${paciente.id}`)
   }
 
   // Quando clicar em "Cadastrar novo paciente"
   const handleCadastrarPaciente = () => {
-    console.log("Cadastrar novo paciente")
-    setAbrirModal(false)
-    // 🔵 Aqui depois abriremos o cadastro de paciente
+    setAbrirModalAtendimento(false)          // Fecha o modal de atendimento
+    setAbrirModalCadastroPaciente(true)       // Abre o modal de cadastro de paciente
+  }
+
+  // Depois que paciente for cadastrado com sucesso
+  const handlePacienteCadastrado = (paciente) => {
+    console.log("Paciente cadastrado:", paciente)
+    setAbrirModalCadastroPaciente(false)
+    // 🔵 Aqui depois levamos direto para a tela de atendimento com paciente novo
   }
 
   return (
@@ -127,7 +134,7 @@ export default function PrescritorDashboard() {
             ))}
           </ul>
 
-          {/* Campo de pesquisa embaixo */}
+          {/* Campo de pesquisa */}
           <div className="mt-6 relative">
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             <input
@@ -144,7 +151,7 @@ export default function PrescritorDashboard() {
         <main className="flex-1 flex items-center justify-center">
           <button
             className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
-            onClick={() => setAbrirModal(true)}
+            onClick={() => setAbrirModalAtendimento(true)}
           >
             <PlusCircle size={28} /> Iniciar Atendimento
           </button>
@@ -153,13 +160,22 @@ export default function PrescritorDashboard() {
       </div>
 
       {/* Modal de iniciar atendimento */}
-      {abrirModal && (
+      {abrirModalAtendimento && (
         <IniciarAtendimentoModal
-          onClose={() => setAbrirModal(false)}
+          onClose={() => setAbrirModalAtendimento(false)}
           onSelecionarPaciente={handleSelecionarPaciente}
           onCadastrarPaciente={handleCadastrarPaciente}
         />
       )}
+
+      {/* Modal de cadastrar paciente */}
+      {abrirModalCadastroPaciente && (
+        <CadastrarPacienteModal
+          onClose={() => setAbrirModalCadastroPaciente(false)}
+          onPacienteCadastrado={handlePacienteCadastrado}
+        />
+      )}
+
     </div>
   )
 }
