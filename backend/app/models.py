@@ -5,7 +5,7 @@ from datetime import date, time
 # Modelo da tabela de usuários (prescritor, paciente, farmácia, academia, clínica)
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    role: Literal["prescritor", "paciente", "farmacia", "academia", "clinica"]
+    role: str
     name: str
     email: str
     password: str
