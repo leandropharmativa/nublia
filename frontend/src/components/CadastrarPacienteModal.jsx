@@ -56,7 +56,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
+      <div className="bg-white rounded-lg p-6 w-full max-w-xl shadow-lg">
 
         {/* Cabeçalho */}
         <div className="flex justify-between items-center mb-4">
