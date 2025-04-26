@@ -15,29 +15,29 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   const [sucesso, setSucesso] = useState(false)
 
   const formatarTelefone = (valor) => {
-  // Remove qualquer coisa que não seja número
-  let numeros = valor.replace(/\D/g, '');
+  let numeros = valor.replace(/\D/g, "");
 
-  // Se for mais de 11 dígitos, corta
+  // Remove o +55 se já tiver
+  if (numeros.startsWith("55")) {
+    numeros = numeros.slice(2);
+  }
+
+  // Limita para no máximo 11 dígitos
   if (numeros.length > 11) {
     numeros = numeros.slice(0, 11);
   }
 
-  // Se não tiver números, retorna vazio
-  if (!numeros) return '';
+  // Se ainda não tem 11 números, retorna o que deu até agora (sem inventar)
+  if (numeros.length < 10) {
+    return numeros; // Não formata ainda se não tiver completo
+  }
 
-  // Monta o telefone formatado
   const ddd = numeros.slice(0, 2);
-  const primeiroBloco = numeros.length >= 7 ? numeros.slice(2, 7) : numeros.slice(2, 6);
-  const segundoBloco = numeros.length >= 7 ? numeros.slice(7) : numeros.slice(6);
+  const primeiroBloco = numeros.length === 11 ? numeros.slice(2, 7) : numeros.slice(2, 6);
+  const segundoBloco = numeros.length === 11 ? numeros.slice(7) : numeros.slice(6);
 
-  let telefone = `+55 (${ddd}) ${primeiroBloco}`;
-  if (segundoBloco) {
-    telefone += `-${segundoBloco}`;
-  }
-
-  return telefone.trim();
-  }
+  return `+55 (${ddd}) ${primeiroBloco}-${segundoBloco}`;
+}
 
   // Atualiza os campos do formulário
   const handleChange = (e) => {
@@ -140,7 +140,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
           </select>
 
           {/* Telefone com formatação */}
-          <input
+         <input
           type="text"
           name="telefone"
           placeholder="Telefone (somente números)"
