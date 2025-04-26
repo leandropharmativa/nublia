@@ -1,48 +1,30 @@
-import { useState } from 'react'
-import axios from 'axios'
-
-export default function Register() {
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'paciente',
-    phone: '',
-    clinic_name: '',
-    clinic_address: '',
-    personal_address: '',
-    crn: '',
-    codigoAtivacao: ''
-  })
-  const [erro, setErro] = useState('')
-  const [sucesso, setSucesso] = useState(false)
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    try {
-      const payload = { ...form }
-
-      // Enviar o código de ativação no lugar correto se necessário
-      if (["prescritor", "farmacia", "academia", "clinica"].includes(form.role)) {
-        if (!form.codigoAtivacao) {
-          setErro("Código de ativação é obrigatório para este tipo de usuário.")
-          return
-        }
-        payload.codigo_ativacao = form.codigoAtivacao
-      }
-
-      await axios.post('https://nublia-backend.onrender.com/register', payload)
-      setSucesso(true)
-      setErro('')
-    } catch (error) {
-      console.error(error)
-      setErro("Erro ao registrar. Verifique os dados.")
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  try {
+    const payload = {
+      user: {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: form.role,
+        phone: form.phone,
+        clinic_name: form.clinic_name,
+        clinic_address: form.clinic_address,
+        personal_address: form.personal_address,
+        crn: form.crn
+      },
+      codigo_ativacao: form.codigoAtivacao || null
     }
+
+    await axios.post('https://nublia-backend.onrender.com/register', payload)
+
+    setSucesso(true)
+    setErro('')
+  } catch (error) {
+    console.error(error)
+    setErro("Erro ao registrar. Verifique os dados.")
   }
+}
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
