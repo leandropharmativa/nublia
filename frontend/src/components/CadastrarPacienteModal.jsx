@@ -15,33 +15,29 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   const [sucesso, setSucesso] = useState(false)
 
   const formatarTelefone = (valor) => {
-  let numeros = valor.replace(/\D/g, "");
+  // Remove qualquer coisa que não seja número
+  let numeros = valor.replace(/\D/g, '');
 
-  if (numeros.startsWith("55")) {
-    numeros = numeros.slice(2);
-  }
-
+  // Se for mais de 11 dígitos, corta
   if (numeros.length > 11) {
     numeros = numeros.slice(0, 11);
   }
 
-  let resultado = "+55 ";
+  // Se não tiver números, retorna vazio
+  if (!numeros) return '';
 
-  if (numeros.length >= 2) {
-    resultado += `(${numeros.slice(0, 2)}) `;
-  }
-  if (numeros.length >= 3 && numeros.length <= 6) {
-    resultado += `${numeros.slice(2)}`;
-  }
-  if (numeros.length >= 7 && numeros.length <= 10) {
-    resultado += `${numeros.slice(2, 6)}-${numeros.slice(6)}`;
-  }
-  if (numeros.length === 11) {
-    resultado += `${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+  // Monta o telefone formatado
+  const ddd = numeros.slice(0, 2);
+  const primeiroBloco = numeros.length >= 7 ? numeros.slice(2, 7) : numeros.slice(2, 6);
+  const segundoBloco = numeros.length >= 7 ? numeros.slice(7) : numeros.slice(6);
+
+  let telefone = `+55 (${ddd}) ${primeiroBloco}`;
+  if (segundoBloco) {
+    telefone += `-${segundoBloco}`;
   }
 
-  return resultado.trim();
-}
+  return telefone.trim();
+  }
 
   // Atualiza os campos do formulário
   const handleChange = (e) => {
@@ -144,7 +140,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
           <input
           type="text"
           name="telefone"
-          placeholder="Telefone (opcional)"
+          placeholder="Telefone (somente números)"
           value={form.telefone}
           onChange={(e) => setForm({ ...form, telefone: e.target.value })}
           onBlur={(e) => setForm({ ...form, telefone: formatarTelefone(e.target.value) })}
