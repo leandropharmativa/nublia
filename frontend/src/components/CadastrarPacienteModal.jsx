@@ -14,29 +14,31 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState(false)
 
-  // Função para formatar telefone no padrão Brasil
-  const formatarTelefone = (valor) => {
-    valor = valor.replace(/\D/g, "") // Remove tudo que não for número
+// Função para formatar o telefone corretamente
+const formatarTelefone = (valor) => {
+  valor = valor.replace(/\D/g, "") // Remove tudo que não for número
 
-    if (valor.length > 11) {
-      valor = valor.slice(0, 11)
-    }
-
-    if (valor.length >= 2) {
-      valor = "+55 " + valor
-    }
-    if (valor.length >= 7) {
-      valor = valor.slice(0, 6) + " (" + valor.slice(6, 8) + ") " + valor.slice(8)
-    }
-    if (valor.length >= 13) {
-      valor = valor.slice(0, 12) + " " + valor.slice(12)
-    }
-    if (valor.length >= 18) {
-      valor = valor.slice(0, 17) + "-" + valor.slice(17)
-    }
-
-    return valor
+  if (valor.length > 11) {
+    valor = valor.slice(0, 11)
   }
+
+  let formatado = ""
+
+  if (valor.length > 0) {
+    formatado = "+55 "
+  }
+  if (valor.length >= 2) {
+    formatado += `(${valor.slice(0, 2)}) `
+  }
+  if (valor.length >= 3) {
+    formatado += `${valor.slice(2, 7)}`
+  }
+  if (valor.length >= 8) {
+    formatado += `-${valor.slice(7, 11)}`
+  }
+
+  return formatado
+}
 
   // Atualiza os campos do formulário
   const handleChange = (e) => {
