@@ -4,7 +4,11 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 export default function Admin() {
-  // Estados para armazenar o código gerado, mensagens de sucesso e erro
+  // Estados para formulário de geração de código
+  const [tipoUsuario, setTipoUsuario] = useState('prescritor')
+  const [emailUsuario, setEmailUsuario] = useState('')
+  
+  // Estados para resultado da operação
   const [codigo, setCodigo] = useState('')
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState('')
@@ -22,9 +26,15 @@ export default function Admin() {
         return
       }
 
+      // Monta o corpo do request
+      const payload = {
+        tipo_usuario: tipoUsuario,
+        email_usuario: emailUsuario
+      }
+
       const response = await axios.post(
         'https://nublia-backend.onrender.com/generate_code',
-        {},
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -33,22 +43,22 @@ export default function Admin() {
         }
       )
 
-      // Atualiza o estado com o código gerado
+      // Atualiza estado com sucesso
       setCodigo(response.data.codigo)
       setErro('')
       setSucesso('Código gerado com sucesso!')
     } catch (error) {
       console.error(error)
-      setErro('Erro ao gerar código. Verifique se você está autenticado.')
+      setErro('Erro ao gerar código. Verifique os dados e tente novamente.')
       setSucesso('')
     }
   }
 
   // Função de logout
   const logout = () => {
-    localStorage.clear() // Limpa tudo
-    navigate('/')        // Navega para login
-    window.location.reload() // Força recarregar a página para resetar estado do React
+    localStorage.clear()          // Limpa tudo
+    navigate('/')                 // Redireciona
+    window.location.reload()      // Recarrega para resetar
   }
 
   return (
@@ -73,21 +83,50 @@ export default function Admin() {
           {erro && <p className="text-red-500 text-center">{erro}</p>}
           {sucesso && <p className="text-green-500 text-center">{sucesso}</p>}
 
-          {/* Botão para gerar novo código */}
-          <button
-            onClick={gerarCodigo}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
-          >
-            Gerar Novo Código
-          </button>
-
-          {/* Exibir código gerado */}
-          {codigo && (
-            <div className="mt-4 p-4 border rounded bg-gray-50 text-center">
-              <p className="text-gray-700 text-sm">Código gerado:</p>
-              <p className="font-mono font-bold text-lg">{codigo}</p>
+          {/* Formulário para gerar novo código */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Tipo de usuário</label>
+              <select
+                value={tipoUsuario}
+                onChange={(e) => setTipoUsuario(e.target.value)}
+                className="border rounded px-3 py-2 w-full"
+              >
+                <option value="prescritor">Prescritor</option>
+                <option value="clinica">Clínica</option>
+                <option value="farmacia">Farmácia</option>
+                <option value="academia">Academia</option>
+              </select>
             </div>
-          )}
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Email do usuário</label>
+              <input
+                type="email"
+                value={emailUsuario}
+                onChange={(e) => setEmailUsuario(e.target.value)}
+                placeholder="exemplo@dominio.com"
+                className="border rounded px-3 py-2 w-full"
+                required
+              />
+            </div>
+
+            <button
+              onClick={gerarCodigo}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
+            >
+              Gerar Código
+            </button>
+
+            {/* Exibir código gerado */}
+            {codigo && (
+              <div className="mt-4 p-4 border rounded bg-gray-50 text-center">
+                <p className="text-gray-700 text-sm">Código gerado:</p>
+                <p className="font-mono font-bold text-lg">{codigo}</p>
+              </div>
+            )}
+          </div>
+
         </div>
       </div>
     </div>
