@@ -2,7 +2,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { LogOut, Calendar, BookOpen, Leaf, Settings, User, FileText } from 'lucide-react'
+
+// Importação de ícones
+import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, Search, PlusCircle } from 'lucide-react'
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
@@ -10,9 +12,9 @@ export default function PrescritorDashboard() {
   const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
 
-  // Ao carregar o painel, recupera os dados do prescritor logado
+  // Carregar usuário logado
   useEffect(() => {
-    const savedUser = localStorage.getItem("user")
+    const savedUser = localStorage.getItem('user')
     if (savedUser) {
       setUser(JSON.parse(savedUser))
     } else {
@@ -20,9 +22,8 @@ export default function PrescritorDashboard() {
     }
   }, [navigate])
 
-  // Exemplo para buscar atendimentos recentes (depois vamos ligar com a API real)
+  // Mock de atendimentos
   useEffect(() => {
-    // Aqui futuramente puxaríamos da API
     const exemplos = [
       { id: 1, nome: "João Silva" },
       { id: 2, nome: "Maria Oliveira" },
@@ -31,16 +32,16 @@ export default function PrescritorDashboard() {
     setAtendimentosRecentes(exemplos)
   }, [])
 
-  // Função de logout
+  // Logout
   const logout = () => {
     localStorage.clear()
     navigate('/')
     window.location.reload()
   }
 
-  // Função para filtrar atendimentos pelo nome
-  const atendimentosFiltrados = atendimentosRecentes.filter((atendimento) =>
-    atendimento.nome.toLowerCase().includes(pesquisa.toLowerCase())
+  // Filtro de pesquisa
+  const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
+    item.nome.toLowerCase().includes(pesquisa.toLowerCase())
   )
 
   return (
@@ -50,7 +51,7 @@ export default function PrescritorDashboard() {
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <h1 className="text-xl font-bold">Painel do Prescritor</h1>
 
-        {/* Nome do usuário e botão de sair */}
+        {/* Nome + botão sair */}
         <div className="flex items-center gap-4">
           <span className="text-sm italic">{user?.name}</span>
           <button
@@ -62,26 +63,37 @@ export default function PrescritorDashboard() {
         </div>
       </header>
 
-      {/* Navegação de funções */}
-      <nav className="bg-white shadow px-6 py-3 flex gap-6">
-        <button className="flex items-center gap-1 hover:underline text-blue-600">
-          <Calendar size={18} /> Agenda
+      {/* Navegação de funções - agora alinhada à direita */}
+      <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
+        {/* Botão Agenda */}
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
+          <CalendarDays size={32} />
+          <span className="text-xs mt-1">Agenda</span>
         </button>
-        <button className="flex items-center gap-1 hover:underline text-blue-600">
-          <BookOpen size={18} /> Fórmulas
+
+        {/* Botão Fórmulas */}
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
+          <BookOpenText size={32} />
+          <span className="text-xs mt-1">Fórmulas</span>
         </button>
-        <button className="flex items-center gap-1 hover:underline text-blue-600">
-          <Leaf size={18} /> Dietas
+
+        {/* Botão Dietas */}
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
+          <Leaf size={32} />
+          <span className="text-xs mt-1">Dietas</span>
         </button>
-        <button className="flex items-center gap-1 hover:underline text-blue-600">
-          <Settings size={18} /> Configurações
+
+        {/* Botão Configurações */}
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
+          <Settings size={32} />
+          <span className="text-xs mt-1">Configurações</span>
         </button>
       </nav>
 
       {/* Conteúdo principal */}
       <div className="flex flex-1">
 
-        {/* Sidebar esquerda: atendimentos recentes */}
+        {/* Sidebar esquerda: Atendimentos Recentes */}
         <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
           <h2 className="font-semibold mb-4">Atendimentos Recentes</h2>
 
@@ -92,32 +104,33 @@ export default function PrescritorDashboard() {
                 <span className="text-sm font-medium">{item.nome}</span>
                 <div className="flex gap-2">
                   <button className="text-blue-600 hover:underline" title="Ver perfil">
-                    <User size={18} />
+                    <User size={20} />
                   </button>
                   <button className="text-blue-600 hover:underline" title="Ver atendimento">
-                    <FileText size={18} />
+                    <FileText size={20} />
                   </button>
                 </div>
               </li>
             ))}
           </ul>
 
-          {/* Campo de pesquisa */}
-          <div className="mt-6">
+          {/* Campo de pesquisa com ícone de lupa */}
+          <div className="mt-6 relative">
+            <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             <input
               type="text"
               placeholder="Pesquisar paciente..."
               value={pesquisa}
               onChange={(e) => setPesquisa(e.target.value)}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full pl-10 px-3 py-2 border rounded"
             />
           </div>
         </aside>
 
-        {/* Centro: botão para iniciar atendimento */}
+        {/* Centro: Botão de iniciar atendimento */}
         <main className="flex-1 flex items-center justify-center">
-          <button className="bg-blue-600 text-white px-6 py-4 rounded-lg shadow hover:bg-blue-700 text-lg">
-            Iniciar Novo Atendimento
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg">
+            <PlusCircle size={28} /> Iniciar Atendimento
           </button>
         </main>
 
