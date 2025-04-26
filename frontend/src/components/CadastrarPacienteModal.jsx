@@ -15,34 +15,32 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   const [sucesso, setSucesso] = useState(false)
 
   const formatarTelefone = (valor) => {
-  // Se já começa com "+55", remove só os parênteses, espaços e traços para reorganizar
-  let numeros = valor.replace(/[^\d]/g, ""); // Remove tudo que não for número
+  let numeros = valor.replace(/\D/g, "");
 
-  // Se o valor já começa com 55, remove ele para não duplicar
   if (numeros.startsWith("55")) {
-    numeros = numeros.slice(2)
+    numeros = numeros.slice(2);
   }
 
   if (numeros.length > 11) {
-    numeros = numeros.slice(0, 11)
+    numeros = numeros.slice(0, 11);
   }
 
-  let resultado = "+55 "
+  let resultado = "+55 ";
 
   if (numeros.length >= 2) {
-    resultado += `(${numeros.slice(0, 2)}) `
+    resultado += `(${numeros.slice(0, 2)}) `;
   }
   if (numeros.length >= 3 && numeros.length <= 6) {
-    resultado += `${numeros.slice(2)}`
+    resultado += `${numeros.slice(2)}`;
   }
   if (numeros.length >= 7 && numeros.length <= 10) {
-    resultado += `${numeros.slice(2, 6)}-${numeros.slice(6)}`
+    resultado += `${numeros.slice(2, 6)}-${numeros.slice(6)}`;
   }
   if (numeros.length === 11) {
-    resultado += `${numeros.slice(2, 7)}-${numeros.slice(7)}`
+    resultado += `${numeros.slice(2, 7)}-${numeros.slice(7)}`;
   }
 
-  return resultado.trim()
+  return resultado.trim();
 }
 
   // Atualiza os campos do formulário
@@ -144,12 +142,13 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
 
           {/* Telefone com formatação */}
           <input
-            type="text"
-            name="telefone"
-            placeholder="Telefone (opcional)"
-            value={form.telefone}
-            onChange={handleChange}
-            className="border px-3 py-2 w-full rounded"
+          type="text"
+          name="telefone"
+          placeholder="Telefone (opcional)"
+          value={form.telefone}
+          onChange={(e) => setForm({ ...form, telefone: e.target.value })}
+          onBlur={(e) => setForm({ ...form, telefone: formatarTelefone(e.target.value) })}
+          className="border px-3 py-2 w-full rounded"
           />
 
           {/* Email */}
