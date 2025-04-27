@@ -94,6 +94,7 @@ export default function FarmaciaDashboard() {
           <>
             {/* 🔵 Sidebar com lista de fórmulas */}
             <FormulaSidebar
+              onRecarregar={() => carregarFormulas(user?.id)}
               formulas={formulas}
               pesquisa={pesquisa}
               setPesquisa={setPesquisa}
