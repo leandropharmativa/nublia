@@ -1,84 +1,145 @@
-// 📄 src/components/FormulaSidebar.jsx
+// 📄 frontend/src/pages/FarmaciaDashboard.jsx
+
 import { useState, useEffect } from 'react';
-import { Edit, Trash2, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Package, FlaskConical, Building, Settings, LogOut } from 'lucide-react';
+import FormulaSidebar from '../components/FormulaSidebar';
+import FormulaForm from '../components/FormulaForm';
 import axios from 'axios';
 
-export default function FormulaSidebar({ farmaciaId, onEditar, onRecarregar }) {
+export default function FarmaciaDashboard() {
+  const navigate = useNavigate();
+  const [abaAtiva, setAbaAtiva] = useState('produtos');
+  const [user, setUser] = useState(null);
+
   const [formulas, setFormulas] = useState([]);
   const [pesquisa, setPesquisa] = useState('');
+  const [formulaSelecionada, setFormulaSelecionada] = useState(null);
+
+  // 🔵 Verifica usuário logado
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const parsedUser = JSON.parse(savedUser);
+      setUser(parsedUser);
+    } else {
+      navigate('/');
+    }
+  }, [navigate]);
+
+  // 🔵 Sempre que o user carregar, buscar fórmulas
+  useEffect(() => {
+    if (user?.id) {
+      carregarFormulas(user.id);
+    }
+  }, [user]);
+
+  // 🔵 Função logout
+  const logout = () => {
+    localStorage.clear();
+    navigate('/', { replace: true });
+  };
 
   // 🔵 Buscar fórmulas do banco
-  useEffect(() => {
-    const buscarFormulas = async () => {
-      try {
-        const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
-        setFormulas(response.data.reverse());
-      } catch (error) {
-        console.error('Erro ao buscar fórmulas:', error);
-      }
-    };
-
-    if (farmaciaId) {
-      buscarFormulas();
-    }
-  }, [farmaciaId]); // 🧹 Atualiza sempre que o ID da farmácia mudar
-
-  // 🔵 Deletar fórmula
-  const excluirFormula = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
-
+  const carregarFormulas = async (farmaciaId) => {
     try {
-      await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
-      setFormulas(prev => prev.filter(f => f.id !== id));
-      if (onRecarregar) onRecarregar();
+      const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
+      if (Array.isArray(response.data)) {
+        setFormulas(response.data.reverse()); // 🔵 Carrega realmente do banco
+      } else {
+        setFormulas([]);
+      }
     } catch (error) {
-      console.error('Erro ao excluir fórmula:', error);
+      console.error('Erro ao carregar fórmulas:', error);
+      setFormulas([]); // 🔵 Se der erro, não mantém fórmula antiga local
     }
   };
 
-  // 🔵 Filtro de pesquisa
-  const formulasFiltradas = formulas.filter((formula) =>
-    formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
-  );
+  // 🔵 Quando salvar ou atualizar
+  const handleFinalizar = () => {
+    setFormulaSelecionada(null);
+    if (user?.id) {
+      carregarFormulas(user.id); // 🔵 Sempre recarrega o banco
+    }
+  };
 
   return (
-    <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
-      <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
+    <div className="min-h-screen flex flex-col bg-gray-100">
 
-      <ul className="space-y-4">
-        {formulasFiltradas.map((formula) => (
-          <li key={formula.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-            <span className="text-sm font-medium truncate">{formula.nome}</span>
-            <div className="flex gap-2">
-              <button
-                className="text-blue-600 hover:text-blue-800"
-                onClick={() => onEditar(formula)}
-                title="Editar fórmula"
-              >
-                <Edit size={20} />
-              </button>
-              <button
-                className="text-red-500 hover:text-red-700"
-                onClick={() => excluirFormula(formula.id)}
-                title="Excluir fórmula"
-              >
-                <Trash2 size={20} />
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {/* 🔵 TOPO */}
+      <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
+        <div>
+          <div className="text-sm font-semibold">Nublia</div>
+          <h1 className="text-xl font-bold">Painel da Farmácia</h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm italic">{user?.name}</span>
+          <button
+            onClick={logout}
+            className="flex items-center gap-1 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm"
+          >
+            <LogOut size={16} /> Sair
+          </button>
+        </div>
+      </header>
 
-      <div className="mt-6 relative">
-        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-        <input
-          type="text"
-          placeholder="Pesquisar fórmula..."
-          value={pesquisa}
-          onChange={(e) => setPesquisa(e.target.value)}
-          className="w-full pl-10 px-3 py-2 border rounded"
-        />
+      {/* 🔵 NAV */}
+      <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
+        <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
+          <Package size={32} />
+          <span className="text-xs mt-1">Produtos</span>
+        </button>
+        <button onClick={() => setAbaAtiva('formulas')} className={`flex flex-col items-center ${abaAtiva === 'formulas' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
+          <FlaskConical size={32} />
+          <span className="text-xs mt-1">Fórmulas</span>
+        </button>
+        <button onClick={() => setAbaAtiva('dados')} className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
+          <Building size={32} />
+          <span className="text-xs mt-1">Dados</span>
+        </button>
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
+          <Settings size={32} />
+          <span className="text-xs mt-1">Configurações</span>
+        </button>
+      </nav>
+
+      {/* 🔵 CONTEÚDO */}
+      <div className="flex flex-1 overflow-hidden">
+
+        {abaAtiva === 'produtos' && (
+          <main className="flex-1 p-6 overflow-y-auto">
+            <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Produtos</h2>
+          </main>
+        )}
+
+        {abaAtiva === 'formulas' && (
+          <>
+            <FormulaSidebar
+              formulas={formulas}
+              pesquisa={pesquisa}
+              setPesquisa={setPesquisa}
+              onEditar={setFormulaSelecionada}
+              onRecarregar={() => carregarFormulas(user?.id)}
+            />
+
+            <main className="flex-1 p-6 overflow-y-auto">
+              <FormulaForm
+                farmaciaId={user?.id}
+                formulaSelecionada={formulaSelecionada}
+                onFinalizar={handleFinalizar}
+              />
+            </main>
+          </>
+        )}
+
+        {abaAtiva === 'dados' && (
+          <main className="flex-1 p-6 overflow-y-auto">
+            <h2 className="text-2xl font-bold text-blue-600 mb-6">Dados da Farmácia</h2>
+          </main>
+        )}
+
       </div>
-    </aside>
+
+    </div>
   );
 }
