@@ -41,19 +41,16 @@ export default function FarmaciaDashboard() {
   };
 
   // 🔵 Buscar fórmulas do banco
-  const carregarFormulas = async (farmaciaId) => {
-    try {
-      const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
-      if (Array.isArray(response.data)) {
-        setFormulas(response.data.reverse()); // 🔵 Carrega realmente do banco
-      } else {
-        setFormulas([]);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar fórmulas:', error);
-      setFormulas([]); // 🔵 Se der erro, não mantém fórmula antiga local
-    }
-  };
+// 🔵 Carregar fórmulas do banco corretamente
+const carregarFormulas = async (farmaciaId) => {
+  try {
+    setFormulas([]); // 🧹 Limpa qualquer fórmula antiga local ANTES de buscar
+    const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
+    setFormulas(response.data.reverse()); // 🔵 Atualiza com dados do banco
+  } catch (error) {
+    console.error('Erro ao carregar fórmulas:', error);
+  }
+};
 
   // 🔵 Quando salvar ou atualizar
   const handleFinalizar = () => {
