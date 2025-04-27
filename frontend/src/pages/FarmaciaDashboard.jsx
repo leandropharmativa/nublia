@@ -9,11 +9,12 @@ export default function FarmaciaDashboard() {
   const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState('produtos');
   const [user, setUser] = useState(null);
-  const [formulas, setFormulas] = useState([]);
-  const [formulaSelecionada, setFormulaSelecionada] = useState(null);
-  const [pesquisa, setPesquisa] = useState('');
 
-  // 🔵 Carregar usuário e fórmulas
+  const [formulas, setFormulas] = useState([]);
+  const [pesquisa, setPesquisa] = useState('');
+  const [formulaSelecionada, setFormulaSelecionada] = useState(null);
+
+  // 🔵 Verifica usuário logado e carrega fórmulas
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -25,17 +26,17 @@ export default function FarmaciaDashboard() {
     }
   }, [navigate]);
 
-  // 🔵 Função de logout
+  // 🔵 Função logout
   const logout = () => {
     localStorage.clear();
     navigate('/', { replace: true });
   };
 
-  // 🔵 Carrega as fórmulas da farmácia
+  // 🔵 Carregar fórmulas da farmácia
   const carregarFormulas = async (farmaciaId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
-      setFormulas(response.data.reverse());
+      setFormulas(response.data.reverse()); // 🔵 Atualiza estado com as fórmulas do banco
     } catch (error) {
       console.error('Erro ao carregar fórmulas:', error);
     }
@@ -61,69 +62,38 @@ export default function FarmaciaDashboard() {
         </div>
       </header>
 
-      {/* 🔵 MENU DE NAVEGAÇÃO */}
+      {/* 🔵 NAV */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
-        <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
-          <Package size={32} />
-          <span className="text-xs mt-1">Produtos</span>
-        </button>
-        <button onClick={() => setAbaAtiva('formulas')} className={`flex flex-col items-center ${abaAtiva === 'formulas' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
-          <FlaskConical size={32} />
-          <span className="text-xs mt-1">Fórmulas</span>
-        </button>
-        <button onClick={() => setAbaAtiva('dados')} className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
-          <Building size={32} />
-          <span className="text-xs mt-1">Dados</span>
-        </button>
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <Settings size={32} />
-          <span className="text-xs mt-1">Configurações</span>
-        </button>
+        {/* botoes de navegação */}
       </nav>
 
       {/* 🔵 CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
 
-        {abaAtiva === 'produtos' && (
-          <main className="flex-1 p-6 overflow-y-auto">
-            <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Produtos</h2>
-          </main>
-        )}
-
         {abaAtiva === 'formulas' && (
           <>
-            {/* 🔵 Sidebar com lista de fórmulas */}
             <FormulaSidebar
-              onRecarregar={() => carregarFormulas(user?.id)}
               formulas={formulas}
               pesquisa={pesquisa}
               setPesquisa={setPesquisa}
-              onEditar={(formula) => setFormulaSelecionada(formula)}
-              onAtualizarLista={() => carregarFormulas(user?.id)}
+              onEditar={setFormulaSelecionada}
+              onRecarregar={() => carregarFormulas(user?.id)} // 🔵 Recarrega do backend
             />
-
-            {/* 🔵 Formulário de cadastro/edição */}
             <main className="flex-1 p-6 overflow-y-auto">
               <FormulaForm
                 farmaciaId={user?.id}
                 formulaSelecionada={formulaSelecionada}
                 onFinalizar={() => {
                   setFormulaSelecionada(null);
-                  carregarFormulas(user?.id);
+                  carregarFormulas(user?.id); // 🔵 Sempre recarrega ao salvar
                 }}
               />
             </main>
           </>
         )}
 
-        {abaAtiva === 'dados' && (
-          <main className="flex-1 p-6 overflow-y-auto">
-            <h2 className="text-2xl font-bold text-blue-600 mb-6">Dados da Farmácia</h2>
-          </main>
-        )}
-
+        {/* outros conteúdos como produtos/dados */}
       </div>
-
     </div>
   );
 }
