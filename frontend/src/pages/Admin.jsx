@@ -1,21 +1,30 @@
-// Importações principais
-import { useState } from 'react'
-import axios from 'axios'
+// 📄 frontend/src/pages/Admin.jsx
+
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 export default function Admin() {
-  // Estados para formulário de geração de código
+  const navigate = useNavigate()
+  
+  const [user, setUser] = useState(null)
   const [tipoUsuario, setTipoUsuario] = useState('prescritor')
   const [emailUsuario, setEmailUsuario] = useState('')
-  
-  // Estados para resultado da operação
   const [codigo, setCodigo] = useState('')
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState('')
 
-  const navigate = useNavigate()
+  // 🔵 Carrega usuário logado ao abrir a tela
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user')
+    if (savedUser) {
+      setUser(JSON.parse(savedUser))
+    } else {
+      navigate('/', { replace: true })
+    }
+  }, [navigate])
 
-  // Função para gerar um novo código de ativação
+  // 🛠 Função para gerar código
   const gerarCodigo = async () => {
     try {
       const token = localStorage.getItem('token')
@@ -26,7 +35,6 @@ export default function Admin() {
         return
       }
 
-      // Monta o corpo do request
       const payload = {
         tipo_usuario: tipoUsuario,
         email_usuario: emailUsuario
@@ -43,7 +51,6 @@ export default function Admin() {
         }
       )
 
-      // Atualiza estado com sucesso
       setCodigo(response.data.codigo)
       setErro('')
       setSucesso('Código gerado com sucesso!')
@@ -54,17 +61,17 @@ export default function Admin() {
     }
   }
 
-  // Função de logout
+  // 🛠 Função de logout
   const logout = () => {
-    localStorage.clear()          // Limpa tudo
-    navigate('/')                 // Redireciona
-    window.location.reload()      // Recarrega para resetar
+    localStorage.clear()
+    navigate('/', { replace: true })
+    window.location.reload()
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       
-      {/* Topo da página com botão de logout */}
+      {/* Topo */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <h1 className="text-xl font-bold">Administração - Nublia</h1>
         <button
@@ -79,11 +86,11 @@ export default function Admin() {
       <div className="flex flex-col items-center justify-center flex-1 p-6">
         <div className="bg-white p-8 rounded shadow-md w-full max-w-md space-y-6">
 
-          {/* Mensagens de erro ou sucesso */}
+          {/* Mensagens */}
           {erro && <p className="text-red-500 text-center">{erro}</p>}
           {sucesso && <p className="text-green-500 text-center">{sucesso}</p>}
 
-          {/* Formulário para gerar novo código */}
+          {/* Formulário */}
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">Tipo de usuário</label>
@@ -118,7 +125,7 @@ export default function Admin() {
               Gerar Código
             </button>
 
-            {/* Exibir código gerado */}
+            {/* Código gerado */}
             {codigo && (
               <div className="mt-4 p-4 border rounded bg-gray-50 text-center">
                 <p className="text-gray-700 text-sm">Código gerado:</p>
