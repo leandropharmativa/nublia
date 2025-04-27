@@ -4,46 +4,49 @@ import { Save, ArrowLeft } from 'lucide-react'
 import axios from 'axios'
 
 export default function FichaAtendimento({ paciente, onFinalizar }) {
-  const [abaAtiva, setAbaAtiva] = useState('anamnese') // 📦 Aba ativa
+  const [abaAtiva, setAbaAtiva] = useState('anamnese')
   const [formulario, setFormulario] = useState({
     anamnese: '',
     antropometria: '',
     dieta: '',
     receita: '',
   })
-  const [mensagem, setMensagem] = useState(null) // 🔵 Mensagem de sucesso ou erro
+  const [mensagem, setMensagem] = useState(null)
+  const [atendimentoId, setAtendimentoId] = useState(null) // 🆕 Guardar ID do atendimento salvo
 
   // 🛠 Atualiza o formulário
   const handleChange = (e) => {
     setFormulario({ ...formulario, [abaAtiva]: e.target.value })
+    setMensagem(null) // 🆕 Se mexer em qualquer campo, apaga a mensagem de sucesso
   }
 
-// 🛠 Salvar atendimento
-const handleSalvar = async () => {
-  try {
-    const dadosAtendimento = {
-      paciente_id: paciente.id,
-      anamnese: formulario.anamnese,
-      antropometria: formulario.antropometria,
-      dieta: formulario.dieta,
-      receita: formulario.receita
+  // 🛠 Salvar ou atualizar atendimento
+  const handleSalvar = async () => {
+    try {
+      const dadosAtendimento = {
+        paciente_id: paciente.id,
+        anamnese: formulario.anamnese,
+        antropometria: formulario.antropometria,
+        dieta: formulario.dieta,
+        receita: formulario.receita
+      }
+
+      if (!atendimentoId) {
+        // Primeiro salvamento: cria um novo atendimento (POST)
+        const response = await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
+        setAtendimentoId(response.data.id) // 🆕 Salva o ID retornado
+      } else {
+        // Se já existe: atualiza o atendimento (PUT)
+        await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
+      }
+
+      setMensagem({ tipo: 'sucesso', texto: 'Atendimento salvo com sucesso!' })
+
+    } catch (error) {
+      console.error(error)
+      setMensagem({ tipo: 'erro', texto: 'Erro ao salvar atendimento. Verifique os dados.' })
     }
-
-    await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
-
-    setMensagem({ tipo: 'sucesso', texto: 'Atendimento salvo com sucesso!' })
-
-    // 🔵 Agora só limpa a mensagem depois de 3 segundos, sem fechar a ficha
-    setTimeout(() => {
-      setMensagem(null)
-    }, 3000)
-
-  } catch (error) {
-    console.error(error)
-    setMensagem({ tipo: 'erro', texto: 'Erro ao salvar atendimento. Verifique os dados.' })
   }
-}
-
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-full">
@@ -80,30 +83,15 @@ const handleSalvar = async () => {
 
       {/* 🔵 Tabs */}
       <div className="flex border-b mb-6">
-        <button
-          onClick={() => setAbaAtiva('anamnese')}
-          className={`px-4 py-2 ${abaAtiva === 'anamnese' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
-        >
-          Anamnese
-        </button>
-        <button
-          onClick={() => setAbaAtiva('antropometria')}
-          className={`px-4 py-2 ${abaAtiva === 'antropometria' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
-        >
-          Avaliação Antropométrica
-        </button>
-        <button
-          onClick={() => setAbaAtiva('dieta')}
-          className={`px-4 py-2 ${abaAtiva === 'dieta' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
-        >
-          Plano Alimentar
-        </button>
-        <button
-          onClick={() => setAbaAtiva('receita')}
-          className={`px-4 py-2 ${abaAtiva === 'receita' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
-        >
-          Receita
-        </button>
+        {["anamnese", "antropometria", "dieta", "receita"].map((aba) => (
+          <button
+            key={aba}
+            onClick={() => setAbaAtiva(aba)}
+            className={`px-4 py-2 ${abaAtiva === aba ? 'border-b-2 border-blue-600 font-bold' : ''}`}
+          >
+            {aba.charAt(0).toUpperCase() + aba.slice(1)}
+          </button>
+        ))}
       </div>
 
       {/* 🔵 Área de preenchimento */}
