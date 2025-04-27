@@ -71,11 +71,11 @@ export default function PrescritorDashboard() {
   }
 
   // 🔵 Logout
-  const logout = () => {
-    localStorage.clear()
-    navigate('/')
-    window.location.reload()
-  }
+const logout = () => {
+  localStorage.clear()
+  navigate('/', { replace: true })
+  window.location.reload()
+}
 
   // 🔵 Filtro de pesquisa
   const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
