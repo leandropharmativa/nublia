@@ -45,6 +45,7 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
       if (formulaSelecionada) {
         // Atualizar fórmula existente
         await axios.put(`https://nublia-backend.onrender.com/formulas/${formulaSelecionada.id}`, {
+          farmacia_id: farmaciaId,
           nome,
           composicao,
           indicacao,
