@@ -1,38 +1,41 @@
-// 📄 src/components/FormulaSidebar.jsx
 import { useState, useEffect } from 'react';
 import { Edit, Trash2, Search } from 'lucide-react';
 import axios from 'axios';
 
-export default function FormulaSidebar({ farmaciaId, onEditar, onRecarregar }) {
+export default function FormulaSidebar({ farmaciaId, onEditar }) {
   const [formulas, setFormulas] = useState([]);
   const [pesquisa, setPesquisa] = useState('');
+  const [erro, setErro] = useState('');
 
-  // 🔵 Buscar fórmulas do banco
+  // 🔵 Buscar fórmulas no banco quando o componente carregar
   useEffect(() => {
-    const buscarFormulas = async () => {
-      try {
-        const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
-        setFormulas(response.data.reverse());
-      } catch (error) {
-        console.error('Erro ao buscar fórmulas:', error);
-      }
-    };
-
     if (farmaciaId) {
-      buscarFormulas();
+      carregarFormulas();
     }
-  }, [farmaciaId]); // 🧹 Atualiza sempre que o ID da farmácia mudar
+  }, [farmaciaId]);
 
-  // 🔵 Deletar fórmula
+  const carregarFormulas = async () => {
+    try {
+      const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
+      setFormulas(response.data.reverse());
+      setErro('');
+    } catch (error) {
+      console.error('Erro ao carregar fórmulas:', error);
+      setErro('Erro ao carregar fórmulas.');
+    }
+  };
+
+  // 🔵 Excluir fórmula
   const excluirFormula = async (id) => {
     if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
-
     try {
       await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
+      // Atualiza a lista após excluir
       setFormulas(prev => prev.filter(f => f.id !== id));
-      if (onRecarregar) onRecarregar();
+      setErro('');
     } catch (error) {
       console.error('Erro ao excluir fórmula:', error);
+      setErro('Erro ao excluir fórmula.');
     }
   };
 
@@ -44,6 +47,8 @@ export default function FormulaSidebar({ farmaciaId, onEditar, onRecarregar }) {
   return (
     <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
       <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
+
+      {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
 
       <ul className="space-y-4">
         {formulasFiltradas.map((formula) => (
@@ -69,6 +74,7 @@ export default function FormulaSidebar({ farmaciaId, onEditar, onRecarregar }) {
         ))}
       </ul>
 
+      {/* 🔵 Caixa de pesquisa */}
       <div className="mt-6 relative">
         <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
         <input
