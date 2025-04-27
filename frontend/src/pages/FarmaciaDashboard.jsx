@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Package, FlaskConical, Building, Settings, LogOut, Edit, Trash2, Search } from 'lucide-react'; // 🆕 Adicionado Trash2
+import { Package, FlaskConical, Building, Settings, LogOut, Edit, Trash2, Search } from 'lucide-react';
 import axios from 'axios';
 
 export default function FarmaciaDashboard() {
@@ -58,7 +58,6 @@ export default function FarmaciaDashboard() {
 
     try {
       if (editandoFormulaId) {
-        // Atualizar fórmula existente
         await axios.put(`https://nublia-backend.onrender.com/formulas/${editandoFormulaId}`, {
           nome: nomeFormula,
           composicao,
@@ -67,7 +66,6 @@ export default function FarmaciaDashboard() {
         });
         setSucesso('Fórmula atualizada com sucesso!');
       } else {
-        // Cadastrar nova fórmula
         await axios.post('https://nublia-backend.onrender.com/formulas/', {
           farmacia_id: user.id,
           nome: nomeFormula,
@@ -84,7 +82,7 @@ export default function FarmaciaDashboard() {
       setPosologia('');
       setEditandoFormulaId(null);
       setErro('');
-      carregarFormulas(user.id); // 🆕 Recarrega a lista
+      carregarFormulas(user.id);
 
     } catch (error) {
       console.error('Erro ao salvar fórmula:', error);
@@ -93,7 +91,7 @@ export default function FarmaciaDashboard() {
     }
   };
 
-  // 🔵 Iniciar edição de uma fórmula
+  // 🔵 Iniciar edição
   const iniciarEdicao = (formula) => {
     setEditandoFormulaId(formula.id);
     setNomeFormula(formula.nome);
@@ -125,7 +123,6 @@ export default function FarmaciaDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      
       {/* 🔵 TOPO */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <div>
@@ -165,7 +162,7 @@ export default function FarmaciaDashboard() {
 
       {/* 🔵 CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
-        
+
         {abaAtiva === 'produtos' && (
           <main className="flex-1 p-6 overflow-y-auto">
             <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Produtos</h2>
@@ -206,8 +203,67 @@ export default function FarmaciaDashboard() {
               </div>
             </aside>
 
-            {/* 🔵 Área de Cadastro de Fórmulas */}
-            {/* ⬇️ Seu formulário de cadastro continua aqui, sem alterações */}
+            {/* 🔵 Formulário de Cadastro */}
+            <main className="flex-1 p-6 overflow-y-auto">
+              <div className="max-w-2xl mx-auto">
+                <h2 className="text-2xl font-bold text-blue-600 mb-6">{editandoFormulaId ? 'Editar Fórmula' : 'Cadastrar Fórmula'}</h2>
+
+                {erro && <p className="text-red-500 mb-4">{erro}</p>}
+                {sucesso && <p className="text-green-500 mb-4">{sucesso}</p>}
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Nome da Fórmula</label>
+                    <input
+                      type="text"
+                      value={nomeFormula}
+                      onChange={(e) => setNomeFormula(e.target.value)}
+                      className="border rounded px-3 py-2 w-full"
+                      placeholder="Ex: Fórmula Antiestresse"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Composição</label>
+                    <textarea
+                      value={composicao}
+                      onChange={(e) => setComposicao(e.target.value)}
+                      className="border rounded px-3 py-2 w-full h-24 resize-none"
+                      placeholder="Ex: Magnésio, Triptofano, Passiflora..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Indicação</label>
+                    <input
+                      type="text"
+                      value={indicacao}
+                      onChange={(e) => setIndicacao(e.target.value)}
+                      className="border rounded px-3 py-2 w-full"
+                      placeholder="Ex: Estresse, Ansiedade, Relaxamento"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Posologia</label>
+                    <input
+                      type="text"
+                      value={posologia}
+                      onChange={(e) => setPosologia(e.target.value)}
+                      className="border rounded px-3 py-2 w-full"
+                      placeholder="Ex: 1 cápsula 2x ao dia"
+                    />
+                  </div>
+
+                  <button
+                    onClick={cadastrarOuAtualizarFormula}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
+                  >
+                    {editandoFormulaId ? 'Atualizar Fórmula' : 'Salvar Fórmula'}
+                  </button>  
+                </div>
+              </div>
+            </main>
           </>
         )}
 
