@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { User, FileText, Search } from 'lucide-react'
 import axios from 'axios'
 
-export default function AtendimentosRecentes({ atendimentos, pesquisa, onPesquisar }) {
+export default function AtendimentosRecentes({ atendimentos, pesquisa, onPesquisar, onVerPerfil }) {
   const [nomesPacientes, setNomesPacientes] = useState({})
 
   useEffect(() => {
@@ -44,7 +44,11 @@ export default function AtendimentosRecentes({ atendimentos, pesquisa, onPesquis
               {nomesPacientes[atendimento.paciente_id] || 'Carregando...'}
             </span>
             <div className="flex gap-2">
-              <button className="text-blue-600 hover:underline" title="Ver perfil">
+              <button
+                className="text-blue-600 hover:underline"
+                title="Ver perfil"
+                onClick={() => onVerPerfil(atendimento.paciente_id)} // <<< 🔵 CHAMA o perfil
+              >
                 <User size={20} />
               </button>
               <button className="text-blue-600 hover:underline" title="Ver atendimento">
