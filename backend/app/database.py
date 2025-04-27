@@ -4,7 +4,7 @@ import os  # Para pegar variáveis de ambiente (como a URL do banco)
 
 # Define a variável de conexão
 # Pega a variável de ambiente DATABASE_URL se existir, senão usa SQLite localmente (para testes locais)
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://nublia:zjilU8UV2f69HShkbFnMYz4BTfebOKl0@dpg-d06grqbuibrs73ej6d90-a.oregon-postgres.render.com/nublia_db")
 
 # Cria o motor de conexão
 engine = create_engine(DATABASE_URL, echo=True)  
