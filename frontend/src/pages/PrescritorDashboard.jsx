@@ -1,198 +1,189 @@
-// Importações principais
+// 📄 src/pages/PrescritorDashboard.jsx
+
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { PlusCircle, Calendar, ScrollText, Salad, Settings, Search } from 'lucide-react'
+import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
 import axios from 'axios'
 
-// Importação dos ícones
-import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, Search, PlusCircle } from 'lucide-react'
-
-// Importação dos componentes
-import IniciarAtendimentoModal from '../components/IniciarAtendimentoModal'
-import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
-
 export default function PrescritorDashboard() {
-  const navigate = useNavigate()
   const [user, setUser] = useState(null)
-  const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
-  const [pesquisa, setPesquisa] = useState('')
-  const [pacienteAtendimento, setPacienteAtendimento] = useState(null)  // Paciente sendo atendido
-  const [mostrarCadastroPaciente, setMostrarCadastroPaciente] = useState(false)  // Mostrar ou não o formulário
+  const [pacientes, setPacientes] = useState([])
+  const [busca, setBusca] = useState('')
+  const [resultadosBusca, setResultadosBusca] = useState([])
+  const [mostrarBuscaPaciente, setMostrarBuscaPaciente] = useState(false)
+  const [mostrarCadastroPaciente, setMostrarCadastroPaciente] = useState(false)
 
-
-  // Estados de controle de modais
-  const [abrirModalAtendimento, setAbrirModalAtendimento] = useState(false)
-  const [abrirModalCadastroPaciente, setAbrirModalCadastroPaciente] = useState(false)
-
-  // Carrega o usuário logado
+  // Carregar usuário logado
   useEffect(() => {
-    const savedUser = localStorage.getItem('user')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
-    } else {
-      navigate('/')
+    const userData = localStorage.getItem('user')
+    if (userData) {
+      setUser(JSON.parse(userData))
     }
-  }, [navigate])
-
-  // Mock dos atendimentos recentes
-  useEffect(() => {
-    const exemplos = [
-      { id: 1, nome: "João Silva" },
-      { id: 2, nome: "Maria Oliveira" },
-      { id: 3, nome: "Carlos Souza" }
-    ]
-    setAtendimentosRecentes(exemplos)
   }, [])
 
-  // Logout
-  const logout = () => {
+  // Buscar pacientes no backend
+  useEffect(() => {
+    async function fetchPacientes() {
+      try {
+        const response = await axios.get('https://nublia-backend.onrender.com/pacientes/')
+        setPacientes(response.data)
+      } catch (error) {
+        console.error('Erro ao buscar pacientes:', error)
+      }
+    }
+    fetchPacientes()
+  }, [])
+
+  // Filtrar pacientes conforme digita
+  useEffect(() => {
+    const resultados = pacientes.filter(p =>
+      p.nome.toLowerCase().includes(busca.toLowerCase())
+    )
+    setResultadosBusca(resultados)
+  }, [busca, pacientes])
+
+  const handleLogout = () => {
     localStorage.clear()
-    navigate('/')
     window.location.reload()
   }
 
-  // Filtro de pesquisa nos atendimentos recentes
-  const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
-    item.nome.toLowerCase().includes(pesquisa.toLowerCase())
-  )
-
-  // Quando seleciona um paciente da lista
-  const handleSelecionarPaciente = (paciente) => {
-    console.log("Paciente selecionado:", paciente)
-    setAbrirModalAtendimento(false)
-    // 🔵 Aqui depois levamos para a página de atendimento
-  }
-
-  // Quando clicar em "Cadastrar novo paciente"
-  const handleCadastrarPaciente = () => {
-    setAbrirModalAtendimento(false)          // Fecha o modal de atendimento
-    setAbrirModalCadastroPaciente(true)       // Abre o modal de cadastro de paciente
-  }
-
-  // Depois que paciente for cadastrado com sucesso
-  const handlePacienteCadastrado = (paciente) => {
-    console.log("Paciente cadastrado:", paciente)
-    setAbrirModalCadastroPaciente(false)
-    // 🔵 Aqui depois levamos direto para a tela de atendimento com paciente novo
-  }
-  {/* Se o prescritor clicou para iniciar atendimento */}
-  {mostrarCadastroPaciente && (
-  <CadastrarPacienteModal 
-    onClose={() => setMostrarCadastroPaciente(false)}
-    onPacienteCadastrado={(paciente) => {
-      setPacienteAtendimento(paciente)
-      setMostrarCadastroPaciente(false)
-    }}
-  />
-  )}
-
-  {/* Se já temos paciente selecionado, abrir ficha */}
-  {pacienteAtendimento && (
-  <FichaAtendimento paciente={pacienteAtendimento} />
-  )}
-
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
-
-      {/* Topo */}
+    <div className="flex flex-col h-screen">
+      {/* TOPO */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
-        <div>
-          <div className="text-sm font-semibold">Nublia</div>
-          <h1 className="text-xl font-bold">Painel do Prescritor</h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm italic">{user?.name}</span>
-          <button
-            onClick={logout}
-            className="flex items-center gap-1 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm"
-          >
-            <LogOut size={16} /> Sair
-          </button>
+        <h1 className="text-xl font-bold">Nublia</h1>
+        <div className="flex items-center gap-6">
+          <nav className="flex gap-6 items-center">
+            <div className="flex flex-col items-center text-sm">
+              <Calendar size={28} />
+              <span>Agenda</span>
+            </div>
+            <div className="flex flex-col items-center text-sm">
+              <ScrollText size={28} />
+              <span>Fórmulas</span>
+            </div>
+            <div className="flex flex-col items-center text-sm">
+              <Salad size={28} />
+              <span>Dietas</span>
+            </div>
+            <div className="flex flex-col items-center text-sm">
+              <Settings size={28} />
+              <span>Configurações</span>
+            </div>
+          </nav>
+          <div className="flex items-center gap-4">
+            <span className="italic">{user?.name}</span>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm"
+            >
+              Sair
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Navegação de funções */}
-      <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <CalendarDays size={32} />
-          <span className="text-xs mt-1">Agenda</span>
-        </button>
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <BookOpenText size={32} />
-          <span className="text-xs mt-1">Fórmulas</span>
-        </button>
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <Leaf size={32} />
-          <span className="text-xs mt-1">Dietas</span>
-        </button>
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <Settings size={32} />
-          <span className="text-xs mt-1">Configurações</span>
-        </button>
-      </nav>
-
-      {/* Conteúdo principal */}
+      {/* CONTEÚDO */}
       <div className="flex flex-1">
-
-        {/* Sidebar esquerda */}
-        <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
-          <h2 className="font-semibold mb-4">Atendimentos Recentes</h2>
-          <ul className="flex-1 space-y-4">
-            {atendimentosFiltrados.map((item) => (
-              <li key={item.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-                <span className="text-sm font-medium">{item.nome}</span>
-                <div className="flex gap-2">
-                  <button className="text-blue-600 hover:underline" title="Ver perfil">
-                    <User size={20} />
-                  </button>
-                  <button className="text-blue-600 hover:underline" title="Ver atendimento">
-                    <FileText size={20} />
-                  </button>
-                </div>
-              </li>
-            ))}
+        {/* LATERAL - Atendimentos recentes */}
+        <aside className="w-64 bg-gray-100 p-4 border-r overflow-y-auto">
+          <h2 className="font-semibold mb-4">Atendimentos recentes</h2>
+          <ul className="space-y-2">
+            {/* Depois preencher com atendimentos */}
           </ul>
 
-          {/* Campo de pesquisa */}
-          <div className="mt-6 relative">
-            <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Pesquisar paciente..."
-              value={pesquisa}
-              onChange={(e) => setPesquisa(e.target.value)}
-              className="w-full pl-10 px-3 py-2 border rounded"
-            />
+          {/* Caixa de pesquisa */}
+          <div className="mt-8">
+            <div className="flex items-center gap-2 border rounded px-2 py-1">
+              <Search size={16} />
+              <input
+                type="text"
+                placeholder="Pesquisar Paciente"
+                className="outline-none w-full"
+              />
+            </div>
           </div>
         </aside>
 
-        {/* Centro */}
-        <main className="flex-1 flex items-center justify-center">
-        <button
-        onClick={() => setMostrarCadastroPaciente(true)}
-        className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 text-lg flex items-center">
-        <PlusCircle className="mr-2" /> Iniciar Atendimento
-        </button>
+        {/* CENTRO */}
+        <main className="flex-1 flex flex-col items-center justify-center p-4">
+          {/* BOTÃO de Iniciar Atendimento */}
+          <button
+            onClick={() => setMostrarBuscaPaciente(true)}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 text-lg flex items-center"
+          >
+            <PlusCircle className="mr-2" />
+            Iniciar novo atendimento
+          </button>
+
+          {/* MODAL de busca paciente */}
+          {mostrarBuscaPaciente && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white p-8 rounded shadow-md w-96 space-y-6">
+                <h2 className="text-xl font-bold text-center text-blue-600">Buscar Paciente</h2>
+
+                <input
+                  type="text"
+                  placeholder="Digite o nome"
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  className="border px-3 py-2 w-full"
+                />
+
+                {/* Resultados */}
+                {resultadosBusca.length > 0 ? (
+                  <ul className="space-y-2">
+                    {resultadosBusca.map(p => (
+                      <li key={p.id} className="flex justify-between items-center">
+                        <span>{p.nome}</span>
+                        <button className="text-blue-600 hover:underline text-sm">
+                          Atender
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500 text-center">Paciente não encontrado.</p>
+                )}
+
+                {/* Botão de cadastrar novo */}
+                <div className="text-center pt-4">
+                  <button
+                    className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
+                    onClick={() => {
+                      setMostrarBuscaPaciente(false)
+                      setMostrarCadastroPaciente(true)
+                    }}
+                  >
+                    Cadastrar Novo Paciente
+                  </button>
+                </div>
+
+                {/* Fechar busca */}
+                <div className="text-center pt-2">
+                  <button
+                    className="text-gray-500 text-sm hover:underline"
+                    onClick={() => setMostrarBuscaPaciente(false)}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODAL de cadastro paciente */}
+          {mostrarCadastroPaciente && (
+            <CadastrarPacienteModal
+              onClose={() => setMostrarCadastroPaciente(false)}
+              onPacienteCadastrado={(paciente) => {
+                console.log('Paciente cadastrado:', paciente)
+                setMostrarCadastroPaciente(false)
+              }}
+            />
+          )}
         </main>
-
       </div>
-
-      {/* Modal de iniciar atendimento */}
-      {abrirModalAtendimento && (
-        <IniciarAtendimentoModal
-          onClose={() => setAbrirModalAtendimento(false)}
-          onSelecionarPaciente={handleSelecionarPaciente}
-          onCadastrarPaciente={handleCadastrarPaciente}
-        />
-      )}
-
-      {/* Modal de cadastrar paciente */}
-      {abrirModalCadastroPaciente && (
-        <CadastrarPacienteModal
-          onClose={() => setAbrirModalCadastroPaciente(false)}
-          onPacienteCadastrado={handlePacienteCadastrado}
-        />
-      )}
-
     </div>
   )
 }
