@@ -13,3 +13,8 @@ engine = create_engine(DATABASE_URL, echo=True)
 # Função que cria as tabelas no banco (caso não existam)
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
+
+# 🔵 ESTA FUNÇÃO FALTAVA
+def get_session():
+    with Session(engine) as session:
+        yield session
