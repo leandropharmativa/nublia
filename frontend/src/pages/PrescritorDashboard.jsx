@@ -8,7 +8,7 @@ import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, PlusCircle } from '
 import BuscarPacienteModal from '../components/BuscarPacienteModal'
 import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
 import FichaAtendimento from '../components/FichaAtendimento'
-import AtendimentosRecentes from '../components/AtendimentosRecentes' // 🔵 Novo componente
+import AtendimentosRecentes from '../components/AtendimentosRecentes'
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
@@ -29,26 +29,51 @@ export default function PrescritorDashboard() {
     }
   }, [navigate])
 
-  // 🔵 Carrega atendimentos recentes (depois vamos buscar via API)
+  // 🔵 Buscar atendimentos recentes do backend
   useEffect(() => {
-    const exemplos = [
-      { id: 1, nome: "João Silva" },
-      { id: 2, nome: "Maria Oliveira" },
-      { id: 3, nome: "Carlos Souza" }
-    ]
-    setAtendimentosRecentes(exemplos)
+    const carregarAtendimentos = async () => {
+      try {
+        const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
+        const atendimentos = response.data
+
+        // 🛠 Para cada atendimento, vamos buscar os dados do paciente
+        const atendimentosComPacientes = await Promise.all(
+          atendimentos.map(async (atendimento) => {
+            try {
+              const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/pacientes/${atendimento.paciente_id}`)
+              return {
+                ...atendimento,
+                nomePaciente: pacienteResponse.data.nome || 'Paciente desconhecido'
+              }
+            } catch (erroPaciente) {
+              console.error('Erro ao buscar paciente:', erroPaciente)
+              return {
+                ...atendimento,
+                nomePaciente: 'Paciente desconhecido'
+              }
+            }
+          })
+        )
+
+        setAtendimentosRecentes(atendimentosComPacientes.reverse()) // mostra mais recentes primeiro
+      } catch (error) {
+        console.error('Erro ao carregar atendimentos:', error)
+      }
+    }
+
+    carregarAtendimentos()
   }, [])
 
-  // 🔵 Função de logout
+  // 🔵 Logout
   const logout = () => {
     localStorage.clear()
     navigate('/')
     window.location.reload()
   }
 
-  // 🔵 Filtro da lista de atendimentos
+  // 🔵 Filtro
   const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
-    item.nome.toLowerCase().includes(pesquisa.toLowerCase())
+    item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
   )
 
   return (
@@ -71,7 +96,7 @@ export default function PrescritorDashboard() {
         </div>
       </header>
 
-      {/* NAV - Menu superior */}
+      {/* NAV */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <CalendarDays size={32} />
@@ -91,17 +116,17 @@ export default function PrescritorDashboard() {
         </button>
       </nav>
 
-      {/* CONTEÚDO PRINCIPAL */}
+      {/* CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
 
-        {/* 🔵 Sidebar de atendimentos recentes */}
+        {/* Sidebar com atendimentos recentes reais */}
         <AtendimentosRecentes
           atendimentos={atendimentosFiltrados}
           pesquisa={pesquisa}
           onPesquisar={(texto) => setPesquisa(texto)}
         />
 
-        {/* 🔵 Área Central */}
+        {/* Centro - Ficha ou Botão */}
         <main className="flex-1 flex flex-col items-start p-4 overflow-hidden">
           {pacienteSelecionado ? (
             <div className="w-full h-full">
@@ -121,10 +146,9 @@ export default function PrescritorDashboard() {
             </div>
           )}
         </main>
-
       </div>
 
-      {/* 🔵 Modal Buscar Paciente */}
+      {/* Modais */}
       {mostrarBuscarPacienteModal && (
         <BuscarPacienteModal
           onClose={() => setMostrarBuscarPacienteModal(false)}
@@ -139,7 +163,6 @@ export default function PrescritorDashboard() {
         />
       )}
 
-      {/* 🔵 Modal Cadastrar Paciente */}
       {mostrarCadastrarPacienteModal && (
         <CadastrarPacienteModal
           onClose={() => setMostrarCadastrarPacienteModal(false)}
@@ -149,7 +172,6 @@ export default function PrescritorDashboard() {
           }}
         />
       )}
-
     </div>
   )
 }
