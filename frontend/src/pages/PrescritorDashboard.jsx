@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 // 📦 Importação de ícones
-import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, PlusCircle } from 'lucide-react'
+import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, PlusCircle, Search } from 'lucide-react'
 
 // 📦 Importação do modal de CadastroPaciente
 import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
@@ -14,6 +14,7 @@ export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
   const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
   const [abrirCadastroPaciente, setAbrirCadastroPaciente] = useState(false)
+  const [pesquisa, setPesquisa] = useState('') // 🔵 Novo: pesquisa para filtrar atendimentos
 
   // 🔵 Carrega o usuário logado
   useEffect(() => {
@@ -41,6 +42,11 @@ export default function PrescritorDashboard() {
     navigate('/')
     window.location.reload()
   }
+
+  // 🔵 Aplica filtro de pesquisa no atendimento
+  const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
+    item.nome.toLowerCase().includes(pesquisa.toLowerCase())
+  )
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -91,9 +97,9 @@ export default function PrescritorDashboard() {
         <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
           <h2 className="text-xl font-bold mb-4 text-blue-600">Atendimentos Recentes</h2>
 
-          {/* Lista de atendimentos */}
+          {/* Lista de atendimentos filtrados */}
           <ul className="flex-1 space-y-4">
-            {atendimentosRecentes.map((item) => (
+            {atendimentosFiltrados.map((item) => (
               <li key={item.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                 <span className="text-sm font-medium">{item.nome}</span>
                 <div className="flex gap-2">
@@ -107,6 +113,18 @@ export default function PrescritorDashboard() {
               </li>
             ))}
           </ul>
+
+          {/* 🔵 Caixa de pesquisa */}
+          <div className="mt-6 relative">
+            <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Pesquisar paciente..."
+              value={pesquisa}
+              onChange={(e) => setPesquisa(e.target.value)}
+              className="w-full pl-10 px-3 py-2 border rounded"
+            />
+          </div>
         </aside>
 
         {/* Centro - Botão Iniciar Atendimento */}
