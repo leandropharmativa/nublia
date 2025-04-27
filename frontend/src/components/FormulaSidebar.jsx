@@ -7,18 +7,15 @@ export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEdit
   const [sucesso, setSucesso] = useState('');
 
   // 🔵 Função para deletar uma fórmula
-  const excluirFormula = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
-    try {
-      await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
-      setSucesso('Fórmula excluída com sucesso!');
-      setErro('');
-      onAtualizarLista(); // Atualiza a lista
-    } catch (error) {
-      console.error(error);
-      setErro('Erro ao excluir a fórmula.');
-      setSucesso('');
-    }
+   const excluirFormula = async (id) => {
+  if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
+  try {
+    await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
+    onRecarregar(); // 🔵 Recarrega a lista do banco
+  } catch (error) {
+    console.error('Erro ao excluir fórmula:', error);
+    alert('Erro ao excluir fórmula.');
+  }
   };
 
   const formulasFiltradas = formulas.filter((formula) =>
