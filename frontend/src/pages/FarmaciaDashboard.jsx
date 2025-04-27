@@ -29,10 +29,9 @@ export default function FarmaciaDashboard() {
 
   // 🔵 Função de logout
   const logout = () => {
-    localStorage.clear();
-    navigate('/');
-    window.location.reload();
-  };
+  localStorage.clear()
+  navigate("/", { replace: true }) // 🔵 Sem reload!
+  }
 
   // 🔵 Cadastrar fórmula (simulado no frontend ainda)
   const cadastrarFormula = async () => {
