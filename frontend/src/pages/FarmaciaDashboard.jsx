@@ -2,18 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Package, FlaskConical, Building, Settings, LogOut, Edit } from 'lucide-react'; // Edit ícone para botão de editar
+import { Package, FlaskConical, Building, Settings, LogOut, Edit, Search } from 'lucide-react';
 
 export default function FarmaciaDashboard() {
   const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState('produtos');
   const [user, setUser] = useState(null);
 
-  // 🔵 Dados do formulário de fórmula
   const [nomeFormula, setNomeFormula] = useState('');
   const [composicao, setComposicao] = useState('');
   const [indicacao, setIndicacao] = useState('');
-  const [formulas, setFormulas] = useState([]); // Lista de fórmulas cadastradas
+  const [formulas, setFormulas] = useState([]);
+  const [pesquisa, setPesquisa] = useState('');
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
 
@@ -44,7 +44,7 @@ export default function FarmaciaDashboard() {
 
     try {
       const novaFormula = { id: Date.now(), nome: nomeFormula, composicao, indicacao };
-      setFormulas((prev) => [novaFormula, ...prev]); // Adiciona nova fórmula no topo
+      setFormulas((prev) => [novaFormula, ...prev]);
       setNomeFormula('');
       setComposicao('');
       setIndicacao('');
@@ -56,6 +56,11 @@ export default function FarmaciaDashboard() {
       setSucesso('');
     }
   };
+
+  // 🔵 Filtrar fórmulas pela pesquisa
+  const formulasFiltradas = formulas.filter((formula) =>
+    formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -77,21 +82,21 @@ export default function FarmaciaDashboard() {
         </div>
       </header>
 
-      {/* 🔵 MENU */}
+      {/* 🔵 MENU - Navegação igual prescritor */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
-        <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-gray-500 hover:text-blue-600'}`}>
+        <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <Package size={32} />
           <span className="text-xs mt-1">Produtos</span>
         </button>
-        <button onClick={() => setAbaAtiva('formulas')} className={`flex flex-col items-center ${abaAtiva === 'formulas' ? 'text-blue-600 font-bold' : 'text-gray-500 hover:text-blue-600'}`}>
+        <button onClick={() => setAbaAtiva('formulas')} className={`flex flex-col items-center ${abaAtiva === 'formulas' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <FlaskConical size={32} />
           <span className="text-xs mt-1">Fórmulas</span>
         </button>
-        <button onClick={() => setAbaAtiva('dados')} className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-gray-500 hover:text-blue-600'}`}>
+        <button onClick={() => setAbaAtiva('dados')} className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <Building size={32} />
-          <span className="text-xs mt-1">Dados da Farmácia</span>
+          <span className="text-xs mt-1">Dados</span>
         </button>
-        <button className="flex flex-col items-center text-gray-500 hover:text-blue-600">
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
           <Settings size={32} />
           <span className="text-xs mt-1">Configurações</span>
         </button>
@@ -99,20 +104,21 @@ export default function FarmaciaDashboard() {
 
       {/* 🔵 ÁREA PRINCIPAL */}
       <div className="flex flex-1 overflow-hidden">
+        
         {abaAtiva === 'produtos' && (
           <main className="flex-1 p-6 overflow-y-auto">
             <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Produtos</h2>
-            {/* Formulário de produtos virá aqui */}
           </main>
         )}
 
         {abaAtiva === 'formulas' && (
           <>
-            {/* 🔵 Lista lateral de fórmulas */}
+            {/* 🔵 Sidebar com fórmulas */}
             <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
               <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
+
               <ul className="space-y-4">
-                {formulas.map((formula) => (
+                {formulasFiltradas.map((formula) => (
                   <li key={formula.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span className="text-sm font-medium truncate">{formula.nome}</span>
                     <button className="text-blue-600 hover:text-blue-800" title="Editar fórmula">
@@ -121,9 +127,21 @@ export default function FarmaciaDashboard() {
                   </li>
                 ))}
               </ul>
+
+              {/* 🔵 Caixa de pesquisa no final */}
+              <div className="mt-6 relative">
+                <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Pesquisar fórmula..."
+                  value={pesquisa}
+                  onChange={(e) => setPesquisa(e.target.value)}
+                  className="w-full pl-10 px-3 py-2 border rounded"
+                />
+              </div>
             </aside>
 
-            {/* 🔵 Área principal de cadastro */}
+            {/* 🔵 Área de cadastro de fórmulas */}
             <main className="flex-1 p-6 overflow-y-auto">
               <div className="max-w-2xl mx-auto">
                 <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Fórmulas</h2>
@@ -181,7 +199,6 @@ export default function FarmaciaDashboard() {
         {abaAtiva === 'dados' && (
           <main className="flex-1 p-6 overflow-y-auto">
             <h2 className="text-2xl font-bold text-blue-600 mb-6">Dados da Farmácia</h2>
-            {/* Formulário de dados gerais virá aqui */}
           </main>
         )}
       </div>
