@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 from app.models import Formula, FormulaCreate
 from app.database import engine
+from database import get_session
 
 router = APIRouter()
 
@@ -25,3 +26,31 @@ def listar_formulas_por_farmacia(farmacia_id: int):
             select(Formula).where(Formula.farmacia_id == farmacia_id)
         ).all()
         return formulas
+        
+# 🔵 Deletar uma fórmula pelo ID
+@router.delete("/formulas/{formula_id}")
+def deletar_formula(formula_id: int, session: Session = Depends(get_session)):
+    formula = session.get(Formula, formula_id)
+    if not formula:
+        raise HTTPException(status_code=404, detail="Fórmula não encontrada")
+    session.delete(formula)
+    session.commit()
+    return {"ok": True}
+
+# 🔵 Atualizar fórmula
+@router.put("/formulas/{formula_id}")
+def atualizar_formula(formula_id: int, formula_data: Formula, session: Session = Depends(get_session)):
+    formula = session.get(Formula, formula_id)
+    if not formula:
+        raise HTTPException(status_code=404, detail="Fórmula não encontrada")
+    
+    formula.nome = formula_data.nome
+    formula.composicao = formula_data.composicao
+    formula.indicacao = formula_data.indicacao
+    formula.posologia = formula_data.posologia
+
+    session.add(formula)
+    session.commit()
+    session.refresh(formula)
+
+    return formula
