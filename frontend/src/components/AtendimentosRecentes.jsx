@@ -13,7 +13,7 @@ export default function AtendimentosRecentes({ atendimentos, pesquisa, onPesquis
 
       for (const atendimento of atendimentos) {
         const pacienteId = atendimento.paciente_id
-        if (!nomesPacientes[pacienteId]) { // se ainda não carregamos este paciente
+        if (!nomesPacientes[pacienteId]) {
           try {
             const response = await axios.get(`https://nublia-backend.onrender.com/pacientes/${pacienteId}`)
             novosNomes[pacienteId] = response.data.nome
@@ -36,19 +36,7 @@ export default function AtendimentosRecentes({ atendimentos, pesquisa, onPesquis
     <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
       <h2 className="text-blue-600 text-xl font-semibold mb-4">Atendimentos Recentes</h2>
 
-      {/* Campo de pesquisa */}
-      <div className="mb-6 relative">
-        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-        <input
-          type="text"
-          placeholder="Pesquisar paciente..."
-          value={pesquisa}
-          onChange={(e) => onPesquisar(e.target.value)}
-          className="w-full pl-10 px-3 py-2 border rounded"
-        />
-      </div>
-
-      {/* Lista */}
+      {/* 🔵 Lista de atendimentos */}
       <ul className="flex-1 space-y-4">
         {atendimentos.map((atendimento) => (
           <li key={atendimento.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
@@ -66,6 +54,18 @@ export default function AtendimentosRecentes({ atendimentos, pesquisa, onPesquis
           </li>
         ))}
       </ul>
+
+      {/* 🔵 Campo de pesquisa no final */}
+      <div className="mt-6 relative">
+        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+        <input
+          type="text"
+          placeholder="Pesquisar paciente..."
+          value={pesquisa}
+          onChange={(e) => onPesquisar(e.target.value)}
+          className="w-full pl-10 px-3 py-2 border rounded"
+        />
+      </div>
     </aside>
   )
 }
