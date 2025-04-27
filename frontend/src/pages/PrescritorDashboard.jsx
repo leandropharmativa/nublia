@@ -9,7 +9,8 @@ import BuscarPacienteModal from '../components/BuscarPacienteModal'
 import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
 import FichaAtendimento from '../components/FichaAtendimento'
 import AtendimentosRecentes from '../components/AtendimentosRecentes'
-import PerfilPacienteModal from '../components/PerfilPacienteModal' // <<< 🔵 Novo componente
+import PerfilPacienteModal from '../components/PerfilPacienteModal'
+import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal' // 🔵 Novo componente para visualizar atendimento
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
@@ -19,8 +20,10 @@ export default function PrescritorDashboard() {
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarCadastrarPacienteModal, setMostrarCadastrarPacienteModal] = useState(false)
   const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
+  const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
   const [pacientePerfil, setPacientePerfil] = useState(null)
+  const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
 
   // 🔵 Carrega usuário logado
   useEffect(() => {
@@ -75,7 +78,7 @@ export default function PrescritorDashboard() {
     item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
   )
 
-  // 🔵 Função para abrir o modal de perfil do paciente
+  // 🔵 Abrir modal de perfil
   const handleVerPerfil = async (pacienteId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/pacientes/${pacienteId}`)
@@ -84,6 +87,12 @@ export default function PrescritorDashboard() {
     } catch (error) {
       console.error('Erro ao carregar perfil do paciente:', error)
     }
+  }
+
+  // 🔵 Abrir modal para visualizar atendimento
+  const handleVerAtendimento = (atendimento) => {
+    setAtendimentoSelecionado(atendimento)
+    setMostrarVisualizarAtendimentoModal(true)
   }
 
   return (
@@ -134,7 +143,8 @@ export default function PrescritorDashboard() {
           atendimentos={atendimentosFiltrados}
           pesquisa={pesquisa}
           onPesquisar={(texto) => setPesquisa(texto)}
-          onVerPerfil={handleVerPerfil} // 🔵 agora passa a função
+          onVerPerfil={handleVerPerfil}
+          onVerAtendimento={handleVerAtendimento} // 🔵 agora passa função para abrir atendimento
         />
 
         {/* Centro */}
@@ -184,11 +194,17 @@ export default function PrescritorDashboard() {
         />
       )}
 
-      {/* 🔵 Modal Perfil Paciente */}
       {mostrarPerfilPacienteModal && pacientePerfil && (
         <PerfilPacienteModal
           paciente={pacientePerfil}
           onClose={() => setMostrarPerfilPacienteModal(false)}
+        />
+      )}
+
+      {mostrarVisualizarAtendimentoModal && atendimentoSelecionado && (
+        <VisualizarAtendimentoModal
+          atendimento={atendimentoSelecionado}
+          onClose={() => setMostrarVisualizarAtendimentoModal(false)}
         />
       )}
     </div>
