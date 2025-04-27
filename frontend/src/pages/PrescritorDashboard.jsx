@@ -4,19 +4,19 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 // 📦 Importação de ícones
-import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, PlusCircle, Search } from 'lucide-react'
+import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, Search, PlusCircle } from 'lucide-react'
 
-// 📦 Importação do modal de CadastroPaciente
+// 📦 Importar o modal de cadastrar paciente
 import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
-  const [abrirCadastroPaciente, setAbrirCadastroPaciente] = useState(false)
-  const [pesquisa, setPesquisa] = useState('') // 🔵 Novo: pesquisa para filtrar atendimentos
+  const [pesquisa, setPesquisa] = useState('')
+  const [mostrarModalPaciente, setMostrarModalPaciente] = useState(false) // ➡️ Controle do Modal
 
-  // 🔵 Carrega o usuário logado
+  // 🔵 Carregar usuário logado
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
@@ -26,7 +26,7 @@ export default function PrescritorDashboard() {
     }
   }, [navigate])
 
-  // 🔵 Mock de atendimentos (futuro: trazer da API)
+  // 🔵 Mock de atendimentos recentes (pode ser substituído depois por dados reais)
   useEffect(() => {
     const exemplos = [
       { id: 1, nome: "João Silva" },
@@ -36,17 +36,24 @@ export default function PrescritorDashboard() {
     setAtendimentosRecentes(exemplos)
   }, [])
 
-  // 🔵 Logout
+  // 🔵 Função de logout
   const logout = () => {
     localStorage.clear()
     navigate('/')
     window.location.reload()
   }
 
-  // 🔵 Aplica filtro de pesquisa no atendimento
+  // 🔵 Filtro de pesquisa de atendimentos
   const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
     item.nome.toLowerCase().includes(pesquisa.toLowerCase())
   )
+
+  // 🔵 Ação após cadastrar paciente
+  const handlePacienteCadastrado = (paciente) => {
+    setMostrarModalPaciente(false)
+    console.log("Paciente cadastrado:", paciente)
+    // ➡️ Depois daqui podemos abrir ficha de atendimento automática
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -58,7 +65,7 @@ export default function PrescritorDashboard() {
           <h1 className="text-xl font-bold">Painel do Prescritor</h1>
         </div>
 
-        {/* Usuário e sair */}
+        {/* Nome do usuário e botão sair */}
         <div className="flex items-center gap-4">
           <span className="text-sm italic">{user?.name}</span>
           <button
@@ -70,7 +77,7 @@ export default function PrescritorDashboard() {
         </div>
       </header>
 
-      {/* Navegação de funções */}
+      {/* Barra de Navegação */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <CalendarDays size={32} />
@@ -90,14 +97,14 @@ export default function PrescritorDashboard() {
         </button>
       </nav>
 
-      {/* Conteúdo principal */}
+      {/* Conteúdo Principal */}
       <div className="flex flex-1">
 
-        {/* Sidebar esquerda - Atendimentos Recentes */}
+        {/* Sidebar Esquerda */}
         <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
-          <h2 className="text-xl font-bold mb-4 text-blue-600">Atendimentos Recentes</h2>
+          <h2 className="text-blue-600 text-xl font-semibold mb-4">Atendimentos Recentes</h2>
 
-          {/* Lista de atendimentos filtrados */}
+          {/* Lista de atendimentos */}
           <ul className="flex-1 space-y-4">
             {atendimentosFiltrados.map((item) => (
               <li key={item.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
@@ -114,7 +121,7 @@ export default function PrescritorDashboard() {
             ))}
           </ul>
 
-          {/* 🔵 Caixa de pesquisa */}
+          {/* Campo de pesquisa de atendimentos */}
           <div className="mt-6 relative">
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             <input
@@ -130,18 +137,20 @@ export default function PrescritorDashboard() {
         {/* Centro - Botão Iniciar Atendimento */}
         <main className="flex-1 flex items-center justify-center">
           <button
+            onClick={() => setMostrarModalPaciente(true)}
             className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
-            onClick={() => setAbrirCadastroPaciente(true)}
           >
             <PlusCircle size={28} /> Iniciar Atendimento
           </button>
         </main>
-
       </div>
 
-      {/* Modal para buscar/cadastrar paciente */}
-      {abrirCadastroPaciente && (
-        <CadastrarPacienteModal onClose={() => setAbrirCadastroPaciente(false)} />
+      {/* Modal de Cadastrar Paciente */}
+      {mostrarModalPaciente && (
+        <CadastrarPacienteModal
+          onClose={() => setMostrarModalPaciente(false)}
+          onPacienteCadastrado={handlePacienteCadastrado}
+        />
       )}
     </div>
   )
