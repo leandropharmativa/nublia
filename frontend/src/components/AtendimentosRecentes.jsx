@@ -1,37 +1,6 @@
-// 📄 frontend/src/components/AtendimentosRecentes.jsx
-
-import { useState, useEffect } from 'react'
 import { User, FileText, Search } from 'lucide-react'
-import axios from 'axios'
 
-export default function AtendimentosRecentes({ atendimentos, pesquisa, onPesquisar, onVerPerfil }) {
-  const [nomesPacientes, setNomesPacientes] = useState({})
-
-  useEffect(() => {
-    const buscarNomes = async () => {
-      const novosNomes = {}
-
-      for (const atendimento of atendimentos) {
-        const pacienteId = atendimento.paciente_id
-        if (!nomesPacientes[pacienteId]) {
-          try {
-            const response = await axios.get(`https://nublia-backend.onrender.com/pacientes/${pacienteId}`)
-            novosNomes[pacienteId] = response.data.nome
-          } catch (error) {
-            console.error('Erro ao buscar paciente:', error)
-            novosNomes[pacienteId] = 'Paciente desconhecido'
-          }
-        }
-      }
-
-      setNomesPacientes((prev) => ({ ...prev, ...novosNomes }))
-    }
-
-    if (atendimentos.length > 0) {
-      buscarNomes()
-    }
-  }, [atendimentos])
-
+export default function AtendimentosRecentes({ atendimentos, pesquisa, onPesquisar, onVerPerfil, onVerAtendimento }) {
   return (
     <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
       <h2 className="text-blue-600 text-xl font-semibold mb-4">Atendimentos Recentes</h2>
@@ -41,17 +10,24 @@ export default function AtendimentosRecentes({ atendimentos, pesquisa, onPesquis
         {atendimentos.map((atendimento) => (
           <li key={atendimento.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
             <span className="text-sm font-medium truncate">
-              {nomesPacientes[atendimento.paciente_id] || 'Carregando...'}
+              {atendimento.nomePaciente || 'Carregando...'}
             </span>
             <div className="flex gap-2">
+              {/* Botão Ver Perfil */}
               <button
                 className="text-blue-600 hover:underline"
                 title="Ver perfil"
-                onClick={() => onVerPerfil(atendimento.paciente_id)} // <<< 🔵 CHAMA o perfil
+                onClick={() => onVerPerfil(atendimento.paciente_id)}
               >
                 <User size={20} />
               </button>
-              <button className="text-blue-600 hover:underline" title="Ver atendimento">
+
+              {/* Botão Ver Atendimento */}
+              <button
+                className="text-blue-600 hover:underline"
+                title="Ver atendimento"
+                onClick={() => onVerAtendimento(atendimento)}
+              >
                 <FileText size={20} />
               </button>
             </div>
