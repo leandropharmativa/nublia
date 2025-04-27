@@ -29,15 +29,19 @@ export default function PrescritorDashboard() {
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
-      const parsedUser = JSON.parse(savedUser)
-      setUser(parsedUser)
-      carregarAtendimentos(parsedUser.id) // 👈 carrega já os atendimentos filtrando pelo usuário
+      setUser(JSON.parse(savedUser))
     } else {
       navigate('/')
     }
   }, [navigate])
 
-  // 🔵 Função para carregar atendimentos do prescritor
+  // 🔵 Só depois que o `user` existir, carrega os atendimentos
+  useEffect(() => {
+    if (user && user.id) {
+      carregarAtendimentos(user.id)
+    }
+  }, [user]) // 👈 só executa quando o `user` mudar
+
   const carregarAtendimentos = async (prescritorId) => {
     try {
       const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
