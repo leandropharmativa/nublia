@@ -1,23 +1,42 @@
 // 📄 src/components/FormulaSidebar.jsx
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Edit, Trash2, Search } from 'lucide-react';
 import axios from 'axios';
 
-export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEditar, onRecarregar }) {
+export default function FormulaSidebar({ farmaciaId, onEditar, onRecarregar }) {
+  const [formulas, setFormulas] = useState([]);
+  const [pesquisa, setPesquisa] = useState('');
 
-  // 🔵 Função para deletar fórmula
-  const deletarFormula = async (id) => {
+  // 🔵 Buscar fórmulas do banco
+  useEffect(() => {
+    const buscarFormulas = async () => {
+      try {
+        const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
+        setFormulas(response.data.reverse());
+      } catch (error) {
+        console.error('Erro ao buscar fórmulas:', error);
+      }
+    };
+
+    if (farmaciaId) {
+      buscarFormulas();
+    }
+  }, [farmaciaId]); // 🧹 Atualiza sempre que o ID da farmácia mudar
+
+  // 🔵 Deletar fórmula
+  const excluirFormula = async (id) => {
     if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
+
     try {
       await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
-      onRecarregar(); // 🔵 Recarrega lista do banco após excluir
+      setFormulas(prev => prev.filter(f => f.id !== id));
+      if (onRecarregar) onRecarregar();
     } catch (error) {
       console.error('Erro ao excluir fórmula:', error);
-      alert('Erro ao excluir a fórmula.');
     }
   };
 
+  // 🔵 Filtro de pesquisa
   const formulasFiltradas = formulas.filter((formula) =>
     formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
   );
@@ -26,7 +45,6 @@ export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEdit
     <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
       <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
 
-      {/* 🔵 Lista de fórmulas */}
       <ul className="space-y-4">
         {formulasFiltradas.map((formula) => (
           <li key={formula.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
@@ -41,7 +59,7 @@ export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEdit
               </button>
               <button
                 className="text-red-500 hover:text-red-700"
-                onClick={() => deletarFormula(formula.id)}
+                onClick={() => excluirFormula(formula.id)}
                 title="Excluir fórmula"
               >
                 <Trash2 size={20} />
@@ -51,7 +69,6 @@ export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEdit
         ))}
       </ul>
 
-      {/* 🔵 Caixa de pesquisa */}
       <div className="mt-6 relative">
         <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
         <input
