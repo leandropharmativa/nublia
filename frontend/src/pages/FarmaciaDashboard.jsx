@@ -1,24 +1,22 @@
-// 📄 frontend/src/pages/FarmaciaDashboard.jsx
+// 📄 src/pages/FarmaciaDashboard.jsx
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Package, FlaskConical, Building, Settings, LogOut, Edit, Trash2, Search } from 'lucide-react';
+import { Package, FlaskConical, Building, Settings, LogOut } from 'lucide-react';
+
+import FormularioFormula from '../components/FormularioFormula'; // 🆕
+import ListaFormulas from '../components/ListaFormulas';         // 🆕
+
 import axios from 'axios';
 
 export default function FarmaciaDashboard() {
   const navigate = useNavigate();
-  const [abaAtiva, setAbaAtiva] = useState('produtos');
   const [user, setUser] = useState(null);
 
-  const [nomeFormula, setNomeFormula] = useState('');
-  const [composicao, setComposicao] = useState('');
-  const [indicacao, setIndicacao] = useState('');
-  const [posologia, setPosologia] = useState('');
+  const [abaAtiva, setAbaAtiva] = useState('formulas'); // Começa já em Fórmulas
   const [formulas, setFormulas] = useState([]);
-  const [pesquisa, setPesquisa] = useState('');
-  const [erro, setErro] = useState('');
-  const [sucesso, setSucesso] = useState('');
-  const [editandoFormulaId, setEditandoFormulaId] = useState(null);
+  const [formularioAberto, setFormularioAberto] = useState(false);
+  const [formularioInicial, setFormularioInicial] = useState(null); // Usado para edição
 
   // 🔵 Verifica usuário logado
   useEffect(() => {
@@ -48,58 +46,16 @@ export default function FarmaciaDashboard() {
     }
   };
 
-  // 🔵 Cadastrar ou atualizar fórmula
-  const cadastrarOuAtualizarFormula = async () => {
-    if (!nomeFormula.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
-      setErro('Preencha todos os campos.');
-      setSucesso('');
-      return;
-    }
-
-    try {
-      if (editandoFormulaId) {
-        await axios.put(`https://nublia-backend.onrender.com/formulas/${editandoFormulaId}`, {
-          nome: nomeFormula,
-          composicao,
-          indicacao,
-          posologia,
-        });
-        setSucesso('Fórmula atualizada com sucesso!');
-      } else {
-        await axios.post('https://nublia-backend.onrender.com/formulas/', {
-          farmacia_id: user.id,
-          nome: nomeFormula,
-          composicao,
-          indicacao,
-          posologia,
-        });
-        setSucesso('Fórmula cadastrada com sucesso!');
-      }
-
-      setNomeFormula('');
-      setComposicao('');
-      setIndicacao('');
-      setPosologia('');
-      setEditandoFormulaId(null);
-      setErro('');
-      carregarFormulas(user.id);
-
-    } catch (error) {
-      console.error('Erro ao salvar fórmula:', error);
-      setErro('Erro ao salvar a fórmula.');
-      setSucesso('');
-    }
+  // 🔵 Abrir formulário para cadastrar nova fórmula
+  const abrirCadastro = () => {
+    setFormularioInicial(null);
+    setFormularioAberto(true);
   };
 
-  // 🔵 Iniciar edição
-  const iniciarEdicao = (formula) => {
-    setEditandoFormulaId(formula.id);
-    setNomeFormula(formula.nome);
-    setComposicao(formula.composicao);
-    setIndicacao(formula.indicacao);
-    setPosologia(formula.posologia || '');
-    setErro('');
-    setSucesso('');
+  // 🔵 Abrir formulário para editar fórmula existente
+  const abrirEdicao = (formula) => {
+    setFormularioInicial(formula);
+    setFormularioAberto(true);
   };
 
   // 🔵 Excluir fórmula
@@ -108,21 +64,14 @@ export default function FarmaciaDashboard() {
     try {
       await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
       setFormulas((prev) => prev.filter((f) => f.id !== id));
-      setSucesso('Fórmula excluída com sucesso!');
-      setErro('');
     } catch (error) {
       console.error('Erro ao excluir fórmula:', error);
-      setErro('Erro ao excluir a fórmula.');
-      setSucesso('');
     }
   };
 
-  const formulasFiltradas = formulas.filter((formula) =>
-    formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
-  );
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
+
       {/* 🔵 TOPO */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <div>
@@ -140,138 +89,90 @@ export default function FarmaciaDashboard() {
         </div>
       </header>
 
-      {/* 🔵 MENU */}
+      {/* 🔵 NAV - Ícones no topo */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
-        <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
+        <button
+          onClick={() => setAbaAtiva('produtos')}
+          className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}
+        >
           <Package size={32} />
           <span className="text-xs mt-1">Produtos</span>
         </button>
-        <button onClick={() => setAbaAtiva('formulas')} className={`flex flex-col items-center ${abaAtiva === 'formulas' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
+
+        <button
+          onClick={() => setAbaAtiva('formulas')}
+          className={`flex flex-col items-center ${abaAtiva === 'formulas' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}
+        >
           <FlaskConical size={32} />
           <span className="text-xs mt-1">Fórmulas</span>
         </button>
-        <button onClick={() => setAbaAtiva('dados')} className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
+
+        <button
+          onClick={() => setAbaAtiva('dados')}
+          className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}
+        >
           <Building size={32} />
           <span className="text-xs mt-1">Dados</span>
         </button>
+
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <Settings size={32} />
           <span className="text-xs mt-1">Configurações</span>
         </button>
       </nav>
 
-      {/* 🔵 CONTEÚDO */}
+      {/* 🔵 CONTEÚDO PRINCIPAL */}
       <div className="flex flex-1 overflow-hidden">
 
-        {abaAtiva === 'produtos' && (
-          <main className="flex-1 p-6 overflow-y-auto">
-            <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Produtos</h2>
-          </main>
-        )}
-
+        {/* 🔵 Seção lateral */}
         {abaAtiva === 'formulas' && (
-          <>
-            {/* 🔵 Sidebar */}
-            <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
-              <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
+          <ListaFormulas
+            formulas={formulas}
+            onEditar={abrirEdicao}
+            onExcluir={excluirFormula}
+          />
+        )}
 
-              <ul className="space-y-4">
-                {formulasFiltradas.map((formula) => (
-                  <li key={formula.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-                    <span className="text-sm font-medium truncate">{formula.nome}</span>
-                    <div className="flex gap-2">
-                      <button className="text-blue-600 hover:text-blue-800" onClick={() => iniciarEdicao(formula)} title="Editar fórmula">
-                        <Edit size={20} />
-                      </button>
-                      <button className="text-red-500 hover:text-red-700" onClick={() => excluirFormula(formula.id)} title="Excluir fórmula">
-                        <Trash2 size={20} />
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+        {/* 🔵 Área Central */}
+        <main className="flex-1 flex flex-col p-6 overflow-y-auto">
+          {abaAtiva === 'produtos' && (
+            <div className="flex-1 flex items-center justify-center">
+              <h2 className="text-2xl font-bold text-blue-600">Cadastro de Produtos (em breve)</h2>
+            </div>
+          )}
 
-              <div className="mt-6 relative">
-                <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-                <input
-                  type="text"
-                  placeholder="Pesquisar fórmula..."
-                  value={pesquisa}
-                  onChange={(e) => setPesquisa(e.target.value)}
-                  className="w-full pl-10 px-3 py-2 border rounded"
+          {abaAtiva === 'formulas' && (
+            <div className="flex-1 flex flex-col items-center">
+              {formularioAberto ? (
+                <FormularioFormula
+                  userId={user.id}
+                  dadosIniciais={formularioInicial}
+                  onSucesso={() => {
+                    carregarFormulas(user.id);
+                    setFormularioAberto(false);
+                  }}
+                  onCancelar={() => setFormularioAberto(false)}
                 />
-              </div>
-            </aside>
-
-            {/* 🔵 Formulário de Cadastro */}
-            <main className="flex-1 p-6 overflow-y-auto">
-              <div className="max-w-2xl mx-auto">
-                <h2 className="text-2xl font-bold text-blue-600 mb-6">{editandoFormulaId ? 'Editar Fórmula' : 'Cadastrar Fórmula'}</h2>
-
-                {erro && <p className="text-red-500 mb-4">{erro}</p>}
-                {sucesso && <p className="text-green-500 mb-4">{sucesso}</p>}
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Nome da Fórmula</label>
-                    <input
-                      type="text"
-                      value={nomeFormula}
-                      onChange={(e) => setNomeFormula(e.target.value)}
-                      className="border rounded px-3 py-2 w-full"
-                      placeholder="Ex: Fórmula Antiestresse"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Composição</label>
-                    <textarea
-                      value={composicao}
-                      onChange={(e) => setComposicao(e.target.value)}
-                      className="border rounded px-3 py-2 w-full h-24 resize-none"
-                      placeholder="Ex: Magnésio, Triptofano, Passiflora..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Indicação</label>
-                    <input
-                      type="text"
-                      value={indicacao}
-                      onChange={(e) => setIndicacao(e.target.value)}
-                      className="border rounded px-3 py-2 w-full"
-                      placeholder="Ex: Estresse, Ansiedade, Relaxamento"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Posologia</label>
-                    <input
-                      type="text"
-                      value={posologia}
-                      onChange={(e) => setPosologia(e.target.value)}
-                      className="border rounded px-3 py-2 w-full"
-                      placeholder="Ex: 1 cápsula 2x ao dia"
-                    />
-                  </div>
-
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
                   <button
-                    onClick={cadastrarOuAtualizarFormula}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
+                    onClick={abrirCadastro}
+                    className="bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg flex items-center gap-2"
                   >
-                    {editandoFormulaId ? 'Atualizar Fórmula' : 'Salvar Fórmula'}
-                  </button>  
+                    + Nova Fórmula
+                  </button>
                 </div>
-              </div>
-            </main>
-          </>
-        )}
+              )}
+            </div>
+          )}
 
-        {abaAtiva === 'dados' && (
-          <main className="flex-1 p-6 overflow-y-auto">
-            <h2 className="text-2xl font-bold text-blue-600 mb-6">Dados da Farmácia</h2>
-          </main>
-        )}
+          {abaAtiva === 'dados' && (
+            <div className="flex-1 flex items-center justify-center">
+              <h2 className="text-2xl font-bold text-blue-600">Dados da Farmácia (em breve)</h2>
+            </div>
+          )}
+        </main>
+
       </div>
     </div>
   );
