@@ -1,24 +1,23 @@
-// 📄 src/pages/PrescritorDashboard.jsx
-
+// 📦 Importações principais
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-// Ícones
+// 📦 Importações de ícones
 import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, Search, PlusCircle } from 'lucide-react'
 
-// Importação do componente de cadastro
+// 📦 Importação do modal de CadastroPaciente
 import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
+  const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
+  const [abrirCadastroPaciente, setAbrirCadastroPaciente] = useState(false)
+  const [buscaPaciente, setBuscaPaciente] = useState('')
   const [pacientes, setPacientes] = useState([])
-  const [pesquisa, setPesquisa] = useState('')
-  const [mostrarBuscaPaciente, setMostrarBuscaPaciente] = useState(false)
-  const [mostrarCadastroPaciente, setMostrarCadastroPaciente] = useState(false)
 
-  // Carregar o usuário logado
+  // 🔵 Carrega o usuário logado
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
@@ -28,40 +27,45 @@ export default function PrescritorDashboard() {
     }
   }, [navigate])
 
-  // Carregar pacientes
+  // 🔵 Mock de atendimentos (futuro: trazer da API)
   useEffect(() => {
-    async function fetchPacientes() {
-      try {
-        const response = await axios.get('https://nublia-backend.onrender.com/pacientes/')
-        setPacientes(response.data)
-      } catch (error) {
-        console.error('Erro ao buscar pacientes:', error)
-      }
-    }
-    fetchPacientes()
+    const exemplos = [
+      { id: 1, nome: "João Silva" },
+      { id: 2, nome: "Maria Oliveira" },
+      { id: 3, nome: "Carlos Souza" }
+    ]
+    setAtendimentosRecentes(exemplos)
   }, [])
 
-  // Filtro de pesquisa
-  const pacientesFiltrados = pacientes.filter((p) =>
-    p.nome.toLowerCase().includes(pesquisa.toLowerCase())
-  )
-
-  // Função para logout
+  // 🔵 Logout
   const logout = () => {
     localStorage.clear()
     navigate('/')
     window.location.reload()
   }
 
+  // 🔵 Buscar pacientes conforme digita
+  useEffect(() => {
+    if (buscaPaciente.trim().length > 0) {
+      axios.get(`https://nublia-backend.onrender.com/pacientes/buscar?nome=${buscaPaciente}`)
+        .then(response => setPacientes(response.data))
+        .catch(error => console.error('Erro ao buscar pacientes:', error))
+    } else {
+      setPacientes([])
+    }
+  }, [buscaPaciente])
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
 
-      {/* Topo: Logo + Painel + Sair */}
+      {/* Topo */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <div>
           <div className="text-sm font-semibold">Nublia</div>
           <h1 className="text-xl font-bold">Painel do Prescritor</h1>
         </div>
+
+        {/* Usuário e sair */}
         <div className="flex items-center gap-4">
           <span className="text-sm italic">{user?.name}</span>
           <button
@@ -73,7 +77,7 @@ export default function PrescritorDashboard() {
         </div>
       </header>
 
-      {/* Navegação superior */}
+      {/* Navegação de funções */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <CalendarDays size={32} />
@@ -93,48 +97,48 @@ export default function PrescritorDashboard() {
         </button>
       </nav>
 
-      {/* Corpo */}
+      {/* Conteúdo principal */}
       <div className="flex flex-1">
 
-        {/* Sidebar - Atendimentos recentes */}
+        {/* Sidebar esquerda */}
         <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
-          <h2 className="font-semibold mb-4">Atendimentos Recentes</h2>
+          <h2 className="text-xl font-bold mb-4 text-blue-600">Buscar Paciente</h2>
 
-          {/* Lista de pacientes */}
-          <ul className="flex-1 space-y-4">
-            {pacientesFiltrados.map((paciente) => (
-              <li key={paciente.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-                <span className="text-sm font-medium">{paciente.nome}</span>
-                <div className="flex gap-2">
-                  <button className="text-blue-600 hover:underline" title="Ver perfil">
-                    <User size={20} />
-                  </button>
-                  <button className="text-blue-600 hover:underline" title="Ver atendimento">
-                    <FileText size={20} />
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          {/* Pesquisa embaixo */}
-          <div className="mt-6 relative">
+          {/* Campo de busca */}
+          <div className="relative mb-4">
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             <input
               type="text"
               placeholder="Pesquisar paciente..."
-              value={pesquisa}
-              onChange={(e) => setPesquisa(e.target.value)}
+              value={buscaPaciente}
+              onChange={(e) => setBuscaPaciente(e.target.value)}
               className="w-full pl-10 px-3 py-2 border rounded"
             />
           </div>
+
+          {/* Lista de pacientes */}
+          {buscaPaciente.trim().length > 0 ? (
+            <ul className="space-y-4">
+              {pacientes.map((paciente) => (
+                <li key={paciente.id} className="flex justify-between items-center bg-white p-3 rounded shadow-sm">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-800">{paciente.nome}</span>
+                    <span className="text-xs text-gray-500">{paciente.email}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-400 text-sm pl-2">Digite para buscar pacientes...</p>
+          )}
+
         </aside>
 
-        {/* Área central */}
+        {/* Centro: botão iniciar atendimento */}
         <main className="flex-1 flex items-center justify-center">
           <button
-            onClick={() => setMostrarBuscaPaciente(true)}
             className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
+            onClick={() => setAbrirCadastroPaciente(true)}
           >
             <PlusCircle size={28} /> Iniciar Atendimento
           </button>
@@ -142,76 +146,10 @@ export default function PrescritorDashboard() {
 
       </div>
 
-      {/* Modal para buscar paciente */}
-      {mostrarBuscaPaciente && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-2xl mx-4">
-            <h2 className="text-xl font-bold mb-4">Buscar Paciente</h2>
-
-            <input
-              type="text"
-              placeholder="Digite o nome"
-              value={pesquisa}
-              onChange={(e) => setPesquisa(e.target.value)}
-              className="border px-3 py-2 w-full"
-            />
-
-            {/* Resultados */}
-            {pacientesFiltrados.length > 0 ? (
-              <ul className="space-y-4">
-              {buscaPaciente.trim().length > 0 ? (
-              pacientes.map((paciente) => (
-              <li key={paciente.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-              <span className="text-sm font-medium">{paciente.nome}</span>
-              <span className="text-xs text-gray-500">{paciente.email}</span>
-            </li>
-          ))
-          ) : (
-          <p className="text-gray-500 text-sm italic">Digite para buscar pacientes...</p>
-          )}
-          </ul>
-
-            ) : (
-              <p className="text-gray-500 text-center">Paciente não encontrado.</p>
-            )}
-
-            {/* Botão cadastrar novo paciente */}
-            <div className="text-center pt-4">
-              <button
-                className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
-                onClick={() => {
-                  setMostrarBuscaPaciente(false)
-                  setMostrarCadastroPaciente(true)
-                }}
-              >
-                Cadastrar Novo Paciente
-              </button>
-            </div>
-
-            {/* Cancelar */}
-            <div className="text-center pt-2">
-              <button
-                className="text-gray-500 text-sm hover:underline"
-                onClick={() => setMostrarBuscaPaciente(false)}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Modal de cadastro de paciente */}
+      {abrirCadastroPaciente && (
+        <CadastrarPacienteModal onClose={() => setAbrirCadastroPaciente(false)} />
       )}
-
-      {/* Modal cadastrar paciente */}
-      {mostrarCadastroPaciente && (
-        <CadastrarPacienteModal
-          onClose={() => setMostrarCadastroPaciente(false)}
-          onPacienteCadastrado={(paciente) => {
-            console.log('Paciente cadastrado:', paciente)
-            setMostrarCadastroPaciente(false)
-          }}
-        />
-      )}
-
     </div>
   )
 }
