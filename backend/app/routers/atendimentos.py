@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select
-from app.models import Atendimento
+from app.models.atendimento import Atendimento
 from app.database import engine
 
 router = APIRouter()
