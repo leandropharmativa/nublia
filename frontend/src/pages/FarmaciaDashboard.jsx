@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Package, FlaskConical, Hospital, LogOut } from 'lucide-react';
+import { Package, FlaskConical, Building2, LogOut } from 'lucide-react';
 
 export default function FarmaciaDashboard() {
   const navigate = useNavigate();
