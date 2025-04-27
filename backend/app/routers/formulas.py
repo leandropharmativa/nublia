@@ -1,11 +1,9 @@
 # 📄 backend/app/routers/formulas.py
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException  # 🛠 adicionei HTTPException que faltava
 from sqlmodel import Session, select
 from app.models import Formula, FormulaCreate
-from app.database import engine
-from app.database import get_session
-
+from app.database import engine, get_session  # 🔵 IMPORTA CORRETAMENTE daqui
 
 router = APIRouter()
 
@@ -27,7 +25,7 @@ def listar_formulas_por_farmacia(farmacia_id: int):
             select(Formula).where(Formula.farmacia_id == farmacia_id)
         ).all()
         return formulas
-        
+
 # 🔵 Deletar uma fórmula pelo ID
 @router.delete("/formulas/{formula_id}")
 def deletar_formula(formula_id: int, session: Session = Depends(get_session)):
@@ -40,11 +38,11 @@ def deletar_formula(formula_id: int, session: Session = Depends(get_session)):
 
 # 🔵 Atualizar fórmula
 @router.put("/formulas/{formula_id}")
-def atualizar_formula(formula_id: int, formula_data: Formula, session: Session = Depends(get_session)):
+def atualizar_formula(formula_id: int, formula_data: FormulaCreate, session: Session = Depends(get_session)):
     formula = session.get(Formula, formula_id)
     if not formula:
         raise HTTPException(status_code=404, detail="Fórmula não encontrada")
-    
+
     formula.nome = formula_data.nome
     formula.composicao = formula_data.composicao
     formula.indicacao = formula_data.indicacao
