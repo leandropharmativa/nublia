@@ -78,8 +78,9 @@ class CodigoAtivacao(SQLModel, table=True):
 class CodigoAtivacaoCreate(SQLModel):
     tipo: str
 
-# Modelo da tabela Atendimento
+# 🛠 Modelo da tabela de Atendimento (salvo no banco de dados)
 class Atendimento(SQLModel, table=True):
+    __tablename__ = "atendimento"  # <<< ADICIONAR ESTA LINHA
     id: Optional[int] = Field(default=None, primary_key=True)
     paciente_id: int
     anamnese: Optional[str] = None
