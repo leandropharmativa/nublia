@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 from app.models import Formula, FormulaCreate
 from app.database import engine
-from database import get_session
+from app.database import get_session
+
 
 router = APIRouter()
 
