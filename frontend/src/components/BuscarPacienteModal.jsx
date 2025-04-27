@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { Search, User } from 'lucide-react'
 
 export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
-  // 📦 Estados para controlar a busca
+  // 📦 Estados para controle
   const [termoBusca, setTermoBusca] = useState('')
   const [pacientes, setPacientes] = useState([])
 
-  // 🔵 Buscar pacientes sempre que digitar algo
+  const navigate = useNavigate()
+
+  // 🔵 Buscar pacientes quando digitar
   useEffect(() => {
     const buscar = async () => {
       if (termoBusca.trim() === '') {
@@ -28,14 +31,21 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
     buscar()
   }, [termoBusca])
 
+  // 🔵 Quando clica em Selecionar paciente
+  const selecionarPaciente = (paciente) => {
+    localStorage.setItem('pacienteSelecionado', JSON.stringify(paciente))
+    onClose()
+    navigate('/ficha')
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-6">
 
-        {/* Título */}
+        {/* 🔵 Título */}
         <h2 className="text-blue-600 text-2xl font-bold">Buscar Paciente</h2>
 
-        {/* Campo de busca */}
+        {/* 🔵 Campo de busca */}
         <div className="relative">
           <Search className="absolute left-3 top-3 text-gray-400" size={20} />
           <input
@@ -47,7 +57,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
           />
         </div>
 
-        {/* Lista de resultados */}
+        {/* 🔵 Lista de resultados */}
         <div className="flex-1 overflow-y-auto">
           {termoBusca.trim() && pacientes.length > 0 ? (
             <ul className="space-y-4">
@@ -57,7 +67,10 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
                     <p className="font-semibold">{paciente.nome}</p>
                     <p className="text-sm text-gray-500">{paciente.email}</p>
                   </div>
-                  <button className="text-blue-600 hover:underline flex items-center gap-1 text-sm">
+                  <button
+                    onClick={() => selecionarPaciente(paciente)}
+                    className="text-blue-600 hover:underline flex items-center gap-1 text-sm"
+                  >
                     <User size={18} /> Selecionar
                   </button>
                 </li>
@@ -70,7 +83,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
           )}
         </div>
 
-        {/* Botões */}
+        {/* 🔵 Botões abaixo */}
         <div className="flex justify-between pt-4">
           <button
             onClick={onClose}
