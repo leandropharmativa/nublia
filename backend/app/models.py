@@ -98,14 +98,9 @@ class AtendimentoCreate(SQLModel):
     dieta: Optional[str] = None
     receita: Optional[str] = None
 
-# 📄 backend/app/models.py
-
-from sqlmodel import SQLModel, Field
-from typing import Optional
-from datetime import datetime
-
 # 🔵 Tabela Formula
 class Formula(SQLModel, table=True):
+    __tablename__ = "formula" 
     id: Optional[int] = Field(default=None, primary_key=True)
     farmacia_id: int
     nome: str
