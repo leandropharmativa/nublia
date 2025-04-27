@@ -10,7 +10,7 @@ import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
 import FichaAtendimento from '../components/FichaAtendimento'
 import AtendimentosRecentes from '../components/AtendimentosRecentes'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
-import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal' // 🔵 Novo componente para visualizar atendimento
+import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
@@ -29,42 +29,42 @@ export default function PrescritorDashboard() {
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
-      setUser(JSON.parse(savedUser))
+      const parsedUser = JSON.parse(savedUser)
+      setUser(parsedUser)
+      carregarAtendimentos(parsedUser.id) // 👈 carrega já os atendimentos filtrando pelo usuário
     } else {
       navigate('/')
     }
   }, [navigate])
 
-  // 🔵 Carrega atendimentos recentes do backend
-  useEffect(() => {
-  const carregarAtendimentos = async () => {
-  try {
-    const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
-    const atendimentos = response.data
+  // 🔵 Função para carregar atendimentos do prescritor
+  const carregarAtendimentos = async (prescritorId) => {
+    try {
+      const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
+      const atendimentos = response.data
 
-    const atendimentosComPacientes = await Promise.all(
-      atendimentos.map(async (atendimento) => {
-        try {
-          const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/pacientes/${atendimento.paciente_id}`)
-          return {
-            ...atendimento,
-            nomePaciente: pacienteResponse.data.nome || 'Paciente desconhecido'
+      const atendimentosFiltrados = atendimentos.filter(a => a.prescritor_id === prescritorId)
+
+      const atendimentosComPacientes = await Promise.all(
+        atendimentosFiltrados.map(async (atendimento) => {
+          try {
+            const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/pacientes/${atendimento.paciente_id}`)
+            return {
+              ...atendimento,
+              nomePaciente: pacienteResponse.data.nome || 'Paciente desconhecido'
+            }
+          } catch (error) {
+            console.error('Erro ao buscar paciente:', error)
+            return { ...atendimento, nomePaciente: 'Paciente desconhecido' }
           }
-        } catch (error) {
-          console.error('Erro ao buscar paciente:', error)
-          return { ...atendimento, nomePaciente: 'Paciente desconhecido' }
-        }
-      })
-    )
+        })
+      )
 
-    // Atualiza lista
-    setAtendimentosRecentes(atendimentosComPacientes.reverse())
+      setAtendimentosRecentes(atendimentosComPacientes.reverse())
     } catch (error) {
-    console.error('Erro ao carregar atendimentos:', error)
+      console.error('Erro ao carregar atendimentos:', error)
+    }
   }
-}
-  carregarAtendimentos()
-}, [])
 
   // 🔵 Logout
   const logout = () => {
@@ -144,7 +144,7 @@ export default function PrescritorDashboard() {
           pesquisa={pesquisa}
           onPesquisar={(texto) => setPesquisa(texto)}
           onVerPerfil={handleVerPerfil}
-          onVerAtendimento={handleVerAtendimento} // 🔵 agora passa função para abrir atendimento
+          onVerAtendimento={handleVerAtendimento}
         />
 
         {/* Centro */}
@@ -154,7 +154,7 @@ export default function PrescritorDashboard() {
               <FichaAtendimento
                 paciente={pacienteSelecionado}
                 onFinalizar={() => setPacienteSelecionado(null)}
-                onAtendimentoSalvo={carregarAtendimentos} // 🆕 chama a função que recarrega a lista
+                onAtendimentoSalvo={() => carregarAtendimentos(user?.id)}
               />
             </div>
           ) : (
