@@ -1,5 +1,6 @@
 // 📄 src/components/ListaFormulas.jsx
 
+import { useState } from 'react';
 import { Edit, Trash2, Search } from 'lucide-react';
 
 export default function ListaFormulas({ formulas, onEditar, onExcluir }) {
@@ -13,7 +14,6 @@ export default function ListaFormulas({ formulas, onEditar, onExcluir }) {
     <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
       <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
 
-      {/* Lista */}
       <ul className="space-y-4">
         {formulasFiltradas.map((formula) => (
           <li key={formula.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
@@ -21,24 +21,23 @@ export default function ListaFormulas({ formulas, onEditar, onExcluir }) {
             <div className="flex gap-2">
               <button
                 className="text-blue-600 hover:text-blue-800"
-                title="Editar fórmula"
                 onClick={() => onEditar(formula)}
+                title="Editar fórmula"
               >
-                <Edit size={18} />
+                <Edit size={20} />
               </button>
               <button
                 className="text-red-500 hover:text-red-700"
-                title="Excluir fórmula"
                 onClick={() => onExcluir(formula.id)}
+                title="Excluir fórmula"
               >
-                <Trash2 size={18} />
+                <Trash2 size={20} />
               </button>
             </div>
           </li>
         ))}
       </ul>
 
-      {/* 🔎 Campo de Pesquisa */}
       <div className="mt-6 relative">
         <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
         <input
