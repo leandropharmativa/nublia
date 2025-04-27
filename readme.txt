@@ -1,7 +1,6 @@
 🚀 Nublia
 Sistema de atendimento e gestão para prescritores de saúde (nutricionistas, médicos, biomédicos, esteticistas) com integração a farmácias, clínicas e academias.
 
-<p align="center"> <a href="https://nublia-backend.onrender.com/" target="_blank"> <img src="https://img.shields.io/badge/Render-Backend-green?style=for-the-badge" /> </a> <a href="https://nublia-frontend.vercel.app/" target="_blank"> <img src="https://img.shields.io/badge/Vercel-Frontend-blue?style=for-the-badge" /> </a> <img src="https://img.shields.io/badge/Made%20with-FastAPI-success?style=for-the-badge" /> <img src="https://img.shields.io/badge/Database-PostgreSQL-blue?style=for-the-badge" /> </p>
 📂 Estrutura de Pastas
 bash
 Copiar
