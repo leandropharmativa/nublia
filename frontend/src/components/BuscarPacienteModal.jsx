@@ -34,8 +34,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
   // 🔵 Quando clica em Selecionar paciente
   const selecionarPaciente = (paciente) => {
     localStorage.setItem('pacienteSelecionado', JSON.stringify(paciente))
-    onClose()
-    navigate('/ficha')
+    window.location.href = '/ficha'  // 🔵 Redireciona diretamente para /ficha
   }
 
   return (
