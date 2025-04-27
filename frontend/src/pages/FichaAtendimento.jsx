@@ -1,113 +1,71 @@
-// 📄 frontend/src/pages/FichaAtendimento.jsx
-
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 
 export default function FichaAtendimento() {
-  // 🧠 Estado para controlar a aba ativa
-  const [abaAtiva, setAbaAtiva] = useState('anamnese')
+  const navigate = useNavigate()
+  const [paciente, setPaciente] = useState(null)
 
-  // Função para alternar abas
-  const trocarAba = (novaAba) => {
-    setAbaAtiva(novaAba)
+  // 🛠 Ao abrir a página, pegar paciente do localStorage
+  useEffect(() => {
+    const pacienteSalvo = localStorage.getItem('pacienteSelecionado')
+    if (pacienteSalvo) {
+      setPaciente(JSON.parse(pacienteSalvo))
+    } else {
+      // Se não tiver paciente salvo, volta para dashboard
+      navigate('/dashboard')
+    }
+  }, [navigate])
+
+  if (!paciente) {
+    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      {/* Título */}
-      <h1 className="text-2xl font-bold text-blue-600 mb-6">Ficha de Atendimento</h1>
+    <div className="min-h-screen bg-gray-100 p-8">
 
-      {/* Navegação das Abas */}
-      <div className="flex space-x-4 mb-6">
+      {/* 🔵 Topo */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-blue-600">Ficha de Atendimento</h1>
+
         <button
-          className={`px-4 py-2 rounded-t ${abaAtiva === 'anamnese' ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border'}`}
-          onClick={() => trocarAba('anamnese')}
+          onClick={() => navigate('/dashboard')}
+          className="flex items-center gap-2 bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded"
         >
-          Anamnese
-        </button>
-        <button
-          className={`px-4 py-2 rounded-t ${abaAtiva === 'antropometria' ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border'}`}
-          onClick={() => trocarAba('antropometria')}
-        >
-          Avaliação Antropométrica
-        </button>
-        <button
-          className={`px-4 py-2 rounded-t ${abaAtiva === 'dietetica' ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border'}`}
-          onClick={() => trocarAba('dietetica')}
-        >
-          Avaliação Dietética
-        </button>
-        <button
-          className={`px-4 py-2 rounded-t ${abaAtiva === 'exames' ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border'}`}
-          onClick={() => trocarAba('exames')}
-        >
-          Exames
-        </button>
-        <button
-          className={`px-4 py-2 rounded-t ${abaAtiva === 'plano' ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border'}`}
-          onClick={() => trocarAba('plano')}
-        >
-          Plano Alimentar
+          <ArrowLeft size={18} /> Voltar
         </button>
       </div>
 
-      {/* Conteúdo das Abas */}
-      <div className="bg-white p-6 rounded shadow-md">
-        {abaAtiva === 'anamnese' && (
-          <>
-            <h2 className="text-xl font-semibold mb-4 text-blue-600">Anamnese</h2>
-            <textarea
-              className="w-full border rounded p-3"
-              rows="8"
-              placeholder="Descreva o histórico de saúde, histórico familiar, alergias, medicamentos, etc."
-            ></textarea>
-          </>
-        )}
-
-        {abaAtiva === 'antropometria' && (
-          <>
-            <h2 className="text-xl font-semibold mb-4 text-blue-600">Avaliação Antropométrica</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input type="text" placeholder="Peso (kg)" className="border rounded p-3" />
-              <input type="text" placeholder="Altura (cm)" className="border rounded p-3" />
-              <input type="text" placeholder="Circunferência da cintura (cm)" className="border rounded p-3" />
-              <input type="text" placeholder="Composição corporal (se disponível)" className="border rounded p-3" />
-            </div>
-          </>
-        )}
-
-        {abaAtiva === 'dietetica' && (
-          <>
-            <h2 className="text-xl font-semibold mb-4 text-blue-600">Avaliação Dietética</h2>
-            <textarea
-              className="w-full border rounded p-3"
-              rows="8"
-              placeholder="Descreva os hábitos alimentares, preferências, restrições, etc."
-            ></textarea>
-          </>
-        )}
-
-        {abaAtiva === 'exames' && (
-          <>
-            <h2 className="text-xl font-semibold mb-4 text-blue-600">Exames</h2>
-            <textarea
-              className="w-full border rounded p-3"
-              rows="6"
-              placeholder="Liste exames solicitados ou análises de exames (glicemia, hemograma, lipidograma, etc.)"
-            ></textarea>
-          </>
-        )}
-
-        {abaAtiva === 'plano' && (
-          <>
-            <h2 className="text-xl font-semibold mb-4 text-blue-600">Plano Alimentar</h2>
-            <textarea
-              className="w-full border rounded p-3"
-              rows="8"
-              placeholder="Descreva aqui o plano alimentar elaborado para o paciente."
-            ></textarea>
-          </>
-        )}
+      {/* 🔵 Dados do Paciente */}
+      <div className="bg-white p-6 rounded-lg shadow-md space-y-4 mb-8">
+        <h2 className="text-xl font-semibold text-gray-800">Informações do Paciente</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <strong>Nome:</strong> <span>{paciente.nome}</span>
+          </div>
+          <div>
+            <strong>Data de Nascimento:</strong> <span>{paciente.data_nascimento}</span>
+          </div>
+          <div>
+            <strong>Sexo:</strong> <span>{paciente.sexo}</span>
+          </div>
+          <div>
+            <strong>Telefone:</strong> <span>{paciente.telefone}</span>
+          </div>
+          <div className="md:col-span-2">
+            <strong>Email:</strong> <span>{paciente.email || 'Não informado'}</span>
+          </div>
+        </div>
       </div>
+
+      {/* 🔵 Estrutura inicial para Tabs (próximos passos) */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Atendimento</h2>
+        <p className="text-gray-500 italic">
+          (Aqui vamos colocar as abas: Anamnese, Avaliação Antropométrica, Plano Alimentar, etc)
+        </p>
+      </div>
+
     </div>
   )
 }
