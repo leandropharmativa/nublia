@@ -1,22 +1,22 @@
-// 📦 Importações principais
+// 📦 Importações
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-// 📦 Importação de ícones
 import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, Search, PlusCircle } from 'lucide-react'
 
-// 📦 Importar o modal de cadastrar paciente
-import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
+import BuscarPacienteModal from '../components/BuscarPacienteModal' // 🔵 Modal de buscar pacientes
+import CadastrarPacienteModal from '../components/CadastrarPacienteModal' // 🔵 Modal de cadastrar paciente
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
-  const [mostrarModalPaciente, setMostrarModalPaciente] = useState(false) // ➡️ Controle do Modal
+  const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
+  const [mostrarCadastrarPacienteModal, setMostrarCadastrarPacienteModal] = useState(false)
 
-  // 🔵 Carregar usuário logado
+  // 🔵 Carrega usuário
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
@@ -26,7 +26,7 @@ export default function PrescritorDashboard() {
     }
   }, [navigate])
 
-  // 🔵 Mock de atendimentos recentes (pode ser substituído depois por dados reais)
+  // 🔵 Mock de atendimentos recentes
   useEffect(() => {
     const exemplos = [
       { id: 1, nome: "João Silva" },
@@ -36,36 +36,25 @@ export default function PrescritorDashboard() {
     setAtendimentosRecentes(exemplos)
   }, [])
 
-  // 🔵 Função de logout
   const logout = () => {
     localStorage.clear()
     navigate('/')
     window.location.reload()
   }
 
-  // 🔵 Filtro de pesquisa de atendimentos
   const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
     item.nome.toLowerCase().includes(pesquisa.toLowerCase())
   )
 
-  // 🔵 Ação após cadastrar paciente
-  const handlePacienteCadastrado = (paciente) => {
-    setMostrarModalPaciente(false)
-    console.log("Paciente cadastrado:", paciente)
-    // ➡️ Depois daqui podemos abrir ficha de atendimento automática
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
 
-      {/* Topo */}
+      {/* TOPO */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <div>
           <div className="text-sm font-semibold">Nublia</div>
           <h1 className="text-xl font-bold">Painel do Prescritor</h1>
         </div>
-
-        {/* Nome do usuário e botão sair */}
         <div className="flex items-center gap-4">
           <span className="text-sm italic">{user?.name}</span>
           <button
@@ -77,7 +66,7 @@ export default function PrescritorDashboard() {
         </div>
       </header>
 
-      {/* Barra de Navegação */}
+      {/* NAV */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <CalendarDays size={32} />
@@ -97,14 +86,13 @@ export default function PrescritorDashboard() {
         </button>
       </nav>
 
-      {/* Conteúdo Principal */}
+      {/* CONTEÚDO */}
       <div className="flex flex-1">
-
-        {/* Sidebar Esquerda */}
+        
+        {/* Sidebar */}
         <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
           <h2 className="text-blue-600 text-xl font-semibold mb-4">Atendimentos Recentes</h2>
 
-          {/* Lista de atendimentos */}
           <ul className="flex-1 space-y-4">
             {atendimentosFiltrados.map((item) => (
               <li key={item.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
@@ -121,7 +109,6 @@ export default function PrescritorDashboard() {
             ))}
           </ul>
 
-          {/* Campo de pesquisa de atendimentos */}
           <div className="mt-6 relative">
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             <input
@@ -134,22 +121,34 @@ export default function PrescritorDashboard() {
           </div>
         </aside>
 
-        {/* Centro - Botão Iniciar Atendimento */}
+        {/* Centro */}
         <main className="flex-1 flex items-center justify-center">
           <button
-            onClick={() => setMostrarModalPaciente(true)}
+            onClick={() => setMostrarBuscarPacienteModal(true)}
             className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
           >
             <PlusCircle size={28} /> Iniciar Atendimento
           </button>
         </main>
+
       </div>
 
-      {/* Modal de Cadastrar Paciente */}
-      {mostrarModalPaciente && (
+      {/* Modal Buscar Paciente */}
+      {mostrarBuscarPacienteModal && (
+        <BuscarPacienteModal
+          onClose={() => setMostrarBuscarPacienteModal(false)}
+          onCadastrarNovo={() => {
+            setMostrarBuscarPacienteModal(false)
+            setMostrarCadastrarPacienteModal(true)
+          }}
+        />
+      )}
+
+      {/* Modal Cadastrar Paciente */}
+      {mostrarCadastrarPacienteModal && (
         <CadastrarPacienteModal
-          onClose={() => setMostrarModalPaciente(false)}
-          onPacienteCadastrado={handlePacienteCadastrado}
+          onClose={() => setMostrarCadastrarPacienteModal(false)}
+          onPacienteCadastrado={() => setMostrarCadastrarPacienteModal(false)}
         />
       )}
     </div>
