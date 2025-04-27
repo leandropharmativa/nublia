@@ -1,108 +1,85 @@
-// Importações principais
+// 📄 frontend/src/pages/Login.jsx
+
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom' // Importa o hook para navegar entre páginas
 import axios from 'axios'
 
 export default function Login({ onLogin }) {
-  const navigate = useNavigate()
-
-  // Estados para armazenar email, senha e possíveis mensagens de erro
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
-  const [erro, setErro] = useState('')
+  const [erro, setErro] = useState(null)
+  const [carregando, setCarregando] = useState(false)
 
-  // Função de login
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setCarregando(true)
+    setErro(null)
+
     try {
-      // Faz a requisição para o backend
-      const response = await axios.post('https://nublia-backend.onrender.com/login', 
-        new URLSearchParams({
-          username: email,
-          password: senha
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
-      )
+      const response = await axios.post('https://nublia-backend.onrender.com/login/', {
+        email,
+        senha,
+      })
 
-      const { user, access_token } = response.data
-
-      // Salva o token e o usuário no localStorage
-      localStorage.setItem("token", access_token)
-      localStorage.setItem("user", JSON.stringify(user))
-
-      // Atualiza o estado do App
-      onLogin(user)
-
-      // 🚀 Redireciona imediatamente após login
-      if (user.role === "admin") {
-        navigate("/admin")
-      } else if (user.role === "prescritor") {
-        navigate("/prescritor")
-      } else {
-        navigate("/") // Qualquer outro tipo (só por segurança)
-      }
-
+      const userData = response.data
+      onLogin(userData) // ✅ Salva e atualiza o estado
     } catch (error) {
-      console.error(error)
-      setErro("Email ou senha inválidos.")
+      console.error('Erro ao fazer login:', error)
+      setErro('Email ou senha inválidos.')
+    } finally {
+      setCarregando(false)
     }
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-96 space-y-6">
-        <h2 className="text-2xl font-bold text-center text-blue-600">Entrar no Nublia</h2>
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
 
-        {/* Mensagem de erro, se houver */}
-        {erro && <p className="text-red-500 text-center">{erro}</p>}
+        <h1 className="text-2xl font-bold text-center text-blue-600 mb-6">Login - Nublia</h1>
 
-        {/* Campo de email */}
-        <div className="flex flex-col">
-          <label className="text-sm mb-1">Email</label>
-          <input 
-            type="email" 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="border rounded px-3 py-2"
-          />
-        </div>
+        {/* Exibe erro */}
+        {erro && <div className="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">{erro}</div>}
 
-        {/* Campo de senha */}
-        <div className="flex flex-col">
-          <label className="text-sm mb-1">Senha</label>
-          <input 
-            type="password" 
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            required
-            className="border rounded px-3 py-2"
-          />
-        </div>
+        {/* Formulário */}
+        <form onSubmit={handleSubmit} className="space-y-4">
 
-        {/* Botão de login */}
-        <button
-          type="submit"
-          className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 w-full"
-        >
-          Entrar
-        </button>
+          {/* Email */}
+          <div>
+            <label className="block mb-1 text-sm font-semibold text-gray-600">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full border rounded px-3 py-2"
+              placeholder="Digite seu email"
+            />
+          </div>
 
-        {/* Link para registro */}
-        <div className="text-center mt-4">
+          {/* Senha */}
+          <div>
+            <label className="block mb-1 text-sm font-semibold text-gray-600">Senha</label>
+            <input
+              type="password"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              required
+              className="w-full border rounded px-3 py-2"
+              placeholder="Digite sua senha"
+            />
+          </div>
+
+          {/* Botão */}
           <button
-            type="button"
-            className="text-blue-600 hover:underline text-sm"
-            onClick={() => navigate('/register')}
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded"
+            disabled={carregando}
           >
-            Não tem conta? Registre-se
+            {carregando ? 'Entrando...' : 'Entrar'}
           </button>
-        </div>
-      </form>
+
+        </form>
+
+      </div>
     </div>
   )
 }
