@@ -2,12 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Package, FlaskConical, Building, LogOut, Settings } from 'lucide-react';
+import { Package, FlaskConical, Building, Settings, LogOut } from 'lucide-react'; // Building no lugar de Hospital
 
 export default function FarmaciaDashboard() {
   const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState('produtos');
   const [user, setUser] = useState(null);
+
+  // 🔵 Dados do formulário de fórmula
+  const [nomeFormula, setNomeFormula] = useState('');
+  const [descricao, setDescricao] = useState('');
+  const [erro, setErro] = useState('');
+  const [sucesso, setSucesso] = useState('');
 
   // 🔵 Verifica usuário logado
   useEffect(() => {
@@ -24,6 +30,28 @@ export default function FarmaciaDashboard() {
     localStorage.clear();
     navigate('/');
     window.location.reload();
+  };
+
+  // 🔵 Função para cadastrar fórmula
+  const cadastrarFormula = async () => {
+    if (!nomeFormula.trim()) {
+      setErro('Preencha o nome da fórmula.');
+      setSucesso('');
+      return;
+    }
+
+    try {
+      // Aqui futuramente faremos o envio para o backend
+      console.log('Fórmula cadastrada:', { nomeFormula, descricao });
+      setSucesso('Fórmula cadastrada com sucesso!');
+      setErro('');
+      setNomeFormula('');
+      setDescricao('');
+    } catch (error) {
+      console.error(error);
+      setErro('Erro ao cadastrar fórmula.');
+      setSucesso('');
+    }
   };
 
   return (
@@ -75,9 +103,43 @@ export default function FarmaciaDashboard() {
           </div>
         )}
         {abaAtiva === 'formulas' && (
-          <div>
+          <div className="max-w-2xl mx-auto">
             <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Fórmulas</h2>
-            {/* Formulário de fórmulas virá aqui */}
+
+            {/* Mensagem de erro ou sucesso */}
+            {erro && <p className="text-red-500 mb-4">{erro}</p>}
+            {sucesso && <p className="text-green-500 mb-4">{sucesso}</p>}
+
+            {/* Formulário de fórmula */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Nome da Fórmula</label>
+                <input
+                  type="text"
+                  value={nomeFormula}
+                  onChange={(e) => setNomeFormula(e.target.value)}
+                  className="border rounded px-3 py-2 w-full"
+                  placeholder="Ex: Fórmula de Emagrecimento"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Descrição</label>
+                <textarea
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
+                  className="border rounded px-3 py-2 w-full h-32 resize-none"
+                  placeholder="Ex: Detalhes sobre os compostos e indicações..."
+                />
+              </div>
+
+              <button
+                onClick={cadastrarFormula}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
+              >
+                Salvar Fórmula
+              </button>
+            </div>
           </div>
         )}
         {abaAtiva === 'dados' && (
