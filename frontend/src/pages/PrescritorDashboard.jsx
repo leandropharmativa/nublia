@@ -76,8 +76,8 @@ export default function PrescritorDashboard() {
   }
   {/* Se o prescritor clicou para iniciar atendimento */}
   {mostrarCadastroPaciente && (
-  <CadastroPaciente 
-    onClose={() => setMostrarCadastroPaciente(false)} 
+  <CadastrarPacienteModal 
+    onClose={() => setMostrarCadastroPaciente(false)}
     onPacienteCadastrado={(paciente) => {
       setPacienteAtendimento(paciente)
       setMostrarCadastroPaciente(false)
