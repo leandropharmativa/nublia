@@ -31,7 +31,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
 
       const paciente = response.data
       setErro('')
-      onPacienteCadastrado(paciente)  // ✅ Se sucesso, já chama a função para abrir ficha
+      onPacienteCadastrado(paciente)  // ✅ Se sucesso, já chama a função para abrir ficha ?
     } catch (error) {
       console.error(error)
       setErro("Erro ao cadastrar paciente. Verifique os dados.")
