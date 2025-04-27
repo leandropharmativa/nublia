@@ -1,27 +1,34 @@
 // 📄 src/pages/PrescritorDashboard.jsx
 
 import { useState, useEffect } from 'react'
-import { PlusCircle, Calendar, ScrollText, Salad, Settings, Search } from 'lucide-react'
-import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
+// Ícones
+import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, Search, PlusCircle } from 'lucide-react'
+
+// Importação do componente de cadastro
+import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
+
 export default function PrescritorDashboard() {
+  const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [pacientes, setPacientes] = useState([])
-  const [busca, setBusca] = useState('')
-  const [resultadosBusca, setResultadosBusca] = useState([])
+  const [pesquisa, setPesquisa] = useState('')
   const [mostrarBuscaPaciente, setMostrarBuscaPaciente] = useState(false)
   const [mostrarCadastroPaciente, setMostrarCadastroPaciente] = useState(false)
 
-  // Carrega usuário logado
+  // Carregar o usuário logado
   useEffect(() => {
-    const userData = localStorage.getItem('user')
-    if (userData) {
-      setUser(JSON.parse(userData))
+    const savedUser = localStorage.getItem('user')
+    if (savedUser) {
+      setUser(JSON.parse(savedUser))
+    } else {
+      navigate('/')
     }
-  }, [])
+  }, [navigate])
 
-  // Busca pacientes
+  // Carregar pacientes
   useEffect(() => {
     async function fetchPacientes() {
       try {
@@ -34,99 +41,108 @@ export default function PrescritorDashboard() {
     fetchPacientes()
   }, [])
 
-  // Filtra pacientes conforme digita
-  useEffect(() => {
-    const resultados = pacientes.filter(p =>
-      p.nome.toLowerCase().includes(busca.toLowerCase())
-    )
-    setResultadosBusca(resultados)
-  }, [busca, pacientes])
+  // Filtro de pesquisa
+  const pacientesFiltrados = pacientes.filter((p) =>
+    p.nome.toLowerCase().includes(pesquisa.toLowerCase())
+  )
 
-  const handleLogout = () => {
+  // Função para logout
+  const logout = () => {
     localStorage.clear()
+    navigate('/')
     window.location.reload()
   }
 
   return (
-    <div className="flex flex-col h-screen">
-      {/* Topo */}
+    <div className="min-h-screen flex flex-col bg-gray-100">
+
+      {/* Topo: Logo + Painel + Sair */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Nublia</h1>
-        <div className="flex items-center gap-6">
-          <nav className="flex gap-6 items-center">
-            <div className="flex flex-col items-center text-sm">
-              <Calendar size={28} />
-              <span>Agenda</span>
-            </div>
-            <div className="flex flex-col items-center text-sm">
-              <ScrollText size={28} />
-              <span>Fórmulas</span>
-            </div>
-            <div className="flex flex-col items-center text-sm">
-              <Salad size={28} />
-              <span>Dietas</span>
-            </div>
-            <div className="flex flex-col items-center text-sm">
-              <Settings size={28} />
-              <span>Configurações</span>
-            </div>
-          </nav>
-          <div className="flex items-center gap-4">
-            <span className="italic">{user?.name}</span>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm"
-            >
-              Sair
-            </button>
-          </div>
+        <div>
+          <div className="text-sm font-semibold">Nublia</div>
+          <h1 className="text-xl font-bold">Painel do Prescritor</h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm italic">{user?.name}</span>
+          <button
+            onClick={logout}
+            className="flex items-center gap-1 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm"
+          >
+            <LogOut size={16} /> Sair
+          </button>
         </div>
       </header>
 
+      {/* Navegação superior */}
+      <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
+          <CalendarDays size={32} />
+          <span className="text-xs mt-1">Agenda</span>
+        </button>
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
+          <BookOpenText size={32} />
+          <span className="text-xs mt-1">Fórmulas</span>
+        </button>
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
+          <Leaf size={32} />
+          <span className="text-xs mt-1">Dietas</span>
+        </button>
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
+          <Settings size={32} />
+          <span className="text-xs mt-1">Configurações</span>
+        </button>
+      </nav>
+
       {/* Corpo */}
       <div className="flex flex-1">
-        {/* Lateral - Atendimentos recentes */}
-        <aside className="w-64 bg-gray-100 p-4 border-r overflow-y-auto flex flex-col justify-between">
-          <div>
-            <h2 className="font-semibold mb-4">Atendimentos recentes</h2>
-            <ul className="space-y-2">
-              {/* Aqui depois mostraremos pacientes atendidos */}
-              <li className="flex justify-between items-center">
-                <span>João Silva</span>
-                <div className="flex gap-1">
-                  <button className="text-blue-500 text-sm hover:underline">Perfil</button>
-                  <button className="text-blue-500 text-sm hover:underline">Atendimento</button>
+
+        {/* Sidebar - Atendimentos recentes */}
+        <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
+          <h2 className="font-semibold mb-4">Atendimentos Recentes</h2>
+
+          {/* Lista de pacientes */}
+          <ul className="flex-1 space-y-4">
+            {pacientesFiltrados.map((paciente) => (
+              <li key={paciente.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                <span className="text-sm font-medium">{paciente.nome}</span>
+                <div className="flex gap-2">
+                  <button className="text-blue-600 hover:underline" title="Ver perfil">
+                    <User size={20} />
+                  </button>
+                  <button className="text-blue-600 hover:underline" title="Ver atendimento">
+                    <FileText size={20} />
+                  </button>
                 </div>
               </li>
-            </ul>
-          </div>
+            ))}
+          </ul>
 
-          {/* Caixa de Pesquisa */}
-          <div className="mt-8">
-            <div className="flex items-center gap-2 border rounded px-2 py-1 bg-white">
-              <Search size={16} />
-              <input
-                type="text"
-                placeholder="Pesquisar Paciente"
-                className="outline-none w-full"
-              />
-            </div>
+          {/* Pesquisa embaixo */}
+          <div className="mt-6 relative">
+            <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Pesquisar paciente..."
+              value={pesquisa}
+              onChange={(e) => setPesquisa(e.target.value)}
+              className="w-full pl-10 px-3 py-2 border rounded"
+            />
           </div>
         </aside>
 
-        {/* Centro */}
-        <main className="flex-1 flex items-center justify-center p-4">
+        {/* Área central */}
+        <main className="flex-1 flex items-center justify-center">
           <button
             onClick={() => setMostrarBuscaPaciente(true)}
-            className="bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg flex items-center"
+            className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
           >
-            <PlusCircle className="mr-2" />
-            Iniciar novo atendimento
+            <PlusCircle size={28} /> Iniciar Atendimento
           </button>
         </main>
+
       </div>
 
-      {/* MODAL de busca paciente */}
+      {/* Modal para buscar paciente */}
       {mostrarBuscaPaciente && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded shadow-md w-96 space-y-6">
@@ -135,15 +151,15 @@ export default function PrescritorDashboard() {
             <input
               type="text"
               placeholder="Digite o nome"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
+              value={pesquisa}
+              onChange={(e) => setPesquisa(e.target.value)}
               className="border px-3 py-2 w-full"
             />
 
             {/* Resultados */}
-            {resultadosBusca.length > 0 ? (
+            {pacientesFiltrados.length > 0 ? (
               <ul className="space-y-2">
-                {resultadosBusca.map(p => (
+                {pacientesFiltrados.map((p) => (
                   <li key={p.id} className="flex justify-between items-center">
                     <span>{p.nome}</span>
                     <button className="text-blue-600 hover:underline text-sm">
@@ -156,7 +172,7 @@ export default function PrescritorDashboard() {
               <p className="text-gray-500 text-center">Paciente não encontrado.</p>
             )}
 
-            {/* Botão de cadastrar novo */}
+            {/* Botão cadastrar novo paciente */}
             <div className="text-center pt-4">
               <button
                 className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
@@ -169,7 +185,7 @@ export default function PrescritorDashboard() {
               </button>
             </div>
 
-            {/* Fechar busca */}
+            {/* Cancelar */}
             <div className="text-center pt-2">
               <button
                 className="text-gray-500 text-sm hover:underline"
@@ -182,7 +198,7 @@ export default function PrescritorDashboard() {
         </div>
       )}
 
-      {/* MODAL de cadastro paciente */}
+      {/* Modal cadastrar paciente */}
       {mostrarCadastroPaciente && (
         <CadastrarPacienteModal
           onClose={() => setMostrarCadastroPaciente(false)}
@@ -192,6 +208,7 @@ export default function PrescritorDashboard() {
           }}
         />
       )}
+
     </div>
   )
 }
