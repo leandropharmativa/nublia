@@ -1,91 +1,96 @@
-import { useState, useEffect } from 'react'
+// 📄 frontend/src/components/BuscarPacienteModal.jsx
+
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { Search, User } from 'lucide-react'
 
 export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
-  // 📦 Estados para controlar a busca
-  const [termoBusca, setTermoBusca] = useState('')
+  const [buscaPaciente, setBuscaPaciente] = useState('')
   const [pacientes, setPacientes] = useState([])
 
-  // 🔵 Buscar pacientes sempre que digitar algo
-  useEffect(() => {
-    const buscar = async () => {
-      if (termoBusca.trim() === '') {
-        setPacientes([])
-        return
-      }
+  const navigate = useNavigate()
+
+  // 🔵 Buscar pacientes no backend conforme digita
+  const handleBuscaChange = async (e) => {
+    const texto = e.target.value
+    setBuscaPaciente(texto)
+
+    if (texto.trim().length > 0) {
       try {
-        const response = await axios.get('https://nublia-backend.onrender.com/pacientes/')
-        const filtrados = response.data.filter(p =>
-          p.nome.toLowerCase().includes(termoBusca.toLowerCase())
-        )
-        setPacientes(filtrados)
+        const response = await axios.get(`https://nublia-backend.onrender.com/pacientes/buscar?termo=${texto}`)
+        setPacientes(response.data)
       } catch (error) {
         console.error('Erro ao buscar pacientes:', error)
         setPacientes([])
       }
+    } else {
+      setPacientes([])
     }
-    buscar()
-  }, [termoBusca])
+  }
+
+  // 🔵 Selecionar paciente e ir para ficha
+  const selecionarPaciente = (paciente) => {
+    localStorage.setItem('pacienteSelecionado', JSON.stringify(paciente))
+    onClose()
+    navigate('/ficha')
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-6">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl mx-4">
+        {/* 🔵 Título */}
+        <h2 className="text-blue-600 text-xl font-bold mb-6">Buscar Paciente</h2>
 
-        {/* Título */}
-        <h2 className="text-blue-600 text-2xl font-bold">Buscar Paciente</h2>
+        {/* 🔵 Campo de busca */}
+        <input
+          type="text"
+          placeholder="Digite o nome do paciente..."
+          value={buscaPaciente}
+          onChange={handleBuscaChange}
+          className="w-full border px-4 py-2 mb-6 rounded"
+        />
 
-        {/* Campo de busca */}
-        <div className="relative">
-          <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-          <input
-            type="text"
-            placeholder="Digite o nome do paciente..."
-            value={termoBusca}
-            onChange={(e) => setTermoBusca(e.target.value)}
-            className="pl-10 border rounded w-full px-3 py-2"
-          />
-        </div>
-
-        {/* Lista de resultados */}
-        <div className="flex-1 overflow-y-auto">
-          {termoBusca.trim() && pacientes.length > 0 ? (
-            <ul className="space-y-4">
-              {pacientes.map((paciente) => (
+        {/* 🔵 Lista de resultados */}
+        <ul className="space-y-4 max-h-64 overflow-y-auto">
+          {buscaPaciente.trim().length > 0 ? (
+            pacientes.length > 0 ? (
+              pacientes.map((paciente) => (
                 <li key={paciente.id} className="flex justify-between items-center bg-gray-100 p-3 rounded">
                   <div>
-                    <p className="font-semibold">{paciente.nome}</p>
-                    <p className="text-sm text-gray-500">{paciente.email}</p>
+                    <span className="block font-medium">{paciente.nome}</span>
+                    <span className="text-xs text-gray-600">{paciente.email}</span>
                   </div>
-                  <button className="text-blue-600 hover:underline flex items-center gap-1 text-sm">
-                    <User size={18} /> Selecionar
+                  <button
+                    onClick={() => selecionarPaciente(paciente)}
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    Selecionar
                   </button>
                 </li>
-              ))}
-            </ul>
-          ) : termoBusca.trim() && pacientes.length === 0 ? (
-            <p className="text-gray-500 text-center italic">Nenhum paciente encontrado.</p>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500 italic">Nenhum paciente encontrado.</p>
+            )
           ) : (
-            <p className="text-gray-400 text-center italic">Digite para buscar pacientes...</p>
+            <p className="text-sm text-gray-500 italic">Digite para buscar pacientes...</p>
           )}
-        </div>
+        </ul>
 
-        {/* Botões */}
-        <div className="flex justify-between pt-4">
+        {/* 🔵 Botões no rodapé */}
+        <div className="flex justify-between mt-8">
+          <button
+            onClick={onCadastrarNovo}
+            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
+          >
+            Cadastrar Novo Paciente
+          </button>
           <button
             onClick={onClose}
             className="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded"
           >
             Cancelar
           </button>
-          <button
-            onClick={onCadastrarNovo}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
-          >
-            Cadastrar Novo Paciente
-          </button>
         </div>
-
       </div>
     </div>
   )
