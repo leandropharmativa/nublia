@@ -126,7 +126,7 @@ export default function PrescritorDashboard() {
         </aside>
 
         {/* Área Central */}
-        <main className="flex-1 flex items-center justify-center">
+        <main className="flex-1 flex flex-col items-start justify-start p-6 overflow-y-auto">
 
           {/* 🟡 Se há paciente selecionado, mostra ficha, senão botão iniciar atendimento */}
           {pacienteSelecionado ? (
