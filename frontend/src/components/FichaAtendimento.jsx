@@ -1,9 +1,10 @@
 // 📦 Importações
 import { useState } from 'react'
 import { Save, ArrowLeft } from 'lucide-react'
+import axios from 'axios'
 
 export default function FichaAtendimento({ paciente, onFinalizar }) {
-  const [abaAtiva, setAbaAtiva] = useState('anamnese') // Aba ativa
+  const [abaAtiva, setAbaAtiva] = useState('anamnese') // 📦 Aba ativa
   const [formulario, setFormulario] = useState({
     anamnese: '',
     antropometria: '',
@@ -11,26 +12,42 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
     receita: '',
   })
 
-  // 🛠 Atualiza o conteúdo do formulário
+  // 🛠 Atualiza o conteúdo do formulário conforme aba ativa
   const handleChange = (e) => {
     setFormulario({ ...formulario, [abaAtiva]: e.target.value })
   }
 
-  // 🛠 Função para "salvar" (futuramente enviaremos para o backend)
-  const handleSalvar = () => {
-    alert('Salvar atendimento (simulado)')
-    console.log('Dados do atendimento:', formulario)
+  // 🛠 Função para salvar o atendimento no backend
+  const handleSalvar = async () => {
+    try {
+      const dadosAtendimento = {
+        paciente_id: paciente.id, // 📎 Vincula ao paciente atual
+        anamnese: formulario.anamnese,
+        antropometria: formulario.antropometria,
+        dieta: formulario.dieta,
+        receita: formulario.receita
+      }
+
+      // 🔵 Envia os dados para o backend
+      await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
+
+      alert('Atendimento salvo com sucesso!')
+      onFinalizar() // ✅ Voltar para o painel
+    } catch (error) {
+      console.error(error)
+      alert('Erro ao salvar atendimento. Verifique os dados.')
+    }
   }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-full">
-      
+
       {/* 🔵 Cabeçalho */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold text-blue-600">Ficha de Atendimento</h2>
 
-          {/* Ícones de ação */}
+          {/* Botões de ação */}
           <button onClick={handleSalvar} className="text-blue-600 hover:text-blue-800">
             <Save size={24} />
           </button>
@@ -48,7 +65,7 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
         </p>
       </div>
 
-      {/* 🔵 Tabs de Navegação */}
+      {/* 🔵 Navegação por abas */}
       <div className="flex border-b mb-6">
         <button
           onClick={() => setAbaAtiva('anamnese')}
@@ -76,7 +93,7 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
         </button>
       </div>
 
-      {/* 🔵 Conteúdo da aba ativa */}
+      {/* 🔵 Campo de texto da aba ativa */}
       <div className="space-y-4">
         <textarea
           placeholder={`Escreva as informações de ${abaAtiva}...`}
@@ -85,7 +102,7 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
           className="w-full h-80 p-4 border rounded resize-none"
         />
       </div>
-      
+
     </div>
   )
 }
