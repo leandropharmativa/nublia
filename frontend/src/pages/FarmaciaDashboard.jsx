@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Package, FlaskConical, Hospital, LogOut, Settings } from 'lucide-react';
+import { Package, FlaskConical, Building, LogOut, Settings } from 'lucide-react';
 
 export default function FarmaciaDashboard() {
   const navigate = useNavigate();
@@ -57,7 +57,7 @@ export default function FarmaciaDashboard() {
           <span className="text-xs mt-1">Fórmulas</span>
         </button>
         <button onClick={() => setAbaAtiva('dados')} className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
-          <Hospital size={32} />
+          <Building size={32} />
           <span className="text-xs mt-1">Dados da Farmácia</span>
         </button>
         <button className="flex flex-col items-center text-gray-500">
