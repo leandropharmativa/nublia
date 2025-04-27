@@ -63,9 +63,9 @@ export default function Admin() {
 
   // 🛠 Função de logout
   const logout = () => {
-    localStorage.clear()
-    navigate('/', { replace: true })
-    window.location.reload()
+  localStorage.clear()
+  navigate('/', { replace: true })
+  window.location.reload()
   }
 
   return (
