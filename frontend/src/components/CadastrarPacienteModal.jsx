@@ -1,8 +1,9 @@
+// 📄 frontend/src/components/CadastrarPacienteModal.jsx
+
 import { useState } from 'react'
 import axios from 'axios'
 
 export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }) {
-  // 📦 Estado do formulário
   const [form, setForm] = useState({
     nome: '',
     data_nascimento: '',
@@ -11,15 +12,12 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
     email: ''
   })
 
-  // 📦 Estado de erro
   const [erro, setErro] = useState('')
 
-  // 🛠 Atualizar campos
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  // 🛠 Enviar dados para API
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -29,7 +27,8 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
 
       const paciente = response.data
       setErro('')
-      onPacienteCadastrado(paciente)  // ✅ Agora envia o paciente cadastrado de volta para abrir a ficha
+      onPacienteCadastrado(paciente)  // ✅ Passa o paciente cadastrado corretamente
+      onClose() // ✅ Fecha o modal
     } catch (error) {
       console.error(error)
       setErro("Erro ao cadastrar paciente. Verifique os dados.")
@@ -41,13 +40,9 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
       <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-2xl mx-4">
         <h2 className="text-blue-600 text-2xl font-bold mb-4">Cadastrar Paciente</h2>
 
-        {/* 🔴 Exibir erro */}
         {erro && <p className="text-red-500 text-center">{erro}</p>}
 
-        {/* 🔵 Formulário */}
         <form onSubmit={handleSubmit} className="space-y-4">
-
-          {/* Nome */}
           <input
             type="text"
             name="nome"
@@ -55,10 +50,9 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             required
             value={form.nome}
             onChange={handleChange}
-            className="border px-3 py-2 w-full"
+            className="border px-3 py-2 top-3 w-full"
           />
 
-          {/* Data de nascimento */}
           <input
             type="date"
             name="data_nascimento"
@@ -68,7 +62,6 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             className="border px-3 py-2 w-full"
           />
 
-          {/* Sexo */}
           <select
             name="sexo"
             value={form.sexo}
@@ -81,7 +74,6 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             <option value="Outro">Outro</option>
           </select>
 
-          {/* Telefone */}
           <input
             type="text"
             name="telefone"
@@ -92,7 +84,6 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             className="border px-3 py-2 w-full"
           />
 
-          {/* Email */}
           <input
             type="email"
             name="email"
@@ -102,7 +93,6 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             className="border px-3 py-2 w-full"
           />
 
-          {/* Botões */}
           <div className="flex justify-between pt-4">
             <button
               type="button"
