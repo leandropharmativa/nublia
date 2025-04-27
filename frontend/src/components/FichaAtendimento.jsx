@@ -11,31 +11,36 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
     dieta: '',
     receita: '',
   })
+  const [mensagem, setMensagem] = useState(null) // 🔵 Mensagem de sucesso ou erro
 
-  // 🛠 Atualiza o conteúdo do formulário conforme aba ativa
+  // 🛠 Atualiza o formulário
   const handleChange = (e) => {
     setFormulario({ ...formulario, [abaAtiva]: e.target.value })
   }
 
-  // 🛠 Função para salvar o atendimento no backend
+  // 🛠 Salvar atendimento
   const handleSalvar = async () => {
     try {
       const dadosAtendimento = {
-        paciente_id: paciente.id, // 📎 Vincula ao paciente atual
+        paciente_id: paciente.id,
         anamnese: formulario.anamnese,
         antropometria: formulario.antropometria,
         dieta: formulario.dieta,
         receita: formulario.receita
       }
 
-      // 🔵 Envia os dados para o backend
+      // 🔵 Tenta enviar para o backend
       await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
 
-      alert('Atendimento salvo com sucesso!')
-      onFinalizar() // ✅ Voltar para o painel
+      setMensagem({ tipo: 'sucesso', texto: 'Atendimento salvo com sucesso!' })
+      setTimeout(() => {
+        setMensagem(null)
+        onFinalizar() // Depois de sucesso volta para painel
+      }, 2000)
+
     } catch (error) {
       console.error(error)
-      alert('Erro ao salvar atendimento. Verifique os dados.')
+      setMensagem({ tipo: 'erro', texto: 'Erro ao salvar atendimento. Verifique os dados.' })
     }
   }
 
@@ -47,7 +52,7 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold text-blue-600">Ficha de Atendimento</h2>
 
-          {/* Botões de ação */}
+          {/* Botões */}
           <button onClick={handleSalvar} className="text-blue-600 hover:text-blue-800">
             <Save size={24} />
           </button>
@@ -57,6 +62,13 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
         </div>
       </div>
 
+      {/* 🔵 Mensagem de sucesso ou erro */}
+      {mensagem && (
+        <div className={`mb-4 p-3 rounded text-center ${mensagem.tipo === 'sucesso' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          {mensagem.texto}
+        </div>
+      )}
+
       {/* 🔵 Informações do paciente */}
       <div className="mb-6">
         <p className="text-lg font-semibold">{paciente.nome}</p>
@@ -65,7 +77,7 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
         </p>
       </div>
 
-      {/* 🔵 Navegação por abas */}
+      {/* 🔵 Tabs */}
       <div className="flex border-b mb-6">
         <button
           onClick={() => setAbaAtiva('anamnese')}
@@ -93,7 +105,7 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
         </button>
       </div>
 
-      {/* 🔵 Campo de texto da aba ativa */}
+      {/* 🔵 Área de preenchimento */}
       <div className="space-y-4">
         <textarea
           placeholder={`Escreva as informações de ${abaAtiva}...`}
