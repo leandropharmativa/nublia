@@ -11,7 +11,7 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
 
-  // 🔵 Preenche campos se for edição
+  // 🔵 Preenche campos ao editar
   useEffect(() => {
     if (formulaSelecionada) {
       setNome(formulaSelecionada.nome || '');
@@ -19,15 +19,21 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
       setIndicacao(formulaSelecionada.indicacao || '');
       setPosologia(formulaSelecionada.posologia || '');
     } else {
-      setNome('');
-      setComposicao('');
-      setIndicacao('');
-      setPosologia('');
+      limparCampos();
     }
   }, [formulaSelecionada]);
 
-  // 🔵 Salvar fórmula (nova ou edição)
-  const salvar = async () => {
+  const limparCampos = () => {
+    setNome('');
+    setComposicao('');
+    setIndicacao('');
+    setPosologia('');
+    setErro('');
+    setSucesso('');
+  };
+
+  // 🔵 Função para salvar (novo ou editar)
+  const salvarFormula = async () => {
     if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
       setErro('Preencha todos os campos.');
       setSucesso('');
@@ -35,40 +41,31 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
     }
 
     try {
-      if (formulaSelecionada?.id) {
-        // Atualizar fórmula existente
+      if (formulaSelecionada) {
+        // Atualizar
         await axios.put(`https://nublia-backend.onrender.com/formulas/${formulaSelecionada.id}`, {
-          farmacia_id: farmaciaId,
           nome,
           composicao,
           indicacao,
           posologia
-        }, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
         });
         setSucesso('Fórmula atualizada com sucesso!');
       } else {
-        // Criar nova fórmula
+        // Cadastrar
         await axios.post('https://nublia-backend.onrender.com/formulas/', {
           farmacia_id: farmaciaId,
           nome,
           composicao,
           indicacao,
           posologia
-        }, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
         });
         setSucesso('Fórmula cadastrada com sucesso!');
       }
 
-      setErro('');
-      onFinalizar(); // 🔵 Recarrega lista e limpa seleção
+      limparCampos();
+      onFinalizar(); // 🔵 Atualiza lista e fecha edição
     } catch (error) {
-      console.error(error);
+      console.error('Erro ao salvar fórmula:', error);
       setErro('Erro ao salvar a fórmula.');
       setSucesso('');
     }
@@ -126,18 +123,23 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
         <div className="flex gap-4 mt-6">
           <button
-            onClick={salvar}
+            onClick={salvarFormula}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
           >
             Salvar
           </button>
 
-          <button
-            onClick={onFinalizar}
-            className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
-          >
-            Cancelar
-          </button>
+          {formulaSelecionada && (
+            <button
+              onClick={() => {
+                limparCampos();
+                onFinalizar();
+              }}
+              className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+            >
+              Cancelar
+            </button>
+          )}
         </div>
       </div>
 
