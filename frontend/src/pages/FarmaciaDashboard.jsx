@@ -1,20 +1,22 @@
+// 📄 frontend/src/pages/FarmaciaDashboard.jsx
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Package, FlaskConical, Building, Settings, LogOut } from 'lucide-react';
+import FormulaSidebar from '../components/FormulaSidebar';
+import FormulaForm from '../components/FormulaForm';
 import axios from 'axios';
-
-import FormularioFormula from '../components/FormularioFormula';
-import ListaFormulas from '../components/ListaFormulas';
 
 export default function FarmaciaDashboard() {
   const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState('produtos');
   const [user, setUser] = useState(null);
-  const [formulas, setFormulas] = useState([]);
-  const [formularioAtivo, setFormularioAtivo] = useState(false);
-  const [formulaSelecionada, setFormulaSelecionada] = useState(null); // para edição
 
-  // 🔵 Carrega user ao entrar
+  const [formulas, setFormulas] = useState([]);
+  const [pesquisa, setPesquisa] = useState('');
+  const [formulaSelecionada, setFormulaSelecionada] = useState(null);
+
+  // 🔵 Verifica usuário logado e carrega fórmulas
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -26,15 +28,16 @@ export default function FarmaciaDashboard() {
     }
   }, [navigate]);
 
-  // 🔵 Logout
+  // 🔵 Função logout
   const logout = () => {
     localStorage.clear();
-    navigate("/", { replace: true });
+    navigate('/', { replace: true });
   };
 
-  // 🔵 Buscar fórmulas da farmácia
+  // 🔵 Carrega fórmulas do banco
   const carregarFormulas = async (farmaciaId) => {
     try {
+      setFormulas([]);
       const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
       setFormulas(response.data.reverse());
     } catch (error) {
@@ -42,41 +45,9 @@ export default function FarmaciaDashboard() {
     }
   };
 
-  // 🔵 Ações relacionadas às fórmulas
-  const handleNovaFormula = () => {
-    setFormulaSelecionada(null);
-    setFormularioAtivo(true);
-  };
-
-  const handleEditarFormula = (formula) => {
-    setFormulaSelecionada(formula);
-    setFormularioAtivo(true);
-  };
-
-  const handleExcluirFormula = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
-    try {
-      await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
-      await carregarFormulas(user.id);
-    } catch (error) {
-      console.error('Erro ao excluir fórmula:', error);
-    }
-  };
-
-  const handleSucessoSalvar = () => {
-    setFormularioAtivo(false);
-    setFormulaSelecionada(null);
-    carregarFormulas(user.id); // atualiza depois de salvar
-  };
-
-  const handleCancelarFormulario = () => {
-    setFormularioAtivo(false);
-    setFormulaSelecionada(null);
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      
+
       {/* 🔵 TOPO */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <div>
@@ -94,7 +65,7 @@ export default function FarmaciaDashboard() {
         </div>
       </header>
 
-      {/* 🔵 MENU */}
+      {/* 🔵 NAV */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <Package size={32} />
@@ -116,7 +87,7 @@ export default function FarmaciaDashboard() {
 
       {/* 🔵 CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
-        
+
         {abaAtiva === 'produtos' && (
           <main className="flex-1 p-6 overflow-y-auto">
             <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Produtos</h2>
@@ -125,30 +96,25 @@ export default function FarmaciaDashboard() {
 
         {abaAtiva === 'formulas' && (
           <>
-            {/* 🔵 Sidebar */}
-            <ListaFormulas
+            {/* 🔵 Sidebar de fórmulas */}
+            <FormulaSidebar
               formulas={formulas}
-              onEditar={handleEditarFormula}
-              onExcluir={handleExcluirFormula}
+              pesquisa={pesquisa}
+              setPesquisa={setPesquisa}
+              onEditar={setFormulaSelecionada}
+              onRecarregar={() => carregarFormulas(user?.id)}
             />
 
-            {/* 🔵 Área de Cadastro */}
-            <main className="flex-1 p-6 overflow-y-auto flex justify-center items-start">
-              {!formularioAtivo ? (
-                <button
-                  onClick={handleNovaFormula}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
-                >
-                  + Nova Fórmula
-                </button>
-              ) : (
-                <FormularioFormula
-                  userId={user?.id}
-                  dadosIniciais={formulaSelecionada}
-                  onSucesso={handleSucessoSalvar}
-                  onCancelar={handleCancelarFormulario}
-                />
-              )}
+            {/* 🔵 Formulário de cadastro / edição */}
+            <main className="flex-1 p-6 overflow-y-auto">
+              <FormulaForm
+                farmaciaId={user?.id}
+                formulaSelecionada={formulaSelecionada}
+                onFinalizar={() => {
+                  setFormulaSelecionada(null);
+                  carregarFormulas(user?.id);
+                }}
+              />
             </main>
           </>
         )}
@@ -158,7 +124,9 @@ export default function FarmaciaDashboard() {
             <h2 className="text-2xl font-bold text-blue-600 mb-6">Dados da Farmácia</h2>
           </main>
         )}
+
       </div>
+
     </div>
   );
 }
