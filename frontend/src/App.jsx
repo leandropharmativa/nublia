@@ -8,6 +8,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Admin from './pages/Admin'
 import PrescritorDashboard from './pages/PrescritorDashboard'
+import FichaAtendimento from './pages/FichaAtendimento' // 🔵 (IMPORTANTE: adicionar import da ficha!)
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -50,6 +51,12 @@ export default function App() {
         <Route
           path="/prescritor"
           element={user?.role === "prescritor" ? <PrescritorDashboard /> : <Navigate to="/" />}
+        />
+
+        {/* 🔵 NOVA ROTA - Ficha de Atendimento */}
+        <Route
+          path="/ficha"
+          element={<FichaAtendimento />}
         />
 
         {/* Rota para qualquer página inexistente */}
