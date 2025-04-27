@@ -13,21 +13,20 @@ export default function FarmaciaDashboard() {
   const [nomeFormula, setNomeFormula] = useState('');
   const [composicao, setComposicao] = useState('');
   const [indicacao, setIndicacao] = useState('');
-  const [posologia, setPosologia] = useState(''); // 🆕
+  const [posologia, setPosologia] = useState('');
   const [formulas, setFormulas] = useState([]);
   const [pesquisa, setPesquisa] = useState('');
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
-  const [editandoFormulaId, setEditandoFormulaId] = useState(null); // 🆕 Id da fórmula sendo editada
+  const [editandoFormulaId, setEditandoFormulaId] = useState(null); // Id da fórmula sendo editada
 
-
-  // 🔵 Verifica usuário logado
+  // 🔵 Verifica usuário logado ao abrir a página
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
-      carregarFormulas(parsedUser.id); // 🆕
+      carregarFormulas(parsedUser.id);
     } else {
       navigate('/');
     }
@@ -39,7 +38,7 @@ export default function FarmaciaDashboard() {
     navigate("/", { replace: true });
   };
 
-  // 🔵 Buscar fórmulas da farmácia
+  // 🔵 Carrega todas as fórmulas cadastradas pela farmácia
   const carregarFormulas = async (farmaciaId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
@@ -49,57 +48,66 @@ export default function FarmaciaDashboard() {
     }
   };
 
-  // 🔵 Cadastrar fórmula no banco
-const cadastrarOuAtualizarFormula = async () => {
-  if (!nomeFormula.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
-    setErro('Preencha todos os campos.');
-    setSucesso('');
-    return;
-  }
-
-  try {
-    if (editandoFormulaId) {
-      // Atualizar fórmula existente
-      setFormulas((prev) =>
-        prev.map((f) =>
-          f.id === editandoFormulaId
-            ? { ...f, nome: nomeFormula, composicao, indicacao, posologia }
-            : f
-        )
-      );
-      setSucesso('Fórmula atualizada com sucesso!');
-    } else {
-      // Cadastrar nova fórmula
-      const novaFormula = { id: Date.now(), nome: nomeFormula, composicao, indicacao, posologia };
-      setFormulas((prev) => [novaFormula, ...prev]);
-      setSucesso('Fórmula cadastrada com sucesso!');
+  // 🔵 Cadastrar uma nova fórmula ou atualizar fórmula existente
+  const cadastrarOuAtualizarFormula = async () => {
+    if (!nomeFormula.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
+      setErro('Preencha todos os campos.');
+      setSucesso('');
+      return;
     }
 
-    // Limpar formulário
-    setNomeFormula('');
-    setComposicao('');
-    setIndicacao('');
-    setPosologia('');
-    setEditandoFormulaId(null); // Reseta modo edição
-    setErro('');
+    try {
+      if (editandoFormulaId) {
+        // 🔵 Atualizar fórmula existente (PUT)
+        await axios.put(`https://nublia-backend.onrender.com/formulas/${editandoFormulaId}`, {
+          nome: nomeFormula,
+          composicao,
+          indicacao,
+          posologia
+        });
+        setSucesso('Fórmula atualizada com sucesso!');
+      } else {
+        // 🔵 Criar nova fórmula (POST)
+        await axios.post('https://nublia-backend.onrender.com/formulas/', {
+          nome: nomeFormula,
+          composicao,
+          indicacao,
+          posologia,
+          farmacia_id: user.id // ✅ Salva o ID da farmácia!
+        });
+        setSucesso('Fórmula cadastrada com sucesso!');
+      }
 
-  } catch (error) {
-    console.error(error);
-    setErro('Erro ao salvar a fórmula.');
-    setSucesso('');
-  }
-};
+      // 🔵 Após salvar ou atualizar, recarrega a lista
+      carregarFormulas(user.id);
 
+      // 🔵 Limpa o formulário
+      setNomeFormula('');
+      setComposicao('');
+      setIndicacao('');
+      setPosologia('');
+      setEditandoFormulaId(null);
+      setErro('');
+
+    } catch (error) {
+      console.error(error);
+      setErro('Erro ao salvar a fórmula.');
+      setSucesso('');
+    }
+  };
+
+  // 🔵 Iniciar edição de uma fórmula
   const iniciarEdicao = (formula) => {
-  setEditandoFormulaId(formula.id);
-  setNomeFormula(formula.nome);
-  setComposicao(formula.composicao);
-  setIndicacao(formula.indicacao);
-  setPosologia(formula.posologia || ''); // caso seja vazio
-  setErro('');
-  setSucesso('');
-};
+    setEditandoFormulaId(formula.id);
+    setNomeFormula(formula.nome);
+    setComposicao(formula.composicao);
+    setIndicacao(formula.indicacao);
+    setPosologia(formula.posologia || '');
+    setErro('');
+    setSucesso('');
+  };
 
+  // 🔵 Filtrar fórmulas pela pesquisa
   const formulasFiltradas = formulas.filter((formula) =>
     formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
   );
@@ -107,7 +115,7 @@ const cadastrarOuAtualizarFormula = async () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       
-      {/* 🔵 TOPO */}
+      {/* TOPO */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <div>
           <div className="text-sm font-semibold">Nublia</div>
@@ -124,7 +132,7 @@ const cadastrarOuAtualizarFormula = async () => {
         </div>
       </header>
 
-      {/* 🔵 MENU */}
+      {/* MENU */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <Package size={32} />
@@ -144,7 +152,7 @@ const cadastrarOuAtualizarFormula = async () => {
         </button>
       </nav>
 
-      {/* 🔵 CONTEÚDO */}
+      {/* CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
         
         {abaAtiva === 'produtos' && (
@@ -155,7 +163,7 @@ const cadastrarOuAtualizarFormula = async () => {
 
         {abaAtiva === 'formulas' && (
           <>
-            {/* 🔵 Sidebar */}
+            {/* Sidebar */}
             <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
               <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
 
@@ -164,16 +172,17 @@ const cadastrarOuAtualizarFormula = async () => {
                   <li key={formula.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span className="text-sm font-medium truncate">{formula.nome}</span>
                     <button
-                    className="text-blue-600 hover:text-blue-800"
-                    title="Editar fórmula"
-                    onClick={() => iniciarEdicao(formula)}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Editar fórmula"
+                      onClick={() => iniciarEdicao(formula)}
                     >
-                    <Edit size={20} />
+                      <Edit size={20} />
                     </button>
                   </li>
                 ))}
               </ul>
 
+              {/* Pesquisa */}
               <div className="mt-6 relative">
                 <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
                 <input
@@ -186,10 +195,12 @@ const cadastrarOuAtualizarFormula = async () => {
               </div>
             </aside>
 
-            {/* 🔵 Área de Cadastro */}
+            {/* Formulário de Cadastro */}
             <main className="flex-1 p-6 overflow-y-auto">
               <div className="max-w-2xl mx-auto">
-                <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Fórmulas</h2>
+                <h2 className="text-2xl font-bold text-blue-600 mb-6">
+                  {editandoFormulaId ? 'Editar Fórmula' : 'Cadastrar Fórmulas'}
+                </h2>
 
                 {erro && <p className="text-red-500 mb-4">{erro}</p>}
                 {sucesso && <p className="text-green-500 mb-4">{sucesso}</p>}
@@ -239,11 +250,11 @@ const cadastrarOuAtualizarFormula = async () => {
                   </div>
 
                   <button
-                  onClick={cadastrarOuAtualizarFormula}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
+                    onClick={cadastrarOuAtualizarFormula}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
                   >
-                  {editandoFormulaId ? 'Atualizar Fórmula' : 'Salvar Fórmula'}
-                  </button>  
+                    {editandoFormulaId ? 'Atualizar Fórmula' : 'Salvar Fórmula'}
+                  </button>
                 </div>
               </div>
             </main>
