@@ -126,7 +126,7 @@ export default function PrescritorDashboard() {
         </aside>
 
         {/* Área Central (Ficha ou Botão) */}
-        <main className="flex-1 flex flex-col items-start p-6 overflow-y-auto">
+        <main className="flex-1 flex flex-col items-start p-4 pt-2 pl-2 overflow-y-auto overflow-x-auto">
 
           {pacienteSelecionado ? (
             <div className="w-full max-w-5xl">
