@@ -1,37 +1,42 @@
 // 📄 frontend/src/pages/FarmaciaDashboard.jsx
 
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Package, FlaskConical, Building2, LogOut } from 'lucide-react';
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { LogOut, Building2, Settings } from 'lucide-react'
+import axios from 'axios'
 
 export default function FarmaciaDashboard() {
-  const navigate = useNavigate();
-  const [abaAtiva, setAbaAtiva] = useState('produtos');
-  const [user, setUser] = useState(null);
+  const navigate = useNavigate()
+  const [user, setUser] = useState(null)
 
-  // 🔵 Verifica usuário logado
+  // 🔵 Carrega usuário logado
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
+    const savedUser = localStorage.getItem('user')
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      setUser(JSON.parse(savedUser))
     } else {
-      navigate('/');
+      navigate('/')
     }
-  }, [navigate]);
+  }, [navigate])
 
-  // 🔵 Função de logout
+  // 🔵 Logout
   const logout = () => {
-    localStorage.clear();
-    navigate('/');
-    window.location.reload();
-  };
+    localStorage.clear()
+    navigate('/')
+    window.location.reload()
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      
-      {/* 🔵 TOPO */}
+
+      {/* TOPO */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Painel da Farmácia</h1>
+        <div>
+          <div className="text-sm font-semibold">Nublia</div>
+          <h1 className="text-xl font-bold flex items-center gap-2">
+            <Building2 size={28} /> Painel da Farmácia
+          </h1>
+        </div>
         <div className="flex items-center gap-4">
           <span className="text-sm italic">{user?.name}</span>
           <button
@@ -43,44 +48,20 @@ export default function FarmaciaDashboard() {
         </div>
       </header>
 
-      {/* 🔵 MENU */}
-      <nav className="bg-white shadow px-6 py-3 flex justify-center gap-10">
-        <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
-          <Package size={32} />
-          <span className="text-xs mt-1">Produtos</span>
-        </button>
-        <button onClick={() => setAbaAtiva('formulas')} className={`flex flex-col items-center ${abaAtiva === 'formulas' ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
-          <FlaskConical size={32} />
-          <span className="text-xs mt-1">Fórmulas</span>
-        </button>
-        <button onClick={() => setAbaAtiva('dados')} className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
-          <Building2 size={32} />
-          <span className="text-xs mt-1">Dados da Farmácia</span>
+      {/* NAV - Ícones no topo */}
+      <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
+          <Settings size={32} />
+          <span className="text-xs mt-1">Configurações</span>
         </button>
       </nav>
 
-      {/* 🔵 ÁREA PRINCIPAL */}
-      <main className="flex-1 p-6 overflow-y-auto">
-        {abaAtiva === 'produtos' && (
-          <div>
-            <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Produtos</h2>
-            {/* Formulário de produtos virá aqui */}
-          </div>
-        )}
-        {abaAtiva === 'formulas' && (
-          <div>
-            <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Fórmulas</h2>
-            {/* Formulário de fórmulas virá aqui */}
-          </div>
-        )}
-        {abaAtiva === 'dados' && (
-          <div>
-            <h2 className="text-2xl font-bold text-blue-600 mb-6">Dados da Farmácia</h2>
-            {/* Formulário de dados gerais virá aqui */}
-          </div>
-        )}
+      {/* CONTEÚDO */}
+      <main className="flex-1 p-6">
+        <p>Bem-vindo ao painel da farmácia!</p>
+        {/* Depois adicionamos a loja de produtos e sugestões de fórmulas */}
       </main>
       
     </div>
-  );
+  )
 }
