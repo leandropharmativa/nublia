@@ -1,12 +1,14 @@
+// 📄 frontend/src/pages/Login.jsx
+
 // Importações principais
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom' // Importa o hook para navegar entre páginas
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 export default function Login({ onLogin }) {
   const navigate = useNavigate()
 
-  // Estados para armazenar email, senha e possíveis mensagens de erro
+  // Estados
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
@@ -15,8 +17,8 @@ export default function Login({ onLogin }) {
   const handleLogin = async (e) => {
     e.preventDefault()
     try {
-      // Faz a requisição para o backend
-      const response = await axios.post('https://nublia-backend.onrender.com/login', 
+      // Faz requisição para o backend
+      const response = await axios.post('https://nublia-backend.onrender.com/login',
         new URLSearchParams({
           username: email,
           password: senha
@@ -30,20 +32,22 @@ export default function Login({ onLogin }) {
 
       const { user, access_token } = response.data
 
-      // Salva o token e o usuário no localStorage
+      // Salva token e usuário no localStorage
       localStorage.setItem("token", access_token)
       localStorage.setItem("user", JSON.stringify(user))
 
-      // Atualiza o estado do App
-      onLogin(user)
+      // Atualiza o App.js corretamente
+      if (onLogin) {
+        onLogin(user) // ✅ Atualiza o estado global
+      }
 
-      // 🚀 Redireciona imediatamente após login
+      // Redireciona conforme o tipo de usuário
       if (user.role === "admin") {
-        navigate("/admin")
+        navigate("/admin", { replace: true }) // ✅ replace: true evita erro visual
       } else if (user.role === "prescritor") {
-        navigate("/prescritor")
+        navigate("/prescritor", { replace: true })
       } else {
-        navigate("/") // Qualquer outro tipo (só por segurança)
+        navigate("/", { replace: true })
       }
 
     } catch (error) {
@@ -57,7 +61,7 @@ export default function Login({ onLogin }) {
       <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-96 space-y-6">
         <h2 className="text-2xl font-bold text-center text-blue-600">Entrar no Nublia</h2>
 
-        {/* Mensagem de erro, se houver */}
+        {/* Mensagem de erro */}
         {erro && <p className="text-red-500 text-center">{erro}</p>}
 
         {/* Campo de email */}
