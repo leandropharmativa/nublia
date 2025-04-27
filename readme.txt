@@ -84,19 +84,6 @@ Uso de token Bearer para autenticação segura
 
 Arquivos .env e variáveis sensíveis gerenciáveis (em breve)
 
-🔥 Próximas Etapas
-Sistema completo de ficha de atendimento para prescritores
-
-Agenda visual de compromissos (fullcalendar ou similar)
-
-Gestão de receitas e envio para farmácias integradas
-
-Área do paciente para visualizar dietas e prescrições
-
-Área da farmácia, academia e clínica para interação
-
-Recuperação de senha por email (opcional)
-
 ✅ Status Atual
 Backend: ✅ Pronto e em produção (Render Backend)
 
