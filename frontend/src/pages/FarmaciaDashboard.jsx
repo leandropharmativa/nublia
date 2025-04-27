@@ -18,6 +18,8 @@ export default function FarmaciaDashboard() {
   const [pesquisa, setPesquisa] = useState('');
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
+  const [editandoFormulaId, setEditandoFormulaId] = useState(null); // 🆕 Id da fórmula sendo editada
+
 
   // 🔵 Verifica usuário logado
   useEffect(() => {
@@ -48,37 +50,55 @@ export default function FarmaciaDashboard() {
   };
 
   // 🔵 Cadastrar fórmula no banco
-  const cadastrarFormula = async () => {
-    if (!nomeFormula.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
-      setErro('Preencha todos os campos.');
-      setSucesso('');
-      return;
-    }
+const cadastrarOuAtualizarFormula = async () => {
+  if (!nomeFormula.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
+    setErro('Preencha todos os campos.');
+    setSucesso('');
+    return;
+  }
 
-    try {
-      const payload = {
-        farmacia_id: user.id,
-        nome: nomeFormula,
-        composicao,
-        indicacao,
-        posologia, // 🆕 envia a posologia
-      };
-
-      const response = await axios.post('https://nublia-backend.onrender.com/formulas/', payload);
-
-      setFormulas((prev) => [response.data, ...prev]);
-      setNomeFormula('');
-      setComposicao('');
-      setIndicacao('');
-      setPosologia(''); // 🆕 limpa o campo
-      setErro('');
+  try {
+    if (editandoFormulaId) {
+      // Atualizar fórmula existente
+      setFormulas((prev) =>
+        prev.map((f) =>
+          f.id === editandoFormulaId
+            ? { ...f, nome: nomeFormula, composicao, indicacao, posologia }
+            : f
+        )
+      );
+      setSucesso('Fórmula atualizada com sucesso!');
+    } else {
+      // Cadastrar nova fórmula
+      const novaFormula = { id: Date.now(), nome: nomeFormula, composicao, indicacao, posologia };
+      setFormulas((prev) => [novaFormula, ...prev]);
       setSucesso('Fórmula cadastrada com sucesso!');
-    } catch (error) {
-      console.error(error);
-      setErro('Erro ao cadastrar fórmula.');
-      setSucesso('');
     }
-  };
+
+    // Limpar formulário
+    setNomeFormula('');
+    setComposicao('');
+    setIndicacao('');
+    setPosologia('');
+    setEditandoFormulaId(null); // Reseta modo edição
+    setErro('');
+
+  } catch (error) {
+    console.error(error);
+    setErro('Erro ao salvar a fórmula.');
+    setSucesso('');
+  }
+};
+
+  const iniciarEdicao = (formula) => {
+  setEditandoFormulaId(formula.id);
+  setNomeFormula(formula.nome);
+  setComposicao(formula.composicao);
+  setIndicacao(formula.indicacao);
+  setPosologia(formula.posologia || ''); // caso seja vazio
+  setErro('');
+  setSucesso('');
+};
 
   const formulasFiltradas = formulas.filter((formula) =>
     formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
@@ -143,8 +163,12 @@ export default function FarmaciaDashboard() {
                 {formulasFiltradas.map((formula) => (
                   <li key={formula.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span className="text-sm font-medium truncate">{formula.nome}</span>
-                    <button className="text-blue-600 hover:text-blue-800" title="Editar fórmula">
-                      <Edit size={20} />
+                    <button
+                    className="text-blue-600 hover:text-blue-800"
+                    title="Editar fórmula"
+                    onClick={() => iniciarEdicao(formula)}
+                    >
+                    <Edit size={20} />
                     </button>
                   </li>
                 ))}
@@ -215,11 +239,11 @@ export default function FarmaciaDashboard() {
                   </div>
 
                   <button
-                    onClick={cadastrarFormula}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
+                  onClick={cadastrarOuAtualizarFormula}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
                   >
-                    Salvar Fórmula
-                  </button>
+                  {editandoFormulaId ? 'Atualizar Fórmula' : 'Salvar Fórmula'}
+                  </button>  
                 </div>
               </div>
             </main>
