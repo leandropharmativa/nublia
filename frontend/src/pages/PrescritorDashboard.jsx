@@ -158,16 +158,19 @@ export default function PrescritorDashboard() {
 
             {/* Resultados */}
             {pacientesFiltrados.length > 0 ? (
-              <ul className="space-y-2">
-                {pacientesFiltrados.map((p) => (
-                  <li key={p.id} className="flex justify-between items-center">
-                    <span>{p.nome}</span>
-                    <button className="text-blue-600 hover:underline text-sm">
-                      Atender
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              <ul className="space-y-4">
+              {buscaPaciente.trim().length > 0 ? (
+              pacientes.map((paciente) => (
+              <li key={paciente.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+              <span className="text-sm font-medium">{paciente.nome}</span>
+              <span className="text-xs text-gray-500">{paciente.email}</span>
+            </li>
+          ))
+          ) : (
+          <p className="text-gray-500 text-sm italic">Digite para buscar pacientes...</p>
+          )}
+          </ul>
+
             ) : (
               <p className="text-gray-500 text-center">Paciente não encontrado.</p>
             )}
