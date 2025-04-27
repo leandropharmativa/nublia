@@ -1,9 +1,9 @@
-// 📄 src/components/FormularioFormula.jsx
+// 📄 src/components/FormulaForm.jsx
 
 import { useState } from 'react';
 import axios from 'axios';
 
-export default function FormularioFormula({ userId, dadosIniciais, onSucesso, onCancelar }) {
+export default function FormulaForm({ userId, dadosIniciais, onSucesso, onCancelar }) {
   const [nome, setNome] = useState(dadosIniciais?.nome || '');
   const [composicao, setComposicao] = useState(dadosIniciais?.composicao || '');
   const [indicacao, setIndicacao] = useState(dadosIniciais?.indicacao || '');
