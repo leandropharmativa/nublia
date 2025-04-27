@@ -80,9 +80,10 @@ class CodigoAtivacaoCreate(SQLModel):
 
 # 🛠 Modelo da tabela de Atendimento (salvo no banco de dados)
 class Atendimento(SQLModel, table=True):
-    __tablename__ = "atendimento_novo"  # <<< ATUALIZADO AQUI
+    __tablename__ = "atendimento"  # <<< Voltamos para atendimento
     id: Optional[int] = Field(default=None, primary_key=True)
     paciente_id: int
+    prescritor_id: int  # <<< Adicionado!
     anamnese: Optional[str] = None
     antropometria: Optional[str] = None
     dieta: Optional[str] = None
@@ -92,6 +93,7 @@ class Atendimento(SQLModel, table=True):
 # Modelo para criação de atendimento (não exige ID)
 class AtendimentoCreate(SQLModel):
     paciente_id: int
+    prescritor_id: int  # <<< Adicionado!
     anamnese: Optional[str] = None
     antropometria: Optional[str] = None
     dieta: Optional[str] = None
