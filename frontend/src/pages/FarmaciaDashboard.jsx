@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Package, FlaskConical, Building, Settings, LogOut, Edit, Search } from 'lucide-react';
+import axios from 'axios';
 
 export default function FarmaciaDashboard() {
   const navigate = useNavigate();
@@ -21,7 +22,9 @@ export default function FarmaciaDashboard() {
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const parsedUser = JSON.parse(savedUser);
+      setUser(parsedUser);
+      carregarFormulas(parsedUser.id); // 🆕 já busca as fórmulas da farmácia ao logar
     } else {
       navigate('/');
     }
@@ -29,11 +32,21 @@ export default function FarmaciaDashboard() {
 
   // 🔵 Função de logout
   const logout = () => {
-  localStorage.clear()
-  navigate("/", { replace: true }) // 🔵 Sem reload!
-  }
+    localStorage.clear();
+    navigate("/", { replace: true });
+  };
 
-  // 🔵 Cadastrar fórmula (simulado no frontend ainda)
+  // 🔵 Função para buscar as fórmulas no banco
+  const carregarFormulas = async (farmaciaId) => {
+    try {
+      const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
+      setFormulas(response.data.reverse()); // Mais recentes primeiro
+    } catch (error) {
+      console.error('Erro ao carregar fórmulas:', error);
+    }
+  };
+
+  // 🔵 Cadastrar fórmula no banco
   const cadastrarFormula = async () => {
     if (!nomeFormula.trim() || !composicao.trim() || !indicacao.trim()) {
       setErro('Preencha todos os campos.');
@@ -42,8 +55,16 @@ export default function FarmaciaDashboard() {
     }
 
     try {
-      const novaFormula = { id: Date.now(), nome: nomeFormula, composicao, indicacao };
-      setFormulas((prev) => [novaFormula, ...prev]);
+      const payload = {
+        farmacia_id: user.id, // 🛡️ Agora pega o id da farmácia logada
+        nome: nomeFormula,
+        composicao,
+        indicacao,
+      };
+
+      const response = await axios.post('https://nublia-backend.onrender.com/formulas/', payload);
+
+      setFormulas((prev) => [response.data, ...prev]);
       setNomeFormula('');
       setComposicao('');
       setIndicacao('');
@@ -56,7 +77,7 @@ export default function FarmaciaDashboard() {
     }
   };
 
-  // 🔵 Filtrar fórmulas pela pesquisa
+  // 🔵 Filtro de pesquisa
   const formulasFiltradas = formulas.filter((formula) =>
     formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
   );
@@ -81,7 +102,7 @@ export default function FarmaciaDashboard() {
         </div>
       </header>
 
-      {/* 🔵 MENU - Navegação igual prescritor */}
+      {/* 🔵 MENU */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <Package size={32} />
@@ -101,7 +122,7 @@ export default function FarmaciaDashboard() {
         </button>
       </nav>
 
-      {/* 🔵 ÁREA PRINCIPAL */}
+      {/* 🔵 CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
         
         {abaAtiva === 'produtos' && (
@@ -112,7 +133,7 @@ export default function FarmaciaDashboard() {
 
         {abaAtiva === 'formulas' && (
           <>
-            {/* 🔵 Sidebar com fórmulas */}
+            {/* 🔵 Sidebar */}
             <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
               <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
 
@@ -127,7 +148,7 @@ export default function FarmaciaDashboard() {
                 ))}
               </ul>
 
-              {/* 🔵 Caixa de pesquisa no final */}
+              {/* 🔵 Caixa de pesquisa */}
               <div className="mt-6 relative">
                 <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
                 <input
@@ -140,16 +161,14 @@ export default function FarmaciaDashboard() {
               </div>
             </aside>
 
-            {/* 🔵 Área de cadastro de fórmulas */}
+            {/* 🔵 Cadastro de Fórmulas */}
             <main className="flex-1 p-6 overflow-y-auto">
               <div className="max-w-2xl mx-auto">
                 <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Fórmulas</h2>
 
-                {/* Mensagem de erro ou sucesso */}
                 {erro && <p className="text-red-500 mb-4">{erro}</p>}
                 {sucesso && <p className="text-green-500 mb-4">{sucesso}</p>}
 
-                {/* Formulário */}
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium mb-1">Nome da Fórmula</label>
