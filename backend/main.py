@@ -11,7 +11,7 @@ app = FastAPI()
 # Permitir que o frontend acesse o backend (CORS)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Pode trocar "*" por URL específica depois, se quiser mais seguro
+    allow_origins=["https://nublia.vercel.app"],  # Pode trocar "*" por URL específica depois, se quiser mais seguro
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
