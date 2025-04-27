@@ -9,12 +9,17 @@ import Admin from './pages/Admin'
 import PrescritorDashboard from './pages/PrescritorDashboard'
 
 export default function App() {
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('user')
-    return savedUser ? JSON.parse(savedUser) : null
-  })
+  const [user, setUser] = useState(null)
 
-  // 🔵 Atualiza o user no App quando ele muda
+  // 🔵 Atualiza o user no App quando a página carrega
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user')
+    if (savedUser) {
+      setUser(JSON.parse(savedUser))
+    }
+  }, [])
+
+  // 🔵 Atualiza o user após login
   const handleLogin = (newUser) => {
     setUser(newUser)
   }
@@ -28,8 +33,8 @@ export default function App() {
           element={!user ? (
             <Login onLogin={handleLogin} />
           ) : (
-            user.role === "admin" ? <Navigate to="/admin" /> :
-            user.role === "prescritor" ? <Navigate to="/prescritor" /> :
+            user.role === "admin" ? <Navigate to="/admin" replace /> :
+            user.role === "prescritor" ? <Navigate to="/prescritor" replace /> :
             <div className="flex items-center justify-center min-h-screen">Acesso não autorizado</div>
           )}
         />
@@ -40,17 +45,17 @@ export default function App() {
         {/* Painel Admin */}
         <Route
           path="/admin"
-          element={user?.role === "admin" ? <Admin /> : <Navigate to="/" />}
+          element={user?.role === "admin" ? <Admin /> : <Navigate to="/" replace />}
         />
 
         {/* Painel Prescritor */}
         <Route
           path="/prescritor"
-          element={user?.role === "prescritor" ? <PrescritorDashboard /> : <Navigate to="/" />}
+          element={user?.role === "prescritor" ? <PrescritorDashboard /> : <Navigate to="/" replace />}
         />
 
         {/* Qualquer rota inválida */}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   )
