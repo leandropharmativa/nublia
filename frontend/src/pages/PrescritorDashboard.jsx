@@ -15,6 +15,9 @@ export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
   const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
+  const [pacienteAtendimento, setPacienteAtendimento] = useState(null)  // Paciente sendo atendido
+  const [mostrarCadastroPaciente, setMostrarCadastroPaciente] = useState(false)  // Mostrar ou não o formulário
+
 
   // Estados de controle de modais
   const [abrirModalAtendimento, setAbrirModalAtendimento] = useState(false)
@@ -71,6 +74,21 @@ export default function PrescritorDashboard() {
     setAbrirModalCadastroPaciente(false)
     // 🔵 Aqui depois levamos direto para a tela de atendimento com paciente novo
   }
+  {/* Se o prescritor clicou para iniciar atendimento */}
+  {mostrarCadastroPaciente && (
+  <CadastroPaciente 
+    onClose={() => setMostrarCadastroPaciente(false)} 
+    onPacienteCadastrado={(paciente) => {
+      setPacienteAtendimento(paciente)
+      setMostrarCadastroPaciente(false)
+    }}
+  />
+  )}
+
+  {/* Se já temos paciente selecionado, abrir ficha */}
+  {pacienteAtendimento && (
+  <FichaAtendimento paciente={pacienteAtendimento} />
+  )}
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -149,12 +167,11 @@ export default function PrescritorDashboard() {
 
         {/* Centro */}
         <main className="flex-1 flex items-center justify-center">
-          <button
-            className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
-            onClick={() => setAbrirModalAtendimento(true)}
-          >
-            <PlusCircle size={28} /> Iniciar Atendimento
-          </button>
+        <button
+        onClick={() => setMostrarCadastroPaciente(true)}
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 text-lg flex items-center">
+        <PlusCircle className="mr-2" /> Iniciar Atendimento
+        </button>
         </main>
 
       </div>
