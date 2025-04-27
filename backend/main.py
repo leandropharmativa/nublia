@@ -6,7 +6,9 @@ from app.routers import codigos
 from fastapi.openapi.utils import get_openapi
 from app.routers import atendimentos
 
-app = FastAPI()
+app = FastAPI(
+    title="Nublia Backend"
+)
 
 # Permitir que o frontend acesse o backend (CORS)
 app.add_middleware(
