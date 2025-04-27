@@ -1,12 +1,13 @@
-// 📦 Importações
+// 📦 Importações principais
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, Search, PlusCircle } from 'lucide-react'
 
-import BuscarPacienteModal from '../components/BuscarPacienteModal' // 🔵 Modal de buscar pacientes
-import CadastrarPacienteModal from '../components/CadastrarPacienteModal' // 🔵 Modal de cadastrar paciente
+import BuscarPacienteModal from '../components/BuscarPacienteModal' // 🔵 Modal para buscar pacientes
+import CadastrarPacienteModal from '../components/CadastrarPacienteModal' // 🔵 Modal para cadastrar pacientes
+import FichaAtendimento from '../components/FichaAtendimento' // 🟡 Novo: Ficha de atendimento
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
@@ -15,6 +16,7 @@ export default function PrescritorDashboard() {
   const [pesquisa, setPesquisa] = useState('')
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarCadastrarPacienteModal, setMostrarCadastrarPacienteModal] = useState(false)
+  const [pacienteSelecionado, setPacienteSelecionado] = useState(null) // 🟡 Paciente selecionado para atendimento
 
   // 🔵 Carrega usuário
   useEffect(() => {
@@ -36,12 +38,14 @@ export default function PrescritorDashboard() {
     setAtendimentosRecentes(exemplos)
   }, [])
 
+  // 🔵 Logout
   const logout = () => {
     localStorage.clear()
     navigate('/')
     window.location.reload()
   }
 
+  // 🔵 Filtro de pesquisa de atendimentos recentes
   const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
     item.nome.toLowerCase().includes(pesquisa.toLowerCase())
   )
@@ -88,8 +92,8 @@ export default function PrescritorDashboard() {
 
       {/* CONTEÚDO */}
       <div className="flex flex-1">
-        
-        {/* Sidebar */}
+
+        {/* Sidebar de atendimentos recentes */}
         <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
           <h2 className="text-blue-600 text-xl font-semibold mb-4">Atendimentos Recentes</h2>
 
@@ -121,19 +125,28 @@ export default function PrescritorDashboard() {
           </div>
         </aside>
 
-        {/* Centro */}
+        {/* Área Central */}
         <main className="flex-1 flex items-center justify-center">
-          <button
-            onClick={() => setMostrarBuscarPacienteModal(true)}
-            className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
-          >
-            <PlusCircle size={28} /> Iniciar Atendimento
-          </button>
-        </main>
 
+          {/* 🟡 Se há paciente selecionado, mostra ficha, senão botão iniciar atendimento */}
+          {pacienteSelecionado ? (
+            <FichaAtendimento
+              paciente={pacienteSelecionado}
+              onFinalizar={() => setPacienteSelecionado(null)}
+            />
+          ) : (
+            <button
+              onClick={() => setMostrarBuscarPacienteModal(true)}
+              className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
+            >
+              <PlusCircle size={28} /> Iniciar Atendimento
+            </button>
+          )}
+
+        </main>
       </div>
 
-      {/* Modal Buscar Paciente */}
+      {/* 🔵 Modal Buscar Paciente */}
       {mostrarBuscarPacienteModal && (
         <BuscarPacienteModal
           onClose={() => setMostrarBuscarPacienteModal(false)}
@@ -141,16 +154,21 @@ export default function PrescritorDashboard() {
             setMostrarBuscarPacienteModal(false)
             setMostrarCadastrarPacienteModal(true)
           }}
+          onSelecionarPaciente={(paciente) => {
+            setPacienteSelecionado(paciente)
+            setMostrarBuscarPacienteModal(false)
+          }}
         />
       )}
 
-      {/* Modal Cadastrar Paciente */}
+      {/* 🔵 Modal Cadastrar Paciente */}
       {mostrarCadastrarPacienteModal && (
         <CadastrarPacienteModal
           onClose={() => setMostrarCadastrarPacienteModal(false)}
           onPacienteCadastrado={() => setMostrarCadastrarPacienteModal(false)}
         />
       )}
+
     </div>
   )
 }
