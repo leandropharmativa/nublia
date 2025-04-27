@@ -1,16 +1,14 @@
+// 📦 Importações
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { Search, User } from 'lucide-react'
 
-export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
-  // 📦 Estados para controle
+export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSelecionarPaciente }) {
+  // 📦 Estados
   const [termoBusca, setTermoBusca] = useState('')
   const [pacientes, setPacientes] = useState([])
 
-  const navigate = useNavigate()
-
-  // 🔵 Buscar pacientes quando digitar
+  // 🔵 Buscar pacientes no backend conforme o termo de busca
   useEffect(() => {
     const buscar = async () => {
       if (termoBusca.trim() === '') {
@@ -31,10 +29,9 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
     buscar()
   }, [termoBusca])
 
-  // 🔵 Quando clica em Selecionar paciente
+  // 🟡 Quando clica em "Selecionar"
   const selecionarPaciente = (paciente) => {
-    localStorage.setItem('pacienteSelecionado', JSON.stringify(paciente))
-    window.location.href = '/ficha'  // 🔵 Redireciona diretamente para /ficha
+    onSelecionarPaciente(paciente)  // 🔵 Chama a função passada pelo Dashboard
   }
 
   return (
@@ -56,7 +53,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
           />
         </div>
 
-        {/* 🔵 Lista de resultados */}
+        {/* 🔵 Resultados */}
         <div className="flex-1 overflow-y-auto">
           {termoBusca.trim() && pacientes.length > 0 ? (
             <ul className="space-y-4">
@@ -82,7 +79,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
           )}
         </div>
 
-        {/* 🔵 Botões abaixo */}
+        {/* 🔵 Botões de ação */}
         <div className="flex justify-between pt-4">
           <button
             onClick={onClose}
