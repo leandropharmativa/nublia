@@ -56,7 +56,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             required
             value={form.nome}
             onChange={handleChange}
-            className="border px-3 py-2 w-full"
+            className="border px-3 py-2 top-3 w-full"
           />
 
           {/* Data de nascimento */}
