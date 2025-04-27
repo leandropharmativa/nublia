@@ -12,19 +12,22 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
     receita: '',
   })
   const [mensagem, setMensagem] = useState(null)
-  const [atendimentoId, setAtendimentoId] = useState(null) // 🆕 Guardar ID do atendimento salvo
+  const [atendimentoId, setAtendimentoId] = useState(null)
 
   // 🛠 Atualiza o formulário
   const handleChange = (e) => {
     setFormulario({ ...formulario, [abaAtiva]: e.target.value })
-    setMensagem(null) // 🆕 Se mexer em qualquer campo, apaga a mensagem de sucesso
+    setMensagem(null) // Limpa mensagem de sucesso ao alterar algo
   }
 
   // 🛠 Salvar ou atualizar atendimento
   const handleSalvar = async () => {
     try {
+      const user = JSON.parse(localStorage.getItem('user')) // 🔵 Captura o usuário logado
+
       const dadosAtendimento = {
         paciente_id: paciente.id,
+        prescritor_id: user?.id,  // 🔵 Inclui o prescritor_id
         anamnese: formulario.anamnese,
         antropometria: formulario.antropometria,
         dieta: formulario.dieta,
@@ -34,16 +37,16 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
       if (!atendimentoId) {
         // Primeiro salvamento: cria um novo atendimento (POST)
         const response = await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
-        setAtendimentoId(response.data.id) // 🆕 Salva o ID retornado
+        setAtendimentoId(response.data.id) // Guarda o ID retornado
       } else {
-        // Se já existe: atualiza o atendimento (PUT)
+        // Atualização de atendimento existente (PUT)
         await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
       }
 
       setMensagem({ tipo: 'sucesso', texto: 'Atendimento salvo com sucesso!' })
 
     } catch (error) {
-      console.error(error)
+      console.error('Erro ao salvar atendimento:', error.response?.data || error.message)
       setMensagem({ tipo: 'erro', texto: 'Erro ao salvar atendimento. Verifique os dados.' })
     }
   }
@@ -56,7 +59,6 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold text-blue-600">Ficha de Atendimento</h2>
 
-          {/* Botões */}
           <button onClick={handleSalvar} className="text-blue-600 hover:text-blue-800">
             <Save size={24} />
           </button>
