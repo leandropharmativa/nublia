@@ -1,156 +1,97 @@
-// 📦 Importações
-import { useState, useEffect } from 'react'
+// 📄 frontend/src/components/BuscarPacienteModal.jsx
+
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, Search, PlusCircle } from 'lucide-react'
+export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
+  const [buscaPaciente, setBuscaPaciente] = useState('')
+  const [pacientes, setPacientes] = useState([])
 
-import BuscarPacienteModal from '../components/BuscarPacienteModal' // 🔵 Modal de buscar pacientes
-import CadastrarPacienteModal from '../components/CadastrarPacienteModal' // 🔵 Modal de cadastrar paciente
-
-export default function PrescritorDashboard() {
   const navigate = useNavigate()
-  const [user, setUser] = useState(null)
-  const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
-  const [pesquisa, setPesquisa] = useState('')
-  const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
-  const [mostrarCadastrarPacienteModal, setMostrarCadastrarPacienteModal] = useState(false)
 
-  // 🔵 Carrega usuário
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
+  // 🔵 Buscar pacientes no backend conforme digita
+  const handleBuscaChange = async (e) => {
+    const texto = e.target.value
+    setBuscaPaciente(texto)
+
+    if (texto.trim().length > 0) {
+      try {
+        const response = await axios.get(`https://nublia-backend.onrender.com/pacientes/buscar?termo=${texto}`)
+        setPacientes(response.data)
+      } catch (error) {
+        console.error('Erro ao buscar pacientes:', error)
+        setPacientes([])
+      }
     } else {
-      navigate('/')
+      setPacientes([])
     }
-  }, [navigate])
-
-  // 🔵 Mock de atendimentos recentes
-  useEffect(() => {
-    const exemplos = [
-      { id: 1, nome: "João Silva" },
-      { id: 2, nome: "Maria Oliveira" },
-      { id: 3, nome: "Carlos Souza" }
-    ]
-    setAtendimentosRecentes(exemplos)
-  }, [])
-
-  const logout = () => {
-    localStorage.clear()
-    navigate('/')
-    window.location.reload()
   }
 
-  const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
-    item.nome.toLowerCase().includes(pesquisa.toLowerCase())
-  )
+  // 🔵 Selecionar paciente e ir para ficha
+  const selecionarPaciente = (paciente) => {
+    localStorage.setItem('pacienteSelecionado', JSON.stringify(paciente))
+    onClose()
+    navigate('/ficha')
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl mx-4">
+        {/* 🔵 Título */}
+        <h2 className="text-blue-600 text-xl font-bold mb-6">Buscar Paciente</h2>
 
-      {/* TOPO */}
-      <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
-        <div>
-          <div className="text-sm font-semibold">Nublia</div>
-          <h1 className="text-xl font-bold">Painel do Prescritor</h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm italic">{user?.name}</span>
+        {/* 🔵 Campo de busca */}
+        <input
+          type="text"
+          placeholder="Digite o nome do paciente..."
+          value={buscaPaciente}
+          onChange={handleBuscaChange}
+          className="w-full border px-4 py-2 mb-6 rounded"
+        />
+
+        {/* 🔵 Lista de resultados */}
+        <ul className="space-y-4 max-h-64 overflow-y-auto">
+          {buscaPaciente.trim().length > 0 ? (
+            pacientes.length > 0 ? (
+              pacientes.map((paciente) => (
+                <li key={paciente.id} className="flex justify-between items-center bg-gray-100 p-3 rounded">
+                  <div>
+                    <span className="block font-medium">{paciente.nome}</span>
+                    <span className="text-xs text-gray-600">{paciente.email}</span>
+                  </div>
+                  <button
+                    onClick={() => selecionarPaciente(paciente)}
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    Selecionar
+                  </button>
+                </li>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500 italic">Nenhum paciente encontrado.</p>
+            )
+          ) : (
+            <p className="text-sm text-gray-500 italic">Digite para buscar pacientes...</p>
+          )}
+        </ul>
+
+        {/* 🔵 Botões no rodapé */}
+        <div className="flex justify-between mt-8">
           <button
-            onClick={logout}
-            className="flex items-center gap-1 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm"
+            onClick={onCadastrarNovo}
+            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
           >
-            <LogOut size={16} /> Sair
+            Cadastrar Novo Paciente
+          </button>
+          <button
+            onClick={onClose}
+            className="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded"
+          >
+            Cancelar
           </button>
         </div>
-      </header>
-
-      {/* NAV */}
-      <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <CalendarDays size={32} />
-          <span className="text-xs mt-1">Agenda</span>
-        </button>
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <BookOpenText size={32} />
-          <span className="text-xs mt-1">Fórmulas</span>
-        </button>
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <Leaf size={32} />
-          <span className="text-xs mt-1">Dietas</span>
-        </button>
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <Settings size={32} />
-          <span className="text-xs mt-1">Configurações</span>
-        </button>
-      </nav>
-
-      {/* CONTEÚDO */}
-      <div className="flex flex-1">
-        
-        {/* Sidebar */}
-        <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
-          <h2 className="text-blue-600 text-xl font-semibold mb-4">Atendimentos Recentes</h2>
-
-          <ul className="flex-1 space-y-4">
-            {atendimentosFiltrados.map((item) => (
-              <li key={item.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-                <span className="text-sm font-medium">{item.nome}</span>
-                <div className="flex gap-2">
-                  <button className="text-blue-600 hover:underline" title="Ver perfil">
-                    <User size={20} />
-                  </button>
-                  <button className="text-blue-600 hover:underline" title="Ver atendimento">
-                    <FileText size={20} />
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-6 relative">
-            <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Pesquisar paciente..."
-              value={pesquisa}
-              onChange={(e) => setPesquisa(e.target.value)}
-              className="w-full pl-10 px-3 py-2 border rounded"
-            />
-          </div>
-        </aside>
-
-        {/* Centro */}
-        <main className="flex-1 flex items-center justify-center">
-          <button
-            onClick={() => setMostrarBuscarPacienteModal(true)}
-            className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
-          >
-            <PlusCircle size={28} /> Iniciar Atendimento
-          </button>
-        </main>
-
       </div>
-
-      {/* Modal Buscar Paciente */}
-      {mostrarBuscarPacienteModal && (
-        <BuscarPacienteModal
-          onClose={() => setMostrarBuscarPacienteModal(false)}
-          onCadastrarNovo={() => {
-            setMostrarBuscarPacienteModal(false)
-            setMostrarCadastrarPacienteModal(true)
-          }}
-        />
-      )}
-
-      {/* Modal Cadastrar Paciente */}
-      {mostrarCadastrarPacienteModal && (
-        <CadastrarPacienteModal
-          onClose={() => setMostrarCadastrarPacienteModal(false)}
-          onPacienteCadastrado={() => setMostrarCadastrarPacienteModal(false)}
-        />
-      )}
     </div>
   )
 }
