@@ -26,7 +26,7 @@ export default function FichaAtendimento({ pacienteSelecionado }) {
   }
 
   return (
-    <div className="flex flex-col bg-white rounded-lg shadow-lg p-6 w-full mx-6 my-8 overflow-y-auto">
+    <div className="flex flex-col bg-white rounded-lg shadow-lg p-6 w-full mx-6 mt-4 overflow-y-auto">
 
       {/* 🔵 Cabeçalho */}
       <div className="mb-6">
