@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Edit, Trash2, Search } from 'lucide-react';
 
-export default function ListaFormulas({ formulas, onEditar, onExcluir }) {
+export default function FormulaSidebar({ formulas, onEditar, onExcluir }) {
   const [pesquisa, setPesquisa] = useState('');
 
   const formulasFiltradas = formulas.filter((formula) =>
