@@ -5,22 +5,23 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
+  // 📦 Estado dos campos
   const [buscaPaciente, setBuscaPaciente] = useState('')
   const [pacientes, setPacientes] = useState([])
 
   const navigate = useNavigate()
 
-  // 🔵 Buscar pacientes no backend conforme digita
+  // 🔵 Função para buscar paciente no backend conforme digita
   const handleBuscaChange = async (e) => {
-    const texto = e.target.value
-    setBuscaPaciente(texto)
+    const termo = e.target.value
+    setBuscaPaciente(termo)
 
-    if (texto.trim().length > 0) {
+    if (termo.trim().length > 0) {
       try {
-        const response = await axios.get(`https://nublia-backend.onrender.com/pacientes/buscar?termo=${texto}`)
+        const response = await axios.get(`https://nublia-backend.onrender.com/pacientes/buscar?termo=${termo}`)
         setPacientes(response.data)
       } catch (error) {
-        console.error('Erro ao buscar pacientes:', error)
+        console.error("Erro ao buscar pacientes:", error)
         setPacientes([])
       }
     } else {
@@ -28,7 +29,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
     }
   }
 
-  // 🔵 Selecionar paciente e ir para ficha
+  // 🔵 Função para selecionar paciente e ir para ficha
   const selecionarPaciente = (paciente) => {
     localStorage.setItem('pacienteSelecionado', JSON.stringify(paciente))
     onClose()
@@ -37,7 +38,8 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl mx-4">
+      <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-2xl mx-4">
+        
         {/* 🔵 Título */}
         <h2 className="text-blue-600 text-xl font-bold mb-6">Buscar Paciente</h2>
 
@@ -50,12 +52,12 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
           className="w-full border px-4 py-2 mb-6 rounded"
         />
 
-        {/* 🔵 Lista de resultados */}
-        <ul className="space-y-4 max-h-64 overflow-y-auto">
+        {/* 🔵 Resultados da busca */}
+        <div className="space-y-4 max-h-64 overflow-y-auto">
           {buscaPaciente.trim().length > 0 ? (
             pacientes.length > 0 ? (
               pacientes.map((paciente) => (
-                <li key={paciente.id} className="flex justify-between items-center bg-gray-100 p-3 rounded">
+                <div key={paciente.id} className="flex justify-between items-center bg-gray-100 p-3 rounded">
                   <div>
                     <span className="block font-medium">{paciente.nome}</span>
                     <span className="text-xs text-gray-600">{paciente.email}</span>
@@ -66,7 +68,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
                   >
                     Selecionar
                   </button>
-                </li>
+                </div>
               ))
             ) : (
               <p className="text-sm text-gray-500 italic">Nenhum paciente encontrado.</p>
@@ -74,9 +76,9 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
           ) : (
             <p className="text-sm text-gray-500 italic">Digite para buscar pacientes...</p>
           )}
-        </ul>
+        </div>
 
-        {/* 🔵 Botões no rodapé */}
+        {/* 🔵 Botões abaixo */}
         <div className="flex justify-between mt-8">
           <button
             onClick={onCadastrarNovo}
@@ -91,6 +93,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo }) {
             Cancelar
           </button>
         </div>
+
       </div>
     </div>
   )
