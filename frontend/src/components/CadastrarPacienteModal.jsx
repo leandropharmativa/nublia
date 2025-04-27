@@ -78,14 +78,10 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
       const paciente = await response.json()
       setSucesso(true)
       setErro('')
-
-      onPacienteCadastrado(paciente)
-
-      setTimeout(() => {
-        onClose()
-      }, 1000)
-
-    } catch (error) {
+      onPacienteCadastrado(paciente)  // Já avisa o dashboard para abrir atendimento
+      } 
+      
+      catch (error) {
       console.error(error)
       setErro('Erro ao cadastrar paciente. Verifique os dados.')
     }
