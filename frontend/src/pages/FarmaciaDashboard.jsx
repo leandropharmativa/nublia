@@ -13,6 +13,7 @@ export default function FarmaciaDashboard() {
   const [nomeFormula, setNomeFormula] = useState('');
   const [composicao, setComposicao] = useState('');
   const [indicacao, setIndicacao] = useState('');
+  const [posologia, setPosologia] = useState(''); // 🆕
   const [formulas, setFormulas] = useState([]);
   const [pesquisa, setPesquisa] = useState('');
   const [erro, setErro] = useState('');
@@ -24,7 +25,7 @@ export default function FarmaciaDashboard() {
     if (savedUser) {
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
-      carregarFormulas(parsedUser.id); // 🆕 já busca as fórmulas da farmácia ao logar
+      carregarFormulas(parsedUser.id); // 🆕
     } else {
       navigate('/');
     }
@@ -36,11 +37,11 @@ export default function FarmaciaDashboard() {
     navigate("/", { replace: true });
   };
 
-  // 🔵 Função para buscar as fórmulas no banco
+  // 🔵 Buscar fórmulas da farmácia
   const carregarFormulas = async (farmaciaId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
-      setFormulas(response.data.reverse()); // Mais recentes primeiro
+      setFormulas(response.data.reverse());
     } catch (error) {
       console.error('Erro ao carregar fórmulas:', error);
     }
@@ -48,7 +49,7 @@ export default function FarmaciaDashboard() {
 
   // 🔵 Cadastrar fórmula no banco
   const cadastrarFormula = async () => {
-    if (!nomeFormula.trim() || !composicao.trim() || !indicacao.trim()) {
+    if (!nomeFormula.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
       setErro('Preencha todos os campos.');
       setSucesso('');
       return;
@@ -56,10 +57,11 @@ export default function FarmaciaDashboard() {
 
     try {
       const payload = {
-        farmacia_id: user.id, // 🛡️ Agora pega o id da farmácia logada
+        farmacia_id: user.id,
         nome: nomeFormula,
         composicao,
         indicacao,
+        posologia, // 🆕 envia a posologia
       };
 
       const response = await axios.post('https://nublia-backend.onrender.com/formulas/', payload);
@@ -68,6 +70,7 @@ export default function FarmaciaDashboard() {
       setNomeFormula('');
       setComposicao('');
       setIndicacao('');
+      setPosologia(''); // 🆕 limpa o campo
       setErro('');
       setSucesso('Fórmula cadastrada com sucesso!');
     } catch (error) {
@@ -77,7 +80,6 @@ export default function FarmaciaDashboard() {
     }
   };
 
-  // 🔵 Filtro de pesquisa
   const formulasFiltradas = formulas.filter((formula) =>
     formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
   );
@@ -148,7 +150,6 @@ export default function FarmaciaDashboard() {
                 ))}
               </ul>
 
-              {/* 🔵 Caixa de pesquisa */}
               <div className="mt-6 relative">
                 <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
                 <input
@@ -161,7 +162,7 @@ export default function FarmaciaDashboard() {
               </div>
             </aside>
 
-            {/* 🔵 Cadastro de Fórmulas */}
+            {/* 🔵 Área de Cadastro */}
             <main className="flex-1 p-6 overflow-y-auto">
               <div className="max-w-2xl mx-auto">
                 <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Fórmulas</h2>
@@ -199,6 +200,17 @@ export default function FarmaciaDashboard() {
                       onChange={(e) => setIndicacao(e.target.value)}
                       className="border rounded px-3 py-2 w-full"
                       placeholder="Ex: Estresse, Ansiedade, Relaxamento"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Posologia</label>
+                    <input
+                      type="text"
+                      value={posologia}
+                      onChange={(e) => setPosologia(e.target.value)}
+                      className="border rounded px-3 py-2 w-full"
+                      placeholder="Ex: 1 cápsula 2x ao dia"
                     />
                   </div>
 
