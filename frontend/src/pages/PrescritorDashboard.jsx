@@ -167,10 +167,11 @@ export default function PrescritorDashboard() {
       <CadastrarPacienteModal
       onClose={() => setMostrarCadastrarPacienteModal(false)}
       onPacienteCadastrado={(paciente) => {
+      localStorage.setItem('pacienteSelecionado', JSON.stringify(paciente)) // ⬅️ Salvar no localStorage também
       setMostrarCadastrarPacienteModal(false)
-      setPacienteSelecionado(paciente) // <<< Aqui, para abrir a ficha já no novo paciente
-  }}
-/>
+      setPacienteSelecionado(paciente)
+      }}
+      />
 
       )}
     </div>
