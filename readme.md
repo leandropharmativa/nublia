@@ -1,7 +1,6 @@
-🚀 Nublia
-Sistema de atendimento e gestão para prescritores de saúde (nutricionistas, médicos, biomédicos, esteticistas) com integração a farmácias, clínicas e academias.
+Nublia
+Sistema online de atendimento para prescritores de saúde (nutricionistas, biomédicos, médicos, esteticistas) com integração a farmácias, clínicas e academias.
 
-<p align="center"> <a href="https://nublia-backend.onrender.com/" target="_blank"> <img src="https://img.shields.io/badge/Render-Backend-green?style=for-the-badge" /> </a> <a href="https://nublia-frontend.vercel.app/" target="_blank"> <img src="https://img.shields.io/badge/Vercel-Frontend-blue?style=for-the-badge" /> </a> <img src="https://img.shields.io/badge/Made%20with-FastAPI-success?style=for-the-badge" /> <img src="https://img.shields.io/badge/Database-PostgreSQL-blue?style=for-the-badge" /> </p>
 📂 Estrutura de Pastas
 bash
 Copiar
@@ -38,71 +37,78 @@ frontend/
   ├── vite.config.js
   ├── index.html
   └── vercel.json
+✅ Observações:
+
+A pasta public/ foi removida — agora o roteamento é feito diretamente no React.
+
+O vercel.json define regras de build e roteamento no deploy da Vercel.
+
 🛠 Tecnologias Utilizadas
 
-Backend	Frontend	Infraestrutura
-FastAPI + SQLModel	React.js + Vite	Render (backend + banco)
-PostgreSQL	TailwindCSS	Vercel (frontend)
-Bcrypt (senhas)	Axios	GitHub
-JWT (autenticação)	Lucide React Icons	
-👨‍⚕️ Funcionalidades Implementadas
-Cadastro e login de usuários
+Backend	Frontend	Infra
+FastAPI + SQLModel	React.js + Vite	Render (Backend + Banco de Dados)
+PostgreSQL	TailwindCSS	Vercel (Frontend)
+JWT para autenticação	Axios para requisições	GitHub para versionamento
+Bcrypt para senhas	Lucide React Icons	
+👨‍⚕️ Funcionalidades
+Registro de pacientes
 
-Paciente, Prescritor, Farmácia, Academia, Clínica
+Cadastro e login de usuários: prescritores, farmácias, academias, clínicas, pacientes e admin
 
-Proteção de perfis com código de ativação
+Gerenciamento de códigos de ativação para acesso restrito
 
-Dashboard exclusivo para prescritor
+Painel do prescritor com:
 
-Lista de atendimentos recentes com filtro por paciente
+Lista de atendimentos recentes
 
-Iniciar atendimento via busca de paciente
+Filtro de pacientes
 
-Cadastro rápido de novo paciente
+Início de atendimento via busca/cadastro de paciente
 
-Controle de autenticação seguro via JWT
+Cadastro de pacientes novos dentro do fluxo de atendimento
+
+Proteção de rotas por token JWT
 
 Interface responsiva e moderna
 
-Deploy contínuo com GitHub → Vercel/Render
+📋 Boas Práticas Adotadas
+Código limpo e comentado
 
-📋 Boas Práticas
-Código limpo e 100% comentado
+Separação de components e pages no frontend
 
-Separação por camadas (components, pages, routers)
+Divisão de routers no backend para melhor organização
 
-Banco de dados PostgreSQL profissional
+Armazenamento seguro de senhas usando Bcrypt
 
-Tokens Bearer para segurança das rotas
+Uso de token Bearer para autenticação segura
 
-Organização para crescimento do projeto a longo prazo
+Arquivos .env e variáveis sensíveis gerenciáveis (em breve)
 
 🔥 Próximas Etapas
-Ficha de atendimento completa (anamnese, antropometria, exames)
+Sistema completo de ficha de atendimento para prescritores
 
-Integração com farmácias e clínicas
+Agenda visual de compromissos (fullcalendar ou similar)
 
-Área exclusiva para pacientes (dieta, prescrições)
+Gestão de receitas e envio para farmácias integradas
 
-Sistema de notificações
+Área do paciente para visualizar dietas e prescrições
 
-Reagendamento e cancelamento de consultas
+Área da farmácia, academia e clínica para interação
 
-Upload de arquivos (exames, imagens)
+Recuperação de senha por email (opcional)
 
 ✅ Status Atual
+Backend: ✅ Pronto e em produção (Render Backend)
 
-Módulo	Status
-Backend API	✅
-Frontend Interface	✅
-Deploy Backend (Render)	✅
-Deploy Frontend (Vercel)	✅
-Integração GitHub Actions (opcional)	🔜
-Ficha de Atendimento	🔜
-📢 Projeto em expansão constante!
-Feito para otimizar a saúde e inovar o atendimento de maneira digital, humanizada e acessível.
+Frontend: ✅ Pronto e em produção (Vercel Frontend)
 
-📎 Links rápidos:
-Backend: https://nublia-backend.onrender.com/
+Integrações: ✅ API funcional
 
-Frontend: https://nublia-frontend.vercel.app/
+Banco de dados: ✅ PostgreSQL na Render
+
+Controle de usuários: ✅ Finalizado
+
+Controle de pacientes: ✅ Finalizado
+
+🚀 Nublia está crescendo!
+Projeto em constante evolução, feito para facilitar o atendimento e melhorar a saúde com tecnologia!
