@@ -20,3 +20,11 @@ def create_paciente(paciente: PacienteCreate):
 def list_pacientes():
     with Session(engine) as session:
         return session.exec(select(Paciente)).all()
+
+@router.get("/pacientes/{paciente_id}")
+def get_paciente(paciente_id: int):
+    with Session(engine) as session:
+        paciente = session.get(Paciente, paciente_id)
+        if not paciente:
+            raise HTTPException(status_code=404, detail="Paciente não encontrado.")
+        return paciente
