@@ -126,23 +126,25 @@ export default function PrescritorDashboard() {
         </aside>
 
         {/* Área Central (Ficha ou Botão) */}
-        <main className="flex-1 overflow-y-auto p-4 pt-2">
-        {pacienteSelecionado ? (
-        <FichaAtendimento
+<main className="flex-1 flex flex-col items-start p-4 pt-2 pl-2 overflow-y-auto">
+  {pacienteSelecionado ? (
+    <div className="w-full max-w-5xl">
+      <FichaAtendimento
         paciente={pacienteSelecionado}
         onFinalizar={() => setPacienteSelecionado(null)}
-        />
-        ) : (
-        <div className="flex flex-1 items-center justify-center">
-        <button
+      />
+    </div>
+  ) : (
+    <div className="flex-1 flex items-center justify-center w-full">
+      <button
         onClick={() => setMostrarBuscarPacienteModal(true)}
         className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
-        >
+      >
         <PlusCircle size={28} /> Iniciar Atendimento
       </button>
-      </div>
-      )}
-      </main>
+    </div>
+  )}
+</main>
       </div>
 
       {/* 🔵 Modal Buscar Paciente */}
