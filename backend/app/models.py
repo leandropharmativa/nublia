@@ -111,6 +111,7 @@ class Formula(SQLModel, table=True):
     nome: str
     composicao: Optional[str] = None
     indicacao: Optional[str] = None
+    posologia: Optional[str] = None
     criado_em: datetime = Field(default_factory=datetime.utcnow)
 
 # 🔵 Modelo para criar formulas (sem ID)
@@ -119,4 +120,5 @@ class FormulaCreate(SQLModel):
     nome: str
     composicao: Optional[str] = None
     indicacao: Optional[str] = None
+    posologia: Optional[str] = None
 
