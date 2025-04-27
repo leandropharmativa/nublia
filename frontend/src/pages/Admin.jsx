@@ -64,10 +64,9 @@ export default function Admin() {
   // 🛠 Função de logout
   const logout = () => {
   localStorage.clear()
-  navigate('/', { replace: true })
-  window.location.reload()
+  navigate("/", { replace: true }) // 🔵 Sem reload!
   }
-
+  
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       
