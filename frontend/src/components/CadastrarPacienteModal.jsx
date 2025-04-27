@@ -23,12 +23,24 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
     try {
       console.log("Enviando dados:", form)
 
+      // 1️⃣ Primeiro cadastra o paciente
       const response = await axios.post('https://nublia-backend.onrender.com/pacientes/', form)
 
-      const paciente = response.data
-      setErro('')
-      onPacienteCadastrado(paciente)  // ✅ Passa o paciente cadastrado corretamente
-      onClose() // ✅ Fecha o modal
+      const pacienteCriado = response.data
+      console.log("Paciente criado:", pacienteCriado)
+
+      if (pacienteCriado.id) {
+        // 2️⃣ Se cadastrou com sucesso, busca o paciente completo pelo ID
+        const pacienteCompleto = await axios.get(`https://nublia-backend.onrender.com/pacientes/${pacienteCriado.id}`)
+
+        // 3️⃣ Agora sim passa o paciente completo para a ficha
+        onPacienteCadastrado(pacienteCompleto.data)
+      } else {
+        console.error('Paciente criado sem ID:', pacienteCriado)
+        setErro("Erro inesperado ao cadastrar paciente.")
+      }
+
+      onClose()
     } catch (error) {
       console.error(error)
       setErro("Erro ao cadastrar paciente. Verifique os dados.")
