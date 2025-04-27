@@ -1,3 +1,5 @@
+// 📄 src/pages/FarmaciaDashboard.jsx
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Package, FlaskConical, Building, Settings, LogOut } from 'lucide-react';
@@ -14,7 +16,7 @@ export default function FarmaciaDashboard() {
   const [pesquisa, setPesquisa] = useState('');
   const [formulaSelecionada, setFormulaSelecionada] = useState(null);
 
-  // 🔵 Verifica usuário logado e carrega fórmulas
+  // 🔵 Verifica usuário logado
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -32,11 +34,11 @@ export default function FarmaciaDashboard() {
     navigate('/', { replace: true });
   };
 
-  // 🔵 Carregar fórmulas da farmácia
+  // 🔵 Carrega fórmulas da farmácia
   const carregarFormulas = async (farmaciaId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
-      setFormulas(response.data.reverse()); // 🔵 Atualiza estado com as fórmulas do banco
+      setFormulas(response.data.reverse());
     } catch (error) {
       console.error('Erro ao carregar fórmulas:', error);
     }
@@ -64,36 +66,66 @@ export default function FarmaciaDashboard() {
 
       {/* 🔵 NAV */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
-        {/* botoes de navegação */}
+        <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
+          <Package size={32} />
+          <span className="text-xs mt-1">Produtos</span>
+        </button>
+        <button onClick={() => setAbaAtiva('formulas')} className={`flex flex-col items-center ${abaAtiva === 'formulas' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
+          <FlaskConical size={32} />
+          <span className="text-xs mt-1">Fórmulas</span>
+        </button>
+        <button onClick={() => setAbaAtiva('dados')} className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
+          <Building size={32} />
+          <span className="text-xs mt-1">Dados</span>
+        </button>
+        <button className="flex flex-col items-center text-blue-600 hover:underline">
+          <Settings size={32} />
+          <span className="text-xs mt-1">Configurações</span>
+        </button>
       </nav>
 
       {/* 🔵 CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
 
+        {abaAtiva === 'produtos' && (
+          <main className="flex-1 p-6 overflow-y-auto">
+            <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Produtos</h2>
+          </main>
+        )}
+
         {abaAtiva === 'formulas' && (
           <>
+            {/* 🔵 Sidebar de fórmulas */}
             <FormulaSidebar
               formulas={formulas}
               pesquisa={pesquisa}
               setPesquisa={setPesquisa}
               onEditar={setFormulaSelecionada}
-              onRecarregar={() => carregarFormulas(user?.id)} // 🔵 Recarrega do backend
+              onRecarregar={() => carregarFormulas(user?.id)}
             />
+
+            {/* 🔵 Formulário de cadastro ou edição */}
             <main className="flex-1 p-6 overflow-y-auto">
               <FormulaForm
                 farmaciaId={user?.id}
                 formulaSelecionada={formulaSelecionada}
                 onFinalizar={() => {
                   setFormulaSelecionada(null);
-                  carregarFormulas(user?.id); // 🔵 Sempre recarrega ao salvar
+                  carregarFormulas(user?.id);
                 }}
               />
             </main>
           </>
         )}
 
-        {/* outros conteúdos como produtos/dados */}
+        {abaAtiva === 'dados' && (
+          <main className="flex-1 p-6 overflow-y-auto">
+            <h2 className="text-2xl font-bold text-blue-600 mb-6">Dados da Farmácia</h2>
+          </main>
+        )}
+
       </div>
+
     </div>
   );
 }
