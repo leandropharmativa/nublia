@@ -36,37 +36,33 @@ export default function PrescritorDashboard() {
   }, [navigate])
 
   // 🔵 Carrega atendimentos recentes do backend
-useEffect(() => {
+  useEffect(() => {
   const carregarAtendimentos = async () => {
-    try {
-      const user = JSON.parse(localStorage.getItem('user')) // <<< 🔵 Pega o prescritor atual
+  try {
+    const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
+    const atendimentos = response.data
 
-      const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
-      const atendimentos = response.data
-
-      const atendimentosDoPrescritor = atendimentos.filter(a => a.prescritor_id === user.id) // <<< 🔵 Filtra
-
-      const atendimentosComPacientes = await Promise.all(
-        atendimentosDoPrescritor.map(async (atendimento) => {
-          try {
-            const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/pacientes/${atendimento.paciente_id}`)
-            return {
-              ...atendimento,
-              nomePaciente: pacienteResponse.data.nome || 'Paciente desconhecido'
-            }
-          } catch (error) {
-            console.error('Erro ao buscar paciente:', error)
-            return { ...atendimento, nomePaciente: 'Paciente desconhecido' }
+    const atendimentosComPacientes = await Promise.all(
+      atendimentos.map(async (atendimento) => {
+        try {
+          const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/pacientes/${atendimento.paciente_id}`)
+          return {
+            ...atendimento,
+            nomePaciente: pacienteResponse.data.nome || 'Paciente desconhecido'
           }
-        })
-      )
+        } catch (error) {
+          console.error('Erro ao buscar paciente:', error)
+          return { ...atendimento, nomePaciente: 'Paciente desconhecido' }
+        }
+      })
+    )
 
-      setAtendimentosRecentes(atendimentosComPacientes.reverse())
+    // Atualiza lista
+    setAtendimentosRecentes(atendimentosComPacientes.reverse())
     } catch (error) {
-      console.error('Erro ao carregar atendimentos:', error)
-    }
+    console.error('Erro ao carregar atendimentos:', error)
   }
-
+}
   carregarAtendimentos()
 }, [])
 
@@ -158,6 +154,7 @@ useEffect(() => {
               <FichaAtendimento
                 paciente={pacienteSelecionado}
                 onFinalizar={() => setPacienteSelecionado(null)}
+                onAtendimentoSalvo={carregarAtendimentos} // 🆕 chama a função que recarrega a lista
               />
             </div>
           ) : (
