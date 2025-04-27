@@ -1,5 +1,3 @@
-// 📄 frontend/src/App.jsx
-
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 
@@ -11,7 +9,7 @@ import PrescritorDashboard from './pages/PrescritorDashboard'
 export default function App() {
   const [user, setUser] = useState(null)
 
-  // 🔵 Atualiza o user no App quando a página carrega
+  // 🔵 Atualiza o usuário ao montar o app
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
@@ -19,7 +17,6 @@ export default function App() {
     }
   }, [])
 
-  // 🔵 Atualiza o user após login
   const handleLogin = (newUser) => {
     setUser(newUser)
   }
@@ -27,35 +24,20 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Rota de login */}
         <Route
           path="/"
           element={!user ? (
             <Login onLogin={handleLogin} />
           ) : (
-            user.role === "admin" ? <Navigate to="/admin" replace /> :
-            user.role === "prescritor" ? <Navigate to="/prescritor" replace /> :
+            user.role === "admin" ? <Navigate to="/admin" /> :
+            user.role === "prescritor" ? <Navigate to="/prescritor" /> :
             <div className="flex items-center justify-center min-h-screen">Acesso não autorizado</div>
           )}
         />
-
-        {/* Rota de registro */}
         <Route path="/register" element={<Register />} />
-
-        {/* Painel Admin */}
-        <Route
-          path="/admin"
-          element={user?.role === "admin" ? <Admin /> : <Navigate to="/" replace />}
-        />
-
-        {/* Painel Prescritor */}
-        <Route
-          path="/prescritor"
-          element={user?.role === "prescritor" ? <PrescritorDashboard /> : <Navigate to="/" replace />}
-        />
-
-        {/* Qualquer rota inválida */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/admin" element={user?.role === "admin" ? <Admin /> : <Navigate to="/" />} />
+        <Route path="/prescritor" element={user?.role === "prescritor" ? <PrescritorDashboard /> : <Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   )
