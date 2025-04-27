@@ -164,10 +164,14 @@ export default function PrescritorDashboard() {
 
       {/* 🔵 Modal Cadastrar Paciente */}
       {mostrarCadastrarPacienteModal && (
-        <CadastrarPacienteModal
-          onClose={() => setMostrarCadastrarPacienteModal(false)}
-          onPacienteCadastrado={() => setMostrarCadastrarPacienteModal(false)}
-        />
+      <CadastrarPacienteModal
+      onClose={() => setMostrarCadastrarPacienteModal(false)}
+      onPacienteCadastrado={(paciente) => {
+      setMostrarCadastrarPacienteModal(false)
+      setPacienteSelecionado(paciente) // <<< Aqui, para abrir a ficha já no novo paciente
+  }}
+/>
+
       )}
     </div>
   )
