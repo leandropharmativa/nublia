@@ -7,7 +7,7 @@ import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, User, FileText, Sea
 
 import BuscarPacienteModal from '../components/BuscarPacienteModal' // 🔵 Modal para buscar pacientes
 import CadastrarPacienteModal from '../components/CadastrarPacienteModal' // 🔵 Modal para cadastrar pacientes
-import FichaAtendimento from '../components/FichaAtendimento' // 🟡 Novo: Ficha de atendimento
+import FichaAtendimento from '../components/FichaAtendimento' // 🟡 Ficha de atendimento
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
@@ -16,9 +16,9 @@ export default function PrescritorDashboard() {
   const [pesquisa, setPesquisa] = useState('')
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarCadastrarPacienteModal, setMostrarCadastrarPacienteModal] = useState(false)
-  const [pacienteSelecionado, setPacienteSelecionado] = useState(null) // 🟡 Paciente selecionado para atendimento
+  const [pacienteSelecionado, setPacienteSelecionado] = useState(null) // 🟡 Paciente em atendimento
 
-  // 🔵 Carrega usuário
+  // 🔵 Carrega usuário logado
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
@@ -28,7 +28,7 @@ export default function PrescritorDashboard() {
     }
   }, [navigate])
 
-  // 🔵 Mock de atendimentos recentes
+  // 🔵 Simula lista de atendimentos recentes
   useEffect(() => {
     const exemplos = [
       { id: 1, nome: "João Silva" },
@@ -38,14 +38,14 @@ export default function PrescritorDashboard() {
     setAtendimentosRecentes(exemplos)
   }, [])
 
-  // 🔵 Logout
+  // 🔵 Função de logout
   const logout = () => {
     localStorage.clear()
     navigate('/')
     window.location.reload()
   }
 
-  // 🔵 Filtro de pesquisa de atendimentos recentes
+  // 🔵 Filtro da lista de atendimentos
   const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
     item.nome.toLowerCase().includes(pesquisa.toLowerCase())
   )
@@ -70,7 +70,7 @@ export default function PrescritorDashboard() {
         </div>
       </header>
 
-      {/* NAV */}
+      {/* NAV - Menu superior */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <CalendarDays size={32} />
@@ -90,8 +90,8 @@ export default function PrescritorDashboard() {
         </button>
       </nav>
 
-      {/* CONTEÚDO */}
-      <div className="flex flex-1">
+      {/* CONTEÚDO PRINCIPAL */}
+      <div className="flex flex-1 overflow-hidden">
 
         {/* Sidebar de atendimentos recentes */}
         <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
@@ -125,25 +125,29 @@ export default function PrescritorDashboard() {
           </div>
         </aside>
 
-        {/* Área Central */}
-        <main className="flex-1 flex flex-col items-start justify-start p-6 overflow-y-auto">
+        {/* Área Central (Ficha ou Botão) */}
+        <main className="flex-1 flex flex-col items-start p-6 overflow-y-auto">
 
-          {/* 🟡 Se há paciente selecionado, mostra ficha, senão botão iniciar atendimento */}
           {pacienteSelecionado ? (
-            <FichaAtendimento
-              paciente={pacienteSelecionado}
-              onFinalizar={() => setPacienteSelecionado(null)}
-            />
+            <div className="w-full max-w-5xl">
+              <FichaAtendimento
+                paciente={pacienteSelecionado}
+                onFinalizar={() => setPacienteSelecionado(null)}
+              />
+            </div>
           ) : (
-            <button
-              onClick={() => setMostrarBuscarPacienteModal(true)}
-              className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
-            >
-              <PlusCircle size={28} /> Iniciar Atendimento
-            </button>
+            <div className="flex-1 flex items-center justify-center w-full">
+              <button
+                onClick={() => setMostrarBuscarPacienteModal(true)}
+                className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
+              >
+                <PlusCircle size={28} /> Iniciar Atendimento
+              </button>
+            </div>
           )}
 
         </main>
+
       </div>
 
       {/* 🔵 Modal Buscar Paciente */}
@@ -168,7 +172,6 @@ export default function PrescritorDashboard() {
           onPacienteCadastrado={() => setMostrarCadastrarPacienteModal(false)}
         />
       )}
-
     </div>
   )
 }
