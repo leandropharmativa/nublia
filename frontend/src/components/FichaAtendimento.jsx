@@ -18,31 +18,32 @@ export default function FichaAtendimento({ paciente, onFinalizar }) {
     setFormulario({ ...formulario, [abaAtiva]: e.target.value })
   }
 
-  // 🛠 Salvar atendimento
-  const handleSalvar = async () => {
-    try {
-      const dadosAtendimento = {
-        paciente_id: paciente.id,
-        anamnese: formulario.anamnese,
-        antropometria: formulario.antropometria,
-        dieta: formulario.dieta,
-        receita: formulario.receita
-      }
-
-      // 🔵 Tenta enviar para o backend
-      await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
-
-      setMensagem({ tipo: 'sucesso', texto: 'Atendimento salvo com sucesso!' })
-      setTimeout(() => {
-        setMensagem(null)
-        onFinalizar() // Depois de sucesso volta para painel
-      }, 2000)
-
-    } catch (error) {
-      console.error(error)
-      setMensagem({ tipo: 'erro', texto: 'Erro ao salvar atendimento. Verifique os dados.' })
+// 🛠 Salvar atendimento
+const handleSalvar = async () => {
+  try {
+    const dadosAtendimento = {
+      paciente_id: paciente.id,
+      anamnese: formulario.anamnese,
+      antropometria: formulario.antropometria,
+      dieta: formulario.dieta,
+      receita: formulario.receita
     }
+
+    await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
+
+    setMensagem({ tipo: 'sucesso', texto: 'Atendimento salvo com sucesso!' })
+
+    // 🔵 Agora só limpa a mensagem depois de 3 segundos, sem fechar a ficha
+    setTimeout(() => {
+      setMensagem(null)
+    }, 3000)
+
+  } catch (error) {
+    console.error(error)
+    setMensagem({ tipo: 'erro', texto: 'Erro ao salvar atendimento. Verifique os dados.' })
   }
+}
+
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-full">
