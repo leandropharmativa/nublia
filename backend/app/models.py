@@ -97,3 +97,26 @@ class AtendimentoCreate(SQLModel):
     antropometria: Optional[str] = None
     dieta: Optional[str] = None
     receita: Optional[str] = None
+
+# 📄 backend/app/models.py
+
+from sqlmodel import SQLModel, Field
+from typing import Optional
+from datetime import datetime
+
+# 🔵 Tabela Formula
+class Formula(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    farmacia_id: int
+    nome: str
+    composicao: Optional[str] = None
+    indicacao: Optional[str] = None
+    criado_em: datetime = Field(default_factory=datetime.utcnow)
+
+# 🔵 Modelo para criar formulas (sem ID)
+class FormulaCreate(SQLModel):
+    farmacia_id: int
+    nome: str
+    composicao: Optional[str] = None
+    indicacao: Optional[str] = None
+
