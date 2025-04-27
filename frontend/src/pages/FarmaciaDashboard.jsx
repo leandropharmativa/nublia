@@ -1,4 +1,4 @@
-// 📄 src/pages/FarmaciaDashboard.jsx
+// 📄 frontend/src/pages/FarmaciaDashboard.jsx
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -22,11 +22,17 @@ export default function FarmaciaDashboard() {
     if (savedUser) {
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
-      carregarFormulas(parsedUser.id);
     } else {
       navigate('/');
     }
   }, [navigate]);
+
+  // 🔵 Sempre que o user carregar, buscar fórmulas
+  useEffect(() => {
+    if (user?.id) {
+      carregarFormulas(user.id);
+    }
+  }, [user]);
 
   // 🔵 Função logout
   const logout = () => {
@@ -34,13 +40,26 @@ export default function FarmaciaDashboard() {
     navigate('/', { replace: true });
   };
 
-  // 🔵 Carrega fórmulas da farmácia
+  // 🔵 Buscar fórmulas do banco
   const carregarFormulas = async (farmaciaId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
-      setFormulas(response.data.reverse());
+      if (Array.isArray(response.data)) {
+        setFormulas(response.data.reverse()); // 🔵 Carrega realmente do banco
+      } else {
+        setFormulas([]);
+      }
     } catch (error) {
       console.error('Erro ao carregar fórmulas:', error);
+      setFormulas([]); // 🔵 Se der erro, não mantém fórmula antiga local
+    }
+  };
+
+  // 🔵 Quando salvar ou atualizar
+  const handleFinalizar = () => {
+    setFormulaSelecionada(null);
+    if (user?.id) {
+      carregarFormulas(user.id); // 🔵 Sempre recarrega o banco
     }
   };
 
@@ -95,7 +114,6 @@ export default function FarmaciaDashboard() {
 
         {abaAtiva === 'formulas' && (
           <>
-            {/* 🔵 Sidebar de fórmulas */}
             <FormulaSidebar
               formulas={formulas}
               pesquisa={pesquisa}
@@ -104,15 +122,11 @@ export default function FarmaciaDashboard() {
               onRecarregar={() => carregarFormulas(user?.id)}
             />
 
-            {/* 🔵 Formulário de cadastro ou edição */}
             <main className="flex-1 p-6 overflow-y-auto">
               <FormulaForm
                 farmaciaId={user?.id}
                 formulaSelecionada={formulaSelecionada}
-                onFinalizar={() => {
-                  setFormulaSelecionada(null);
-                  carregarFormulas(user?.id);
-                }}
+                onFinalizar={handleFinalizar}
               />
             </main>
           </>
