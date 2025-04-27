@@ -1,124 +1,72 @@
-// Importações principais
+// 📄 frontend/src/components/CadastrarPacienteModal.jsx
+
 import { useState } from 'react'
+import axios from 'axios'
 
 export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }) {
-  // Estado dos campos do paciente
+  // 📦 Estado para armazenar o formulário
   const [form, setForm] = useState({
     nome: '',
     data_nascimento: '',
-    sexo: '',
+    sexo: 'Masculino',
     telefone: '',
     email: ''
   })
 
+  // 📦 Estado para mensagens de erro
   const [erro, setErro] = useState('')
-  const [sucesso, setSucesso] = useState(false)
 
-  const formatarTelefone = (valor) => {
-  let numeros = valor.replace(/\D/g, "");
-
-  // Remove o +55 se já tiver
-  if (numeros.startsWith("55")) {
-    numeros = numeros.slice(2);
-  }
-
-  // Precisa ter 11 dígitos (2 DDD + 9 Número)
-  if (numeros.length !== 11) {
-    return ""; // Retorna vazio se não for 11 dígitos
-  }
-
-  const ddd = numeros.slice(0, 2);
-  const primeiroBloco = numeros.slice(2, 7);
-  const segundoBloco = numeros.slice(7);
-
-  return `+55 (${ddd}) ${primeiroBloco}-${segundoBloco}`;
-  }
-
-  // Atualiza os campos do formulário
+  // 🛠 Captura mudanças nos campos
   const handleChange = (e) => {
-    const { name, value } = e.target
-
-    if (name === 'telefone') {
-      setForm({ ...form, telefone: formatarTelefone(value) })
-    } else {
-      setForm({ ...form, [name]: value })
-    }
+    setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  // Envia os dados para o backend
+  // 🛠 Envia os dados para o backend
   const handleSubmit = async (e) => {
     e.preventDefault()
-
-    console.log("Dados que serão enviados:", form);
-
     try {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        throw new Error('Usuário não autenticado.')
-      }
+      console.log("Enviando dados:", form)
 
-      const response = await fetch('https://nublia-backend.onrender.com/pacientes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(form)
-      })
+      const response = await axios.post('https://nublia-backend.onrender.com/pacientes/', form)
 
-      if (form.telefone && form.telefone.length < 19) {
-      setErro("Telefone inválido. Verifique o número digitado.");
-      return;
-      }
-
-      if (!response.ok) {
-        throw new Error('Erro ao cadastrar paciente')
-      }
-      
-      const paciente = await response.json()
-      setSucesso(true)
+      const paciente = response.data
       setErro('')
-      onPacienteCadastrado(paciente)  // Já avisa o dashboard para abrir atendimento
-      } 
-      
-      catch (error) {
+      onPacienteCadastrado(paciente)  // ✅ Se sucesso, já chama a função para abrir ficha
+    } catch (error) {
       console.error(error)
-      setErro('Erro ao cadastrar paciente. Verifique os dados.')
+      setErro("Erro ao cadastrar paciente. Verifique os dados.")
     }
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-xl shadow-lg">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white p-8 rounded shadow-md w-96 space-y-6">
+        <h2 className="text-xl font-bold text-center text-blue-600">Cadastrar Paciente</h2>
 
-        {/* Cabeçalho */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-blue-600">Cadastrar Novo Paciente</h2>
-          <button onClick={onClose} className="text-gray-600 hover:text-gray-800">&times;</button>
-        </div>
+        {/* Mensagem de erro */}
+        {erro && <p className="text-red-500 text-center">{erro}</p>}
 
         {/* Formulário */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          
           {/* Nome */}
           <input
             type="text"
             name="nome"
             placeholder="Nome completo"
+            required
             value={form.nome}
             onChange={handleChange}
-            required
-            className="border px-3 py-2 w-full rounded"
+            className="border px-3 py-2 w-full"
           />
 
           {/* Data de nascimento */}
           <input
             type="date"
             name="data_nascimento"
+            required
             value={form.data_nascimento}
             onChange={handleChange}
-            required
-            className="border px-3 py-2 w-full rounded"
+            className="border px-3 py-2 w-full"
           />
 
           {/* Sexo */}
@@ -127,23 +75,22 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             value={form.sexo}
             onChange={handleChange}
             required
-            className="border px-3 py-2 w-full rounded"
+            className="border px-3 py-2 w-full"
           >
-            <option value="">Selecione o sexo</option>
             <option value="Masculino">Masculino</option>
             <option value="Feminino">Feminino</option>
             <option value="Outro">Outro</option>
           </select>
 
-          {/* Telefone com formatação */}
-         <input
-          type="text"
-          name="telefone"
-          placeholder="Telefone (somente números)"
-          value={form.telefone}
-          onChange={(e) => setForm({ ...form, telefone: e.target.value })}
-          onBlur={(e) => setForm({ ...form, telefone: formatarTelefone(e.target.value) })}
-          className="border px-3 py-2 w-full rounded"
+          {/* Telefone */}
+          <input
+            type="text"
+            name="telefone"
+            placeholder="Telefone com DDD"
+            required
+            value={form.telefone}
+            onChange={handleChange}
+            className="border px-3 py-2 w-full"
           />
 
           {/* Email */}
@@ -153,32 +100,26 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             placeholder="Email (opcional)"
             value={form.email}
             onChange={handleChange}
-            className="border px-3 py-2 w-full rounded"
+            className="border px-3 py-2 w-full"
           />
 
-          {/* Mensagens de sucesso/erro */}
-          {erro && <p className="text-red-500 text-sm">{erro}</p>}
-          {sucesso && <p className="text-green-500 text-sm">Paciente cadastrado com sucesso!</p>}
-
           {/* Botões */}
-          <div className="flex justify-end gap-4 mt-4">
+          <div className="flex justify-between pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded hover:bg-gray-100"
+              className="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
             >
-              Salvar
+              Cadastrar
             </button>
           </div>
-
         </form>
-
       </div>
     </div>
   )
