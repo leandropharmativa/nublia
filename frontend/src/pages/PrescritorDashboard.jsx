@@ -145,7 +145,7 @@ export default function PrescritorDashboard() {
       {/* Modal para buscar paciente */}
       {mostrarBuscaPaciente && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-md mx-4">
+          <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-2xl mx-4">
             <h2 className="text-xl font-bold text-center text-blue-600">Buscar Paciente</h2>
 
             <input
