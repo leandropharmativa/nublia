@@ -54,7 +54,7 @@ export default function FarmaciaDashboard() {
           <span className="text-xs mt-1">Fórmulas</span>
         </button>
         <button onClick={() => setAbaAtiva('dados')} className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
-          <Hospital size={32} />
+          <Building2 size={32} />
           <span className="text-xs mt-1">Dados da Farmácia</span>
         </button>
       </nav>
