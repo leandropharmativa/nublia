@@ -78,11 +78,3 @@ class CodigoAtivacao(SQLModel, table=True):
 class CodigoAtivacaoCreate(SQLModel):
     tipo: str
 
-class Atendimento(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    paciente_id: int
-    anamnese: str
-    antropometria: str
-    dieta: str
-    receita: str
-    data_criacao: datetime = Field(default_factory=datetime.utcnow)
