@@ -107,14 +107,15 @@ export default function FarmaciaDashboard() {
 
             {/* 🔵 Formulário de cadastro / edição */}
             <main className="flex-1 p-6 overflow-y-auto">
-              <FormulaForm
-                farmaciaId={user?.id}
-                formulaSelecionada={formulaSelecionada}
-                onFinalizar={() => {
-                  setFormulaSelecionada(null);
-                  carregarFormulas(user?.id);
-                }}
-              />
+            <FormulaForm
+            farmacia Id={user?.id}
+            dadosIniciais={formulaSelecionada} // 🔵 Corrigido!
+            onFinalizar={() => {
+            setFormulaSelecionada(null);
+            carregarFormulas(user?.id);
+            }}
+            />
+
             </main>
           </>
         )}
