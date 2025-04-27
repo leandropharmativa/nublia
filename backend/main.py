@@ -5,6 +5,7 @@ from app.routers import root, users, pacientes, agenda
 from app.routers import codigos
 from fastapi.openapi.utils import get_openapi
 from app.routers import atendimentos
+from app.routers import formulas  # <<< adiciona isso
 
 app = FastAPI(
     title="Nublia Backend"
@@ -26,6 +27,7 @@ app.include_router(pacientes.router)
 app.include_router(agenda.router)
 app.include_router(codigos.router)
 app.include_router(atendimentos.router)
+app.include_router(formulas.router)
 
 # Evento que roda no início para criar o banco de dados (se não existir)
 @app.on_event("startup")
