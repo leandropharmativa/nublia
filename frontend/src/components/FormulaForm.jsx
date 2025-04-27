@@ -22,6 +22,7 @@ export default function FormulaForm({ userId, dadosIniciais, onSucesso, onCancel
       if (dadosIniciais?.id) {
         // Atualizar
         await axios.put(`https://nublia-backend.onrender.com/formulas/${dadosIniciais.id}`, {
+          farmacia_id: userId,
           nome,
           composicao,
           indicacao,
