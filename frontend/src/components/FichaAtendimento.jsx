@@ -1,128 +1,86 @@
-// 📄 FichaAtendimento.jsx
-import { useState, useEffect } from 'react'
+// 📦 Importações
+import { useState } from 'react'
+import { Save, ArrowLeft } from 'lucide-react' // Ícones de salvar e voltar
 
-export default function FichaAtendimento({ pacienteSelecionado }) {
-  const [paciente, setPaciente] = useState(null)
-  const [tabAtiva, setTabAtiva] = useState('anamnese')
+export default function FichaAtendimento({ paciente, onFinalizar }) {
+  const [abaAtiva, setAbaAtiva] = useState('anamnese') // Controle das tabs
 
-  // 🔵 Carrega paciente selecionado
-  useEffect(() => {
-    if (pacienteSelecionado) {
-      setPaciente(pacienteSelecionado)
-    } else {
-      const saved = localStorage.getItem('pacienteSelecionado')
-      if (saved) {
-        setPaciente(JSON.parse(saved))
-      }
-    }
-  }, [pacienteSelecionado])
-
-  if (!paciente) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full">
-        <p className="text-gray-500">Nenhum paciente selecionado.</p>
-      </div>
-    )
+  const handleSalvar = () => {
+    alert('Salvar atendimento (futuramente gravar no banco)')
   }
 
   return (
-    <div className="flex flex-col bg-white rounded-lg shadow-lg p-6 w-full mx-6 mt-4 overflow-y-auto">
-
+    <div className="bg-white p-6 rounded-lg shadow-md w-full">
       {/* 🔵 Cabeçalho */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-blue-600 mb-1">Ficha de Atendimento</h2>
-        <p className="text-lg font-semibold">{paciente.nome}</p>
-        <div className="text-sm text-gray-600">
-          <p>{paciente.email}</p>
-          <p>{paciente.telefone}</p>
-          <p>Nascimento: {paciente.data_nascimento}</p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold text-blue-600">Ficha de Atendimento</h2>
+
+          {/* Ícones de ação */}
+          <button onClick={handleSalvar} className="text-blue-600 hover:text-blue-800">
+            <Save size={24} />
+          </button>
+          <button onClick={onFinalizar} className="text-gray-600 hover:text-gray-800">
+            <ArrowLeft size={24} />
+          </button>
         </div>
       </div>
 
       {/* 🔵 Tabs */}
-      <div className="border-b mb-6 flex gap-6">
+      <div className="flex border-b mb-6">
         <button
-          className={`pb-2 ${tabAtiva === 'anamnese' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}
-          onClick={() => setTabAtiva('anamnese')}
+          onClick={() => setAbaAtiva('anamnese')}
+          className={`px-4 py-2 ${abaAtiva === 'anamnese' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
         >
           Anamnese
         </button>
         <button
-          className={`pb-2 ${tabAtiva === 'antropometria' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}
-          onClick={() => setTabAtiva('antropometria')}
+          onClick={() => setAbaAtiva('antropometria')}
+          className={`px-4 py-2 ${abaAtiva === 'antropometria' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
         >
           Avaliação Antropométrica
         </button>
         <button
-          className={`pb-2 ${tabAtiva === 'dieta' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}
-          onClick={() => setTabAtiva('dieta')}
-        >
-          Avaliação Dietética
-        </button>
-        <button
-          className={`pb-2 ${tabAtiva === 'plano' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}
-          onClick={() => setTabAtiva('plano')}
+          onClick={() => setAbaAtiva('dietas')}
+          className={`px-4 py-2 ${abaAtiva === 'dietas' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
         >
           Plano Alimentar
         </button>
         <button
-          className={`pb-2 ${tabAtiva === 'receita' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}
-          onClick={() => setTabAtiva('receita')}
+          onClick={() => setAbaAtiva('receita')}
+          className={`px-4 py-2 ${abaAtiva === 'receita' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
         >
           Receita
         </button>
       </div>
 
-      {/* 🔵 Conteúdo da Tab */}
-      <div className="space-y-4">
-
-        {tabAtiva === 'anamnese' && (
-          <textarea
-            placeholder="Descreva histórico de saúde, hábitos, medicamentos..."
-            className="w-full border rounded p-3 h-48 resize-none"
-          />
+      {/* 🔵 Conteúdo da aba ativa */}
+      <div>
+        {abaAtiva === 'anamnese' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-blue-600">Anamnese</h3>
+            {/* Conteúdo da Anamnese aqui */}
+          </div>
         )}
-
-        {tabAtiva === 'antropometria' && (
-          <textarea
-            placeholder="Peso, altura, circunferências, composição corporal..."
-            className="w-full border rounded p-3 h-48 resize-none"
-          />
+        {abaAtiva === 'antropometria' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-blue-600">Avaliação Antropométrica</h3>
+            {/* Conteúdo da Avaliação Antropométrica aqui */}
+          </div>
         )}
-
-        {tabAtiva === 'dieta' && (
-          <textarea
-            placeholder="Recordatório alimentar, hábitos alimentares..."
-            className="w-full border rounded p-3 h-48 resize-none"
-          />
+        {abaAtiva === 'dietas' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-blue-600">Plano Alimentar</h3>
+            {/* Conteúdo do Plano Alimentar aqui */}
+          </div>
         )}
-
-        {tabAtiva === 'plano' && (
-          <textarea
-            placeholder="Sugestão inicial de plano alimentar personalizado..."
-            className="w-full border rounded p-3 h-48 resize-none"
-          />
+        {abaAtiva === 'receita' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-blue-600">Receita</h3>
+            {/* Conteúdo da Receita aqui */}
+          </div>
         )}
-
-        {tabAtiva === 'receita' && (
-          <textarea
-            placeholder="Prescrição de fórmula manipulada, suplemento, fitoterápico, etc."
-            className="w-full border rounded p-3 h-48 resize-none"
-          />
-        )}
-
       </div>
-
-      {/* 🔵 Botão Salvar (futuro) */}
-      <div className="text-center mt-8">
-        <button
-          type="button"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded font-semibold shadow"
-        >
-          Salvar Atendimento
-        </button>
-      </div>
-
     </div>
   )
 }
