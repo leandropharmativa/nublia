@@ -1,5 +1,3 @@
-// 📄 frontend/src/pages/FarmaciaDashboard.jsx
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Package, FlaskConical, Building, Settings, LogOut } from 'lucide-react';
@@ -12,55 +10,22 @@ export default function FarmaciaDashboard() {
   const [abaAtiva, setAbaAtiva] = useState('produtos');
   const [user, setUser] = useState(null);
 
-  const [formulas, setFormulas] = useState([]);
-  const [pesquisa, setPesquisa] = useState('');
   const [formulaSelecionada, setFormulaSelecionada] = useState(null);
 
   // 🔵 Verifica usuário logado
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
-      const parsedUser = JSON.parse(savedUser);
-      setUser(parsedUser);
+      setUser(JSON.parse(savedUser));
     } else {
       navigate('/');
     }
   }, [navigate]);
 
-  // 🔵 Sempre que o user carregar, buscar fórmulas
-  useEffect(() => {
-    if (user?.id) {
-      carregarFormulas(user.id);
-    }
-  }, [user]);
-
   // 🔵 Função logout
   const logout = () => {
     localStorage.clear();
     navigate('/', { replace: true });
-  };
-
-  // 🔵 Buscar fórmulas do banco
-  const carregarFormulas = async (farmaciaId) => {
-    try {
-      const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
-      if (Array.isArray(response.data)) {
-        setFormulas(response.data.reverse()); // 🔵 Carrega realmente do banco
-      } else {
-        setFormulas([]);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar fórmulas:', error);
-      setFormulas([]); // 🔵 Se der erro, não mantém fórmula antiga local
-    }
-  };
-
-  // 🔵 Quando salvar ou atualizar
-  const handleFinalizar = () => {
-    setFormulaSelecionada(null);
-    if (user?.id) {
-      carregarFormulas(user.id); // 🔵 Sempre recarrega o banco
-    }
   };
 
   return (
@@ -83,7 +48,7 @@ export default function FarmaciaDashboard() {
         </div>
       </header>
 
-      {/* 🔵 NAV */}
+      {/* 🔵 MENU */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <Package size={32} />
@@ -106,40 +71,45 @@ export default function FarmaciaDashboard() {
       {/* 🔵 CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
 
+        {/* 🔵 Produtos */}
         {abaAtiva === 'produtos' && (
           <main className="flex-1 p-6 overflow-y-auto">
             <h2 className="text-2xl font-bold text-blue-600 mb-6">Cadastrar Produtos</h2>
           </main>
         )}
 
+        {/* 🔵 Fórmulas */}
         {abaAtiva === 'formulas' && (
           <>
-            <FormulaSidebar
-              formulas={formulas}
-              pesquisa={pesquisa}
-              setPesquisa={setPesquisa}
-              onEditar={setFormulaSelecionada}
-              onRecarregar={() => carregarFormulas(user?.id)}
-            />
-
-            <main className="flex-1 p-6 overflow-y-auto">
-              <FormulaForm
-                farmaciaId={user?.id}
-                formulaSelecionada={formulaSelecionada}
-                onFinalizar={handleFinalizar}
+            {/* 🔵 Sidebar de fórmulas */}
+            {user?.id && (
+              <FormulaSidebar
+                farmaciaId={user.id}
+                onEditar={setFormulaSelecionada}
               />
+            )}
+
+            {/* 🔵 Formulário de cadastro/edição */}
+            <main className="flex-1 p-6 overflow-y-auto">
+              {user?.id && (
+                <FormulaForm
+                  userId={user.id}
+                  dadosIniciais={formulaSelecionada}
+                  onSucesso={() => setFormulaSelecionada(null)}
+                  onCancelar={() => setFormulaSelecionada(null)}
+                />
+              )}
             </main>
           </>
         )}
 
+        {/* 🔵 Dados da Farmácia */}
         {abaAtiva === 'dados' && (
           <main className="flex-1 p-6 overflow-y-auto">
             <h2 className="text-2xl font-bold text-blue-600 mb-6">Dados da Farmácia</h2>
           </main>
         )}
-
       </div>
-
     </div>
   );
 }
