@@ -1,3 +1,5 @@
+// 📄 src/components/FormulaForm.jsx (v2.0.0)
+
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -6,60 +8,59 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
   const [composicao, setComposicao] = useState('');
   const [indicacao, setIndicacao] = useState('');
   const [posologia, setPosologia] = useState('');
-  const [erro, setErro] = useState('');
-  const [sucesso, setSucesso] = useState('');
+  const [mensagem, setMensagem] = useState('');
 
   useEffect(() => {
     if (formulaSelecionada) {
-      setNome(formulaSelecionada.nome);
-      setComposicao(formulaSelecionada.composicao);
-      setIndicacao(formulaSelecionada.indicacao);
-      setPosologia(formulaSelecionada.posologia);
+      setNome(formulaSelecionada.nome || '');
+      setComposicao(formulaSelecionada.composicao || '');
+      setIndicacao(formulaSelecionada.indicacao || '');
+      setPosologia(formulaSelecionada.posologia || '');
     } else {
       setNome('');
       setComposicao('');
       setIndicacao('');
       setPosologia('');
     }
+    setMensagem('');
   }, [formulaSelecionada]);
 
   const salvar = async () => {
     if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
-      setErro('Preencha todos os campos.');
-      setSucesso('');
+      setMensagem('Preencha todos os campos.');
       return;
     }
 
     try {
       if (formulaSelecionada) {
-        // Atualizar fórmula (POST para /formulas/update)
+        // 🛠 Atualizar fórmula EXISTENTE
         await axios.post('https://nublia-backend.onrender.com/formulas/update', {
           id: formulaSelecionada.id,
           nome,
           composicao,
           indicacao,
           posologia,
-          farmacia_id: farmaciaId,
+          farmacia_id: farmaciaId, // 🔵 necessário para update no backend
         });
-        setSucesso('Fórmula atualizada com sucesso!');
+        setMensagem('Fórmula atualizada com sucesso!');
       } else {
-        // Criar nova fórmula
+        // 🛠 Cadastrar NOVA fórmula
         await axios.post('https://nublia-backend.onrender.com/formulas/', {
-          farmacia_id: farmaciaId,
           nome,
           composicao,
           indicacao,
           posologia,
+          farmacia_id: farmaciaId,
         });
-        setSucesso('Fórmula cadastrada com sucesso!');
+        setMensagem('Fórmula cadastrada com sucesso!');
       }
 
-      setErro('');
+      // 🛠 Depois de salvar:
       onFinalizar();
+
     } catch (error) {
       console.error('Erro ao salvar fórmula:', error);
-      setErro('Erro ao salvar fórmula.');
-      setSucesso('');
+      setMensagem('Erro ao salvar a fórmula.');
     }
   };
 
@@ -70,8 +71,7 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
         {formulaSelecionada ? 'Editar Fórmula' : 'Nova Fórmula'}
       </h2>
 
-      {erro && <p className="text-red-500">{erro}</p>}
-      {sucesso && <p className="text-green-500">{sucesso}</p>}
+      {mensagem && <p className="text-center text-sm text-red-500">{mensagem}</p>}
 
       <div className="space-y-4">
         <div>
