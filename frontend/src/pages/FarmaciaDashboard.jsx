@@ -1,3 +1,5 @@
+// 📄 frontend/src/pages/FarmaciaDashboard.jsx (v2.0.0)
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Package, FlaskConical, Building, Settings, LogOut } from 'lucide-react';
@@ -11,10 +13,12 @@ export default function FarmaciaDashboard() {
   const [user, setUser] = useState(null);
 
   const [formulas, setFormulas] = useState([]);
-  const [pesquisa, setPesquisa] = useState('');
   const [formulaSelecionada, setFormulaSelecionada] = useState(null);
+  const [formulaParaExcluir, setFormulaParaExcluir] = useState(null); // 🔵 fórmula aguardando confirmação
+  const [mensagem, setMensagem] = useState('');
+  const [erro, setErro] = useState('');
 
-  // 🔵 Verifica usuário logado e carrega fórmulas
+  // 🔵 Verifica login e carrega fórmulas
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -26,19 +30,32 @@ export default function FarmaciaDashboard() {
     }
   }, [navigate]);
 
-  // 🔵 Função logout
   const logout = () => {
     localStorage.clear();
     navigate('/', { replace: true });
   };
 
-  // 🔵 Carrega fórmulas do banco
   const carregarFormulas = async (farmaciaId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
       setFormulas(response.data.reverse());
     } catch (error) {
       console.error('Erro ao carregar fórmulas:', error);
+    }
+  };
+
+  // 🔵 Quando confirma exclusão
+  const confirmarExclusao = async () => {
+    try {
+      await axios.post(`https://nublia-backend.onrender.com/formulas/delete`, { id: formulaParaExcluir });
+      setMensagem('Fórmula excluída com sucesso!');
+      setErro('');
+      setFormulaParaExcluir(null);
+      carregarFormulas(user?.id);
+    } catch (error) {
+      console.error('Erro ao excluir fórmula:', error);
+      setErro('Erro ao excluir fórmula.');
+      setMensagem('');
     }
   };
 
@@ -53,10 +70,7 @@ export default function FarmaciaDashboard() {
         </div>
         <div className="flex items-center gap-4">
           <span className="text-sm italic">{user?.name}</span>
-          <button
-            onClick={logout}
-            className="flex items-center gap-1 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm"
-          >
+          <button onClick={logout} className="flex items-center gap-1 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">
             <LogOut size={16} /> Sair
           </button>
         </div>
@@ -82,6 +96,25 @@ export default function FarmaciaDashboard() {
         </button>
       </nav>
 
+      {/* 🔵 MENSAGENS */}
+      {(mensagem || erro) && (
+        <div className="p-4">
+          {mensagem && <p className="text-green-600 font-semibold">{mensagem}</p>}
+          {erro && <p className="text-red-600 font-semibold">{erro}</p>}
+        </div>
+      )}
+
+      {/* 🔵 CONFIRMAÇÃO DE EXCLUSÃO */}
+      {formulaParaExcluir && (
+        <div className="bg-white p-4 m-4 rounded shadow-md">
+          <p className="text-gray-700 mb-4">Deseja realmente excluir esta fórmula?</p>
+          <div className="flex gap-4">
+            <button onClick={confirmarExclusao} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Sim, excluir</button>
+            <button onClick={() => setFormulaParaExcluir(null)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">Cancelar</button>
+          </div>
+        </div>
+      )}
+
       {/* 🔵 CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
 
@@ -96,13 +129,11 @@ export default function FarmaciaDashboard() {
             {/* 🔵 Sidebar de fórmulas */}
             <FormulaSidebar
               formulas={formulas}
-              pesquisa={pesquisa}
-              setPesquisa={setPesquisa}
               onEditar={setFormulaSelecionada}
-              onAtualizarLista={() => carregarFormulas(user?.id)}
+              onExcluir={(id) => setFormulaParaExcluir(id)}
             />
 
-            {/* 🔵 Formulário de cadastro / edição */}
+            {/* 🔵 Formulário */}
             <main className="flex-1 p-6 overflow-y-auto">
               <FormulaForm
                 farmaciaId={user?.id}
@@ -110,6 +141,8 @@ export default function FarmaciaDashboard() {
                 onSucesso={() => {
                   setFormulaSelecionada(null);
                   carregarFormulas(user?.id);
+                  setMensagem('Fórmula salva com sucesso!');
+                  setErro('');
                 }}
                 onCancelar={() => setFormulaSelecionada(null)}
               />
@@ -122,7 +155,6 @@ export default function FarmaciaDashboard() {
             <h2 className="text-2xl font-bold text-blue-600 mb-6">Dados da Farmácia</h2>
           </main>
         )}
-
       </div>
 
     </div>
