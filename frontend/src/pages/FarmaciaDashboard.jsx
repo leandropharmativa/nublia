@@ -1,4 +1,4 @@
-// 📄 frontend/src/pages/FarmaciaDashboard.jsx (v2.1.0)
+// 📄 frontend/src/pages/FarmaciaDashboard.jsx (v3.0.0)
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,10 +13,9 @@ export default function FarmaciaDashboard() {
   const [user, setUser] = useState(null);
 
   const [formulas, setFormulas] = useState([]);
-  const [pesquisa, setPesquisa] = useState('');
   const [formulaSelecionada, setFormulaSelecionada] = useState(null);
 
-  // 🔵 Verifica usuário logado
+  // 🔵 Verifica usuário logado e carrega fórmulas
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -34,7 +33,7 @@ export default function FarmaciaDashboard() {
     navigate('/', { replace: true });
   };
 
-  // 🔵 Carregar fórmulas
+  // 🔵 Carrega fórmulas
   const carregarFormulas = async (farmaciaId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
@@ -44,10 +43,18 @@ export default function FarmaciaDashboard() {
     }
   };
 
+  // 🔵 Depois de salvar ou cancelar, limpa seleção e atualiza a lista
+  const aoFinalizarEdicao = () => {
+    setFormulaSelecionada(null);
+    if (user?.id) {
+      carregarFormulas(user.id);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
 
-      {/* 🔵 TOPO */}
+      {/* 🔵 Topo */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <div>
           <div className="text-sm font-semibold">Nublia</div>
@@ -64,7 +71,7 @@ export default function FarmaciaDashboard() {
         </div>
       </header>
 
-      {/* 🔵 MENU */}
+      {/* 🔵 Menu */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <Package size={32} />
@@ -84,7 +91,7 @@ export default function FarmaciaDashboard() {
         </button>
       </nav>
 
-      {/* 🔵 CONTEÚDO */}
+      {/* 🔵 Conteúdo */}
       <div className="flex flex-1 overflow-hidden">
 
         {abaAtiva === 'produtos' && (
@@ -95,11 +102,10 @@ export default function FarmaciaDashboard() {
 
         {abaAtiva === 'formulas' && (
           <>
-            {/* 🔵 Sidebar de fórmulas */}
+            {/* 🔵 Sidebar */}
             <FormulaSidebar
+              farmaciaId={user?.id}
               formulas={formulas}
-              pesquisa={pesquisa}
-              setPesquisa={setPesquisa}
               onEditar={setFormulaSelecionada}
               onRecarregar={() => carregarFormulas(user?.id)}
             />
@@ -109,10 +115,7 @@ export default function FarmaciaDashboard() {
               <FormulaForm
                 farmaciaId={user?.id}
                 formulaSelecionada={formulaSelecionada}
-                onFinalizar={() => {
-                  carregarFormulas(user?.id);
-                  setFormulaSelecionada(null);
-                }}
+                onFinalizar={aoFinalizarEdicao}
               />
             </main>
           </>
