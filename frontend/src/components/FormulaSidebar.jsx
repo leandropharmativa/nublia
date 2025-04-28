@@ -1,25 +1,27 @@
+// 📄 src/components/FormulaSidebar.jsx
+
 import { useState } from 'react';
 import { Edit, Trash2, Search } from 'lucide-react';
 import axios from 'axios';
 
-export default function FormulaSidebar({ farmaciaId, formulas, onEditar, onAtualizarLista }) {
-  const [pesquisa, setPesquisa] = useState('');
+export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEditar, onAtualizarLista }) {
 
+  // 🔵 Função correta para excluir
+  const handleExcluir = async (id) => {
+    if (!confirm('Tem certeza que deseja excluir esta fórmula?')) return;
+    try {
+      await axios.post('https://nublia-backend.onrender.com/formulas/delete', { id });
+      onAtualizarLista(); // 🔵 Atualiza lista após excluir
+    } catch (error) {
+      console.error('Erro ao excluir fórmula:', error);
+      alert('Erro ao excluir a fórmula.');
+    }
+  };
+
+  // 🔵 Fórmulas filtradas
   const formulasFiltradas = formulas.filter((formula) =>
     formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
   );
-
-  // 🔵 Excluir fórmula
-const handleExcluir = async (id) => {
-  if (!confirm('Tem certeza que deseja excluir esta fórmula?')) return;
-  try {
-    await axios.post('https://nublia-backend.onrender.com/formulas/delete', { id });
-    onAtualizarLista(); // 🔵 Atualiza a lista após excluir
-  } catch (error) {
-    console.error('Erro ao excluir fórmula:', error);
-    alert('Erro ao excluir a fórmula.');
-  }
-};
 
   return (
     <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
@@ -39,7 +41,7 @@ const handleExcluir = async (id) => {
               </button>
               <button
                 className="text-red-500 hover:text-red-700"
-                onClick={() => excluirFormula(formula.id)}
+                onClick={() => handleExcluir(formula.id)} // 🔥 Aqui agora chama handleExcluir corretamente
                 title="Excluir fórmula"
               >
                 <Trash2 size={20} />
