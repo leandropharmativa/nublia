@@ -53,3 +53,26 @@ def atualizar_formula(formula_id: int, formula_data: FormulaCreate, session: Ses
     session.refresh(formula)
 
     return formula
+    
+# 🔵 Deletar fórmula (agora via POST)
+@router.post("/formulas/delete")
+def deletar_formula_post(id: int, session: Session = Depends(get_session)):
+    formula = session.get(Formula, id)
+    if not formula:
+        raise HTTPException(status_code=404, detail="Fórmula não encontrada")
+    session.delete(formula)
+    session.commit()
+    return {"ok": True}
+
+# 🔵 Atualizar fórmula (agora via POST)
+@router.post("/formulas/update")
+def atualizar_formula_post(data: FormulaCreate, session: Session = Depends(get_session)):
+    formula = session.get(Formula, data.id)
+    if not formula:
+        raise HTTPException(status_code=404, detail="Fórmula não encontrada")
+    formula.nome = data.nome
+    formula.composicao = data.composicao
+    formula.indicacao = data.indicacao
+    formula.posologia = data.posologia
+    session.commit()
+    return formula
