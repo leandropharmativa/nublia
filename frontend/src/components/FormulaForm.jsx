@@ -1,4 +1,4 @@
-// 📄 src/components/FormulaForm.jsx (v2.2.0)
+// 📄 src/components/FormulaForm.jsx (v2.3.0)
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -10,7 +10,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
   const [posologia, setPosologia] = useState('');
   const [erro, setErro] = useState('');
 
-  // 🔵 Quando selecionar uma fórmula para editar, carrega no form
   useEffect(() => {
     if (formulaSelecionada) {
       setNome(formulaSelecionada.nome);
@@ -22,7 +21,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
     }
   }, [formulaSelecionada]);
 
-  // 🔵 Função para limpar campos
   const limparCampos = () => {
     setNome('');
     setComposicao('');
@@ -30,7 +28,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
     setPosologia('');
   };
 
-  // 🔵 Função para salvar ou atualizar
   const salvarFormula = async () => {
     if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
       setErro('Preencha todos os campos.');
@@ -39,7 +36,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
     try {
       if (formulaSelecionada) {
-        // Atualizar fórmula existente
         await axios.post('https://nublia-backend.onrender.com/formulas/update', {
           id: formulaSelecionada.id,
           nome,
@@ -48,7 +44,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           posologia
         });
       } else {
-        // Criar nova fórmula
         await axios.post('https://nublia-backend.onrender.com/formulas/', {
           farmacia_id: farmaciaId,
           nome,
@@ -56,11 +51,11 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           indicacao,
           posologia
         });
-        limparCampos(); // 🔵 Limpa o formulário após criar
+        limparCampos();
       }
 
       setErro('');
-      onFinalizar(); // 🔵 Atualiza a lista e reseta o modo edição
+      onFinalizar();
     } catch (error) {
       console.error('Erro ao salvar fórmula:', error);
       setErro('Erro ao salvar a fórmula.');
@@ -123,6 +118,15 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           >
             {formulaSelecionada ? 'Atualizar Fórmula' : 'Salvar Nova Fórmula'}
           </button>
+
+          {formulaSelecionada && (
+            <button
+              onClick={onFinalizar}
+              className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+            >
+              Cancelar Edição
+            </button>
+          )}
         </div>
       </div>
 
