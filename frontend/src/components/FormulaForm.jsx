@@ -1,4 +1,4 @@
-// 📄 src/components/FormulaForm.jsx (v2.1.0)
+// 📄 src/components/FormulaForm.jsx (v2.2.0)
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -8,80 +8,73 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
   const [composicao, setComposicao] = useState('');
   const [indicacao, setIndicacao] = useState('');
   const [posologia, setPosologia] = useState('');
-  const [mensagemSucesso, setMensagemSucesso] = useState('');
-  const [mensagemErro, setMensagemErro] = useState('');
-  const [modoEdicao, setModoEdicao] = useState(false);
+  const [erro, setErro] = useState('');
 
+  // 🔵 Quando selecionar uma fórmula para editar, carrega no form
   useEffect(() => {
     if (formulaSelecionada) {
-      setNome(formulaSelecionada.nome || '');
-      setComposicao(formulaSelecionada.composicao || '');
-      setIndicacao(formulaSelecionada.indicacao || '');
-      setPosologia(formulaSelecionada.posologia || '');
-      setModoEdicao(true);
+      setNome(formulaSelecionada.nome);
+      setComposicao(formulaSelecionada.composicao);
+      setIndicacao(formulaSelecionada.indicacao);
+      setPosologia(formulaSelecionada.posologia);
     } else {
-      setNome('');
-      setComposicao('');
-      setIndicacao('');
-      setPosologia('');
-      setModoEdicao(false);
+      limparCampos();
     }
-    setMensagemErro('');
-    setMensagemSucesso('');
   }, [formulaSelecionada]);
 
-  const salvar = async () => {
+  // 🔵 Função para limpar campos
+  const limparCampos = () => {
+    setNome('');
+    setComposicao('');
+    setIndicacao('');
+    setPosologia('');
+  };
+
+  // 🔵 Função para salvar ou atualizar
+  const salvarFormula = async () => {
     if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
-      setMensagemErro('Preencha todos os campos.');
-      setMensagemSucesso('');
+      setErro('Preencha todos os campos.');
       return;
     }
 
     try {
-      if (modoEdicao && formulaSelecionada) {
-        // Atualizar fórmula
+      if (formulaSelecionada) {
+        // Atualizar fórmula existente
         await axios.post('https://nublia-backend.onrender.com/formulas/update', {
           id: formulaSelecionada.id,
           nome,
           composicao,
           indicacao,
-          posologia,
-          farmacia_id: farmaciaId,
+          posologia
         });
-        setMensagemSucesso('Fórmula atualizada com sucesso!');
       } else {
-        // Nova fórmula
+        // Criar nova fórmula
         await axios.post('https://nublia-backend.onrender.com/formulas/', {
           farmacia_id: farmaciaId,
           nome,
           composicao,
           indicacao,
-          posologia,
+          posologia
         });
-        setMensagemSucesso('Fórmula cadastrada com sucesso!');
+        limparCampos(); // 🔵 Limpa o formulário após criar
       }
 
-      setMensagemErro('');
-
-      setTimeout(() => {
-        onFinalizar(); // Atualiza o Dashboard para recarregar a lista
-      }, 500);
-
+      setErro('');
+      onFinalizar(); // 🔵 Atualiza a lista e reseta o modo edição
     } catch (error) {
       console.error('Erro ao salvar fórmula:', error);
-      setMensagemErro('Erro ao salvar a fórmula.');
-      setMensagemSucesso('');
+      setErro('Erro ao salvar a fórmula.');
     }
   };
 
   return (
     <div className="w-full max-w-2xl space-y-6 bg-white p-6 rounded-lg shadow">
+
       <h2 className="text-2xl font-bold text-blue-600">
-        {modoEdicao ? 'Editar Fórmula' : 'Nova Fórmula'}
+        {formulaSelecionada ? 'Editar Fórmula' : 'Nova Fórmula'}
       </h2>
 
-      {mensagemErro && <p className="text-center text-sm text-red-500">{mensagemErro}</p>}
-      {mensagemSucesso && <p className="text-center text-sm text-green-600">{mensagemSucesso}</p>}
+      {erro && <p className="text-red-600 text-sm">{erro}</p>}
 
       <div className="space-y-4">
         <div>
@@ -123,22 +116,16 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           />
         </div>
 
-        <div className="flex gap-4 mt-6">
+        <div className="flex justify-end gap-4 mt-6">
           <button
-            onClick={salvar}
+            onClick={salvarFormula}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
           >
-            {modoEdicao ? 'Atualizar' : 'Salvar'}
-          </button>
-
-          <button
-            onClick={onFinalizar}
-            className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
-          >
-            Cancelar
+            {formulaSelecionada ? 'Atualizar Fórmula' : 'Salvar Nova Fórmula'}
           </button>
         </div>
       </div>
+
     </div>
   );
 }
