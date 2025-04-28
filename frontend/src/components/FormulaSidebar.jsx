@@ -1,5 +1,3 @@
-// 📄 src/components/FormulaSidebar.jsx
-
 import { useState } from 'react';
 import { Edit, Trash2, Search } from 'lucide-react';
 import axios from 'axios';
@@ -10,12 +8,12 @@ export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEdit
   const excluirFormula = async (id) => {
     if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
     try {
-      // 🔵 Agora excluindo via POST
-      await axios.post('https://nublia-backend.onrender.com/formulas/delete', { id });
-      onRecarregar();
+      await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
+      onRecarregar(); // 🔵 Atualiza a lista de novo depois de excluir
+      setErro('');
     } catch (error) {
       console.error('Erro ao excluir fórmula:', error);
-      setErro('Erro ao excluir a fórmula.');
+      setErro('Erro ao excluir fórmula.');
     }
   };
 
@@ -26,8 +24,6 @@ export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEdit
   return (
     <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
       <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
-
-      {erro && <p className="text-red-500 text-sm mb-2">{erro}</p>}
 
       <ul className="space-y-4">
         {formulasFiltradas.map((formula) => (
@@ -63,6 +59,8 @@ export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEdit
           className="w-full pl-10 px-3 py-2 border rounded"
         />
       </div>
+
+      {erro && <p className="text-red-500 text-center mt-4">{erro}</p>}
     </aside>
   );
 }
