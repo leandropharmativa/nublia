@@ -1,35 +1,22 @@
-// 📄 src/components/FormulaSidebar.jsx (v2.4.2)
+// 📄 src/components/FormulaSidebar.jsx (v2.4.3)
 
-import { Edit, Trash2, Search } from 'lucide-react';
-import ModalConfirmacao from './ModalConfirmacao';
 import { useState } from 'react';
+import { Edit, Trash2, Search } from 'lucide-react';
 
-export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEditar, onExcluir }) {
-  const [idParaExcluir, setIdParaExcluir] = useState(null);
+export default function FormulaSidebar({ formulas = [], onEditar, onExcluir }) {
+  const [pesquisa, setPesquisa] = useState('');
 
-  const confirmarExclusao = (id) => {
-    setIdParaExcluir(id);
-  };
+  // 🔵 Garante que só fórmulas válidas entram na lista
+  const formulasValidas = Array.isArray(formulas)
+    ? formulas.filter(f => f && typeof f.nome === 'string')
+    : [];
 
-  const cancelarExclusao = () => {
-    setIdParaExcluir(null);
-  };
-
-  const confirmarExclusaoFinal = () => {
-    if (idParaExcluir) {
-      onExcluir(idParaExcluir);
-      setIdParaExcluir(null);
-    }
-  };
-
-  const formulasFiltradas = (formulas || [])
-  .filter((formula) => formula && formula.nome && typeof formula.nome === 'string')
-  .filter((formula) =>
+  const formulasFiltradas = formulasValidas.filter((formula) =>
     formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
   );
 
   return (
-    <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto relative">
+    <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
       <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
 
       <ul className="space-y-4">
@@ -46,7 +33,7 @@ export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEdit
               </button>
               <button
                 className="text-red-500 hover:text-red-700"
-                onClick={() => confirmarExclusao(formula.id)}
+                onClick={() => onExcluir(formula.id)}
                 title="Excluir fórmula"
               >
                 <Trash2 size={20} />
@@ -66,14 +53,6 @@ export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEdit
           className="w-full pl-10 px-3 py-2 border rounded"
         />
       </div>
-
-      {/* 🔵 Modal de confirmação de exclusão */}
-      <ModalConfirmacao
-        aberto={!!idParaExcluir}
-        mensagem="Deseja realmente excluir esta fórmula?"
-        onConfirmar={confirmarExclusaoFinal}
-        onCancelar={cancelarExclusao}
-      />
     </aside>
   );
 }
