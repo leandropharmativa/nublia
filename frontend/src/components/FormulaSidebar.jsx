@@ -1,4 +1,4 @@
-// 📄 src/components/FormulaSidebar.jsx (v2.4.0)
+// 📄 src/components/FormulaSidebar.jsx (v2.4.1)
 
 import { Edit, Trash2, Search } from 'lucide-react';
 import ModalConfirmacao from './ModalConfirmacao';
@@ -22,8 +22,8 @@ export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEdit
     }
   };
 
-  const formulasFiltradas = formulas.filter((formula) =>
-    formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
+  const formulasFiltradas = (formulas || []).filter((formula) =>
+  formula?.nome?.toLowerCase().includes(pesquisa.toLowerCase())
   );
 
   return (
