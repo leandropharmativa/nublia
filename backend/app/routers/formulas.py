@@ -6,6 +6,14 @@ from app.database import engine, get_session
 
 router = APIRouter()
 
+# 🔵 Modelo de recebimento para DELETE
+class FormulaDeleteRequest(BaseModel):
+    id: int
+
+# 🔵 Modelo de recebimento para UPDATE
+class FormulaUpdateRequest(FormulaCreate):
+    id: int
+
 # 🔵 Criar fórmula
 @router.post("/formulas/")
 def criar_formula(formula: FormulaCreate):
@@ -25,29 +33,28 @@ def listar_formulas_por_farmacia(farmacia_id: int):
         ).all()
         return formulas
 
-# 🔵 Deletar uma fórmula pelo ID via POST
-class FormulaDeleteRequest(BaseModel):
-    id: int
-
+# 🔵 Deletar fórmula via POST (CORRIGIDO)
 @router.post("/formulas/delete")
-def deletar_formula_post(data: FormulaDeleteRequest, session: Session = Depends(get_session)):
-    formula = session.get(Formula, data.id)
+def deletar_formula_post(payload: FormulaDeleteRequest, session: Session = Depends(get_session)):
+    formula = session.get(Formula, payload.id)
     if not formula:
         raise HTTPException(status_code=404, detail="Fórmula não encontrada")
     session.delete(formula)
     session.commit()
     return {"ok": True}
 
-# 🔵 Atualizar fórmula via POST
+# 🔵 Atualizar fórmula via POST (CORRIGIDO)
 @router.post("/formulas/update")
-def atualizar_formula_post(data: FormulaCreate, session: Session = Depends(get_session)):
-    formula = session.get(data.id)
+def atualizar_formula_post(data: FormulaUpdateRequest, session: Session = Depends(get_session)):
+    formula = session.get(Formula, data.id)
     if not formula:
         raise HTTPException(status_code=404, detail="Fórmula não encontrada")
+
     formula.nome = data.nome
     formula.composicao = data.composicao
     formula.indicacao = data.indicacao
     formula.posologia = data.posologia
+
     session.commit()
     session.refresh(formula)
     return formula
