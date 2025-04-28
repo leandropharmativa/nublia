@@ -1,22 +1,24 @@
 // 📄 src/components/FormulaSidebar.jsx (v2.4.0)
 
-import { useState } from 'react';
 import { Edit, Trash2, Search } from 'lucide-react';
-import axios from 'axios';
+import ModalConfirmacao from './ModalConfirmacao';
+import { useState } from 'react';
 
-export default function FormulaSidebar({ formulas, onEditar, recarregar }) {
-  const [pesquisa, setPesquisa] = useState('');
-  const [mensagem, setMensagem] = useState('');
+export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEditar, onExcluir }) {
+  const [idParaExcluir, setIdParaExcluir] = useState(null);
 
-  const excluirFormula = async (id) => {
-    if (!confirm('Tem certeza que deseja excluir esta fórmula?')) return;
-    try {
-      await axios.post('https://nublia-backend.onrender.com/formulas/delete', { id });
-      setMensagem('Fórmula excluída com sucesso!');
-      recarregar();
-    } catch (error) {
-      console.error('Erro ao excluir fórmula:', error);
-      setMensagem('Erro ao excluir a fórmula.');
+  const confirmarExclusao = (id) => {
+    setIdParaExcluir(id);
+  };
+
+  const cancelarExclusao = () => {
+    setIdParaExcluir(null);
+  };
+
+  const confirmarExclusaoFinal = () => {
+    if (idParaExcluir) {
+      onExcluir(idParaExcluir);
+      setIdParaExcluir(null);
     }
   };
 
@@ -25,12 +27,8 @@ export default function FormulaSidebar({ formulas, onEditar, recarregar }) {
   );
 
   return (
-    <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
+    <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto relative">
       <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
-
-      {mensagem && (
-        <p className="text-center mb-4 text-sm font-semibold text-green-600">{mensagem}</p>
-      )}
 
       <ul className="space-y-4">
         {formulasFiltradas.map((formula) => (
@@ -46,7 +44,7 @@ export default function FormulaSidebar({ formulas, onEditar, recarregar }) {
               </button>
               <button
                 className="text-red-500 hover:text-red-700"
-                onClick={() => excluirFormula(formula.id)}
+                onClick={() => confirmarExclusao(formula.id)}
                 title="Excluir fórmula"
               >
                 <Trash2 size={20} />
@@ -66,6 +64,14 @@ export default function FormulaSidebar({ formulas, onEditar, recarregar }) {
           className="w-full pl-10 px-3 py-2 border rounded"
         />
       </div>
+
+      {/* 🔵 Modal de confirmação de exclusão */}
+      <ModalConfirmacao
+        aberto={!!idParaExcluir}
+        mensagem="Deseja realmente excluir esta fórmula?"
+        onConfirmar={confirmarExclusaoFinal}
+        onCancelar={cancelarExclusao}
+      />
     </aside>
   );
 }
