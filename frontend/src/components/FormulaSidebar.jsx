@@ -1,33 +1,20 @@
-import { Search, Edit, Trash2 } from 'lucide-react';
-import axios from 'axios';
-import { useState } from 'react';
+// 📄 src/components/FormulaSidebar.jsx (v2.0.0)
 
-export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
+import { useState } from 'react';
+import { Edit, Trash2, Search } from 'lucide-react';
+
+export default function FormulaSidebar({ formulas, onEditar, onExcluir }) {
   const [pesquisa, setPesquisa] = useState('');
 
-  const excluirFormula = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
-
-    try {
-      await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
-        id: id,   // 🔵 Mandando id dentro do BODY
-      });
-      alert('Fórmula excluída com sucesso!');
-      onRecarregar();
-    } catch (error) {
-      console.error('Erro ao excluir fórmula:', error);
-      alert('Erro ao excluir fórmula.');
-    }
-  };
-
-  const formulasFiltradas = formulas.filter((f) =>
-    f.nome.toLowerCase().includes(pesquisa.toLowerCase())
+  const formulasFiltradas = formulas.filter((formula) =>
+    formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
   );
 
   return (
     <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
       <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
 
+      {/* 🔵 LISTA DE FÓRMULAS */}
       <ul className="space-y-4">
         {formulasFiltradas.map((formula) => (
           <li key={formula.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
@@ -35,15 +22,15 @@ export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
             <div className="flex gap-2">
               <button
                 className="text-blue-600 hover:text-blue-800"
-                onClick={() => onEditar(formula)}
                 title="Editar fórmula"
+                onClick={() => onEditar(formula)}
               >
                 <Edit size={20} />
               </button>
               <button
                 className="text-red-500 hover:text-red-700"
-                onClick={() => excluirFormula(formula.id)}
                 title="Excluir fórmula"
+                onClick={() => onExcluir(formula.id)}
               >
                 <Trash2 size={20} />
               </button>
@@ -52,6 +39,7 @@ export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
         ))}
       </ul>
 
+      {/* 🔵 CAMPO DE PESQUISA */}
       <div className="mt-6 relative">
         <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
         <input
