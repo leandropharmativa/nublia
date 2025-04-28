@@ -10,19 +10,16 @@ export default function FormulaSidebar({ farmaciaId, formulas, onEditar, onAtual
   );
 
   // 🔵 Excluir fórmula
-  const excluirFormula = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
-
-    try {
-      await axios.post('https://nublia-backend.onrender.com/formulas/delete', null, {
-        params: { id: id },
-      });
-      onAtualizarLista();
-    } catch (error) {
-      console.error('Erro ao excluir fórmula:', error);
-      alert('Erro ao excluir fórmula.');
-    }
-  };
+const handleExcluir = async (id) => {
+  if (!confirm('Tem certeza que deseja excluir esta fórmula?')) return;
+  try {
+    await axios.post('https://nublia-backend.onrender.com/formulas/delete', { id });
+    onAtualizarLista(); // 🔵 Atualiza a lista após excluir
+  } catch (error) {
+    console.error('Erro ao excluir fórmula:', error);
+    alert('Erro ao excluir a fórmula.');
+  }
+};
 
   return (
     <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
