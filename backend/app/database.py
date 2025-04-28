@@ -1,5 +1,6 @@
+# 📄 backend/app/database.py  -  (v1.0.1)
 # Importa o SQLModel para definir as tabelas e o create_engine para conectar ao banco
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import SQLModel, create_engine, Session
 import os  # Para pegar variáveis de ambiente (como a URL do banco)
 
 # Define a variável de conexão
