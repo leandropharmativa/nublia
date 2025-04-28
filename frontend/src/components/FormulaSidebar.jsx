@@ -5,17 +5,19 @@ import axios from 'axios';
 export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEditar, onRecarregar }) {
   const [erro, setErro] = useState('');
 
-  const excluirFormula = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
-    try {
-      await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
-      onRecarregar(); // 🔵 Atualiza a lista de novo depois de excluir
-      setErro('');
-    } catch (error) {
-      console.error('Erro ao excluir fórmula:', error);
-      setErro('Erro ao excluir fórmula.');
-    }
-  };
+const excluirFormula = async (id) => {
+  if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
+  try {
+    await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    onRecarregar(); // Atualiza lista depois de excluir
+  } catch (error) {
+    console.error('Erro ao excluir fórmula:', error);
+  }
+};
 
   const formulasFiltradas = formulas.filter((formula) =>
     formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
