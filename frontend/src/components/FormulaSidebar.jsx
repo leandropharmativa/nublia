@@ -1,42 +1,24 @@
-import { useState, useEffect } from 'react';
+// 📄 src/components/FormulaSidebar.jsx
+
+import { useState } from 'react';
 import { Edit, Trash2, Search } from 'lucide-react';
 import axios from 'axios';
 
-export default function FormulaSidebar({ farmaciaId, onEditar }) {
-  const [formulas, setFormulas] = useState([]);
-  const [pesquisa, setPesquisa] = useState('');
+export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEditar, onRecarregar }) {
   const [erro, setErro] = useState('');
 
-  // 🔵 Buscar fórmulas no banco quando o componente carregar
-  useEffect(() => {
-    if (farmaciaId) {
-      carregarFormulas();
-    }
-  }, [farmaciaId]);
-
-  const carregarFormulas = async () => {
+  const excluirFormula = async (id) => {
+    if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
     try {
-      const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
-      setFormulas(response.data.reverse());
-      setErro('');
+      // 🔵 Agora excluindo via POST
+      await axios.post('https://nublia-backend.onrender.com/formulas/delete', { id });
+      onRecarregar();
     } catch (error) {
-      console.error('Erro ao carregar fórmulas:', error);
-      setErro('Erro ao carregar fórmulas.');
+      console.error('Erro ao excluir fórmula:', error);
+      setErro('Erro ao excluir a fórmula.');
     }
   };
 
-  // 🔵 Excluir fórmula
-const excluirFormula = async (id) => {
-  if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
-  try {
-    await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
-    onRecarregar(); // depois recarrega as fórmulas
-  } catch (error) {
-    console.error('Erro ao excluir fórmula:', error);
-  }
-};
-
-  // 🔵 Filtro de pesquisa
   const formulasFiltradas = formulas.filter((formula) =>
     formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
   );
@@ -45,7 +27,7 @@ const excluirFormula = async (id) => {
     <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
       <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
 
-      {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
+      {erro && <p className="text-red-500 text-sm mb-2">{erro}</p>}
 
       <ul className="space-y-4">
         {formulasFiltradas.map((formula) => (
@@ -71,7 +53,6 @@ const excluirFormula = async (id) => {
         ))}
       </ul>
 
-      {/* 🔵 Caixa de pesquisa */}
       <div className="mt-6 relative">
         <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
         <input
