@@ -11,10 +11,9 @@ export default function FarmaciaDashboard() {
   const [user, setUser] = useState(null);
 
   const [formulas, setFormulas] = useState([]);
-  const [pesquisa, setPesquisa] = useState('');
   const [formulaSelecionada, setFormulaSelecionada] = useState(null);
 
-  // 🔵 Verifica login e carrega fórmulas
+  // 🔵 Verifica usuário logado e carrega fórmulas
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -33,14 +32,14 @@ export default function FarmaciaDashboard() {
   };
 
   // 🔵 Carregar fórmulas do banco
-const carregarFormulas = async (farmaciaId) => {
-  try {
-    const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
-    setFormulas(response.data.reverse()); // Carrega certinho do banco
-  } catch (error) {
-    console.error('Erro ao carregar fórmulas:', error);
-  }
-};
+  const carregarFormulas = async (farmaciaId) => {
+    try {
+      const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
+      setFormulas(response.data.reverse());
+    } catch (error) {
+      console.error('Erro ao carregar fórmulas:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -62,26 +61,17 @@ const carregarFormulas = async (farmaciaId) => {
         </div>
       </header>
 
-      {/* 🔵 NAV */}
+      {/* 🔵 MENU */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
-        <button
-          onClick={() => setAbaAtiva('produtos')}
-          className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}
-        >
+        <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <Package size={32} />
           <span className="text-xs mt-1">Produtos</span>
         </button>
-        <button
-          onClick={() => setAbaAtiva('formulas')}
-          className={`flex flex-col items-center ${abaAtiva === 'formulas' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}
-        >
+        <button onClick={() => setAbaAtiva('formulas')} className={`flex flex-col items-center ${abaAtiva === 'formulas' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <FlaskConical size={32} />
           <span className="text-xs mt-1">Fórmulas</span>
         </button>
-        <button
-          onClick={() => setAbaAtiva('dados')}
-          className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}
-        >
+        <button onClick={() => setAbaAtiva('dados')} className={`flex flex-col items-center ${abaAtiva === 'dados' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <Building size={32} />
           <span className="text-xs mt-1">Dados</span>
         </button>
@@ -102,26 +92,22 @@ const carregarFormulas = async (farmaciaId) => {
 
         {abaAtiva === 'formulas' && (
           <>
-            {/* 🔵 Sidebar de fórmulas */}
+            {/* 🔵 Sidebar com fórmulas */}
             <FormulaSidebar
+              farmaciaId={user?.id}
               formulas={formulas}
-              pesquisa={pesquisa}
-              setPesquisa={setPesquisa}
-              onEditar={setFormulaSelecionada}
-              onRecarregar={() => carregarFormulas(user?.id)}
+              onEditar={(formula) => setFormulaSelecionada(formula)}
+              onAtualizarLista={() => carregarFormulas(user?.id)}
             />
 
             {/* 🔵 Formulário de cadastro / edição */}
             <main className="flex-1 p-6 overflow-y-auto">
               <FormulaForm
-                userId={user?.id}
-                dadosIniciais={formulaSelecionada}
-                onSucesso={() => {
+                farmaciaId={user?.id}
+                formulaSelecionada={formulaSelecionada}
+                onFinalizar={() => {
                   setFormulaSelecionada(null);
                   carregarFormulas(user?.id);
-                }}
-                onCancelar={() => {
-                  setFormulaSelecionada(null);
                 }}
               />
             </main>
@@ -135,7 +121,6 @@ const carregarFormulas = async (farmaciaId) => {
         )}
 
       </div>
-
     </div>
   );
 }
