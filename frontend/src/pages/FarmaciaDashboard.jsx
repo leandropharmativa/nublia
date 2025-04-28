@@ -11,6 +11,7 @@ export default function FarmaciaDashboard() {
   const [user, setUser] = useState(null);
 
   const [formulas, setFormulas] = useState([]);
+  const [pesquisa, setPesquisa] = useState('');
   const [formulaSelecionada, setFormulaSelecionada] = useState(null);
 
   // 🔵 Verifica usuário logado e carrega fórmulas
@@ -31,7 +32,7 @@ export default function FarmaciaDashboard() {
     navigate('/', { replace: true });
   };
 
-  // 🔵 Carregar fórmulas do banco
+  // 🔵 Carrega fórmulas do banco
   const carregarFormulas = async (farmaciaId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
@@ -61,7 +62,7 @@ export default function FarmaciaDashboard() {
         </div>
       </header>
 
-      {/* 🔵 MENU */}
+      {/* 🔵 NAV */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button onClick={() => setAbaAtiva('produtos')} className={`flex flex-col items-center ${abaAtiva === 'produtos' ? 'text-blue-600 font-bold' : 'text-blue-600 hover:underline'}`}>
           <Package size={32} />
@@ -92,11 +93,12 @@ export default function FarmaciaDashboard() {
 
         {abaAtiva === 'formulas' && (
           <>
-            {/* 🔵 Sidebar com fórmulas */}
+            {/* 🔵 Sidebar de fórmulas */}
             <FormulaSidebar
-              farmaciaId={user?.id}
               formulas={formulas}
-              onEditar={(formula) => setFormulaSelecionada(formula)}
+              pesquisa={pesquisa}
+              setPesquisa={setPesquisa}
+              onEditar={setFormulaSelecionada}
               onAtualizarLista={() => carregarFormulas(user?.id)}
             />
 
@@ -104,11 +106,12 @@ export default function FarmaciaDashboard() {
             <main className="flex-1 p-6 overflow-y-auto">
               <FormulaForm
                 farmaciaId={user?.id}
-                formulaSelecionada={formulaSelecionada}
-                onFinalizar={() => {
+                dadosIniciais={formulaSelecionada}
+                onSucesso={() => {
                   setFormulaSelecionada(null);
                   carregarFormulas(user?.id);
                 }}
+                onCancelar={() => setFormulaSelecionada(null)}
               />
             </main>
           </>
@@ -121,6 +124,7 @@ export default function FarmaciaDashboard() {
         )}
 
       </div>
+
     </div>
   );
 }
