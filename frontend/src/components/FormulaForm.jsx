@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function FormulaForm({ userId, dadosIniciais, onSucesso, onCancelar }) {
+export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinalizar }) {
   const [nome, setNome] = useState('');
   const [composicao, setComposicao] = useState('');
   const [indicacao, setIndicacao] = useState('');
@@ -10,59 +10,64 @@ export default function FormulaForm({ userId, dadosIniciais, onSucesso, onCancel
   const [sucesso, setSucesso] = useState('');
 
   useEffect(() => {
-    if (dadosIniciais) {
-      setNome(dadosIniciais.nome || '');
-      setComposicao(dadosIniciais.composicao || '');
-      setIndicacao(dadosIniciais.indicacao || '');
-      setPosologia(dadosIniciais.posologia || '');
-    }
-  }, [dadosIniciais]);
-
-const salvar = async () => {
-  if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
-    setErro('Preencha todos os campos.');
-    setSucesso('');
-    return;
-  }
-
-  try {
-    if (dadosIniciais?.id) {
-      // Atualizar fórmula
-      await axios.put(`https://nublia-backend.onrender.com/formulas/${dadosIniciais.id}`, {
-        nome,
-        composicao,
-        indicacao,
-        posologia
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+    if (formulaSelecionada) {
+      setNome(formulaSelecionada.nome);
+      setComposicao(formulaSelecionada.composicao);
+      setIndicacao(formulaSelecionada.indicacao);
+      setPosologia(formulaSelecionada.posologia);
     } else {
-      // Criar nova fórmula
-      await axios.post(`https://nublia-backend.onrender.com/formulas/`, {
-        farmacia_id: userId,
-        nome,
-        composicao,
-        indicacao,
-        posologia
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      setNome('');
+      setComposicao('');
+      setIndicacao('');
+      setPosologia('');
+    }
+  }, [formulaSelecionada]);
+
+  const salvar = async () => {
+    if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
+      setErro('Preencha todos os campos.');
+      setSucesso('');
+      return;
     }
 
-    onSucesso(); // 🔵 Atualiza lista depois de salvar
-  } catch (error) {
-    console.error('Erro ao salvar fórmula:', error);
-  }
-};
+    try {
+      if (formulaSelecionada) {
+        // Atualizar fórmula (POST para /formulas/update)
+        await axios.post('https://nublia-backend.onrender.com/formulas/update', {
+          id: formulaSelecionada.id,
+          nome,
+          composicao,
+          indicacao,
+          posologia,
+          farmacia_id: farmaciaId,
+        });
+        setSucesso('Fórmula atualizada com sucesso!');
+      } else {
+        // Criar nova fórmula
+        await axios.post('https://nublia-backend.onrender.com/formulas/', {
+          farmacia_id: farmaciaId,
+          nome,
+          composicao,
+          indicacao,
+          posologia,
+        });
+        setSucesso('Fórmula cadastrada com sucesso!');
+      }
+
+      setErro('');
+      onFinalizar();
+    } catch (error) {
+      console.error('Erro ao salvar fórmula:', error);
+      setErro('Erro ao salvar fórmula.');
+      setSucesso('');
+    }
+  };
 
   return (
     <div className="w-full max-w-2xl space-y-6 bg-white p-6 rounded-lg shadow">
+
       <h2 className="text-2xl font-bold text-blue-600">
-        {dadosIniciais ? 'Editar Fórmula' : 'Nova Fórmula'}
+        {formulaSelecionada ? 'Editar Fórmula' : 'Nova Fórmula'}
       </h2>
 
       {erro && <p className="text-red-500">{erro}</p>}
@@ -115,14 +120,16 @@ const salvar = async () => {
           >
             Salvar
           </button>
+
           <button
-            onClick={onCancelar}
+            onClick={onFinalizar}
             className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
           >
             Cancelar
           </button>
         </div>
       </div>
+
     </div>
   );
 }
