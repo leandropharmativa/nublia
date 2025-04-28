@@ -1,15 +1,22 @@
-// 📄 src/components/FormulaForm.jsx
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function FormulaForm({ userId, dadosIniciais, onSucesso, onCancelar }) {
-  const [nome, setNome] = useState(dadosIniciais?.nome || '');
-  const [composicao, setComposicao] = useState(dadosIniciais?.composicao || '');
-  const [indicacao, setIndicacao] = useState(dadosIniciais?.indicacao || '');
-  const [posologia, setPosologia] = useState(dadosIniciais?.posologia || '');
+  const [nome, setNome] = useState('');
+  const [composicao, setComposicao] = useState('');
+  const [indicacao, setIndicacao] = useState('');
+  const [posologia, setPosologia] = useState('');
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
+
+  useEffect(() => {
+    if (dadosIniciais) {
+      setNome(dadosIniciais.nome || '');
+      setComposicao(dadosIniciais.composicao || '');
+      setIndicacao(dadosIniciais.indicacao || '');
+      setPosologia(dadosIniciais.posologia || '');
+    }
+  }, [dadosIniciais]);
 
   const salvar = async () => {
     if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
@@ -20,30 +27,29 @@ export default function FormulaForm({ userId, dadosIniciais, onSucesso, onCancel
 
     try {
       if (dadosIniciais?.id) {
-        // 🔵 Atualizar fórmula usando POST
-        await axios.post('https://nublia-backend.onrender.com/formulas/update', {
-          id: dadosIniciais.id,
+        // Atualizar
+        await axios.put(`https://nublia-backend.onrender.com/formulas/${dadosIniciais.id}`, {
           nome,
           composicao,
           indicacao,
-          posologia
+          posologia,
         });
         setSucesso('Fórmula atualizada com sucesso!');
       } else {
-        // 🔵 Criar nova fórmula
-        await axios.post('https://nublia-backend.onrender.com/formulas/', {
+        // Criar nova
+        await axios.post(`https://nublia-backend.onrender.com/formulas/`, {
           farmacia_id: userId,
           nome,
           composicao,
           indicacao,
-          posologia
+          posologia,
         });
         setSucesso('Fórmula cadastrada com sucesso!');
       }
 
-      onSucesso(); // 🔵 Chama função do pai para atualizar lista
+      onSucesso(); // 🔵 Atualiza lista e reseta form
     } catch (error) {
-      console.error(error);
+      console.error('Erro ao salvar fórmula:', error);
       setErro('Erro ao salvar a fórmula.');
       setSucesso('');
     }
@@ -105,7 +111,6 @@ export default function FormulaForm({ userId, dadosIniciais, onSucesso, onCancel
           >
             Salvar
           </button>
-
           <button
             onClick={onCancelar}
             className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
