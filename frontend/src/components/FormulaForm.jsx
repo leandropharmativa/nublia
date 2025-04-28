@@ -1,4 +1,4 @@
-// 📄 src/components/FormulaForm.jsx (v2.3.0)
+// 📄 src/components/FormulaForm.jsx (v2.4.0)
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -12,10 +12,10 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
   useEffect(() => {
     if (formulaSelecionada) {
-      setNome(formulaSelecionada.nome);
-      setComposicao(formulaSelecionada.composicao);
-      setIndicacao(formulaSelecionada.indicacao);
-      setPosologia(formulaSelecionada.posologia);
+      setNome(formulaSelecionada.nome || '');
+      setComposicao(formulaSelecionada.composicao || '');
+      setIndicacao(formulaSelecionada.indicacao || '');
+      setPosologia(formulaSelecionada.posologia || '');
     } else {
       limparCampos();
     }
@@ -26,6 +26,7 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
     setComposicao('');
     setIndicacao('');
     setPosologia('');
+    setErro('');
   };
 
   const salvarFormula = async () => {
@@ -36,8 +37,8 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
     try {
       if (formulaSelecionada) {
-        await axios.post('https://nublia-backend.onrender.com/formulas/update', {
-          id: formulaSelecionada.id,
+        await axios.put(`https://nublia-backend.onrender.com/formulas/${formulaSelecionada.id}`, {
+          farmacia_id: farmaciaId, // 🔵 Correção
           nome,
           composicao,
           indicacao,
@@ -51,25 +52,22 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           indicacao,
           posologia
         });
-        limparCampos();
       }
-
-      setErro('');
-      onFinalizar();
+      limparCampos();
+      onFinalizar(); // 🔵 Atualiza a lista
     } catch (error) {
-      console.error('Erro ao salvar fórmula:', error);
+      console.error(error);
       setErro('Erro ao salvar a fórmula.');
     }
   };
 
   return (
     <div className="w-full max-w-2xl space-y-6 bg-white p-6 rounded-lg shadow">
-
       <h2 className="text-2xl font-bold text-blue-600">
         {formulaSelecionada ? 'Editar Fórmula' : 'Nova Fórmula'}
       </h2>
 
-      {erro && <p className="text-red-600 text-sm">{erro}</p>}
+      {erro && <p className="text-red-500">{erro}</p>}
 
       <div className="space-y-4">
         <div>
@@ -111,17 +109,17 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           />
         </div>
 
-        <div className="flex justify-end gap-4 mt-6">
+        <div className="flex gap-4 mt-6">
           <button
             onClick={salvarFormula}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
           >
-            {formulaSelecionada ? 'Atualizar Fórmula' : 'Salvar Nova Fórmula'}
+            {formulaSelecionada ? 'Atualizar Fórmula' : 'Cadastrar Fórmula'}
           </button>
 
           {formulaSelecionada && (
             <button
-              onClick={onFinalizar}
+              onClick={limparCampos}
               className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
             >
               Cancelar Edição
@@ -129,7 +127,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           )}
         </div>
       </div>
-
     </div>
   );
 }
