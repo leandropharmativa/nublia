@@ -1,4 +1,4 @@
-// 📄 src/components/FormulaForm.jsx (v2.0.1)
+// 📄 src/components/FormulaForm.jsx (v2.1.0)
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -8,10 +8,10 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
   const [composicao, setComposicao] = useState('');
   const [indicacao, setIndicacao] = useState('');
   const [posologia, setPosologia] = useState('');
-  const [mensagem, setMensagem] = useState('');
+  const [mensagemSucesso, setMensagemSucesso] = useState('');
+  const [mensagemErro, setMensagemErro] = useState('');
   const [modoEdicao, setModoEdicao] = useState(false);
 
-  // Atualiza campos quando selecionar fórmula
   useEffect(() => {
     if (formulaSelecionada) {
       setNome(formulaSelecionada.nome || '');
@@ -26,12 +26,14 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
       setPosologia('');
       setModoEdicao(false);
     }
-    setMensagem('');
+    setMensagemErro('');
+    setMensagemSucesso('');
   }, [formulaSelecionada]);
 
   const salvar = async () => {
     if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
-      setMensagem('Preencha todos os campos.');
+      setMensagemErro('Preencha todos os campos.');
+      setMensagemSucesso('');
       return;
     }
 
@@ -46,9 +48,9 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           posologia,
           farmacia_id: farmaciaId,
         });
-        setMensagem('Fórmula atualizada com sucesso!');
+        setMensagemSucesso('Fórmula atualizada com sucesso!');
       } else {
-        // Cadastrar nova fórmula
+        // Nova fórmula
         await axios.post('https://nublia-backend.onrender.com/formulas/', {
           farmacia_id: farmaciaId,
           nome,
@@ -56,18 +58,19 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           indicacao,
           posologia,
         });
-        setMensagem('Fórmula cadastrada com sucesso!');
+        setMensagemSucesso('Fórmula cadastrada com sucesso!');
       }
 
-      // Após sucesso:
+      setMensagemErro('');
+
       setTimeout(() => {
-        setMensagem('');
-        onFinalizar();  // chama o FarmaciaDashboard para atualizar lista
-      }, 1000);
+        onFinalizar(); // Atualiza o Dashboard para recarregar a lista
+      }, 500);
 
     } catch (error) {
       console.error('Erro ao salvar fórmula:', error);
-      setMensagem('Erro ao salvar a fórmula.');
+      setMensagemErro('Erro ao salvar a fórmula.');
+      setMensagemSucesso('');
     }
   };
 
@@ -77,7 +80,8 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
         {modoEdicao ? 'Editar Fórmula' : 'Nova Fórmula'}
       </h2>
 
-      {mensagem && <p className="text-center text-sm text-red-500">{mensagem}</p>}
+      {mensagemErro && <p className="text-center text-sm text-red-500">{mensagemErro}</p>}
+      {mensagemSucesso && <p className="text-center text-sm text-green-600">{mensagemSucesso}</p>}
 
       <div className="space-y-4">
         <div>
