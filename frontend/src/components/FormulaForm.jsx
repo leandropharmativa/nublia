@@ -1,39 +1,17 @@
 // 📄 src/components/FormulaForm.jsx
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 
-export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinalizar }) {
-  const [nome, setNome] = useState('');
-  const [composicao, setComposicao] = useState('');
-  const [indicacao, setIndicacao] = useState('');
-  const [posologia, setPosologia] = useState('');
+export default function FormulaForm({ userId, dadosIniciais, onSucesso, onCancelar }) {
+  const [nome, setNome] = useState(dadosIniciais?.nome || '');
+  const [composicao, setComposicao] = useState(dadosIniciais?.composicao || '');
+  const [indicacao, setIndicacao] = useState(dadosIniciais?.indicacao || '');
+  const [posologia, setPosologia] = useState(dadosIniciais?.posologia || '');
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
 
-  // 🔵 Preenche campos ao editar
-  useEffect(() => {
-    if (formulaSelecionada) {
-      setNome(formulaSelecionada.nome || '');
-      setComposicao(formulaSelecionada.composicao || '');
-      setIndicacao(formulaSelecionada.indicacao || '');
-      setPosologia(formulaSelecionada.posologia || '');
-    } else {
-      limparCampos();
-    }
-  }, [formulaSelecionada]);
-
-  const limparCampos = () => {
-    setNome('');
-    setComposicao('');
-    setIndicacao('');
-    setPosologia('');
-    setErro('');
-    setSucesso('');
-  };
-
-  // 🔵 Função para salvar (novo ou editar)
-  const salvarFormula = async () => {
+  const salvar = async () => {
     if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
       setErro('Preencha todos os campos.');
       setSucesso('');
@@ -41,9 +19,10 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
     }
 
     try {
-      if (formulaSelecionada) {
-        // Atualizar
-        await axios.put(`https://nublia-backend.onrender.com/formulas/${formulaSelecionada.id}`, {
+      if (dadosIniciais?.id) {
+        // 🔵 Atualizar fórmula usando POST
+        await axios.post('https://nublia-backend.onrender.com/formulas/update', {
+          id: dadosIniciais.id,
           nome,
           composicao,
           indicacao,
@@ -51,9 +30,9 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
         });
         setSucesso('Fórmula atualizada com sucesso!');
       } else {
-        // Cadastrar
+        // 🔵 Criar nova fórmula
         await axios.post('https://nublia-backend.onrender.com/formulas/', {
-          farmacia_id: farmaciaId,
+          farmacia_id: userId,
           nome,
           composicao,
           indicacao,
@@ -62,10 +41,9 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
         setSucesso('Fórmula cadastrada com sucesso!');
       }
 
-      limparCampos();
-      onFinalizar(); // 🔵 Atualiza lista e fecha edição
+      onSucesso(); // 🔵 Chama função do pai para atualizar lista
     } catch (error) {
-      console.error('Erro ao salvar fórmula:', error);
+      console.error(error);
       setErro('Erro ao salvar a fórmula.');
       setSucesso('');
     }
@@ -73,9 +51,8 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
   return (
     <div className="w-full max-w-2xl space-y-6 bg-white p-6 rounded-lg shadow">
-
       <h2 className="text-2xl font-bold text-blue-600">
-        {formulaSelecionada ? 'Editar Fórmula' : 'Nova Fórmula'}
+        {dadosIniciais ? 'Editar Fórmula' : 'Nova Fórmula'}
       </h2>
 
       {erro && <p className="text-red-500">{erro}</p>}
@@ -123,26 +100,20 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
         <div className="flex gap-4 mt-6">
           <button
-            onClick={salvarFormula}
+            onClick={salvar}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
           >
             Salvar
           </button>
 
-          {formulaSelecionada && (
-            <button
-              onClick={() => {
-                limparCampos();
-                onFinalizar();
-              }}
-              className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
-            >
-              Cancelar
-            </button>
-          )}
+          <button
+            onClick={onCancelar}
+            className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+          >
+            Cancelar
+          </button>
         </div>
       </div>
-
     </div>
   );
 }
