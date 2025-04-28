@@ -18,42 +18,46 @@ export default function FormulaForm({ userId, dadosIniciais, onSucesso, onCancel
     }
   }, [dadosIniciais]);
 
-  const salvar = async () => {
-    if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
-      setErro('Preencha todos os campos.');
-      setSucesso('');
-      return;
+const salvar = async () => {
+  if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
+    setErro('Preencha todos os campos.');
+    setSucesso('');
+    return;
+  }
+
+  try {
+    if (dadosIniciais?.id) {
+      // Atualizar fórmula
+      await axios.put(`https://nublia-backend.onrender.com/formulas/${dadosIniciais.id}`, {
+        nome,
+        composicao,
+        indicacao,
+        posologia
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    } else {
+      // Criar nova fórmula
+      await axios.post(`https://nublia-backend.onrender.com/formulas/`, {
+        farmacia_id: userId,
+        nome,
+        composicao,
+        indicacao,
+        posologia
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
     }
 
-    try {
-      if (dadosIniciais?.id) {
-        // Atualizar
-        await axios.put(`https://nublia-backend.onrender.com/formulas/${dadosIniciais.id}`, {
-          nome,
-          composicao,
-          indicacao,
-          posologia,
-        });
-        setSucesso('Fórmula atualizada com sucesso!');
-      } else {
-        // Criar nova
-        await axios.post(`https://nublia-backend.onrender.com/formulas/`, {
-          farmacia_id: userId,
-          nome,
-          composicao,
-          indicacao,
-          posologia,
-        });
-        setSucesso('Fórmula cadastrada com sucesso!');
-      }
-
-      onSucesso(); // 🔵 Atualiza lista e reseta form
-    } catch (error) {
-      console.error('Erro ao salvar fórmula:', error);
-      setErro('Erro ao salvar a fórmula.');
-      setSucesso('');
-    }
-  };
+    onSucesso(); // 🔵 Atualiza lista depois de salvar
+  } catch (error) {
+    console.error('Erro ao salvar fórmula:', error);
+  }
+};
 
   return (
     <div className="w-full max-w-2xl space-y-6 bg-white p-6 rounded-lg shadow">
