@@ -1,4 +1,4 @@
-// 📄 src/pages/FarmaciaDashboard.jsx (v2.4.0)
+// 📄 src/pages/FarmaciaDashboard.jsx (v2.5.0)
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,9 @@ export default function FarmaciaDashboard() {
   const [user, setUser] = useState(null);
   const [formulas, setFormulas] = useState([]);
   const [formulaSelecionada, setFormulaSelecionada] = useState(null);
+  const [recarregar, setRecarregar] = useState(false);
 
+  // 🔵 Verifica usuário logado e carrega fórmulas
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -23,8 +25,9 @@ export default function FarmaciaDashboard() {
     } else {
       navigate('/');
     }
-  }, [navigate]);
+  }, [navigate, recarregar]);
 
+  // 🔵 Carregar fórmulas do banco
   const carregarFormulas = async (farmaciaId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
@@ -34,6 +37,7 @@ export default function FarmaciaDashboard() {
     }
   };
 
+  // 🔵 Logout
   const logout = () => {
     localStorage.clear();
     navigate('/', { replace: true });
@@ -41,7 +45,7 @@ export default function FarmaciaDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      
+
       {/* 🔵 TOPO */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <div>
@@ -90,18 +94,22 @@ export default function FarmaciaDashboard() {
 
         {abaAtiva === 'formulas' && (
           <>
+            {/* 🔵 Sidebar de fórmulas */}
             <FormulaSidebar
               formulas={formulas}
-              onEditar={setFormulaSelecionada}
-              recarregar={() => carregarFormulas(user?.id)}
+              onEditar={(formula) => setFormulaSelecionada(formula)}
+              farmaciaId={user?.id}
+              onAtualizar={() => setRecarregar(!recarregar)}
             />
+
+            {/* 🔵 Formulário de fórmulas */}
             <main className="flex-1 p-6 overflow-y-auto">
               <FormulaForm
                 farmaciaId={user?.id}
                 formulaSelecionada={formulaSelecionada}
                 onFinalizar={() => {
                   setFormulaSelecionada(null);
-                  carregarFormulas(user?.id);
+                  setRecarregar(!recarregar);
                 }}
               />
             </main>
@@ -115,6 +123,7 @@ export default function FarmaciaDashboard() {
         )}
 
       </div>
+
     </div>
   );
 }
