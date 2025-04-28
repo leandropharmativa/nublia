@@ -26,18 +26,15 @@ export default function FormulaSidebar({ farmaciaId, onEditar }) {
   };
 
   // 🔵 Excluir fórmula
-  const excluirFormula = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
-    try {
-      await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
-      // Atualiza a lista após excluir
-      setFormulas(prev => prev.filter(f => f.id !== id));
-      setErro('');
-    } catch (error) {
-      console.error('Erro ao excluir fórmula:', error);
-      setErro('Erro ao excluir fórmula.');
-    }
-  };
+const excluirFormula = async (id) => {
+  if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
+  try {
+    await axios.delete(`https://nublia-backend.onrender.com/formulas/${id}`);
+    onRecarregar(); // depois recarrega as fórmulas
+  } catch (error) {
+    console.error('Erro ao excluir fórmula:', error);
+  }
+};
 
   // 🔵 Filtro de pesquisa
   const formulasFiltradas = formulas.filter((formula) =>
