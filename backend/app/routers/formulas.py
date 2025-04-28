@@ -1,6 +1,5 @@
-# 📄 backend/app/routers/formulas.py
-
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlmodel import Session, select
 from app.models import Formula, FormulaCreate
 from app.database import engine, get_session
@@ -26,28 +25,29 @@ def listar_formulas_por_farmacia(farmacia_id: int):
         ).all()
         return formulas
 
-# 🔵 Deletar fórmula (usando POST para evitar CORS bloqueios)
+# 🔵 Deletar uma fórmula pelo ID via POST
+class FormulaDeleteRequest(BaseModel):
+    id: int
+
 @router.post("/formulas/delete")
-def deletar_formula_post(id: int, session: Session = Depends(get_session)):
-    formula = session.get(Formula, id)
+def deletar_formula_post(data: FormulaDeleteRequest, session: Session = Depends(get_session)):
+    formula = session.get(Formula, data.id)
     if not formula:
         raise HTTPException(status_code=404, detail="Fórmula não encontrada")
     session.delete(formula)
     session.commit()
     return {"ok": True}
 
-# 🔵 Atualizar fórmula (usando POST para evitar CORS bloqueios)
+# 🔵 Atualizar fórmula via POST
 @router.post("/formulas/update")
 def atualizar_formula_post(data: FormulaCreate, session: Session = Depends(get_session)):
-    formula = session.get(Formula, data.id)
+    formula = session.get(data.id)
     if not formula:
         raise HTTPException(status_code=404, detail="Fórmula não encontrada")
-
     formula.nome = data.nome
     formula.composicao = data.composicao
     formula.indicacao = data.indicacao
     formula.posologia = data.posologia
-
     session.commit()
     session.refresh(formula)
     return formula
