@@ -1,9 +1,9 @@
 # 📄 backend/app/routers/formulas.py
 
-from fastapi import APIRouter, Depends, HTTPException  # 🛠 adicionei HTTPException que faltava
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from app.models import Formula, FormulaCreate
-from app.database import engine, get_session  # 🔵 IMPORTA CORRETAMENTE daqui
+from app.database import engine, get_session
 
 router = APIRouter()
 
@@ -26,35 +26,7 @@ def listar_formulas_por_farmacia(farmacia_id: int):
         ).all()
         return formulas
 
-# 🔵 Deletar uma fórmula pelo ID
-@router.delete("/formulas/{formula_id}")
-def deletar_formula(formula_id: int, session: Session = Depends(get_session)):
-    formula = session.get(Formula, formula_id)
-    if not formula:
-        raise HTTPException(status_code=404, detail="Fórmula não encontrada")
-    session.delete(formula)
-    session.commit()
-    return {"ok": True}
-
-# 🔵 Atualizar fórmula
-@router.put("/formulas/{formula_id}")
-def atualizar_formula(formula_id: int, formula_data: FormulaCreate, session: Session = Depends(get_session)):
-    formula = session.get(Formula, formula_id)
-    if not formula:
-        raise HTTPException(status_code=404, detail="Fórmula não encontrada")
-
-    formula.nome = formula_data.nome
-    formula.composicao = formula_data.composicao
-    formula.indicacao = formula_data.indicacao
-    formula.posologia = formula_data.posologia
-
-    session.add(formula)
-    session.commit()
-    session.refresh(formula)
-
-    return formula
-    
-# 🔵 Deletar fórmula (agora via POST)
+# 🔵 Deletar fórmula (usando POST para evitar CORS bloqueios)
 @router.post("/formulas/delete")
 def deletar_formula_post(id: int, session: Session = Depends(get_session)):
     formula = session.get(Formula, id)
@@ -64,15 +36,18 @@ def deletar_formula_post(id: int, session: Session = Depends(get_session)):
     session.commit()
     return {"ok": True}
 
-# 🔵 Atualizar fórmula (agora via POST)
+# 🔵 Atualizar fórmula (usando POST para evitar CORS bloqueios)
 @router.post("/formulas/update")
 def atualizar_formula_post(data: FormulaCreate, session: Session = Depends(get_session)):
     formula = session.get(Formula, data.id)
     if not formula:
         raise HTTPException(status_code=404, detail="Fórmula não encontrada")
+
     formula.nome = data.nome
     formula.composicao = data.composicao
     formula.indicacao = data.indicacao
     formula.posologia = data.posologia
+
     session.commit()
+    session.refresh(formula)
     return formula
