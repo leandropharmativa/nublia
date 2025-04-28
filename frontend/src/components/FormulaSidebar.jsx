@@ -1,26 +1,27 @@
-// 📄 src/components/FormulaSidebar.jsx
-
-import { useState } from 'react';
-import { Edit, Trash2, Search } from 'lucide-react';
+import { Search, Edit, Trash2 } from 'lucide-react';
 import axios from 'axios';
+import { useState } from 'react';
 
-export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEditar, onAtualizarLista }) {
+export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
+  const [pesquisa, setPesquisa] = useState('');
 
-  // 🔵 Função correta para excluir
-  const handleExcluir = async (id) => {
-    if (!confirm('Tem certeza que deseja excluir esta fórmula?')) return;
+  const excluirFormula = async (id) => {
+    if (!window.confirm('Tem certeza que deseja excluir esta fórmula?')) return;
+
     try {
-      await axios.post('https://nublia-backend.onrender.com/formulas/delete', { id });
-      onAtualizarLista(); // 🔵 Atualiza lista após excluir
+      await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
+        id: id,   // 🔵 Mandando id dentro do BODY
+      });
+      alert('Fórmula excluída com sucesso!');
+      onRecarregar();
     } catch (error) {
       console.error('Erro ao excluir fórmula:', error);
-      alert('Erro ao excluir a fórmula.');
+      alert('Erro ao excluir fórmula.');
     }
   };
 
-  // 🔵 Fórmulas filtradas
-  const formulasFiltradas = formulas.filter((formula) =>
-    formula.nome.toLowerCase().includes(pesquisa.toLowerCase())
+  const formulasFiltradas = formulas.filter((f) =>
+    f.nome.toLowerCase().includes(pesquisa.toLowerCase())
   );
 
   return (
@@ -41,7 +42,7 @@ export default function FormulaSidebar({ formulas, pesquisa, setPesquisa, onEdit
               </button>
               <button
                 className="text-red-500 hover:text-red-700"
-                onClick={() => handleExcluir(formula.id)} // 🔥 Aqui agora chama handleExcluir corretamente
+                onClick={() => excluirFormula(formula.id)}
                 title="Excluir fórmula"
               >
                 <Trash2 size={20} />
