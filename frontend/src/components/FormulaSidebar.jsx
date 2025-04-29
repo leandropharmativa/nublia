@@ -1,51 +1,63 @@
-// 📄 src/components/FormulaSidebar.jsx (v2.4.11)
-
 import { useState } from 'react';
-import { Edit, Search } from 'lucide-react';
+import axios from 'axios';
 
-export default function FormulaSidebar({ formulas, onEditar }) {
-  const [pesquisa, setPesquisa] = useState('');
+export default function FormulaSidebar({ formulaSelecionada, onFinalizar }) {
+  const [mostrarModal, setMostrarModal] = useState(false);
 
-  const formulasFiltradas = formulas.filter(
-    (formula) =>
-      formula?.nome?.toLowerCase().includes(pesquisa.toLowerCase())
-  );
+  const excluirFormula = async () => {
+    if (!formulaSelecionada) return;
+
+    try {
+      await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
+        id: formulaSelecionada.id,
+      });
+      setMostrarModal(false);
+      onFinalizar(); // para recarregar ou limpar seleção no pai
+      alert('Fórmula excluída com sucesso.');
+    } catch (error) {
+      console.error('Erro ao excluir fórmula:', error);
+      alert('Erro ao excluir a fórmula.');
+    }
+  };
 
   return (
-    <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
-      <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
+    <div className="w-64 bg-gray-100 p-4 flex flex-col gap-4">
+      {/* Outros botões ou conteúdos do Sidebar */}
 
-      <ul className="space-y-4">
-        {formulasFiltradas.map((formula) => (
-          <li
-            key={formula.id}
-            className="flex justify-between items-center bg-white p-2 rounded shadow-sm"
+      {formulaSelecionada && (
+        <>
+          <button
+            onClick={() => setMostrarModal(true)}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded mt-auto"
           >
-            <span className="text-sm font-medium truncate">{formula.nome}</span>
-            <div className="flex gap-2">
-              <button
-                className="text-blue-600 hover:text-blue-800"
-                onClick={() => onEditar(formula)}
-                title="Editar fórmula"
-              >
-                <Edit size={20} />
-              </button>
-              {/* Botão de exclusão removido */}
-            </div>
-          </li>
-        ))}
-      </ul>
+            Excluir Fórmula
+          </button>
 
-      <div className="mt-6 relative">
-        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-        <input
-          type="text"
-          placeholder="Pesquisar fórmula..."
-          value={pesquisa}
-          onChange={(e) => setPesquisa(e.target.value)}
-          className="w-full pl-10 px-3 py-2 border rounded"
-        />
-      </div>
-    </aside>
+          {/* Modal de confirmação */}
+          {mostrarModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm text-center animate-fade-in">
+                <h2 className="text-xl font-semibold text-red-600 mb-4">Confirmar Exclusão</h2>
+                <p className="text-gray-700 mb-6">Tem certeza que deseja excluir esta fórmula?</p>
+                <div className="flex justify-center gap-4">
+                  <button
+                    onClick={excluirFormula}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                  >
+                    Sim, Excluir
+                  </button>
+                  <button
+                    onClick={() => setMostrarModal(false)}
+                    className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 }
