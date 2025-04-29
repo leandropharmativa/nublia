@@ -90,13 +90,13 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
         user = session.exec(select(User).where(User.email == form_data.username)).first()
 
         if not user:
-            raise HTTPException(status_code=400, detail="Email ou senha inválidos.")
+            raise HTTPException(status_code=400, detail="Email não encontrado.")
 
         if not user.password:
-            raise HTTPException(status_code=400, detail="Usuário ainda não definiu uma senha.")
+            raise HTTPException(status_code=400, detail="Usuário ainda não definiu uma senha. Primeiro acesso: crie sua senha.")
 
         if not pwd_context.verify(form_data.password, user.password):
-            raise HTTPException(status_code=400, detail="Email ou senha inválidos.")
+            raise HTTPException(status_code=400, detail="Senha inválida.")
 
         token_data = {
             "sub": str(user.id)
