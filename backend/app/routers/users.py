@@ -9,6 +9,7 @@ from jose import jwt
 from typing import Optional
 import random
 import string
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -16,7 +17,7 @@ router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Configurações de autenticação JWT
-SECRET_KEY = "chave-secreta-do-nublia"  # Ideal deixar em variável de ambiente depois
+SECRET_KEY = "chave-secreta-do-nublia"  # Ideal: usar variável de ambiente
 ALGORITHM = "HS256"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -32,6 +33,7 @@ def create_access_token(data: dict):
 # Função para gerar código aleatório único
 def gerar_codigo_unico():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
 
 # 🛠 ROTA: Registrar novo usuário
 @router.post("/register")
@@ -67,7 +69,7 @@ def register_user(user: UserCreate, codigo_ativacao: Optional[str] = Body(None))
             session.commit()
 
         # Cria novo usuário com senha criptografada
-        hashed_password = hash_password(user.password)
+        hashed_password = hash_password(user.password) if user.password else None
         user_data = user.dict()
         user_data['password'] = hashed_password
         new_user = User(**user_data)
@@ -81,7 +83,7 @@ def register_user(user: UserCreate, codigo_ativacao: Optional[str] = Body(None))
             "id": new_user.id
         }
 
-# 🛠 ROTA: Login
+# 🛠 ROTA: Login com JWT
 @router.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
     with Session(engine) as session:
@@ -89,6 +91,9 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
         if not user:
             raise HTTPException(status_code=400, detail="Email ou senha inválidos.")
+
+        if not user.password:
+            raise HTTPException(status_code=400, detail="Usuário ainda não definiu uma senha.")
 
         if not pwd_context.verify(form_data.password, user.password):
             raise HTTPException(status_code=400, detail="Email ou senha inválidos.")
@@ -109,20 +114,42 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
             }
         }
 
+# 🛠 ROTA: Criar senha para usuários sem senha (primeiro acesso)
+class CriarSenhaRequest(BaseModel):
+    email: str
+    nova_senha: str
+
+@router.post("/usuarios/criar-senha")
+def criar_senha(data: CriarSenhaRequest):
+    with Session(engine) as session:
+        user = session.exec(select(User).where(User.email == data.email)).first()
+
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+
+        if user.password:
+            raise HTTPException(status_code=400, detail="Este usuário já possui senha. Faça login normalmente.")
+
+        user.password = hash_password(data.nova_senha)
+        session.add(user)
+        session.commit()
+
+        return {"ok": True, "message": "Senha cadastrada com sucesso."}
+
 # 🛠 ROTA: Listar todos os usuários
 @router.get("/users/all")
 def list_users():
     with Session(engine) as session:
         return session.exec(select(User)).all()
 
-# 🛠 ROTA NOVA: Gerar código de ativação
+# 🛠 ROTA: Gerar código de ativação (requer admin)
 @router.post("/generate_code")
 def generate_activation_code(
     tipo_usuario: str = Body(...),
     email_usuario: str = Body(...),
     token: str = Depends(oauth2_scheme)
 ):
-    # Decodifica o token JWT para garantir que é admin
+    # Decodifica token JWT
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("sub")
@@ -135,14 +162,13 @@ def generate_activation_code(
         if not user or user.role != "admin":
             raise HTTPException(status_code=403, detail="Acesso negado")
 
-        # Gera código novo
+        # Gera novo código
         novo_codigo = gerar_codigo_unico()
 
         # Cria o registro no banco
         codigo_registro = CodigoAtivacao(
             codigo=novo_codigo,
             tipo=tipo_usuario,
-            email=email_usuario,
             ativo=True
         )
 
