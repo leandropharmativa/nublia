@@ -1,77 +1,80 @@
-// 📄 src/components/FormulaForm.jsx (v2.4.5)
+// 📄 src/components/FormulaForm.jsx (v2.4.6)
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
-import ModalMensagem from './ModalMensagem'; // 🔵 Componente modal reutilizável
+import ModalMensagem from './ModalMensagem';
 
 export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinalizar }) {
-  const [nome, setNome] = useState('');
-  const [composicao, setComposicao] = useState('');
-  const [indicacao, setIndicacao] = useState('');
-  const [posologia, setPosologia] = useState('');
-  const [modal, setModal] = useState(null); // 🔵 Controla mensagens de sucesso/erro
+  const [nome, setNome] = useState(formulaSelecionada?.nome || '');
+  const [composicao, setComposicao] = useState(formulaSelecionada?.composicao || '');
+  const [indicacao, setIndicacao] = useState(formulaSelecionada?.indicacao || '');
+  const [posologia, setPosologia] = useState(formulaSelecionada?.posologia || '');
 
-  useEffect(() => {
-    if (formulaSelecionada) {
-      setNome(formulaSelecionada.nome || '');
-      setComposicao(formulaSelecionada.composicao || '');
-      setIndicacao(formulaSelecionada.indicacao || '');
-      setPosologia(formulaSelecionada.posologia || '');
-    } else {
-      limparFormulario();
+  const [erro, setErro] = useState('');
+  const [modalExclusao, setModalExclusao] = useState(false);
+
+  const salvar = async () => {
+    if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
+      setErro('Preencha todos os campos.');
+      return;
     }
-  }, [formulaSelecionada]);
+
+    try {
+      if (formulaSelecionada?.id) {
+        await axios.put(`https://nublia-backend.onrender.com/formulas/${formulaSelecionada.id}`, {
+          nome,
+          composicao,
+          indicacao,
+          posologia,
+        });
+      } else {
+        await axios.post('https://nublia-backend.onrender.com/formulas/', {
+          farmacia_id: farmaciaId,
+          nome,
+          composicao,
+          indicacao,
+          posologia,
+        });
+      }
+
+      limparFormulario();
+      onFinalizar();
+    } catch (error) {
+      console.error(error);
+      setErro('Erro ao salvar a fórmula.');
+    }
+  };
+
+  const excluir = async () => {
+    try {
+      await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
+        id: formulaSelecionada.id,
+      });
+      setModalExclusao(false);
+      limparFormulario();
+      onFinalizar();
+    } catch (error) {
+      console.error('Erro ao excluir fórmula:', error);
+      setErro('Erro ao excluir a fórmula.');
+    }
+  };
 
   const limparFormulario = () => {
     setNome('');
     setComposicao('');
     setIndicacao('');
     setPosologia('');
-  };
-
-  const salvar = async () => {
-    if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
-      setModal({ tipo: 'erro', mensagem: 'Preencha todos os campos.' });
-      return;
-    }
-
-    try {
-      if (formulaSelecionada) {
-        // Atualizar fórmula
-        await axios.post(`https://nublia-backend.onrender.com/formulas/update`, {
-          id: formulaSelecionada.id,
-          farmacia_id: farmaciaId,
-          nome,
-          composicao,
-          indicacao,
-          posologia
-        });
-        setModal({ tipo: 'sucesso', mensagem: 'Fórmula atualizada com sucesso!' });
-      } else {
-        // Criar nova fórmula
-        await axios.post('https://nublia-backend.onrender.com/formulas/', {
-          farmacia_id: farmaciaId,
-          nome,
-          composicao,
-          indicacao,
-          posologia
-        });
-        setModal({ tipo: 'sucesso', mensagem: 'Fórmula cadastrada com sucesso!' });
-      }
-
-      onFinalizar();
-      limparFormulario();
-    } catch (error) {
-      console.error(error);
-      setModal({ tipo: 'erro', mensagem: 'Erro ao salvar a fórmula.' });
-    }
+    setErro('');
   };
 
   return (
     <div className="w-full max-w-2xl space-y-6 bg-white p-6 rounded-lg shadow">
+
       <h2 className="text-2xl font-bold text-blue-600">
         {formulaSelecionada ? 'Editar Fórmula' : 'Nova Fórmula'}
       </h2>
+
+      {erro && <p className="text-red-500">{erro}</p>}
 
       <div className="space-y-4">
         <div>
@@ -123,26 +126,34 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
           {formulaSelecionada && (
             <button
-              onClick={() => {
-                limparFormulario();
-                onFinalizar();
-              }}
-              className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+              onClick={() => setModalExclusao(true)}
+              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded"
             >
-              Cancelar Edição
+              Excluir Fórmula
             </button>
           )}
+
+          <button
+            onClick={() => {
+              limparFormulario();
+              onFinalizar();
+            }}
+            className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+          >
+            Cancelar Edição
+          </button>
         </div>
       </div>
 
-      {/* 🔵 Modal de mensagem */}
-      {modal && (
-        <ModalMensagem
-          tipo={modal.tipo}
-          mensagem={modal.mensagem}
-          onFechar={() => setModal(null)}
-        />
-      )}
+      <ModalMensagem
+        exibir={modalExclusao}
+        titulo="Confirmar Exclusão"
+        mensagem="Deseja realmente excluir esta fórmula?"
+        textoConfirmar="Sim, excluir"
+        textoCancelar="Cancelar"
+        onConfirmar={excluir}
+        onCancelar={() => setModalExclusao(false)}
+      />
     </div>
   );
 }
