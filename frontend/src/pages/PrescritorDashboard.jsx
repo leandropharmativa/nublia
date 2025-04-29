@@ -2,7 +2,14 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-import { LogOut, CalendarDays, BookOpenText, Leaf, Settings, PlusCircle } from 'lucide-react'
+import {
+  LogOut,
+  CalendarDays,
+  BookOpenText,
+  Leaf,
+  Settings,
+  PlusCircle
+} from 'lucide-react'
 
 import BuscarPacienteModal from '../components/BuscarPacienteModal'
 import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
@@ -15,7 +22,7 @@ export default function PrescritorDashboard() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
-  const [pacientes, setPacientes] = useState([]) // 🔵 Novo: lista de usuários com role=paciente
+  const [pacientes, setPacientes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarCadastrarPacienteModal, setMostrarCadastrarPacienteModal] = useState(false)
@@ -25,7 +32,6 @@ export default function PrescritorDashboard() {
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
 
-  // 🔵 Carrega usuário logado
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
@@ -35,7 +41,6 @@ export default function PrescritorDashboard() {
     }
   }, [navigate])
 
-  // 🔵 Após obter o user, carrega os atendimentos e pacientes
   useEffect(() => {
     if (user?.id) {
       carregarAtendimentos(user.id)
@@ -43,32 +48,32 @@ export default function PrescritorDashboard() {
     }
   }, [user])
 
-  // 🔁 Busca os atendimentos do prescritor
   const carregarAtendimentos = async (prescritorId) => {
     try {
       const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
       const atendimentos = response.data.filter(a => a.prescritor_id === prescritorId)
 
-try {
-  const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/users/${atendimento.paciente_id}`)
-  const paciente = pacienteResponse.data
+      const atendimentosComPacientes = await Promise.all(
+        atendimentos.map(async (atendimento) => {
+          try {
+            const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/users/${atendimento.paciente_id}`)
+            const paciente = pacienteResponse.data
 
-  if (!paciente || paciente.role !== 'paciente') {
-    throw new Error('Usuário inválido ou não é paciente.')
-  }
+            if (!paciente || paciente.role !== 'paciente') {
+              throw new Error('Usuário inválido ou não é paciente.')
+            }
 
-  return {
-    ...atendimento,
-    nomePaciente: paciente.name
-  }
-} catch (error) {
-  console.error(`Erro ao buscar paciente ID ${atendimento.paciente_id}:`, error.message)
-  return {
-    ...atendimento,
-    nomePaciente: 'Paciente não encontrado'
-  }
-}
-
+            return {
+              ...atendimento,
+              nomePaciente: paciente.name
+            }
+          } catch (error) {
+            console.error(`Erro ao buscar paciente ID ${atendimento.paciente_id}:`, error.message)
+            return {
+              ...atendimento,
+              nomePaciente: 'Paciente não encontrado'
+            }
+          }
         })
       )
 
@@ -78,29 +83,25 @@ try {
     }
   }
 
-  // 🔁 Busca todos os usuários com role="paciente"
   const carregarPacientes = async () => {
     try {
       const response = await axios.get('https://nublia-backend.onrender.com/users/all')
-      const pacientesFiltrados = response.data.filter((u) => u.role === 'paciente')
+      const pacientesFiltrados = response.data.filter(u => u.role === 'paciente')
       setPacientes(pacientesFiltrados)
     } catch (error) {
       console.error('Erro ao carregar pacientes:', error)
     }
   }
 
-  // 🔁 Logout
   const logout = () => {
     localStorage.clear()
     navigate("/", { replace: true })
   }
 
-  // 🔍 Filtra os atendimentos pela pesquisa
   const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
     item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
   )
 
-  // 🔍 Abrir modal com perfil de paciente
   const handleVerPerfil = async (pacienteId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
@@ -114,7 +115,6 @@ try {
     }
   }
 
-  // 🔍 Abrir modal de atendimento
   const handleVerAtendimento = (atendimento) => {
     setAtendimentoSelecionado(atendimento)
     setMostrarVisualizarAtendimentoModal(true)
@@ -122,8 +122,6 @@ try {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-
-      {/* TOPO */}
       <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <div>
           <div className="text-sm font-semibold">Nublia</div>
@@ -140,7 +138,6 @@ try {
         </div>
       </header>
 
-      {/* NAV */}
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <CalendarDays size={32} />
@@ -160,20 +157,16 @@ try {
         </button>
       </nav>
 
-      {/* CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
-
-        {/* Sidebar com lista de atendimentos recentes */}
         <AtendimentosRecentes
           atendimentos={atendimentosFiltrados}
-          pacientes={pacientes} // 🔵 passa lista de usuários do tipo paciente
+          pacientes={pacientes}
           pesquisa={pesquisa}
           onPesquisar={(texto) => setPesquisa(texto)}
           onVerPerfil={handleVerPerfil}
           onVerAtendimento={handleVerAtendimento}
         />
 
-        {/* Centro: Atendimento em andamento ou botão para iniciar */}
         <main className="flex-1 flex flex-col items-start p-4 overflow-hidden">
           {pacienteSelecionado ? (
             <div className="w-full h-full">
@@ -196,7 +189,6 @@ try {
         </main>
       </div>
 
-      {/* Modais */}
       {mostrarBuscarPacienteModal && (
         <BuscarPacienteModal
           onClose={() => setMostrarBuscarPacienteModal(false)}
