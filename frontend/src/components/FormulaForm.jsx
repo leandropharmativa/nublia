@@ -18,6 +18,8 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
       setComposicao(formulaSelecionada.composicao || '');
       setIndicacao(formulaSelecionada.indicacao || '');
       setPosologia(formulaSelecionada.posologia || '');
+    } else {
+      limparFormulario();
     }
   }, [formulaSelecionada]);
 
@@ -29,20 +31,23 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
     try {
       if (formulaSelecionada?.id) {
+        // Atualizar via POST
         await axios.post('https://nublia-backend.onrender.com/formulas/update', {
           id: formulaSelecionada.id,
           nome,
           composicao,
           indicacao,
-          posologia
+          posologia,
+          farmacia_id: farmaciaId,
         });
       } else {
+        // Criar nova fórmula
         await axios.post('https://nublia-backend.onrender.com/formulas/', {
-          farmacia_id: farmaciaId,
           nome,
           composicao,
           indicacao,
           posologia,
+          farmacia_id: farmaciaId,
         });
       }
 
@@ -78,6 +83,7 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
   return (
     <div className="w-full max-w-2xl space-y-6 bg-white p-6 rounded-lg shadow">
+
       <h2 className="text-2xl font-bold text-blue-600">
         {formulaSelecionada ? 'Editar Fórmula' : 'Nova Fórmula'}
       </h2>
