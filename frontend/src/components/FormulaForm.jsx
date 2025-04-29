@@ -1,5 +1,8 @@
+// 📄 src/components/FormulaForm.jsx (v2.4.11)
+
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import ModalMensagem from './ModalMensagem';
 
 export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinalizar }) {
   const [nome, setNome] = useState('');
@@ -7,6 +10,7 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
   const [indicacao, setIndicacao] = useState('');
   const [posologia, setPosologia] = useState('');
   const [erro, setErro] = useState('');
+  const [modalExclusao, setModalExclusao] = useState(false);
 
   useEffect(() => {
     if (formulaSelecionada) {
@@ -14,6 +18,8 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
       setComposicao(formulaSelecionada.composicao || '');
       setIndicacao(formulaSelecionada.indicacao || '');
       setPosologia(formulaSelecionada.posologia || '');
+    } else {
+      limparFormulario();
     }
   }, [formulaSelecionada]);
 
@@ -64,6 +70,7 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
       await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
         id: formulaSelecionada.id,
       });
+      setModalExclusao(false);
       limparFormulario();
       onFinalizar();
     } catch (error) {
@@ -129,25 +136,38 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           </button>
 
           {formulaSelecionada && (
-            <button
-              onClick={excluir}
-              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded"
-            >
-              Excluir Fórmula
-            </button>
-          )}
+            <>
+              <button
+                onClick={() => setModalExclusao(true)}
+                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded"
+              >
+                Excluir Fórmula
+              </button>
 
-          <button
-            onClick={() => {
-              limparFormulario();
-              onFinalizar();
-            }}
-            className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
-          >
-            Cancelar Edição
-          </button>
+              <button
+                onClick={() => {
+                  limparFormulario();
+                  onFinalizar();
+                }}
+                className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+              >
+                Cancelar Edição
+              </button>
+            </>
+          )}
         </div>
       </div>
+
+      {/* 🔵 Modal de confirmação para excluir */}
+      <ModalMensagem
+        exibir={modalExclusao}
+        titulo="Confirmar Exclusão"
+        mensagem="Deseja realmente excluir esta fórmula?"
+        textoConfirmar="Sim, excluir"
+        textoCancelar="Cancelar"
+        onConfirmar={excluir}
+        onCancelar={() => setModalExclusao(false)}
+      />
     </div>
   );
 }
