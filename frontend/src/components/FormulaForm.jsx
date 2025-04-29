@@ -1,8 +1,5 @@
-// 📄 src/components/FormulaForm.jsx (v2.4.11)
-
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import ModalMensagem from './ModalMensagem';
 
 export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinalizar }) {
   const [nome, setNome] = useState('');
@@ -10,8 +7,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
   const [indicacao, setIndicacao] = useState('');
   const [posologia, setPosologia] = useState('');
   const [erro, setErro] = useState('');
-  const [modalExclusao, setModalExclusao] = useState(false);
-  const [modalMensagem, setModalMensagem] = useState({ exibir: false, texto: '', tipo: 'success' });
 
   useEffect(() => {
     if (formulaSelecionada) {
@@ -69,9 +64,7 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
       await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
         id: formulaSelecionada.id,
       });
-      setModalExclusao(false);
       limparFormulario();
-      setModalMensagem({ exibir: true, texto: 'Fórmula excluída com sucesso!', tipo: 'success' });
       onFinalizar();
     } catch (error) {
       console.error('Erro ao excluir fórmula:', error);
@@ -137,7 +130,7 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
           {formulaSelecionada && (
             <button
-              onClick={() => setModalExclusao(true)}
+              onClick={excluir}
               className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded"
             >
               Excluir Fórmula
@@ -155,26 +148,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           </button>
         </div>
       </div>
-
-      {/* Modal de confirmação para excluir */}
-      <ModalMensagem
-        exibir={modalExclusao}
-        titulo="Confirmar Exclusão"
-        mensagem="Deseja realmente excluir esta fórmula?"
-        textoConfirmar="Sim, excluir"
-        textoCancelar="Cancelar"
-        onConfirmar={excluir}
-        onCancelar={() => setModalExclusao(false)}
-      />
-
-      {/* Modal de sucesso */}
-      <ModalMensagem
-        exibir={modalMensagem.exibir}
-        titulo="Sucesso"
-        mensagem={modalMensagem.texto}
-        tipo={modalMensagem.tipo}
-        aoFechar={() => setModalMensagem({ exibir: false, texto: '', tipo: 'success' })}
-      />
     </div>
   );
 }
