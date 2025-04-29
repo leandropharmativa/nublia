@@ -1,4 +1,3 @@
-// 📦 Importações principais
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -16,6 +15,7 @@ export default function PrescritorDashboard() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
+  const [pacientes, setPacientes] = useState([]) // 🔵 Novo: lista de usuários com role=paciente
   const [pesquisa, setPesquisa] = useState('')
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarCadastrarPacienteModal, setMostrarCadastrarPacienteModal] = useState(false)
@@ -35,27 +35,28 @@ export default function PrescritorDashboard() {
     }
   }, [navigate])
 
-  // 🔵 Só depois que o `user` existir, carrega os atendimentos
+  // 🔵 Após obter o user, carrega os atendimentos e pacientes
   useEffect(() => {
-    if (user && user.id) {
+    if (user?.id) {
       carregarAtendimentos(user.id)
+      carregarPacientes()
     }
-  }, [user]) // 👈 só executa quando o `user` mudar
+  }, [user])
 
+  // 🔁 Busca os atendimentos do prescritor
   const carregarAtendimentos = async (prescritorId) => {
     try {
       const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
-      const atendimentos = response.data
-
-      const atendimentosFiltrados = atendimentos.filter(a => a.prescritor_id === prescritorId)
+      const atendimentos = response.data.filter(a => a.prescritor_id === prescritorId)
 
       const atendimentosComPacientes = await Promise.all(
-        atendimentosFiltrados.map(async (atendimento) => {
+        atendimentos.map(async (atendimento) => {
           try {
-            const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/pacientes/${atendimento.paciente_id}`)
+            const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/users/${atendimento.paciente_id}`)
+            const paciente = pacienteResponse.data
             return {
               ...atendimento,
-              nomePaciente: pacienteResponse.data.nome || 'Paciente desconhecido'
+              nomePaciente: paciente?.name || 'Paciente desconhecido'
             }
           } catch (error) {
             console.error('Erro ao buscar paciente:', error)
@@ -70,21 +71,35 @@ export default function PrescritorDashboard() {
     }
   }
 
-  // 🔵 Logout
-  const logout = () => {
-  localStorage.clear()
-  navigate("/", { replace: true }) // 🔵 Sem reload!
+  // 🔁 Busca todos os usuários com role="paciente"
+  const carregarPacientes = async () => {
+    try {
+      const response = await axios.get('https://nublia-backend.onrender.com/users/all')
+      const pacientesFiltrados = response.data.filter((u) => u.role === 'paciente')
+      setPacientes(pacientesFiltrados)
+    } catch (error) {
+      console.error('Erro ao carregar pacientes:', error)
+    }
   }
-  
-  // 🔵 Filtro de pesquisa
+
+  // 🔁 Logout
+  const logout = () => {
+    localStorage.clear()
+    navigate("/", { replace: true })
+  }
+
+  // 🔍 Filtra os atendimentos pela pesquisa
   const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
     item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
   )
 
-  // 🔵 Abrir modal de perfil
+  // 🔍 Abrir modal com perfil de paciente
   const handleVerPerfil = async (pacienteId) => {
     try {
-      const response = await axios.get(`https://nublia-backend.onrender.com/pacientes/${pacienteId}`)
+      const response = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+      if (response.data.role !== 'paciente') {
+        throw new Error("Usuário não é um paciente")
+      }
       setPacientePerfil(response.data)
       setMostrarPerfilPacienteModal(true)
     } catch (error) {
@@ -92,7 +107,7 @@ export default function PrescritorDashboard() {
     }
   }
 
-  // 🔵 Abrir modal para visualizar atendimento
+  // 🔍 Abrir modal de atendimento
   const handleVerAtendimento = (atendimento) => {
     setAtendimentoSelecionado(atendimento)
     setMostrarVisualizarAtendimentoModal(true)
@@ -141,16 +156,17 @@ export default function PrescritorDashboard() {
       {/* CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
 
-        {/* Sidebar */}
+        {/* Sidebar com lista de atendimentos recentes */}
         <AtendimentosRecentes
           atendimentos={atendimentosFiltrados}
+          pacientes={pacientes} // 🔵 passa lista de usuários do tipo paciente
           pesquisa={pesquisa}
           onPesquisar={(texto) => setPesquisa(texto)}
           onVerPerfil={handleVerPerfil}
           onVerAtendimento={handleVerAtendimento}
         />
 
-        {/* Centro */}
+        {/* Centro: Atendimento em andamento ou botão para iniciar */}
         <main className="flex-1 flex flex-col items-start p-4 overflow-hidden">
           {pacienteSelecionado ? (
             <div className="w-full h-full">
