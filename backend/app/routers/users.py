@@ -37,7 +37,10 @@ def gerar_codigo_unico():
 
 # 🛠 ROTA: Registrar novo usuário
 @router.post("/register")
-def register_user(user: UserCreate, codigo_ativacao: Optional[str] = Body(None)):
+def register_user(
+    user: UserCreate = Body(...),
+    codigo_ativacao: Optional[str] = Body(None)
+):
     with Session(engine) as session:
         # Verifica se email já está em uso
         existing = session.exec(select(User).where(User.email == user.email)).first()
