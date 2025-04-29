@@ -1,6 +1,19 @@
 import { User, FileText, Search } from 'lucide-react'
 
-export default function AtendimentosRecentes({ atendimentos, pesquisa, onPesquisar, onVerPerfil, onVerAtendimento }) {
+export default function AtendimentosRecentes({
+  atendimentos,
+  pacientes = [], // agora recebe a lista de users com role 'paciente'
+  pesquisa,
+  onPesquisar,
+  onVerPerfil,
+  onVerAtendimento
+}) {
+  // 🔍 Função para obter nome do paciente pelo ID
+  const getNomePaciente = (id) => {
+    const paciente = pacientes.find((p) => p.id === id)
+    return paciente ? paciente.name : 'Carregando...'
+  }
+
   return (
     <aside className="w-72 bg-gray-100 p-4 border-r flex flex-col overflow-y-auto">
       <h2 className="text-blue-600 text-xl font-semibold mb-4">Atendimentos Recentes</h2>
@@ -10,7 +23,7 @@ export default function AtendimentosRecentes({ atendimentos, pesquisa, onPesquis
         {atendimentos.map((atendimento) => (
           <li key={atendimento.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
             <span className="text-sm font-medium truncate">
-              {atendimento.nomePaciente || 'Carregando...'}
+              {getNomePaciente(atendimento.paciente_id)}
             </span>
             <div className="flex gap-2">
               {/* Botão Ver Perfil */}
