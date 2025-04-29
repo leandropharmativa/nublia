@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinalizar }) {
+export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinalizar, onExcluir }) {
   const [nome, setNome] = useState('');
   const [composicao, setComposicao] = useState('');
   const [indicacao, setIndicacao] = useState('');
@@ -56,19 +56,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
     } catch (error) {
       console.error(error);
       setErro('Erro ao salvar a fórmula.');
-    }
-  };
-
-  const excluir = async () => {
-    try {
-      await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
-        id: formulaSelecionada.id,
-      });
-      limparFormulario();
-      onFinalizar();
-    } catch (error) {
-      console.error('Erro ao excluir fórmula:', error);
-      setErro('Erro ao excluir a fórmula.');
     }
   };
 
@@ -129,24 +116,15 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           </button>
 
           {formulaSelecionada && (
-            <>
-              <button
-                onClick={excluir}
-                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded"
-              >
-                Excluir Fórmula
-              </button>
-
-              <button
-                onClick={() => {
-                  limparFormulario();
-                  onFinalizar();
-                }}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
-              >
-                Cancelar Edição
-              </button>
-            </>
+            <button
+              onClick={() => {
+                limparFormulario();
+                onFinalizar();
+              }}
+              className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+            >
+              Cancelar Edição
+            </button>
           )}
         </div>
       </div>
