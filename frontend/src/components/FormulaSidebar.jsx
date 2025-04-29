@@ -1,12 +1,12 @@
-// 📄 src/components/FormulaSidebar.jsx (v2.4.6)
+// 📄 src/components/FormulaSidebar.jsx (v2.4.7)
 
 import { useState } from 'react';
 import { Edit, Trash2, Search } from 'lucide-react';
-import ModalMensagem from './ModalMensagem';
+import ModalConfirmacao from './ModalConfirmacao';
 
 export default function FormulaSidebar({ formulas, onEditar, onExcluir }) {
   const [pesquisa, setPesquisa] = useState('');
-  const [idParaExcluir, setIdParaExcluir] = useState(null); // ID aguardando confirmação
+  const [idParaExcluir, setIdParaExcluir] = useState(null);
 
   const formulasFiltradas = formulas.filter(
     (formula) =>
@@ -56,12 +56,10 @@ export default function FormulaSidebar({ formulas, onEditar, onExcluir }) {
       </div>
 
       {/* Modal de confirmação de exclusão */}
-      <ModalMensagem
+      <ModalConfirmacao
         exibir={idParaExcluir !== null}
         titulo="Confirmar Exclusão"
         mensagem="Deseja realmente excluir esta fórmula?"
-        textoConfirmar="Sim, excluir"
-        textoCancelar="Cancelar"
         onConfirmar={() => {
           onExcluir(idParaExcluir);
           setIdParaExcluir(null);
