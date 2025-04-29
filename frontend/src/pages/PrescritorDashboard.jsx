@@ -102,14 +102,12 @@ export default function PrescritorDashboard() {
     item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
   )
 
-  const handleVerPerfil = async (pacienteId) => {
+const handleVerPerfil = async (pacienteId) => {
   try {
     const response = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-
     const paciente = response.data
 
     if (!paciente || paciente.role !== 'paciente') {
-      console.warn("Usuário encontrado, mas não é paciente:", paciente)
       throw new Error("Usuário inválido ou não é paciente")
     }
 
