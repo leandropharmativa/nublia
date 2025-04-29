@@ -103,17 +103,22 @@ export default function PrescritorDashboard() {
   )
 
   const handleVerPerfil = async (pacienteId) => {
-    try {
-      const response = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-      if (response.data.role !== 'paciente') {
-        throw new Error("Usuário não é um paciente")
-      }
-      setPacientePerfil(response.data)
-      setMostrarPerfilPacienteModal(true)
-    } catch (error) {
-      console.error('Erro ao carregar perfil do paciente:', error)
+  try {
+    const response = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+
+    const paciente = response.data
+
+    if (!paciente || paciente.role !== 'paciente') {
+      console.warn("Usuário encontrado, mas não é paciente:", paciente)
+      throw new Error("Usuário inválido ou não é paciente")
     }
+
+    setPacientePerfil(paciente)
+    setMostrarPerfilPacienteModal(true)
+  } catch (error) {
+    console.error(`Erro ao carregar perfil do paciente (ID ${pacienteId}):`, error?.response?.data || error.message)
   }
+}
 
   const handleVerAtendimento = (atendimento) => {
     setAtendimentoSelecionado(atendimento)
