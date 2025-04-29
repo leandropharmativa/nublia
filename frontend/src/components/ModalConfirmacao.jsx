@@ -1,7 +1,7 @@
-// 📄 src/components/ModalConfirmacao.jsx (v2.4.0)
+// 📄 src/components/ModalConfirmacao.jsx (v2.4.1)
 
-export default function ModalConfirmacao({ aberto, titulo, mensagem, onConfirmar, onCancelar }) {
-  if (!aberto) return null;
+export default function ModalConfirmacao({ exibir, titulo, mensagem, onConfirmar, onCancelar }) {
+  if (!exibir) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
