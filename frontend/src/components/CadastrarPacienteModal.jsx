@@ -86,4 +86,48 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             className="border px-3 py-2 w-full"
           >
             <option value="Masculino">Masculino</option>
-            <option value="Feminino
+            <option value="Feminino">Feminino</option>
+            <option value="Outro">Outro</option>
+          </select>
+
+          <input
+            type="text"
+            name="telefone"
+            placeholder="Telefone com DDD"
+            required
+            value={form.telefone}
+            onChange={handleChange}
+            className="border px-3 py-2 w-full"
+          />
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Email (opcional)"
+            value={form.email}
+            onChange={handleChange}
+            className="border px-3 py-2 w-full"
+          />
+
+          {/* 🔘 Botões de ação */}
+          <div className="flex justify-between pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={carregando}
+              className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+            >
+              {carregando ? 'Cadastrando...' : 'Cadastrar'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
