@@ -49,19 +49,26 @@ export default function PrescritorDashboard() {
       const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
       const atendimentos = response.data.filter(a => a.prescritor_id === prescritorId)
 
-      const atendimentosComPacientes = await Promise.all(
-        atendimentos.map(async (atendimento) => {
-          try {
-            const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/users/${atendimento.paciente_id}`)
-            const paciente = pacienteResponse.data
-            return {
-              ...atendimento,
-              nomePaciente: paciente?.name || 'Paciente desconhecido'
-            }
-          } catch (error) {
-            console.error('Erro ao buscar paciente:', error)
-            return { ...atendimento, nomePaciente: 'Paciente desconhecido' }
-          }
+try {
+  const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/users/${atendimento.paciente_id}`)
+  const paciente = pacienteResponse.data
+
+  if (!paciente || paciente.role !== 'paciente') {
+    throw new Error('Usuário inválido ou não é paciente.')
+  }
+
+  return {
+    ...atendimento,
+    nomePaciente: paciente.name
+  }
+} catch (error) {
+  console.error(`Erro ao buscar paciente ID ${atendimento.paciente_id}:`, error.message)
+  return {
+    ...atendimento,
+    nomePaciente: 'Paciente não encontrado'
+  }
+}
+
         })
       )
 
