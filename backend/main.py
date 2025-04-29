@@ -22,7 +22,6 @@ app.add_middleware(
 # Registro de todas as rotas (routers)
 app.include_router(root.router)
 app.include_router(users.router)
-app.include_router(pacientes.router)
 app.include_router(agenda.router)
 app.include_router(codigos.router)
 app.include_router(atendimentos.router)
