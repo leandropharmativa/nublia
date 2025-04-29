@@ -14,8 +14,7 @@ export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
       formula?.nome?.toLowerCase().includes(pesquisa.toLowerCase())
   );
 
-  const excluirFormula = async () => {
-    if (!idParaExcluir) return;
+  const confirmarExclusao = async () => {
     try {
       await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
         id: idParaExcluir,
@@ -24,6 +23,8 @@ export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
       onRecarregar();
     } catch (error) {
       console.error('Erro ao excluir fórmula:', error);
+      alert('Erro ao excluir fórmula.');
+      setIdParaExcluir(null);
     }
   };
 
@@ -33,10 +34,7 @@ export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
 
       <ul className="space-y-4">
         {formulasFiltradas.map((formula) => (
-          <li
-            key={formula.id}
-            className="flex justify-between items-center bg-white p-2 rounded shadow-sm"
-          >
+          <li key={formula.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
             <span className="text-sm font-medium truncate">{formula.nome}</span>
             <div className="flex gap-2">
               <button
@@ -76,7 +74,7 @@ export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
         mensagem="Deseja realmente excluir esta fórmula?"
         textoConfirmar="Sim, excluir"
         textoCancelar="Cancelar"
-        onConfirmar={excluirFormula}
+        onConfirmar={confirmarExclusao}
         onCancelar={() => setIdParaExcluir(null)}
       />
     </aside>
