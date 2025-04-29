@@ -129,23 +129,25 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           </button>
 
           {formulaSelecionada && (
-            <button
-              onClick={excluir}
-              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded"
-            >
-              Excluir Fórmula
-            </button>
-          )}
+            <>
+              <button
+                onClick={excluir}
+                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded"
+              >
+                Excluir Fórmula
+              </button>
 
-          <button
-            onClick={() => {
-              limparFormulario();
-              onFinalizar();
-            }}
-            className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
-          >
-            Cancelar Edição
-          </button>
+              <button
+                onClick={() => {
+                  limparFormulario();
+                  onFinalizar();
+                }}
+                className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+              >
+                Cancelar Edição
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
