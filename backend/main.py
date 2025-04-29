@@ -2,25 +2,24 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import create_db_and_tables
 from app.routers import root, users, pacientes, agenda
-from app.routers import codigos
+from app.routers import codigos, atendimentos, formulas, agendamentos  # <<< atualizado
+
 from fastapi.openapi.utils import get_openapi
-from app.routers import atendimentos
-from app.routers import formulas  # <<< adiciona isso
 
 app = FastAPI(
     title="Nublia Backend"
 )
 
-# Permitir que o frontend acesse o backend (CORS)
+# CORS: liberar acesso para o frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://nublia.vercel.app"],  # Pode trocar "*" por URL específica depois, se quiser mais seguro
+    allow_origins=["https://nublia.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Incluir todos os routers
+# Registro de todas as rotas (routers)
 app.include_router(root.router)
 app.include_router(users.router)
 app.include_router(pacientes.router)
@@ -28,12 +27,14 @@ app.include_router(agenda.router)
 app.include_router(codigos.router)
 app.include_router(atendimentos.router)
 app.include_router(formulas.router)
+app.include_router(agendamentos.router)  # <<< nova linha adicionada
 
-# Evento que roda no início para criar o banco de dados (se não existir)
+# Criação automática das tabelas no primeiro startup
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
 
+# Customização do Swagger com autenticação JWT
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -56,5 +57,4 @@ def custom_openapi():
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
-# Ativar o esquema customizado
 app.openapi = custom_openapi
