@@ -1,50 +1,59 @@
-// 📄 frontend/src/components/PerfilPacienteModal.jsx
-
-import { X } from 'lucide-react'
-
 export default function PerfilPacienteModal({ paciente, onClose }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-6 relative">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl mx-4">
+        <h2 className="text-2xl font-bold text-blue-600 mb-4">Perfil do Paciente</h2>
 
-        {/* 🔵 Botão de fechar */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-          title="Fechar"
-        >
-          <X size={24} />
-        </button>
+        <div className="space-y-4 text-sm text-gray-700">
 
-        {/* 🔵 Cabeçalho */}
-        <h2 className="text-blue-600 text-2xl font-bold text-center">Perfil do Paciente</h2>
+          {/* Nome */}
+          <div>
+            <p className="font-semibold text-gray-800">Nome:</p>
+            <p>{paciente.name || 'Não informado'}</p>
+          </div>
 
-        {/* 🔵 Informações do paciente */}
-        <div className="space-y-4">
+          {/* Email */}
           <div>
-            <span className="font-semibold">Nome: </span>{paciente.nome}
+            <p className="font-semibold text-gray-800">Email:</p>
+            <p>{paciente.email || 'Não informado'}</p>
           </div>
+
+          {/* Telefone */}
           <div>
-            <span className="font-semibold">Data de Nascimento: </span>{paciente.data_nascimento}
+            <p className="font-semibold text-gray-800">Telefone:</p>
+            <p>{paciente.telefone || 'Não informado'}</p>
           </div>
+
+          {/* Sexo */}
           <div>
-            <span className="font-semibold">Sexo: </span>{paciente.sexo}
+            <p className="font-semibold text-gray-800">Sexo:</p>
+            <p>{paciente.sexo || 'Não informado'}</p>
           </div>
+
+          {/* Data de nascimento */}
           <div>
-            <span className="font-semibold">Telefone: </span>{paciente.telefone}
+            <p className="font-semibold text-gray-800">Data de Nascimento:</p>
+            <p>{paciente.data_nascimento || 'Não informada'}</p>
           </div>
-          {paciente.email && (
-            <div>
-              <span className="font-semibold">Email: </span>{paciente.email}
-            </div>
-          )}
-          {paciente.observacoes && (
-            <div>
-              <span className="font-semibold">Observações: </span>{paciente.observacoes}
-            </div>
-          )}
+
+          {/* Observações */}
+          <div>
+            <p className="font-semibold text-gray-800">Observações:</p>
+            <p className="whitespace-pre-wrap">
+              {paciente.observacoes || 'Nenhuma observação registrada.'}
+            </p>
+          </div>
         </div>
 
+        {/* Botão de fechar */}
+        <div className="text-right mt-8">
+          <button
+            onClick={onClose}
+            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded"
+          >
+            Fechar
+          </button>
+        </div>
       </div>
     </div>
   )
