@@ -1,14 +1,15 @@
-// 📄 src/components/FormulaForm.jsx (v2.4.4)
+// 📄 src/components/FormulaForm.jsx (v2.4.5)
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import ModalMensagem from './ModalMensagem'; // 🔵 Componente modal reutilizável
 
 export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinalizar }) {
   const [nome, setNome] = useState('');
   const [composicao, setComposicao] = useState('');
   const [indicacao, setIndicacao] = useState('');
   const [posologia, setPosologia] = useState('');
-  const [erro, setErro] = useState('');
+  const [modal, setModal] = useState(null); // 🔵 Controla mensagens de sucesso/erro
 
   useEffect(() => {
     if (formulaSelecionada) {
@@ -16,7 +17,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
       setComposicao(formulaSelecionada.composicao || '');
       setIndicacao(formulaSelecionada.indicacao || '');
       setPosologia(formulaSelecionada.posologia || '');
-      setErro('');
     } else {
       limparFormulario();
     }
@@ -27,25 +27,26 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
     setComposicao('');
     setIndicacao('');
     setPosologia('');
-    setErro('');
   };
 
   const salvar = async () => {
     if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
-      setErro('Preencha todos os campos.');
+      setModal({ tipo: 'erro', mensagem: 'Preencha todos os campos.' });
       return;
     }
 
     try {
       if (formulaSelecionada) {
-        // Atualizar fórmula EXISTENTE
-        await axios.post('https://nublia-backend.onrender.com/formulas/update', {
+        // Atualizar fórmula
+        await axios.post(`https://nublia-backend.onrender.com/formulas/update`, {
           id: formulaSelecionada.id,
+          farmacia_id: farmaciaId,
           nome,
           composicao,
           indicacao,
-          posologia,
+          posologia
         });
+        setModal({ tipo: 'sucesso', mensagem: 'Fórmula atualizada com sucesso!' });
       } else {
         // Criar nova fórmula
         await axios.post('https://nublia-backend.onrender.com/formulas/', {
@@ -53,30 +54,24 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           nome,
           composicao,
           indicacao,
-          posologia,
+          posologia
         });
+        setModal({ tipo: 'sucesso', mensagem: 'Fórmula cadastrada com sucesso!' });
       }
+
+      onFinalizar();
       limparFormulario();
-      onFinalizar(); // Atualizar a lista
     } catch (error) {
       console.error(error);
-      setErro('Erro ao salvar a fórmula.');
+      setModal({ tipo: 'erro', mensagem: 'Erro ao salvar a fórmula.' });
     }
-  };
-
-  const cancelar = () => {
-    limparFormulario();
-    onFinalizar(); // Voltar para estado de nova fórmula
   };
 
   return (
     <div className="w-full max-w-2xl space-y-6 bg-white p-6 rounded-lg shadow">
-
       <h2 className="text-2xl font-bold text-blue-600">
         {formulaSelecionada ? 'Editar Fórmula' : 'Nova Fórmula'}
       </h2>
-
-      {erro && <p className="text-red-500">{erro}</p>}
 
       <div className="space-y-4">
         <div>
@@ -128,15 +123,26 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
           {formulaSelecionada && (
             <button
-              onClick={cancelar}
+              onClick={() => {
+                limparFormulario();
+                onFinalizar();
+              }}
               className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
             >
-              Cancelar
+              Cancelar Edição
             </button>
           )}
         </div>
       </div>
 
+      {/* 🔵 Modal de mensagem */}
+      {modal && (
+        <ModalMensagem
+          tipo={modal.tipo}
+          mensagem={modal.mensagem}
+          onFechar={() => setModal(null)}
+        />
+      )}
     </div>
   );
 }
