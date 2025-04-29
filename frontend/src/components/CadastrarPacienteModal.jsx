@@ -1,11 +1,9 @@
-// 📄 frontend/src/components/CadastrarPacienteModal.jsx
-
 import { useState } from 'react'
 import axios from 'axios'
 
 export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }) {
   const [form, setForm] = useState({
-    nome: '',
+    name: '',
     data_nascimento: '',
     sexo: 'Masculino',
     telefone: '',
@@ -21,25 +19,24 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      console.log("Enviando dados:", form)
+      setErro("")
 
-      // 1️⃣ Primeiro cadastra o paciente
-      const response = await axios.post('https://nublia-backend.onrender.com/pacientes/', form)
-
-      const pacienteCriado = response.data
-      console.log("Paciente criado:", pacienteCriado)
-
-      if (pacienteCriado.id) {
-        // 2️⃣ Se cadastrou com sucesso, busca o paciente completo pelo ID
-        const pacienteCompleto = await axios.get(`https://nublia-backend.onrender.com/pacientes/${pacienteCriado.id}`)
-
-        // 3️⃣ Agora sim passa o paciente completo para a ficha
-        onPacienteCadastrado(pacienteCompleto.data)
-      } else {
-        console.error('Paciente criado sem ID:', pacienteCriado)
-        setErro("Erro inesperado ao cadastrar paciente.")
+      const novoPaciente = {
+        ...form,
+        role: "paciente",
+        password: null
       }
 
+      const response = await axios.post('https://nublia-backend.onrender.com/register', novoPaciente)
+
+      // 🧩 O backend retorna o id no campo "id"
+      const pacienteCriado = {
+        ...novoPaciente,
+        id: response.data.id
+      }
+
+      // ✅ Retorna direto para ficha de atendimento
+      onPacienteCadastrado(pacienteCriado)
       onClose()
     } catch (error) {
       console.error(error)
@@ -57,10 +54,10 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            name="nome"
+            name="name"
             placeholder="Nome completo"
             required
-            value={form.nome}
+            value={form.name}
             onChange={handleChange}
             className="border px-3 py-2 top-3 w-full"
           />
