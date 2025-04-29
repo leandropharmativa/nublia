@@ -1,31 +1,15 @@
-// 📄 src/components/FormulaSidebar.jsx (v2.4.10)
+// 📄 src/components/FormulaSidebar.jsx (v2.4.11)
 
 import { useState } from 'react';
-import { Edit, Trash2, Search } from 'lucide-react';
-import ModalMensagem from './ModalMensagem';
-import axios from 'axios';
+import { Edit, Search } from 'lucide-react';
 
-export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
+export default function FormulaSidebar({ formulas, onEditar }) {
   const [pesquisa, setPesquisa] = useState('');
-  const [idParaExcluir, setIdParaExcluir] = useState(null);
 
   const formulasFiltradas = formulas.filter(
     (formula) =>
       formula?.nome?.toLowerCase().includes(pesquisa.toLowerCase())
   );
-
-  const excluirFormula = async () => {
-    if (!idParaExcluir) return;
-    try {
-      await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
-        id: idParaExcluir,
-      });
-      setIdParaExcluir(null);
-      onRecarregar();
-    } catch (error) {
-      console.error('Erro ao excluir fórmula:', error);
-    }
-  };
 
   return (
     <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
@@ -46,13 +30,7 @@ export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
               >
                 <Edit size={20} />
               </button>
-              <button
-                className="text-red-500 hover:text-red-700"
-                onClick={() => setIdParaExcluir(formula.id)}
-                title="Excluir fórmula"
-              >
-                <Trash2 size={20} />
-              </button>
+              {/* Botão de exclusão removido */}
             </div>
           </li>
         ))}
@@ -68,17 +46,6 @@ export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
           className="w-full pl-10 px-3 py-2 border rounded"
         />
       </div>
-
-      {/* Modal de confirmação */}
-      <ModalMensagem
-        exibir={idParaExcluir !== null}
-        titulo="Confirmar Exclusão"
-        mensagem="Deseja realmente excluir esta fórmula?"
-        textoConfirmar="Sim, excluir"
-        textoCancelar="Cancelar"
-        onConfirmar={excluirFormula}
-        onCancelar={() => setIdParaExcluir(null)}
-      />
     </aside>
   );
 }
