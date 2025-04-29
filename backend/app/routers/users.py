@@ -154,6 +154,16 @@ def criar_senha(data: CriarSenhaRequest):
 def list_users():
     with Session(engine) as session:
         return session.exec(select(User)).all()
+        
+# 🛠 ROTA: Listar usuario pelo id
+@router.get("/users/{user_id}")
+def get_user_by_id(user_id: int):
+    with Session(engine) as session:
+        user = session.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        return user
+
 
 # 🛠 ROTA: Gerar código de ativação (requer admin)
 @router.post("/generate_code")
