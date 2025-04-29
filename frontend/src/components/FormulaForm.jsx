@@ -1,17 +1,25 @@
-// 📄 src/components/FormulaForm.jsx (v2.4.6)
+// 📄 src/components/FormulaForm.jsx (v2.4.7)
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ModalMensagem from './ModalMensagem';
 
 export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinalizar }) {
-  const [nome, setNome] = useState(formulaSelecionada?.nome || '');
-  const [composicao, setComposicao] = useState(formulaSelecionada?.composicao || '');
-  const [indicacao, setIndicacao] = useState(formulaSelecionada?.indicacao || '');
-  const [posologia, setPosologia] = useState(formulaSelecionada?.posologia || '');
-
+  const [nome, setNome] = useState('');
+  const [composicao, setComposicao] = useState('');
+  const [indicacao, setIndicacao] = useState('');
+  const [posologia, setPosologia] = useState('');
   const [erro, setErro] = useState('');
   const [modalExclusao, setModalExclusao] = useState(false);
+
+  // 🆕 Atualiza os campos sempre que uma nova fórmula for selecionada
+  useEffect(() => {
+    setNome(formulaSelecionada?.nome || '');
+    setComposicao(formulaSelecionada?.composicao || '');
+    setIndicacao(formulaSelecionada?.indicacao || '');
+    setPosologia(formulaSelecionada?.posologia || '');
+    setErro('');
+  }, [formulaSelecionada]);
 
   const salvar = async () => {
     if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
