@@ -1,63 +1,48 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional, Literal
-from datetime import date, time
+from datetime import date, time, datetime
 
-# Modelo da tabela de usuários (prescritor, paciente, farmácia, academia, clínica)
+# 🔵 Modelo da tabela de usuários (prescritor, paciente, farmácia, academia, clínica, secretária)
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    role: str
+    role: Literal["admin", "prescritor", "paciente", "farmacia", "academia", "clinica", "secretaria"]
     name: str
     email: str
-    password: str
+    password: Optional[str] = None  # Senha opcional para permitir cadastro manual
     phone: Optional[str] = None
     clinic_name: Optional[str] = None
     clinic_address: Optional[str] = None
     personal_address: Optional[str] = None
     crn: Optional[str] = None  # Para prescritor (nutricionista, biomédico, médico)
+    data_nascimento: Optional[date] = None  # Para paciente
+    sexo: Optional[str] = None              # Para paciente
+    observacoes: Optional[str] = None       # Observações gerais
 
-# Modelo usado apenas para criação de usuários (sem o ID)
+# 🔵 Modelo usado apenas para criação de novos usuários (sem ID)
 class UserCreate(SQLModel):
-    role: Literal["admin", "prescritor", "paciente", "farmacia", "academia", "clinica"]
+    role: Literal["admin", "prescritor", "paciente", "farmacia", "academia", "clinica", "secretaria"]
     name: str
     email: str
-    password: str
+    password: Optional[str] = None
     phone: Optional[str] = None
     clinic_name: Optional[str] = None
     clinic_address: Optional[str] = None
     personal_address: Optional[str] = None
     crn: Optional[str] = None
-
-# 🛠 Modelo completo de paciente (salvo no banco de dados)
-class Paciente(SQLModel, table=True):
-    __tablename__ = "paciente_novo"  # <<< ADICIONAR ESSA LINHA
-    id: Optional[int] = Field(default=None, primary_key=True)
-    nome: str
-    data_nascimento: date
-    sexo: str
-    telefone: str
-    email: Optional[str] = None
-    observacoes: Optional[str] = None
-  # Aqui você pode anotar observações do paciente
-
-# 🛠 Modelo apenas para criação de paciente (sem o ID)
-class PacienteCreate(SQLModel):
-    nome: str
-    data_nascimento: date
-    sexo: str
-    telefone: str
-    email: Optional[str] = None
+    data_nascimento: Optional[date] = None
+    sexo: Optional[str] = None
     observacoes: Optional[str] = None
 
-# Modelo de agendamento de consultas/atendimentos
+# 🔵 Modelo da tabela de Agendamento de consultas/atendimentos
 class Agendamento(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     data: date
     hora: time
     prescritor_id: int  # ID do usuário prescritor
-    paciente_id: int  # ID do paciente
+    paciente_id: int    # ID do usuário paciente
     observacoes: Optional[str] = None
 
-# Modelo usado apenas para criação de agendamento (sem o ID)
+# 🔵 Modelo usado apenas para criação de Agendamento (sem ID)
 class AgendamentoCreate(SQLModel):
     data: date
     hora: time
@@ -65,9 +50,7 @@ class AgendamentoCreate(SQLModel):
     paciente_id: int
     observacoes: Optional[str] = None
 
-from datetime import datetime
-
-# Modelo usado apenas para criação de códigos de ativação de contas
+# 🔵 Modelo da tabela de Código de Ativação
 class CodigoAtivacao(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     codigo: str
@@ -75,32 +58,32 @@ class CodigoAtivacao(SQLModel, table=True):
     ativo: bool = True
     criado_em: datetime = Field(default_factory=datetime.utcnow)
 
+# 🔵 Modelo para criação de Código de Ativação (sem ID)
 class CodigoAtivacaoCreate(SQLModel):
     tipo: str
 
-# 🛠 Modelo da tabela de Atendimento (salvo no banco de dados)
+# 🔵 Modelo da tabela de Atendimento
 class Atendimento(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    paciente_id: int
-    prescritor_id: int  # <<< Adicionado!
+    paciente_id: int  # ID do usuário paciente
+    prescritor_id: int  # ID do usuário prescritor
     anamnese: Optional[str] = None
     antropometria: Optional[str] = None
     dieta: Optional[str] = None
     receita: Optional[str] = None
     criado_em: datetime = Field(default_factory=datetime.utcnow)
 
-# Modelo para criação de atendimento (não exige ID)
+# 🔵 Modelo usado apenas para criação de Atendimento (sem ID)
 class AtendimentoCreate(SQLModel):
     paciente_id: int
-    prescritor_id: int  # <<< Adicionado!
+    prescritor_id: int
     anamnese: Optional[str] = None
     antropometria: Optional[str] = None
     dieta: Optional[str] = None
     receita: Optional[str] = None
 
-# 🔵 Tabela Formula
+# 🔵 Modelo da tabela de Fórmulas
 class Formula(SQLModel, table=True):
-    __tablename__ = "formula" 
     id: Optional[int] = Field(default=None, primary_key=True)
     farmacia_id: int
     nome: str
@@ -109,11 +92,10 @@ class Formula(SQLModel, table=True):
     posologia: Optional[str] = None
     criado_em: datetime = Field(default_factory=datetime.utcnow)
 
-# 🔵 Modelo para criar formulas (sem ID)
+# 🔵 Modelo usado apenas para criação de Fórmulas (sem ID)
 class FormulaCreate(SQLModel):
     farmacia_id: int
     nome: str
     composicao: Optional[str] = None
     indicacao: Optional[str] = None
     posologia: Optional[str] = None
-
