@@ -1,153 +1,82 @@
-import { useState, useEffect } from 'react';
+// 📄 src/components/FormulaSidebar.jsx (v2.4.10)
+
+import { useState } from 'react';
+import { Edit, Trash2, Search } from 'lucide-react';
+import ModalMensagem from './ModalMensagem';
 import axios from 'axios';
 
-export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinalizar }) {
-  const [nome, setNome] = useState('');
-  const [composicao, setComposicao] = useState('');
-  const [indicacao, setIndicacao] = useState('');
-  const [posologia, setPosologia] = useState('');
-  const [erro, setErro] = useState('');
+export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
+  const [pesquisa, setPesquisa] = useState('');
+  const [idParaExcluir, setIdParaExcluir] = useState(null);
 
-  useEffect(() => {
-    if (formulaSelecionada) {
-      setNome(formulaSelecionada.nome || '');
-      setComposicao(formulaSelecionada.composicao || '');
-      setIndicacao(formulaSelecionada.indicacao || '');
-      setPosologia(formulaSelecionada.posologia || '');
-    }
-  }, [formulaSelecionada]);
+  const formulasFiltradas = formulas.filter(
+    (formula) =>
+      formula?.nome?.toLowerCase().includes(pesquisa.toLowerCase())
+  );
 
-  const limparFormulario = () => {
-    setNome('');
-    setComposicao('');
-    setIndicacao('');
-    setPosologia('');
-    setErro('');
-  };
-
-  const salvar = async () => {
-    if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
-      setErro('Preencha todos os campos.');
-      return;
-    }
-
-    try {
-      if (formulaSelecionada?.id) {
-        await axios.post('https://nublia-backend.onrender.com/formulas/update', {
-          id: formulaSelecionada.id,
-          nome,
-          composicao,
-          indicacao,
-          posologia,
-          farmacia_id: farmaciaId
-        });
-      } else {
-        await axios.post('https://nublia-backend.onrender.com/formulas/', {
-          farmacia_id: farmaciaId,
-          nome,
-          composicao,
-          indicacao,
-          posologia,
-        });
-      }
-
-      limparFormulario();
-      onFinalizar();
-    } catch (error) {
-      console.error(error);
-      setErro('Erro ao salvar a fórmula.');
-    }
-  };
-
-  const excluir = async () => {
+  const confirmarExclusao = async () => {
     try {
       await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
-        id: formulaSelecionada.id,
+        id: idParaExcluir,
       });
-      limparFormulario();
-      onFinalizar();
+      setIdParaExcluir(null);
+      onRecarregar();
     } catch (error) {
       console.error('Erro ao excluir fórmula:', error);
-      setErro('Erro ao excluir a fórmula.');
+      alert('Erro ao excluir fórmula.');
+      setIdParaExcluir(null);
     }
   };
 
   return (
-    <div className="w-full max-w-2xl space-y-6 bg-white p-6 rounded-lg shadow">
-      <h2 className="text-2xl font-bold text-blue-600">
-        {formulaSelecionada ? 'Editar Fórmula' : 'Nova Fórmula'}
-      </h2>
+    <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
+      <h2 className="text-blue-600 text-xl font-semibold mb-4">Fórmulas Cadastradas</h2>
 
-      {erro && <p className="text-red-500">{erro}</p>}
+      <ul className="space-y-4">
+        {formulasFiltradas.map((formula) => (
+          <li key={formula.id} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+            <span className="text-sm font-medium truncate">{formula.nome}</span>
+            <div className="flex gap-2">
+              <button
+                className="text-blue-600 hover:text-blue-800"
+                onClick={() => onEditar(formula)}
+                title="Editar fórmula"
+              >
+                <Edit size={20} />
+              </button>
+              <button
+                className="text-red-500 hover:text-red-700"
+                onClick={() => setIdParaExcluir(formula.id)}
+                title="Excluir fórmula"
+              >
+                <Trash2 size={20} />
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
 
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Nome da Fórmula</label>
-          <input
-            type="text"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            className="border rounded px-3 py-2 w-full"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Composição</label>
-          <textarea
-            value={composicao}
-            onChange={(e) => setComposicao(e.target.value)}
-            className="border rounded px-3 py-2 w-full h-24 resize-none"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Indicação</label>
-          <input
-            type="text"
-            value={indicacao}
-            onChange={(e) => setIndicacao(e.target.value)}
-            className="border rounded px-3 py-2 w-full"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Posologia</label>
-          <input
-            type="text"
-            value={posologia}
-            onChange={(e) => setPosologia(e.target.value)}
-            className="border rounded px-3 py-2 w-full"
-          />
-        </div>
-
-        <div className="flex gap-4 mt-6">
-          <button
-            onClick={salvar}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
-          >
-            {formulaSelecionada ? 'Atualizar Fórmula' : 'Salvar Fórmula'}
-          </button>
-
-          {formulaSelecionada && (
-            <button
-              onClick={excluir}
-              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded"
-            >
-              Excluir Fórmula
-            </button>
-          )}
-
-          <button
-            onClick={() => {
-              limparFormulario();
-              onFinalizar();
-            }}
-            className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
-          >
-            Cancelar Edição
-          </button>
-        </div>
+      <div className="mt-6 relative">
+        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+        <input
+          type="text"
+          placeholder="Pesquisar fórmula..."
+          value={pesquisa}
+          onChange={(e) => setPesquisa(e.target.value)}
+          className="w-full pl-10 px-3 py-2 border rounded"
+        />
       </div>
-    </div>
+
+      {/* Modal de confirmação */}
+      <ModalMensagem
+        exibir={idParaExcluir !== null}
+        titulo="Confirmar Exclusão"
+        mensagem="Deseja realmente excluir esta fórmula?"
+        textoConfirmar="Sim, excluir"
+        textoCancelar="Cancelar"
+        onConfirmar={confirmarExclusao}
+        onCancelar={() => setIdParaExcluir(null)}
+      />
+    </aside>
   );
 }
