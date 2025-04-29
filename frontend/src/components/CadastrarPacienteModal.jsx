@@ -11,36 +11,42 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   })
 
   const [erro, setErro] = useState('')
+  const [carregando, setCarregando] = useState(false)
 
+  // 🔄 Atualiza os campos do formulário conforme o usuário digita
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
+  // 🛠 Envia o formulário para o backend (cadastra paciente)
   const handleSubmit = async (e) => {
     e.preventDefault()
-    try {
-      setErro("")
+    setErro('')
+    setCarregando(true)
 
-      const novoPaciente = {
+    try {
+      const payload = {
         ...form,
-        role: "paciente",
+        role: 'paciente',
         password: null
       }
 
-      const response = await axios.post('https://nublia-backend.onrender.com/register', novoPaciente)
+      // ✅ Envia os dados para /register
+      const response = await axios.post('https://nublia-backend.onrender.com/register', payload)
 
-      // 🧩 O backend retorna o id no campo "id"
       const pacienteCriado = {
-        ...novoPaciente,
+        ...payload,
         id: response.data.id
       }
 
-      // ✅ Retorna direto para ficha de atendimento
+      // ✅ Informa ao componente pai que o paciente foi cadastrado com sucesso
       onPacienteCadastrado(pacienteCriado)
       onClose()
     } catch (error) {
       console.error(error)
       setErro("Erro ao cadastrar paciente. Verifique os dados.")
+    } finally {
+      setCarregando(false)
     }
   }
 
@@ -49,6 +55,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
       <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-2xl mx-4">
         <h2 className="text-blue-600 text-2xl font-bold mb-4">Cadastrar Paciente</h2>
 
+        {/* 🔴 Exibe erro, se houver */}
         {erro && <p className="text-red-500 text-center">{erro}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -59,7 +66,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             required
             value={form.name}
             onChange={handleChange}
-            className="border px-3 py-2 top-3 w-full"
+            className="border px-3 py-2 w-full"
           />
 
           <input
@@ -79,46 +86,4 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             className="border px-3 py-2 w-full"
           >
             <option value="Masculino">Masculino</option>
-            <option value="Feminino">Feminino</option>
-            <option value="Outro">Outro</option>
-          </select>
-
-          <input
-            type="text"
-            name="telefone"
-            placeholder="Telefone com DDD"
-            required
-            value={form.telefone}
-            onChange={handleChange}
-            className="border px-3 py-2 w-full"
-          />
-
-          <input
-            type="email"
-            name="email"
-            placeholder="Email (opcional)"
-            value={form.email}
-            onChange={handleChange}
-            className="border px-3 py-2 w-full"
-          />
-
-          <div className="flex justify-between pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
-            >
-              Cadastrar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  )
-}
+            <option value="Feminino
