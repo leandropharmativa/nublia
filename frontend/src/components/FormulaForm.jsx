@@ -1,4 +1,5 @@
-// 📄 src/components/FormulaForm.jsx (v2.4.10)
+// 📄 src/components/FormulaForm.jsx (v2.4.11)
+
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ModalMensagem from './ModalMensagem';
@@ -9,22 +10,17 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
   const [indicacao, setIndicacao] = useState('');
   const [posologia, setPosologia] = useState('');
   const [erro, setErro] = useState('');
-  const [modalExclusao, setModalExclusao] = useState(false);
+  const [mostrarModalExclusao, setMostrarModalExclusao] = useState(false);
 
-  // 🔄 Preenche os campos ao selecionar uma fórmula para edição
+  // Atualiza os campos quando muda a fórmula selecionada
   useEffect(() => {
-    if (formulaSelecionada) {
-      setNome(formulaSelecionada.nome || '');
-      setComposicao(formulaSelecionada.composicao || '');
-      setIndicacao(formulaSelecionada.indicacao || '');
-      setPosologia(formulaSelecionada.posologia || '');
-      setErro('');
-    } else {
-      limparFormulario();
-    }
+    setNome(formulaSelecionada?.nome || '');
+    setComposicao(formulaSelecionada?.composicao || '');
+    setIndicacao(formulaSelecionada?.indicacao || '');
+    setPosologia(formulaSelecionada?.posologia || '');
+    setErro('');
   }, [formulaSelecionada]);
 
-  // 🟢 Salvar nova ou atualizar fórmula
   const salvar = async () => {
     if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
       setErro('Preencha todos os campos.');
@@ -39,7 +35,7 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           composicao,
           indicacao,
           posologia,
-          farmacia_id: farmaciaId,
+          farmacia_id: farmaciaId
         });
       } else {
         await axios.post('https://nublia-backend.onrender.com/formulas/', {
@@ -47,10 +43,9 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           nome,
           composicao,
           indicacao,
-          posologia,
+          posologia
         });
       }
-
       limparFormulario();
       onFinalizar();
     } catch (error) {
@@ -59,22 +54,20 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
     }
   };
 
-  // 🔴 Excluir fórmula com confirmação
   const excluir = async () => {
     try {
       await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
         id: formulaSelecionada.id,
       });
-      setModalExclusao(false);
+      setMostrarModalExclusao(false);
       limparFormulario();
       onFinalizar();
     } catch (error) {
-      console.error(error);
+      console.error('Erro ao excluir fórmula:', error);
       setErro('Erro ao excluir a fórmula.');
     }
   };
 
-  // ♻️ Limpa os campos do formulário
   const limparFormulario = () => {
     setNome('');
     setComposicao('');
@@ -141,35 +134,34 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
           {formulaSelecionada && (
             <button
-              onClick={() => setModalExclusao(true)}
+              onClick={() => setMostrarModalExclusao(true)}
               className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded"
             >
               Excluir Fórmula
             </button>
           )}
 
-          {formulaSelecionada && (
-            <button
-              onClick={() => {
-                limparFormulario();
-                onFinalizar();
-              }}
-              className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
-            >
-              Cancelar Edição
-            </button>
-          )}
+          <button
+            onClick={() => {
+              limparFormulario();
+              onFinalizar();
+            }}
+            className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+          >
+            Cancelar Edição
+          </button>
         </div>
       </div>
 
+      {/* Modal de Confirmação de Exclusão */}
       <ModalMensagem
-        exibir={modalExclusao}
+        exibir={mostrarModalExclusao}
         titulo="Confirmar Exclusão"
         mensagem="Deseja realmente excluir esta fórmula?"
         textoConfirmar="Sim, excluir"
         textoCancelar="Cancelar"
         onConfirmar={excluir}
-        onCancelar={() => setModalExclusao(false)}
+        onCancelar={() => setMostrarModalExclusao(false)}
       />
     </div>
   );
