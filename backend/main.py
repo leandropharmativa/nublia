@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import create_db_and_tables
-from app.routers import root, users, pacientes, agenda
+from app.routers import root, users, agenda
 from app.routers import codigos, atendimentos, formulas, agendamentos  # <<< atualizado
 
 from fastapi.openapi.utils import get_openapi
