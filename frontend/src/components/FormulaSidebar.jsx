@@ -1,10 +1,10 @@
-// 📄 src/components/FormulaSidebar.jsx (v2.4.7)
-
+// 📄 src/components/FormulaSidebar.jsx (v2.4.8)
 import { useState } from 'react';
 import { Edit, Trash2, Search } from 'lucide-react';
+import axios from 'axios';
 import ModalConfirmacao from './ModalConfirmacao';
 
-export default function FormulaSidebar({ formulas, onEditar, onExcluir }) {
+export default function FormulaSidebar({ formulas, onEditar, onRecarregar }) {
   const [pesquisa, setPesquisa] = useState('');
   const [idParaExcluir, setIdParaExcluir] = useState(null);
 
@@ -12,6 +12,21 @@ export default function FormulaSidebar({ formulas, onEditar, onExcluir }) {
     (formula) =>
       formula?.nome?.toLowerCase().includes(pesquisa.toLowerCase())
   );
+
+  const confirmarExclusao = async () => {
+    if (!idParaExcluir) return;
+
+    try {
+      await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
+        id: idParaExcluir,
+      });
+      setIdParaExcluir(null);
+      onRecarregar();
+    } catch (error) {
+      console.error('Erro ao excluir fórmula:', error);
+      alert('Erro ao excluir fórmula.');
+    }
+  };
 
   return (
     <aside className="w-72 bg-gray-100 p-4 border-r overflow-y-auto">
@@ -55,15 +70,12 @@ export default function FormulaSidebar({ formulas, onEditar, onExcluir }) {
         />
       </div>
 
-      {/* Modal de confirmação de exclusão */}
+      {/* 🔵 Modal de confirmação de exclusão */}
       <ModalConfirmacao
-        exibir={idParaExcluir !== null}
+        aberto={idParaExcluir !== null}
         titulo="Confirmar Exclusão"
-        mensagem="Deseja realmente excluir esta fórmula?"
-        onConfirmar={() => {
-          onExcluir(idParaExcluir);
-          setIdParaExcluir(null);
-        }}
+        mensagem="Tem certeza que deseja excluir esta fórmula?"
+        onConfirmar={confirmarExclusao}
         onCancelar={() => setIdParaExcluir(null)}
       />
     </aside>
