@@ -114,6 +114,19 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
             }
         }
 
+# rota checar se jah existe usuario/senha
+@router.get("/usuarios/checar-email/{email}")
+def checar_email(email: str):
+    with Session(engine) as session:
+        user = session.exec(select(User).where(User.email == email)).first()
+
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+
+        return {
+            "tem_senha": bool(user.password)
+        }
+
 # 🛠 ROTA: Criar senha para usuários sem senha (primeiro acesso)
 class CriarSenhaRequest(BaseModel):
     email: str
