@@ -1,4 +1,4 @@
-// 📄 src/pages/FarmaciaDashboard.jsx (v2.5.0)
+// 📄 src/pages/FarmaciaDashboard.jsx (v2.4.5)
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -11,11 +11,10 @@ export default function FarmaciaDashboard() {
   const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState('produtos');
   const [user, setUser] = useState(null);
+
   const [formulas, setFormulas] = useState([]);
   const [formulaSelecionada, setFormulaSelecionada] = useState(null);
-  const [recarregar, setRecarregar] = useState(false);
 
-  // 🔵 Verifica usuário logado e carrega fórmulas
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -25,9 +24,8 @@ export default function FarmaciaDashboard() {
     } else {
       navigate('/');
     }
-  }, [navigate, recarregar]);
+  }, [navigate]);
 
-  // 🔵 Carregar fórmulas do banco
   const carregarFormulas = async (farmaciaId) => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`);
@@ -37,10 +35,17 @@ export default function FarmaciaDashboard() {
     }
   };
 
-  // 🔵 Logout
+  const excluirFormula = async (id) => {
+    try {
+      await axios.post('https://nublia-backend.onrender.com/formulas/delete', { id });
+    } catch (error) {
+      console.error('Erro ao excluir fórmula:', error);
+    }
+  };
+
   const logout = () => {
     localStorage.clear();
-    navigate('/', { replace: true });
+    navigate("/", { replace: true });
   };
 
   return (
@@ -94,22 +99,20 @@ export default function FarmaciaDashboard() {
 
         {abaAtiva === 'formulas' && (
           <>
-            {/* 🔵 Sidebar de fórmulas */}
             <FormulaSidebar
               formulas={formulas}
-              onEditar={(formula) => setFormulaSelecionada(formula)}
-              farmaciaId={user?.id}
-              onAtualizar={() => setRecarregar(!recarregar)}
+              onEditar={setFormulaSelecionada}
+              onExcluir={excluirFormula}
+              onAtualizarSidebar={() => carregarFormulas(user?.id)}
             />
 
-            {/* 🔵 Formulário de fórmulas */}
             <main className="flex-1 p-6 overflow-y-auto">
               <FormulaForm
                 farmaciaId={user?.id}
                 formulaSelecionada={formulaSelecionada}
                 onFinalizar={() => {
                   setFormulaSelecionada(null);
-                  setRecarregar(!recarregar);
+                  carregarFormulas(user?.id);
                 }}
               />
             </main>
@@ -123,7 +126,6 @@ export default function FarmaciaDashboard() {
         )}
 
       </div>
-
     </div>
   );
 }
