@@ -1,4 +1,4 @@
-// 📄 src/components/FormulaForm.jsx (v2.4.7)
+// 📄 src/components/FormulaForm.jsx (v2.4.8)
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -12,13 +12,13 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
   const [erro, setErro] = useState('');
   const [modalExclusao, setModalExclusao] = useState(false);
 
-  // 🆕 Atualiza os campos sempre que uma nova fórmula for selecionada
   useEffect(() => {
-    setNome(formulaSelecionada?.nome || '');
-    setComposicao(formulaSelecionada?.composicao || '');
-    setIndicacao(formulaSelecionada?.indicacao || '');
-    setPosologia(formulaSelecionada?.posologia || '');
-    setErro('');
+    if (formulaSelecionada) {
+      setNome(formulaSelecionada.nome || '');
+      setComposicao(formulaSelecionada.composicao || '');
+      setIndicacao(formulaSelecionada.indicacao || '');
+      setPosologia(formulaSelecionada.posologia || '');
+    }
   }, [formulaSelecionada]);
 
   const salvar = async () => {
@@ -29,11 +29,12 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
     try {
       if (formulaSelecionada?.id) {
-        await axios.put(`https://nublia-backend.onrender.com/formulas/${formulaSelecionada.id}`, {
+        await axios.post('https://nublia-backend.onrender.com/formulas/update', {
+          id: formulaSelecionada.id,
           nome,
           composicao,
           indicacao,
-          posologia,
+          posologia
         });
       } else {
         await axios.post('https://nublia-backend.onrender.com/formulas/', {
@@ -77,7 +78,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
 
   return (
     <div className="w-full max-w-2xl space-y-6 bg-white p-6 rounded-lg shadow">
-
       <h2 className="text-2xl font-bold text-blue-600">
         {formulaSelecionada ? 'Editar Fórmula' : 'Nova Fórmula'}
       </h2>
