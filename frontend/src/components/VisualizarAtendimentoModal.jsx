@@ -1,72 +1,73 @@
-// 📄 frontend/src/components/VisualizarAtendimentoModal.jsx
-
-import { useState } from 'react'
-import { X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 export default function VisualizarAtendimentoModal({ atendimento, onClose }) {
-  const [abaAtiva, setAbaAtiva] = useState('anamnese')
+  const [paciente, setPaciente] = useState(null)
+  const [erro, setErro] = useState('')
 
-  const formatarData = (data) => {
-    if (!data) return ''
-    return new Date(data).toLocaleDateString('pt-BR')
-  }
+  // 🔄 Ao abrir o modal, busca os dados do paciente
+  useEffect(() => {
+    const buscarPaciente = async () => {
+      try {
+        const response = await axios.get(`https://nublia-backend.onrender.com/users/${atendimento.paciente_id}`)
+        setPaciente(response.data)
+      } catch (error) {
+        console.error("Erro ao buscar paciente:", error)
+        setErro("Paciente não encontrado.")
+      }
+    }
+
+    if (atendimento?.paciente_id) {
+      buscarPaciente()
+    }
+  }, [atendimento])
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl mx-4 flex flex-col">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl mx-4 overflow-y-auto max-h-[90vh]">
+        <h2 className="text-2xl font-bold text-blue-600 mb-4">Visualizar Atendimento</h2>
 
-        {/* 🔵 Cabeçalho */}
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-2xl font-bold text-blue-600">Atendimento</h2>
-            <p className="text-sm text-gray-500 mt-1">
-              {atendimento.nomePaciente} • {formatarData(atendimento.criado_em)}
+        {/* 🔴 Caso erro na busca */}
+        {erro && <p className="text-red-600 mb-4">{erro}</p>}
+
+        {/* 🔵 Dados do paciente */}
+        {paciente && (
+          <div className="mb-6 border-b pb-4">
+            <p className="text-lg font-semibold">{paciente.name}</p>
+            <p className="text-sm text-gray-600">
+              {paciente.email || 'Sem email'} • {paciente.telefone || 'Sem telefone'} • {paciente.sexo || 'Sem sexo'} • {paciente.data_nascimento || 'Sem data de nascimento'}
             </p>
           </div>
-          <button onClick={onClose} className="text-gray-600 hover:text-gray-800">
-            <X size={28} />
-          </button>
+        )}
+
+        {/* 🔵 Data do atendimento */}
+        <div className="mb-6">
+          <p className="text-sm text-gray-500 italic">
+            Data do atendimento: {new Date(atendimento.criado_em).toLocaleString('pt-BR')}
+          </p>
         </div>
 
-        {/* 🔵 Tabs de navegação */}
-        <div className="flex border-b mb-6">
-          <button
-            onClick={() => setAbaAtiva('anamnese')}
-            className={`px-4 py-2 ${abaAtiva === 'anamnese' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
-          >
-            Anamnese
-          </button>
-          <button
-            onClick={() => setAbaAtiva('antropometria')}
-            className={`px-4 py-2 ${abaAtiva === 'antropometria' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
-          >
-            Avaliação Antropométrica
-          </button>
-          <button
-            onClick={() => setAbaAtiva('dieta')}
-            className={`px-4 py-2 ${abaAtiva === 'dieta' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
-          >
-            Plano Alimentar
-          </button>
-          <button
-            onClick={() => setAbaAtiva('receita')}
-            className={`px-4 py-2 ${abaAtiva === 'receita' ? 'border-b-2 border-blue-600 font-bold' : ''}`}
-          >
-            Receita
-          </button>
-        </div>
-
-        {/* 🔵 Conteúdo da aba ativa */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="border rounded p-4 min-h-80 bg-gray-50">
-            {atendimento[abaAtiva] ? (
-              <p className="whitespace-pre-line">{atendimento[abaAtiva]}</p>
-            ) : (
-              <p className="text-gray-400 italic">Sem informações nesta aba.</p>
-            )}
+        {/* 🔵 Conteúdo do atendimento */}
+        {["anamnese", "antropometria", "dieta", "receita"].map((campo) => (
+          <div key={campo} className="mb-6">
+            <h3 className="text-lg font-semibold text-blue-600 capitalize mb-2">
+              {campo}
+            </h3>
+            <div className="bg-gray-100 p-4 rounded text-sm text-gray-800 whitespace-pre-wrap">
+              {atendimento[campo] || "Não preenchido."}
+            </div>
           </div>
-        </div>
+        ))}
 
+        {/* 🔘 Botão para fechar */}
+        <div className="text-right mt-8">
+          <button
+            onClick={onClose}
+            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded"
+          >
+            Fechar
+          </button>
+        </div>
       </div>
     </div>
   )
