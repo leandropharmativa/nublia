@@ -10,16 +10,23 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
   const [indicacao, setIndicacao] = useState('');
   const [posologia, setPosologia] = useState('');
   const [erro, setErro] = useState('');
-  const [mostrarModalExclusao, setMostrarModalExclusao] = useState(false);
 
-  // Atualiza os campos quando muda a fórmula selecionada
   useEffect(() => {
-    setNome(formulaSelecionada?.nome || '');
-    setComposicao(formulaSelecionada?.composicao || '');
-    setIndicacao(formulaSelecionada?.indicacao || '');
-    setPosologia(formulaSelecionada?.posologia || '');
-    setErro('');
+    if (formulaSelecionada) {
+      setNome(formulaSelecionada.nome || '');
+      setComposicao(formulaSelecionada.composicao || '');
+      setIndicacao(formulaSelecionada.indicacao || '');
+      setPosologia(formulaSelecionada.posologia || '');
+    }
   }, [formulaSelecionada]);
+
+  const limparFormulario = () => {
+    setNome('');
+    setComposicao('');
+    setIndicacao('');
+    setPosologia('');
+    setErro('');
+  };
 
   const salvar = async () => {
     if (!nome.trim() || !composicao.trim() || !indicacao.trim() || !posologia.trim()) {
@@ -43,37 +50,16 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           nome,
           composicao,
           indicacao,
-          posologia
+          posologia,
         });
       }
+
       limparFormulario();
       onFinalizar();
     } catch (error) {
       console.error(error);
       setErro('Erro ao salvar a fórmula.');
     }
-  };
-
-  const excluir = async () => {
-    try {
-      await axios.post('https://nublia-backend.onrender.com/formulas/delete', {
-        id: formulaSelecionada.id,
-      });
-      setMostrarModalExclusao(false);
-      limparFormulario();
-      onFinalizar();
-    } catch (error) {
-      console.error('Erro ao excluir fórmula:', error);
-      setErro('Erro ao excluir a fórmula.');
-    }
-  };
-
-  const limparFormulario = () => {
-    setNome('');
-    setComposicao('');
-    setIndicacao('');
-    setPosologia('');
-    setErro('');
   };
 
   return (
@@ -132,15 +118,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
             {formulaSelecionada ? 'Atualizar Fórmula' : 'Salvar Fórmula'}
           </button>
 
-          {formulaSelecionada && (
-            <button
-              onClick={() => setMostrarModalExclusao(true)}
-              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded"
-            >
-              Excluir Fórmula
-            </button>
-          )}
-
           <button
             onClick={() => {
               limparFormulario();
@@ -152,17 +129,6 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           </button>
         </div>
       </div>
-
-      {/* Modal de Confirmação de Exclusão */}
-      <ModalMensagem
-        exibir={mostrarModalExclusao}
-        titulo="Confirmar Exclusão"
-        mensagem="Deseja realmente excluir esta fórmula?"
-        textoConfirmar="Sim, excluir"
-        textoCancelar="Cancelar"
-        onConfirmar={excluir}
-        onCancelar={() => setMostrarModalExclusao(false)}
-      />
     </div>
   );
 }
