@@ -1,6 +1,3 @@
-import { useState } from 'react';
-import axios from 'axios';
-
 export default function FormulaSidebar({ formulaSelecionada, onFinalizar }) {
   const [mostrarModal, setMostrarModal] = useState(false);
 
