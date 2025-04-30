@@ -4,9 +4,7 @@ import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-const locales = {
-  'pt-BR': ptBR,
-}
+const locales = { 'pt-BR': ptBR }
 
 const localizer = dateFnsLocalizer({
   format,
@@ -45,18 +43,41 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         components={{
           toolbar: CustomToolbar,
         }}
-        eventPropGetter={() => ({
-          style: {
-            fontSize: '0.75rem',
-            padding: '2px',
-          },
-        })}
+        eventPropGetter={(event) => {
+          const cor = event.status === 'agendado' ? '#dc2626' : '#2563eb'
+          return {
+            style: {
+              backgroundColor: cor,
+              color: 'white',
+              fontSize: '0.75rem',
+              padding: '2px 4px',
+              borderRadius: '4px',
+              border: 'none',
+            },
+          }
+        }}
       />
     </div>
   )
 }
 
-function CustomToolbar({ label, onNavigate, onView, views, view }) {
+function CustomToolbar({ label, onNavigate, onView, views, view, date }) {
+  const renderLabel = () => {
+    const f = (d, fmt) => format(d, fmt, { locale: ptBR })
+
+    if (view === 'month') return f(date, 'MMMM yyyy')
+    if (view === 'day') return f(date, "dd 'de' MMMM yyyy")
+
+    if (view === 'week') {
+      const start = startOfWeek(date, { weekStartsOn: 1 })
+      const end = new Date(start)
+      end.setDate(end.getDate() + 6)
+      return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
+    }
+
+    return label
+  }
+
   return (
     <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
       <div className="flex items-center gap-2">
@@ -66,7 +87,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view }) {
         <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
           <ChevronRight size={20} />
         </button>
-        <span className="text-sm font-medium text-gray-700">{label}</span>
+        <span className="text-sm font-medium text-gray-700">{renderLabel()}</span>
       </div>
 
       <div className="flex gap-1">
@@ -75,9 +96,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view }) {
             key={v}
             onClick={() => onView(v)}
             className={`text-sm px-2 py-1 rounded ${
-              view === v
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-700 hover:bg-gray-100'
+              view === v ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
             }`}
           >
             {v.charAt(0).toUpperCase() + v.slice(1)}
