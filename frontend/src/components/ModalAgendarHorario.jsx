@@ -2,7 +2,15 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
 
-export default function ModalAgendarHorario({ agendamentoId, onConfirmar, onCancelar, onRemover }) {
+export default function ModalAgendarHorario({
+  agendamentoId,
+  statusAtual,
+  pacienteAtual,
+  onConfirmar,
+  onCancelar,
+  onRemover,
+  onDesagendar
+}) {
   const [pacientes, setPacientes] = useState([])
   const [filtro, setFiltro] = useState('')
   const [selecionado, setSelecionado] = useState(null)
@@ -33,7 +41,21 @@ export default function ModalAgendarHorario({ agendamentoId, onConfirmar, onCanc
     <>
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
         <div className="bg-white rounded-xl p-6 shadow-lg max-w-md w-full">
-          <h2 className="text-lg font-semibold mb-4">Agendar horário</h2>
+          <h2 className="text-lg font-semibold mb-4">
+            {statusAtual === 'agendado' ? 'Editar agendamento' : 'Agendar horário'}
+          </h2>
+
+          {statusAtual === 'agendado' && pacienteAtual && (
+            <div className="mb-4 text-sm text-gray-700">
+              Paciente atual: <strong>ID {pacienteAtual}</strong>
+              <button
+                onClick={() => onDesagendar(agendamentoId)}
+                className="ml-3 text-red-600 hover:underline text-xs"
+              >
+                Remover paciente
+              </button>
+            </div>
+          )}
 
           <input
             type="text"
