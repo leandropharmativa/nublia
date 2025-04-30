@@ -13,6 +13,7 @@
     "react-router-dom": "^6.22.3",
     "lucide-react": "^0.293.0",
     "react-big-calendar": "^1.6.0",
+    "react-tooltip": "^5.15.0",
     "date-fns": "^3.6.0"
   },
   "devDependencies": {
