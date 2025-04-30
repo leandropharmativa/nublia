@@ -175,7 +175,10 @@ const handleVerPerfil = async (pacienteId) => {
             <div className="w-full h-full">
               <FichaAtendimento
                 paciente={pacienteSelecionado}
-                onFinalizar={() => setPacienteSelecionado(null)}
+                onFinalizar={() => {
+                // Esta função só será chamada se a ficha confirmar a saída
+                setPacienteSelecionado(null)
+                }}
                 onAtendimentoSalvo={() => carregarAtendimentos(user?.id)}
               />
             </div>
