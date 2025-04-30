@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
 import PerfilPacienteModal from './PerfilPacienteModal'
-import { Search, User, X } from 'lucide-react'
+import { Search, User, X, Loader2 } from 'lucide-react'
 
 export default function ModalAgendarHorario({
   agendamentoId,
@@ -16,7 +16,7 @@ export default function ModalAgendarHorario({
   onCancelar,
   onRemover,
   onDesagendar,
-  onAtualizarAgenda // ✅ novo
+  onAtualizarAgenda
 }) {
   const [pacientes, setPacientes] = useState([])
   const [filtro, setFiltro] = useState('')
@@ -25,6 +25,7 @@ export default function ModalAgendarHorario({
   const [selecionado, setSelecionado] = useState(null)
   const [horariosDisponiveis, setHorariosDisponiveis] = useState([])
   const [novoHorarioId, setNovoHorarioId] = useState(null)
+  const [carregando, setCarregando] = useState(false)
 
   const inputRef = useRef(null)
   const user = JSON.parse(localStorage.getItem('user'))
@@ -74,15 +75,18 @@ export default function ModalAgendarHorario({
 
   const reagendar = async () => {
     if (!novoHorarioId) return
+    setCarregando(true)
     try {
       await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
         de_id: agendamentoId,
         para_id: novoHorarioId
       })
-      if (onAtualizarAgenda) onAtualizarAgenda() // ✅ atualiza agenda no pai
+      if (onAtualizarAgenda) onAtualizarAgenda()
+      setCarregando(false)
       onCancelar()
     } catch (error) {
       console.error('Erro ao reagendar:', error)
+      setCarregando(false)
     }
   }
 
@@ -153,8 +157,12 @@ export default function ModalAgendarHorario({
                 {novoHorarioId && (
                   <button
                     onClick={reagendar}
-                    className="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                    disabled={carregando}
+                    className={`mt-3 px-4 py-2 rounded flex items-center justify-center gap-2 ${
+                      carregando ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                    } text-white`}
                   >
+                    {carregando && <Loader2 className="animate-spin" size={16} />}
                     Confirmar novo horário
                   </button>
                 )}
