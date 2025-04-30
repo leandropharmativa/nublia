@@ -96,7 +96,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
   // 🟠 Ao clicar no botão "Voltar"
   const tentarSair = () => {
     if (houveAlteracao && !atendimentoId) {
-      setMostrarConfirmacaoSaida(true)
+      setConfirmacaoSaida(true)
     } else {
       onFinalizar()
     }
@@ -194,16 +194,17 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
       )}
 
       {/* Modal de confirmação ao tentar sair */}
-      {mostrarConfirmacaoSaida && (
-        <ModalConfirmacao
-          titulo="Descartar alterações?"
-          mensagem="Você digitou informações no atendimento. Deseja realmente sair e perder os dados?"
-          onConfirmar={() => {
-            setMostrarConfirmacaoSaida(false)
-            onFinalizar()
-          }}
-          onCancelar={() => setMostrarConfirmacaoSaida(false)}
-        />
+      <ModalConfirmacao
+      aberto={mostrarConfirmacaoSaida}
+      titulo="Descartar alterações?"
+      mensagem="Você digitou informações no atendimento. Deseja realmente sair e perder os dados?"
+      onConfirmar={() => {
+      setMostrarConfirmacaoSaida(false)
+      onFinalizar()
+      }}
+      onCancelar={() => setMostrarConfirmacaoSaida(false)}
+      />
+
       )}
     </div>
   )
