@@ -35,12 +35,15 @@ class UserCreate(SQLModel):
 
 # 🔵 Modelo da tabela de mento de consultas/atendimentos
 class Agendamento(SQLModel, table=True):
+    __table_args__ = {"extend_existing": True}
+
     id: Optional[int] = Field(default=None, primary_key=True)
+    prescritor_id: int
+    paciente_id: Optional[int] = None
     data: date
     hora: time
-    prescritor_id: int  # ID do usuário prescritor
-    paciente_id: int    # ID do usuário paciente
-    observacoes: Optional[str] = None
+    status: str = "disponivel"
+    observacao: Optional[str] = None
 
 # 🔵 Modelo usado apenas para criação de Agendamento (sem ID)
 class Agendamento(SQLModel, table=True):
