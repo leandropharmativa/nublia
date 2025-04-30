@@ -1,4 +1,3 @@
-
 // 📄 AgendaPrescritor.jsx
 
 import { useState, useEffect } from 'react'
@@ -11,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import CalendarioAgenda from '../components/CalendarioAgenda'
 import ModalNovoHorario from '../components/ModalNovoHorario'
 import ModalAgendarHorario from '../components/ModalAgendarHorario'
+import PerfilPacienteModal from '../components/PerfilPacienteModal'
 
 export default function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
@@ -24,6 +24,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   const [horarioSelecionado, setHorarioSelecionado] = useState(null)
   const [filtroPaciente, setFiltroPaciente] = useState('')
   const [resultadosBusca, setResultadosBusca] = useState([])
+  const [mostrarPerfil, setMostrarPerfil] = useState(false)
 
   const user = JSON.parse(localStorage.getItem('user'))
 
@@ -90,7 +91,6 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         setSlotSelecionado(null)
       }
     } catch (error) {
-      console.error('Erro ao salvar horário:', error)
       toast.error('Erro ao cadastrar horário.')
     }
   }
@@ -105,7 +105,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         const res = await axios.get(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
         setPacienteAtual(res.data.name)
         setPacienteId(res.data.id)
-      } catch (error) {
+      } catch {
         setPacienteAtual('Paciente não encontrado')
         setPacienteId(null)
       }
@@ -128,7 +128,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
       carregarEventos()
-    } catch (error) {
+    } catch {
       toast.error('Erro ao agendar paciente.')
     }
   }
@@ -140,7 +140,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
       carregarEventos()
-    } catch (error) {
+    } catch {
       toast.error('Erro ao desagendar.')
     }
   }
@@ -152,7 +152,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
       carregarEventos()
-    } catch (error) {
+    } catch {
       toast.error('Erro ao remover horário.')
     }
   }
@@ -173,10 +173,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
 
   const abrirPerfilPaciente = (id) => {
     setPacienteId(id)
-    setPacienteAtual(null)
-    setModalAgendar(true)
-    setAgendamentoSelecionado(null)
-    setAgendamentoStatus('agendado')
+    setMostrarPerfil(true)
   }
 
   return (
@@ -261,6 +258,13 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           onRemover={removerHorario}
           onDesagendar={desagendarHorario}
           onAtualizarAgenda={carregarEventos}
+        />
+      )}
+
+      {mostrarPerfil && pacienteId && (
+        <PerfilPacienteModal
+          pacienteId={pacienteId}
+          onClose={() => setMostrarPerfil(false)}
         />
       )}
 
