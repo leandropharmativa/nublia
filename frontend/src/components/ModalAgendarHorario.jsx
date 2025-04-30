@@ -72,7 +72,6 @@ export default function ModalAgendarHorario({
 
   const agendar = (pacienteId) => {
     onConfirmar(agendamentoId, pacienteId)
-    toast.success('Paciente agendado com sucesso!')
   }
 
   const reagendar = async () => {
