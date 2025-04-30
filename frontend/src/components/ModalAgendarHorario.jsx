@@ -26,6 +26,7 @@ export default function ModalAgendarHorario({
   const [horariosDisponiveis, setHorariosDisponiveis] = useState([])
   const [novoHorarioId, setNovoHorarioId] = useState(null)
   const [carregando, setCarregando] = useState(false)
+  const [erroReagendamento, setErroReagendamento] = useState('')
 
   const inputRef = useRef(null)
   const user = JSON.parse(localStorage.getItem('user'))
@@ -76,6 +77,8 @@ export default function ModalAgendarHorario({
   const reagendar = async () => {
     if (!novoHorarioId) return
     setCarregando(true)
+    setErroReagendamento('')
+
     try {
       await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
         de_id: agendamentoId,
@@ -86,6 +89,11 @@ export default function ModalAgendarHorario({
       onCancelar()
     } catch (error) {
       console.error('Erro ao reagendar:', error)
+      if (error?.response?.status === 400) {
+        setErroReagendamento('Este horário já está ocupado. Escolha outro.')
+      } else {
+        setErroReagendamento('Erro ao reagendar. Tente novamente.')
+      }
       setCarregando(false)
     }
   }
@@ -154,6 +162,11 @@ export default function ModalAgendarHorario({
                     </option>
                   ))}
                 </select>
+
+                {erroReagendamento && (
+                  <p className="text-sm text-red-600 mt-1">{erroReagendamento}</p>
+                )}
+
                 {novoHorarioId && (
                   <button
                     onClick={reagendar}
