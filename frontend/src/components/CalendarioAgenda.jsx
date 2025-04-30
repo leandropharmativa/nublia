@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
@@ -18,9 +18,11 @@ const localizer = dateFnsLocalizer({
 })
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
+  const [view, setView] = useState('month')
+
   useEffect(() => {
     ReactTooltip.rebuild()
-  }, [eventos])
+  }, [eventos, view])
 
   return (
     <div className="h-full p-6 bg-white rounded shadow overflow-hidden">
@@ -37,6 +39,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         culture="pt-BR"
         onSelectSlot={aoSelecionarSlot}
         onSelectEvent={aoSelecionarEvento}
+        onView={(v) => setView(v)}
         messages={{
           next: <ChevronRight size={20} />,
           previous: <ChevronLeft size={20} />,
