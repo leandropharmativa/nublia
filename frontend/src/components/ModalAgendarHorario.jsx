@@ -16,6 +16,7 @@ export default function ModalAgendarHorario({
   const [pacientes, setPacientes] = useState([])
   const [filtro, setFiltro] = useState('')
   const [mostrarCadastro, setMostrarCadastro] = useState(false)
+  const [selecionado, setSelecionado] = useState(null)
 
   useEffect(() => {
     if (filtro.length < 2) {
@@ -45,9 +46,9 @@ export default function ModalAgendarHorario({
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative">
+        <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-xl mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative">
 
-          {/* Ícone de fechar no canto superior direito */}
+          {/* Botão de fechar (X) */}
           <button
             onClick={onCancelar}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -105,7 +106,10 @@ export default function ModalAgendarHorario({
                     </div>
                     <button
                       type="button"
-                      onClick={() => agendar(paciente.id)}
+                      onClick={() => {
+                        setSelecionado(paciente)
+                        agendar(paciente.id)
+                      }}
                       className="text-blue-600 hover:underline flex items-center gap-1 text-sm"
                     >
                       <User size={18} /> Selecionar
@@ -124,22 +128,22 @@ export default function ModalAgendarHorario({
 
           {/* Rodapé com ações */}
           <div className="flex justify-between pt-4">
-            {statusAtual === 'disponivel' ? (
+            {statusAtual === 'disponivel' && (
               <button
                 onClick={() => onRemover(agendamentoId)}
                 className="bg-blue-100 text-blue-800 hover:bg-blue-200 py-2 px-4 rounded"
               >
                 Cancelar disponibilidade
               </button>
-            ) : (
-              <div></div>
             )}
-            <button
-              onClick={() => setMostrarCadastro(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
-            >
-              Cadastrar Novo Paciente
-            </button>
+            {!selecionado && (
+              <button
+                onClick={() => setMostrarCadastro(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+              >
+                Cadastrar Novo Paciente
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -148,6 +152,7 @@ export default function ModalAgendarHorario({
         <CadastrarPacienteModal
           onClose={() => setMostrarCadastro(false)}
           onPacienteCadastrado={(paciente) => {
+            setSelecionado(paciente)
             agendar(paciente.id)
             setMostrarCadastro(false)
           }}
