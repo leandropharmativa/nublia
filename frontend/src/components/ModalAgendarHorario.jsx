@@ -47,17 +47,15 @@ export default function ModalAgendarHorario({
           </h2>
 
           {statusAtual === 'agendado' && pacienteAtual && (
-            <div className="mb-4 text-sm text-gray-700">
-              <div className="flex items-center justify-between">
-                <span>Paciente atual:</span>
-                <button
-                  onClick={() => onDesagendar(agendamentoId)}
-                  className="text-red-600 hover:text-red-700 flex items-center gap-1 text-xs"
-                >
-                  <XCircle size={16} /> Remover paciente
-                </button>
-              </div>
-              <div className="mt-1 font-semibold">{pacienteAtual}</div>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="text-base font-semibold text-gray-800">{pacienteAtual}</div>
+              <button
+                onClick={() => onDesagendar(agendamentoId)}
+                className="text-red-600 hover:text-red-700"
+                title="Remover paciente"
+              >
+                <XCircle size={20} />
+              </button>
             </div>
           )}
 
@@ -86,15 +84,14 @@ export default function ModalAgendarHorario({
             )}
           </div>
 
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex flex-col gap-2">
+          <div className="flex justify-between items-center mt-6">
+            <div className="flex flex-col gap-1">
               <button
                 onClick={() => setMostrarCadastro(true)}
                 className="text-sm text-blue-600 hover:underline"
               >
                 + Cadastrar novo paciente
               </button>
-
               {statusAtual === 'disponivel' && (
                 <button
                   onClick={() => onRemover(agendamentoId)}
@@ -104,22 +101,22 @@ export default function ModalAgendarHorario({
                 </button>
               )}
             </div>
-          </div>
 
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={onCancelar}
-              className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded"
-            >
-              Cancelar
-            </button>
-            <button
-              disabled={!selecionado}
-              onClick={() => onConfirmar(agendamentoId, selecionado.id)}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50"
-            >
-              Confirmar
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={onCancelar}
+                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded"
+              >
+                Cancelar
+              </button>
+              <button
+                disabled={!selecionado}
+                onClick={() => onConfirmar(agendamentoId, selecionado.id)}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50"
+              >
+                Confirmar
+              </button>
+            </div>
           </div>
         </div>
       </div>
