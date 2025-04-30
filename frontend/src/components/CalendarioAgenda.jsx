@@ -1,9 +1,11 @@
+import { useId } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarioCustom.css'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import ReactTooltip from 'react-tooltip'
 
 const locales = { 'pt-BR': ptBR }
 
@@ -44,6 +46,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         components={{
           toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
           day: { header: CustomDayHeader },
+          event: EventWithTooltip,
         }}
         eventPropGetter={(event) => {
           const cor = event.status === 'agendado' ? '#dc2626' : '#2563eb'
@@ -59,6 +62,20 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           }
         }}
       />
+      <ReactTooltip id="agenda-tooltip" effect="solid" place="top" />
+    </div>
+  )
+}
+
+function EventWithTooltip({ event }) {
+  const hora = event.start.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
+  return (
+    <div data-tip={`Horário: ${hora}`} data-for="agenda-tooltip">
+      {event.title}
     </div>
   )
 }
