@@ -30,9 +30,9 @@
   min-height: 80px;
 }
 .rbc-event {
-  padding: 1px 4px !important;
-  font-size: 0.5rem !important;
-  line-height: 2rem;
+  padding: 1px 3px !important;
+  font-size: 0.4rem !important;
+  line-height: 0.5rem;
 }
 
 /* Remove linhas verticais entre os dias 
