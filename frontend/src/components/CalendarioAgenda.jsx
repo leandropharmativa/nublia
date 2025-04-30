@@ -17,48 +17,68 @@ const localizer = dateFnsLocalizer({
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   return (
-    <div className="h-full px-6 py-6 bg-white rounded-xl shadow overflow-hidden">
-      <Calendar
-        localizer={localizer}
-        events={eventos}
-        startAccessor="start"
-        endAccessor="end"
-        defaultView="week"
-        views={['month', 'week', 'day', 'agenda']}
-        selectable
-        step={60}
-        timeslots={1}
-        culture="pt-BR"
-        onSelectSlot={aoSelecionarSlot}
-        onSelectEvent={aoSelecionarEvento}
-        messages={{
-          next: <ChevronRight size={20} />,
-          previous: <ChevronLeft size={20} />,
-          today: 'Hoje',
-          month: 'Mês',
-          week: 'Semana',
-          day: 'Dia',
-          agenda: 'Agenda',
-          noEventsInRange: 'Sem eventos neste período.',
-        }}
-        components={{
-          toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
-          day: { header: CustomDayHeader },
-        }}
-        eventPropGetter={(event) => {
-          const cor = event.status === 'agendado' ? '#dc2626' : '#2563eb'
-          return {
-            style: {
-              backgroundColor: cor,
-              color: 'white',
-              fontSize: '0.75rem',
-              padding: '2px 4px',
-              borderRadius: '4px',
-              border: 'none',
-            },
-          }
-        }}
-      />
+    <div className="h-full px-6 py-6 bg-white rounded-xl shadow overflow-hidden flex flex-col">
+      <div className="flex-grow">
+        <Calendar
+          localizer={localizer}
+          events={eventos}
+          startAccessor="start"
+          endAccessor="end"
+          defaultView="week"
+          views={['month', 'week', 'day', 'agenda']}
+          selectable
+          step={60}
+          timeslots={1}
+          culture="pt-BR"
+          onSelectSlot={aoSelecionarSlot}
+          onSelectEvent={aoSelecionarEvento}
+          messages={{
+            next: <ChevronRight size={20} />,
+            previous: <ChevronLeft size={20} />,
+            today: 'Hoje',
+            month: 'Mês',
+            week: 'Semana',
+            day: 'Dia',
+            agenda: 'Agenda',
+            noEventsInRange: 'Sem eventos neste período.',
+          }}
+          components={{
+            toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
+            day: { header: CustomDayHeader },
+          }}
+          eventPropGetter={(event) => {
+            const cor = event.status === 'agendado' ? '#dc2626' : '#2563eb'
+            return {
+              style: {
+                backgroundColor: cor,
+                color: 'white',
+                fontSize: '0.75rem',
+                padding: '2px 4px',
+                borderRadius: '4px',
+                border: 'none',
+              },
+            }
+          }}
+        />
+      </div>
+
+      {/* Legenda abaixo do calendário */}
+      <div className="mt-6 px-2 text-sm text-gray-600 flex items-start gap-2">
+        <span className="text-yellow-500">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2a9 9 0 00-9 9c0 3.732 2.179 6.944 5.25 8.25v1.25a1 1 0 001 1h4.5a1 1 0 001-1V19.25C18.821 17.944 21 14.732 21 11a9 9 0 00-9-9z" />
+          </svg>
+        </span>
+        <div>
+          <p className="font-medium text-gray-700">Dica de uso da agenda:</p>
+          <ul className="list-disc ml-5 mt-1 space-y-1">
+            <li>Clique em um horário vazio para disponibilizar um novo horário.</li>
+            <li>Clique em um horário disponível para agendar com um paciente.</li>
+            <li>Clique em um agendamento para visualizar, remover ou substituir o paciente.</li>
+            <li>Use os botões no topo para alternar entre mês, semana e dia.</li>
+          </ul>
+        </div>
+      </div>
     </div>
   )
 }
