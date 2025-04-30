@@ -1,13 +1,12 @@
 /* Cor padrão para dias da semana (segunda a sábado) */
 .rbc-header {
   color: #2563eb !important; /* azul padrão Tailwind */
-  text-transform: uppercase;
   font-weight: 600;
   font-size: 0.875rem;
   text-align: center;
 }
 
 /* Cor para domingo (1ª coluna) */
-.rbc-header:first-child {
+ .rbc-header:last-child {
   color: #dc2626 !important; /* vermelho padrão Tailwind */
 }
