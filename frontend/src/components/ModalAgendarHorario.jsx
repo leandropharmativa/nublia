@@ -122,8 +122,18 @@ export default function ModalAgendarHorario({
             </>
           )}
 
-          {/* Rodapé com botões */}
-          <div className="flex justify-end pt-4">
+          {/* Rodapé com ações */}
+          <div className="flex justify-between pt-4">
+            {statusAtual === 'disponivel' ? (
+              <button
+                onClick={() => onRemover(agendamentoId)}
+                className="bg-blue-100 text-blue-800 hover:bg-blue-200 py-2 px-4 rounded"
+              >
+                Cancelar disponibilidade
+              </button>
+            ) : (
+              <div></div>
+            )}
             <button
               onClick={() => setMostrarCadastro(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
@@ -131,18 +141,6 @@ export default function ModalAgendarHorario({
               Cadastrar Novo Paciente
             </button>
           </div>
-
-          {statusAtual === 'disponivel' && (
-            <div className="text-sm text-red-600 text-center mt-2">
-              - Cancelar disponibilidade de horário
-              <button
-                onClick={() => onRemover(agendamentoId)}
-                className="block mx-auto mt-1 text-red-600 underline hover:text-red-700"
-              >
-                Confirmar cancelamento
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
