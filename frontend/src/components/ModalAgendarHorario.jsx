@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
-import { Search, User, X } from 'lucide-react'
+import { Search, User, X, UserRoundSearch } from 'lucide-react'
+import PerfilPacienteModal from './PerfilPacienteModal'
 
 export default function ModalAgendarHorario({
   agendamentoId,
   statusAtual,
   pacienteAtual,
+  pacienteId,
   horarioSelecionado,
   onConfirmar,
   onCancelar,
@@ -16,15 +18,31 @@ export default function ModalAgendarHorario({
   const [pacientes, setPacientes] = useState([])
   const [filtro, setFiltro] = useState('')
   const [mostrarCadastro, setMostrarCadastro] = useState(false)
+  const [mostrarPerfil, setMostrarPerfil] = useState(false)
   const [selecionado, setSelecionado] = useState(null)
+  const [horariosDisponiveis, setHorariosDisponiveis] = useState([])
+  const [novoHorarioId, setNovoHorarioId] = useState(null)
 
   const inputRef = useRef(null)
+  const user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
     if (statusAtual !== 'agendado' && inputRef.current) {
       inputRef.current.focus()
     }
   }, [statusAtual])
+
+  useEffect(() => {
+    if (statusAtual === 'agendado') {
+      axios
+        .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+        .then(res => {
+          const disponiveis = res.data.filter(h => h.status === 'disponivel')
+          setHorariosDisponiveis(disponiveis)
+        })
+        .catch(err => console.error('Erro ao buscar horários disponíveis:', err))
+    }
+  }, [statusAtual, user.id])
 
   useEffect(() => {
     if (filtro.length < 2) {
@@ -49,6 +67,19 @@ export default function ModalAgendarHorario({
 
   const agendar = (pacienteId) => {
     onConfirmar(agendamentoId, pacienteId)
+  }
+
+  const reagendar = async () => {
+    if (!novoHorarioId) return
+    try {
+      await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
+        de_id: agendamentoId,
+        para_id: novoHorarioId
+      })
+      onCancelar()
+    } catch (error) {
+      console.error('Erro ao reagendar:', error)
+    }
   }
 
   return (
@@ -81,12 +112,51 @@ export default function ModalAgendarHorario({
           )}
 
           {statusAtual === 'agendado' && pacienteAtual && (
-            <div className="text-sm text-gray-700 flex items-center justify-between border rounded px-3 py-2 bg-gray-50">
-              <span><strong>Paciente atual:</strong> {pacienteAtual}</span>
-              <button onClick={() => onDesagendar(agendamentoId)} className="text-red-500 hover:text-red-600">
-                <X size={16} />
-              </button>
-            </div>
+            <>
+              <div className="text-sm text-gray-700 flex items-center justify-between border rounded px-3 py-2 bg-gray-50">
+                <span><strong>Paciente atual:</strong> {pacienteAtual}</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setMostrarPerfil(true)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <UserRoundSearch size={18} />
+                  </button>
+                  <button
+                    onClick={() => onDesagendar(agendamentoId)}
+                    className="text-red-500 hover:text-red-600"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Alterar para outro horário:</label>
+                <select
+                  value={novoHorarioId || ''}
+                  onChange={(e) => setNovoHorarioId(Number(e.target.value))}
+                  className="w-full border rounded px-3 py-2 mt-1"
+                >
+                  <option value="">Selecione um horário disponível</option>
+                  {horariosDisponiveis.map(h => (
+                    <option key={h.id} value={h.id}>
+                      {new Date(`${h.data}T${h.hora}`).toLocaleString('pt-BR', {
+                        weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                      })}
+                    </option>
+                  ))}
+                </select>
+                {novoHorarioId && (
+                  <button
+                    onClick={reagendar}
+                    className="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                  >
+                    Confirmar novo horário
+                  </button>
+                )}
+              </div>
+            </>
           )}
 
           {statusAtual !== 'agendado' && (
@@ -165,6 +235,13 @@ export default function ModalAgendarHorario({
             agendar(paciente.id)
             setMostrarCadastro(false)
           }}
+        />
+      )}
+
+      {mostrarPerfil && pacienteId && (
+        <PerfilPacienteModal
+          pacienteId={pacienteId}
+          onClose={() => setMostrarPerfil(false)}
         />
       )}
     </>
