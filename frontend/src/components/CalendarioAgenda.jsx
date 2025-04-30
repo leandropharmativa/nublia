@@ -2,7 +2,6 @@ import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import './CalendarioCustom.css'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
@@ -17,7 +16,7 @@ const localizer = dateFnsLocalizer({
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   return (
-    <div className="h-full px-6 py-6 bg-white rounded-xl shadow overflow-hidden">
+    <div className="h-full px-6 py-4 bg-white rounded-xl shadow overflow-hidden">
       <Calendar
         localizer={localizer}
         events={eventos}
@@ -26,7 +25,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         defaultView="week"
         views={['month', 'week', 'day', 'agenda']}
         selectable
-        step={60}
+        step={15}
         timeslots={1}
         culture="pt-BR"
         onSelectSlot={aoSelecionarSlot}
@@ -67,7 +66,7 @@ function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
   const colorClass = isSunday ? 'text-red-600' : 'text-blue-600'
   return (
-    <div className={text-sm font-semibold text-center uppercase ${colorClass}}>
+    <div className={`text-sm font-semibold text-center uppercase ${colorClass}`}>
       {label}
     </div>
   )
@@ -83,7 +82,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
       const start = startOfWeek(date, { weekStartsOn: 1 })
       const end = new Date(start)
       end.setDate(end.getDate() + 6)
-      return Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}
+      return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
     }
     return label
   }
@@ -100,7 +99,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
     const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
     const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
 
-    return ${agendados} agendamentos · ${disponiveis} horários disponíveis
+    return `${agendados} agendamentos · ${disponiveis} horários disponíveis`
   }
 
   return (
@@ -122,9 +121,9 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
             <button
               key={v}
               onClick={() => onView(v)}
-              className={text-sm px-2 py-1 rounded ${
+              className={`text-sm px-2 py-1 rounded ${
                 view === v ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
-              }}
+              }`}
             >
               {v.charAt(0).toUpperCase() + v.slice(1)}
             </button>
