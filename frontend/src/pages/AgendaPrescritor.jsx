@@ -1,3 +1,5 @@
+// 📄 AgendaPrescritor.jsx
+
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { addHours } from 'date-fns'
@@ -176,6 +178,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           }}
           onRemover={removerHorario}
           onDesagendar={desagendarHorario}
+          onAtualizarAgenda={carregarEventos} {/* ✅ atualização automática */}
         />
       )}
     </div>
