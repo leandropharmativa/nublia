@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { addHours } from 'date-fns'
+import { addHours, isSameDay } from 'date-fns'
 import CalendarioAgenda from '../components/CalendarioAgenda'
 import ModalNovoHorario from '../components/ModalNovoHorario'
 import ModalAgendarHorario from '../components/ModalAgendarHorario'
@@ -17,6 +17,8 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   const [pacienteAtual, setPacienteAtual] = useState(null)
   const [pacienteId, setPacienteId] = useState(null)
   const [horarioSelecionado, setHorarioSelecionado] = useState(null)
+  const [filtroPaciente, setFiltroPaciente] = useState('')
+  const [pacienteFiltradoId, setPacienteFiltradoId] = useState(null)
 
   const user = JSON.parse(localStorage.getItem('user'))
 
@@ -65,7 +67,11 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     setModalAberto(true)
   }
 
-  // ✅ agora aceita manterAberto: boolean
+  const handleAdicionarRapido = (date) => {
+    setSlotSelecionado(date)
+    setModalAberto(true)
+  }
+
   const confirmarHorario = async (horaDigitada, manterAberto = false) => {
     const data = slotSelecionado.toISOString().split('T')[0]
     const hora = horaDigitada
@@ -149,14 +155,65 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     }
   }
 
+  const buscarPaciente = async (nome) => {
+    if (!nome || nome.length < 2) {
+      setPacienteFiltradoId(null)
+      return
+    }
+
+    try {
+      const res = await axios.get('https://nublia-backend.onrender.com/users/all')
+      const paciente = res.data.find(
+        (p) => p.role === 'paciente' && p.name.toLowerCase().includes(nome.toLowerCase())
+      )
+
+      if (paciente) {
+        setPacienteFiltradoId(paciente.id)
+      } else {
+        setPacienteFiltradoId(null)
+      }
+    } catch (error) {
+      console.error('Erro ao buscar paciente:', error)
+    }
+  }
+
+  // Aplicar destaque condicional
+  const eventosFiltrados = eventos.map((ev) => {
+    if (pacienteFiltradoId && ev.paciente_id === pacienteFiltradoId) {
+      return {
+        ...ev,
+        title: `${ev.title} ★`,
+        backgroundColor: '#facc15' // amarelo
+      }
+    }
+    return ev
+  })
+
   return (
-    <div className="w-full h-[72vh]">
+    <div className="w-full h-[72vh] flex flex-col gap-2">
+      {/* 🔍 Campo de filtro por paciente */}
+      <div className="px-6 pt-2">
+        <input
+          type="text"
+          placeholder="Buscar por nome do paciente..."
+          value={filtroPaciente}
+          onChange={(e) => {
+            setFiltroPaciente(e.target.value)
+            buscarPaciente(e.target.value)
+          }}
+          className="border border-gray-300 rounded px-3 py-2 text-sm w-full"
+        />
+      </div>
+
+      {/* 📆 Calendário */}
       <CalendarioAgenda
-        eventos={eventos}
+        eventos={eventosFiltrados}
         aoSelecionarSlot={handleNovoSlot}
         aoSelecionarEvento={handleEventoClick}
+        onAdicionarRapido={handleAdicionarRapido}
       />
 
+      {/* ➕ Modal de adicionar horário */}
       {modalAberto && (
         <ModalNovoHorario
           horario={slotSelecionado}
@@ -168,6 +225,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         />
       )}
 
+      {/* 📝 Modal de reagendamento/agendamento */}
       {modalAgendar && (
         <ModalAgendarHorario
           agendamentoId={agendamentoSelecionado}
