@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
 import { Search, User, X } from 'lucide-react'
@@ -17,6 +17,14 @@ export default function ModalAgendarHorario({
   const [filtro, setFiltro] = useState('')
   const [mostrarCadastro, setMostrarCadastro] = useState(false)
   const [selecionado, setSelecionado] = useState(null)
+
+  const inputRef = useRef(null)
+
+  useEffect(() => {
+    if (statusAtual !== 'agendado' && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [statusAtual])
 
   useEffect(() => {
     if (filtro.length < 2) {
@@ -86,6 +94,7 @@ export default function ModalAgendarHorario({
               <div className="relative">
                 <Search className="absolute left-3 top-3 text-gray-400" size={20} />
                 <input
+                  ref={inputRef}
                   type="text"
                   placeholder="Digite para buscar pacientes..."
                   value={filtro}
@@ -133,7 +142,7 @@ export default function ModalAgendarHorario({
                 onClick={() => onRemover(agendamentoId)}
                 className="bg-blue-100 text-blue-800 hover:bg-blue-200 py-2 px-4 rounded"
               >
-                Cancelar disponibilidade
+                Remover horário
               </button>
             )}
             {statusAtual !== 'agendado' && (
@@ -141,7 +150,7 @@ export default function ModalAgendarHorario({
                 onClick={() => setMostrarCadastro(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
               >
-                Cadastrar Novo Paciente
+                Novo paciente
               </button>
             )}
           </div>
