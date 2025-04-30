@@ -1,30 +1,80 @@
 // src/pages/AgendaPrescritor.jsx
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import CalendarioAgenda from '../components/CalendarioAgenda'
-import { useState } from 'react'
-import { addHours } from 'date-fns'
+import ModalNovoHorario from '../components/ModalNovoHorario'
 
 export default function AgendaPrescritor() {
   const [eventos, setEventos] = useState([])
+  const [modalAberto, setModalAberto] = useState(false)
+  const [slotSelecionado, setSlotSelecionado] = useState(null)
+  const user = JSON.parse(localStorage.getItem('user'))
 
-  const handleNovoHorario = ({ start, end }) => {
-    const titulo = prompt('Título do horário (ex: "Disponível para consulta")')
-    if (titulo) {
-      const novoEvento = { title: titulo, start, end }
-      setEventos([...eventos, novoEvento])
+  useEffect(() => {
+    carregarEventos()
+  }, [])
+
+  const carregarEventos = async () => {
+    try {
+      const response = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+      const eventosFormatados = response.data.map(ev => {
+        return {
+          id: ev.id,
+          title: ev.status === 'agendado' ? 'Agendado' : 'Disponível',
+          start: new Date(`${ev.data}T${ev.hora}`),
+          end: new Date(`${ev.data}T${ev.hora}`), // mesma hora (ajuste visual no calendário)
+          status: ev.status
+        }
+      })
+      setEventos(eventosFormatados)
+    } catch (error) {
+      console.error('Erro ao carregar eventos:', error)
     }
   }
 
-  const handleEventoClick = (event) => {
-    alert(`Evento: ${event.title}`)
+  const handleNovoSlot = (slotInfo) => {
+    setSlotSelecionado(slotInfo.start)
+    setModalAberto(true)
+  }
+
+  const confirmarHorario = async () => {
+    const data = slotSelecionado.toISOString().split('T')[0]
+    const hora = slotSelecionado.toTimeString().slice(0, 5)
+
+    try {
+      await axios.post('https://nublia-backend.onrender.com/agenda/disponibilizar', {
+        prescritor_id: user.id,
+        data,
+        hora,
+        status: 'disponivel'
+      })
+
+      setModalAberto(false)
+      setSlotSelecionado(null)
+      carregarEventos()
+    } catch (error) {
+      console.error('Erro ao salvar horário:', error)
+    }
   }
 
   return (
-    <div className="w-full h-[72vh] p-2"> {/* 🔹 altura ajustada + margem reduzida */}
+    <div className="w-full h-[72vh] p-2">
       <CalendarioAgenda
         eventos={eventos}
-        aoSelecionarSlot={handleNovoHorario}
-        aoSelecionarEvento={handleEventoClick}
+        aoSelecionarSlot={handleNovoSlot}
+        aoSelecionarEvento={(e) => {}}
       />
+
+      {modalAberto && (
+        <ModalNovoHorario
+          horario={slotSelecionado}
+          onConfirmar={confirmarHorario}
+          onCancelar={() => {
+            setModalAberto(false)
+            setSlotSelecionado(null)
+          }}
+        />
+      )}
     </div>
   )
 }
