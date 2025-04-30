@@ -23,7 +23,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         events={eventos}
         startAccessor="start"
         endAccessor="end"
-        defaultView="week"
+        defaultView="month"
         views={['month', 'week', 'day', 'agenda']}
         selectable
         step={15}
