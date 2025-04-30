@@ -102,21 +102,21 @@ export default function PrescritorDashboard() {
     item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
   )
 
-const handleVerPerfil = async (pacienteId) => {
-  try {
-    const response = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-    const paciente = response.data
+  const handleVerPerfil = async (pacienteId) => {
+    try {
+      const response = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+      const paciente = response.data
 
-    if (!paciente || paciente.role !== 'paciente') {
-      throw new Error("Usuário inválido ou não é paciente")
+      if (!paciente || paciente.role !== 'paciente') {
+        throw new Error("Usuário inválido ou não é paciente")
+      }
+
+      setPacientePerfil(paciente)
+      setMostrarPerfilPacienteModal(true)
+    } catch (error) {
+      console.error(`Erro ao carregar perfil do paciente (ID ${pacienteId}):`, error?.response?.data || error.message)
     }
-
-    setPacientePerfil(paciente)
-    setMostrarPerfilPacienteModal(true)
-  } catch (error) {
-    console.error(`Erro ao carregar perfil do paciente (ID ${pacienteId}):`, error?.response?.data || error.message)
   }
-}
 
   const handleVerAtendimento = (atendimento) => {
     setAtendimentoSelecionado(atendimento)
@@ -176,8 +176,8 @@ const handleVerPerfil = async (pacienteId) => {
               <FichaAtendimento
                 paciente={pacienteSelecionado}
                 onFinalizar={() => {
-                // Esta função só será chamada se a ficha confirmar a saída
-                setPacienteSelecionado(null)
+                  // ✅ Essa função será chamada somente após confirmação dentro da ficha
+                  setPacienteSelecionado(null)
                 }}
                 onAtendimentoSalvo={() => carregarAtendimentos(user?.id)}
               />
