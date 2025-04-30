@@ -85,7 +85,7 @@ export default function ModalAgendarHorario({
         para_id: novoHorarioId
       })
 
-      toast.success('Horário reagendado com sucesso!')
+      // toast agora só será disparado no componente pai
       if (onAtualizarAgenda) onAtualizarAgenda()
       setCarregando(false)
       onCancelar()
