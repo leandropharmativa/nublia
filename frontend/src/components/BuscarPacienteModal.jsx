@@ -1,10 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { Search, User } from 'lucide-react'
 
 export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSelecionarPaciente }) {
   const [termoBusca, setTermoBusca] = useState('')
   const [pacientes, setPacientes] = useState([])
+
+  const inputRef = useRef(null)
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [])
 
   useEffect(() => {
     const buscar = async () => {
@@ -45,6 +53,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
         <div className="relative">
           <Search className="absolute left-3 top-3 text-gray-400" size={20} />
           <input
+            ref={inputRef}
             type="text"
             placeholder="Digite o nome do paciente..."
             value={termoBusca}
