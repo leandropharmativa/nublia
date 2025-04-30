@@ -5,7 +5,7 @@ import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarioCustom.css'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { ReactTooltip } from 'react-tooltip'
+import ReactTooltip from 'react-tooltip'
 
 const locales = { 'pt-BR': ptBR }
 
