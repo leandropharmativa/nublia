@@ -3,7 +3,7 @@ import { Save, ArrowLeft } from 'lucide-react'
 import axios from 'axios'
 
 export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoSalvo }) {
-  const [abaAtiva, setAbaAtiva] = useState('anamnese')
+  const [abaAtiva, setAbaAtiva] = useState('paciente')
   const [formulario, setFormulario] = useState({
     anamnese: '',
     antropometria: '',
@@ -49,10 +49,12 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
     }
   }
 
+  const abas = ['paciente', 'anamnese', 'antropometria', 'dieta', 'receita']
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-full">
 
-      {/* 🔵 Cabeçalho com título e botões */}
+      {/* Cabeçalho com título e botões */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold text-blue-600">Ficha de Atendimento</h2>
@@ -65,24 +67,16 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         </div>
       </div>
 
-      {/* 🔵 Mensagem de feedback */}
+      {/* Mensagem de feedback */}
       {mensagem && (
         <div className={`mb-4 p-3 rounded text-center ${mensagem.tipo === 'sucesso' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
           {mensagem.texto}
         </div>
       )}
 
-      {/* 🔵 Dados do paciente */}
-      <div className="mb-6 border-b pb-4">
-        <p className="text-lg font-semibold">{paciente.name}</p>
-        <p className="text-sm text-gray-500">
-          {paciente.email || 'Sem email'} • {paciente.telefone || 'Sem telefone'} • {paciente.sexo || 'Sem sexo'} • {paciente.data_nascimento || 'Sem data de nascimento'}
-        </p>
-      </div>
-
-      {/* 🔵 Tabs */}
+      {/* Abas de navegação */}
       <div className="flex border-b mb-6">
-        {["anamnese", "antropometria", "dieta", "receita"].map((aba) => (
+        {abas.map((aba) => (
           <button
             key={aba}
             onClick={() => setAbaAtiva(aba)}
@@ -93,14 +87,43 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         ))}
       </div>
 
-      {/* 🔵 Área de texto para cada aba */}
+      {/* Conteúdo da aba */}
       <div className="space-y-4">
-        <textarea
-          placeholder={`Escreva as informações de ${abaAtiva}...`}
-          value={formulario[abaAtiva]}
-          onChange={handleChange}
-          className="w-full h-80 p-4 border rounded resize-none"
-        />
+        {abaAtiva === 'paciente' ? (
+          <div className="space-y-2 text-sm text-gray-700">
+            <div>
+              <p className="font-semibold text-gray-800">Nome:</p>
+              <p>{paciente.name || 'Não informado'}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-800">Email:</p>
+              <p>{paciente.email || 'Não informado'}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-800">Telefone:</p>
+              <p>{paciente.telefone || 'Não informado'}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-800">Sexo:</p>
+              <p>{paciente.sexo || 'Não informado'}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-800">Data de Nascimento:</p>
+              <p>{paciente.data_nascimento || 'Não informada'}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-800">Observações:</p>
+              <p className="whitespace-pre-wrap">{paciente.observacoes || 'Nenhuma observação registrada.'}</p>
+            </div>
+          </div>
+        ) : (
+          <textarea
+            placeholder={`Escreva as informações de ${abaAtiva}...`}
+            value={formulario[abaAtiva]}
+            onChange={handleChange}
+            className="w-full h-80 p-4 border rounded resize-none"
+          />
+        )}
       </div>
     </div>
   )
