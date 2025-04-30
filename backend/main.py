@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database import create_db_and_tables
 from app.routers import root, users, agenda
 from app.routers import codigos, atendimentos, formulas, agendamentos  # <<< atualizado
+from app.routers import agenda
 
 from fastapi.openapi.utils import get_openapi
 
@@ -27,6 +28,7 @@ app.include_router(codigos.router)
 app.include_router(atendimentos.router)
 app.include_router(formulas.router)
 app.include_router(agendamentos.router)  # <<< nova linha adicionada
+app.include_router(agenda.router)
 
 # Criação automática das tabelas no primeiro startup
 @app.on_event("startup")
