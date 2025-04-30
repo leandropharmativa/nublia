@@ -3,24 +3,23 @@ import axios from 'axios'
 import { addHours } from 'date-fns'
 import CalendarioAgenda from '../components/CalendarioAgenda'
 import ModalNovoHorario from '../components/ModalNovoHorario'
+import ModalAgendarHorario from '../components/ModalAgendarHorario'
 
 export default function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
   const [modalAberto, setModalAberto] = useState(false)
+  const [modalAgendar, setModalAgendar] = useState(false)
   const [slotSelecionado, setSlotSelecionado] = useState(null)
+  const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null)
   const user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
-    if (mostrarAgenda) {
-      carregarEventos()
-    }
+    if (mostrarAgenda) carregarEventos()
   }, [mostrarAgenda])
 
   const carregarEventos = async () => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-      console.log('Eventos recebidos:', response.data)
-
       const eventosFormatados = response.data.map(ev => {
         const start = new Date(`${ev.data}T${ev.hora}`)
         const end = addHours(start, 1)
@@ -33,7 +32,6 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           status: ev.status
         }
       })
-
       setEventos(eventosFormatados)
     } catch (error) {
       console.error('Erro ao carregar eventos:', error)
@@ -65,12 +63,34 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     }
   }
 
+  const handleEventoClick = (evento) => {
+    if (evento.status === 'disponivel') {
+      setAgendamentoSelecionado(evento.id)
+      setModalAgendar(true)
+    }
+  }
+
+  const confirmarAgendamento = async (agendamentoId, pacienteId) => {
+    try {
+      await axios.post('https://nublia-backend.onrender.com/agenda/agendar', {
+        id: agendamentoId,
+        paciente_id: pacienteId
+      })
+
+      setModalAgendar(false)
+      setAgendamentoSelecionado(null)
+      carregarEventos()
+    } catch (error) {
+      console.error('Erro ao agendar:', error)
+    }
+  }
+
   return (
     <div className="w-full h-[72vh] p-2">
       <CalendarioAgenda
         eventos={eventos}
         aoSelecionarSlot={handleNovoSlot}
-        aoSelecionarEvento={() => {}}
+        aoSelecionarEvento={handleEventoClick}
       />
 
       {modalAberto && (
@@ -80,6 +100,17 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           onCancelar={() => {
             setModalAberto(false)
             setSlotSelecionado(null)
+          }}
+        />
+      )}
+
+      {modalAgendar && (
+        <ModalAgendarHorario
+          agendamentoId={agendamentoSelecionado}
+          onConfirmar={confirmarAgendamento}
+          onCancelar={() => {
+            setModalAgendar(false)
+            setAgendamentoSelecionado(null)
           }}
         />
       )}
