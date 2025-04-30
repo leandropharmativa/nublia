@@ -78,3 +78,32 @@ export default function ModalAgendarHorario({ agendamentoId, onConfirmar, onCanc
 
           <div className="flex justify-end gap-2">
             <button
+              onClick={onCancelar}
+              className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded"
+            >
+              Cancelar
+            </button>
+            <button
+              disabled={!selecionado}
+              onClick={() => onConfirmar(agendamentoId, selecionado.id)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50"
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {mostrarCadastro && (
+        <CadastrarPacienteModal
+          onClose={() => setMostrarCadastro(false)}
+          onPacienteCadastrado={(paciente) => {
+            setSelecionado(paciente)
+            setFiltro(paciente.name)
+            setMostrarCadastro(false)
+          }}
+        />
+      )}
+    </>
+  )
+}
