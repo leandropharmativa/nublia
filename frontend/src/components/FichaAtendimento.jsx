@@ -191,9 +191,12 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
 
       <ModalConfirmacao
         aberto={mostrarConfirmacaoSaida}
-        titulo="Descartar alterações?"
-        mensagem="Você digitou informações no atendimento. Deseja realmente sair e perder os dados?"
-        onConfirmar={() => {
+        titulo="Deseja salvar o atendimento?"
+        mensagem="Se você sair agora, o atendimento não poderá mais ser editado. Deseja salvar antes de sair?"
+        textoBotaoConfirmar="Salvar e sair"
+        textoBotaoCancelar="Cancelar"
+        onConfirmar={async () => {
+          await handleSalvar()
           setMostrarConfirmacaoSaida(false)
           onFinalizar()
         }}
