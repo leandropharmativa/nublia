@@ -178,7 +178,7 @@ export default function PrescritorDashboard() {
           onVerAtendimento={handleVerAtendimento}
         />
 
-        <main className="h-screen flex-1 flex flex-col items-start p-4 overflow-hidden">
+        <main className="flex-1 flex flex-col items-start p-4 overflow-hidden">
           {mostrarAgenda ? (
             <div className="w-full h-full">
               <AgendaPrescritor mostrarAgenda={mostrarAgenda} />
