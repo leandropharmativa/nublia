@@ -1,22 +1,34 @@
-from fastapi import APIRouter
+# backend/app/routers/agenda.py
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from app.models import Agendamento, AgendamentoCreate
-from app.database import engine
+from app.database import get_session
+from app.models import Agendamento
+from typing import List
+from datetime import date
 
-router = APIRouter()
+router = APIRouter(prefix="/agenda", tags=["Agenda"])
 
-# Rota para criar um novo agendamento
-@router.post("/agenda/")
-def create_agendamento(agendamento: AgendamentoCreate):
-    with Session(engine) as session:
-        novo_agendamento = Agendamento.from_orm(agendamento)
-        session.add(novo_agendamento)
-        session.commit()
-        session.refresh(novo_agendamento)
-        return {"message": "Agendamento criado com sucesso!", "id": novo_agendamento.id}
+@router.post("/disponibilizar", response_model=Agendamento)
+def disponibilizar_horario(agendamento: Agendamento, session: Session = Depends(get_session)):
+    session.add(agendamento)
+    session.commit()
+    session.refresh(agendamento)
+    return agendamento
 
-# Rota para listar todos os agendamentos
-@router.get("/agenda/")
-def list_agendamentos():
-    with Session(engine) as session:
-        return session.exec(select(Agendamento)).all()
+@router.get("/prescritor/{prescritor_id}", response_model=List[Agendamento])
+def listar_agenda_prescritor(prescritor_id: int, session: Session = Depends(get_session)):
+    result = session.exec(select(Agendamento).where(Agendamento.prescritor_id == prescritor_id))
+    return result.all()
+
+@router.post("/agendar", response_model=Agendamento)
+def agendar_horario(id: int, paciente_id: int, session: Session = Depends(get_session)):
+    agendamento = session.get(Agendamento, id)
+    if not agendamento or agendamento.status != "disponivel":
+        raise HTTPException(status_code=400, detail="Horário indisponível")
+    agendamento.paciente_id = paciente_id
+    agendamento.status = "agendado"
+    session.add(agendamento)
+    session.commit()
+    session.refresh(agendamento)
+    return agendamento
