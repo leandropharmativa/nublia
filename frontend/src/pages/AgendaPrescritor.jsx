@@ -66,11 +66,23 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     }
   }
 
-  const handleEventoClick = (evento) => {
+    const handleEventoClick = async (evento) => {
     setAgendamentoSelecionado(evento.id)
     setAgendamentoStatus(evento.status)
-    setPacienteAtual(evento.paciente_id || null)
-    setModalAgendar(true)
+
+    if (evento.status === 'agendado' && evento.paciente_id) {
+    try {
+      const res = await axios.get(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
+      setPacienteAtual(res.data.name)
+    } catch (error) {
+      console.error('Erro ao buscar nome do paciente:', error)
+      setPacienteAtual('Paciente não encontrado')
+    }
+    } else {
+    setPacienteAtual(null)
+    }
+
+  setModalAgendar(true)
   }
 
   const confirmarAgendamento = async (agendamentoId, pacienteId) => {
