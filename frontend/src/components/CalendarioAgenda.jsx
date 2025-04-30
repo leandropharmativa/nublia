@@ -26,7 +26,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         defaultView="week"
         views={['month', 'week', 'day', 'agenda']}
         selectable
-        step={15}
+        step={60}
         timeslots={1}
         culture="pt-BR"
         onSelectSlot={aoSelecionarSlot}
