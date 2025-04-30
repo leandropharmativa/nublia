@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
+import { XCircle } from 'lucide-react'
 
 export default function ModalAgendarHorario({
   agendamentoId,
@@ -40,21 +41,24 @@ export default function ModalAgendarHorario({
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl p-6 shadow-lg max-w-md w-full">
-          <h2 className="text-lg font-semibold mb-4">
+        <div className="bg-white rounded-xl p-6 shadow-lg max-w-xl w-full">
+          <h2 className="text-lg font-semibold mb-4 text-blue-600">
             {statusAtual === 'agendado' ? 'Editar agendamento' : 'Agendar horário'}
           </h2>
 
           {statusAtual === 'agendado' && pacienteAtual && (
-          <div className="mb-4 text-sm text-gray-700">
-          Paciente atual: <strong>{pacienteAtual}</strong>
-          <button
-          onClick={() => onDesagendar(agendamentoId)}
-          className="ml-3 text-red-600 hover:underline text-xs"
-          >
-          Remover paciente
-          </button>
-          </div>
+            <div className="mb-4 text-sm text-gray-700">
+              <div className="flex items-center justify-between">
+                <span>Paciente atual:</span>
+                <button
+                  onClick={() => onDesagendar(agendamentoId)}
+                  className="text-red-600 hover:text-red-700 flex items-center gap-1 text-xs"
+                >
+                  <XCircle size={16} /> Remover paciente
+                </button>
+              </div>
+              <div className="mt-1 font-semibold">{pacienteAtual}</div>
+            </div>
           )}
 
           <input
@@ -65,11 +69,11 @@ export default function ModalAgendarHorario({
             className="w-full border border-gray-300 rounded px-3 py-2 mb-3"
           />
 
-          <div className="max-h-40 overflow-y-auto mb-4">
+          <div className="max-h-40 overflow-y-auto mb-4 border border-gray-200 rounded">
             {pacientes.map((p) => (
               <div
                 key={p.id}
-                className={`p-2 rounded cursor-pointer ${
+                className={`p-2 cursor-pointer text-sm ${
                   selecionado?.id === p.id ? 'bg-blue-100' : 'hover:bg-gray-100'
                 }`}
                 onClick={() => setSelecionado(p)}
@@ -82,24 +86,25 @@ export default function ModalAgendarHorario({
             )}
           </div>
 
-          <div className="flex flex-col items-start gap-2 mb-3">
-          <button
-          onClick={() => setMostrarCadastro(true)}
-          className="text-sm text-blue-600 hover:underline"
-          >
-          + Cadastrar novo paciente
-          </button>
-  
-          {statusAtual === 'disponivel' && (
-          <button
-          onClick={() => onRemover(agendamentoId)}
-          className="text-sm text-red-600 hover:underline"
-          >
-          - Cancelar disponibilidade
-          </button>
-          )}
-          </div>
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => setMostrarCadastro(true)}
+                className="text-sm text-blue-600 hover:underline"
+              >
+                + Cadastrar novo paciente
+              </button>
 
+              {statusAtual === 'disponivel' && (
+                <button
+                  onClick={() => onRemover(agendamentoId)}
+                  className="text-sm text-red-600 hover:underline"
+                >
+                  - Cancelar disponibilidade
+                </button>
+              )}
+            </div>
+          </div>
 
           <div className="flex justify-end gap-2">
             <button
