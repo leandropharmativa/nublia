@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
@@ -15,11 +16,24 @@ const localizer = dateFnsLocalizer({
 })
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
+  const [statusFiltro, setStatusFiltro] = useState('Todos')
+  const [buscaPaciente, setBuscaPaciente] = useState('')
+
+  const eventosFiltrados = useMemo(() => {
+    return eventos.filter(e => {
+      const nome = e.title?.toLowerCase() || ''
+      const correspondeBusca = buscaPaciente.length === 0 || nome.includes(buscaPaciente.toLowerCase())
+      const correspondeStatus =
+        statusFiltro === 'Todos' || e.status === statusFiltro.toLowerCase()
+      return correspondeBusca && correspondeStatus
+    })
+  }, [eventos, statusFiltro, buscaPaciente])
+
   return (
     <div className="h-full px-6 py-4 bg-white rounded-xl shadow overflow-hidden">
       <Calendar
         localizer={localizer}
-        events={eventos}
+        events={eventosFiltrados}
         startAccessor="start"
         endAccessor="end"
         defaultView="week"
@@ -41,7 +55,16 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           noEventsInRange: 'Sem eventos neste período.',
         }}
         components={{
-          toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
+          toolbar: (props) => (
+            <CustomToolbar
+              {...props}
+              eventos={eventosFiltrados}
+              statusFiltro={statusFiltro}
+              onStatusFiltroChange={setStatusFiltro}
+              buscaPaciente={buscaPaciente}
+              onBuscaPacienteChange={setBuscaPaciente}
+            />
+          ),
           day: { header: CustomDayHeader },
         }}
         eventPropGetter={(event) => {
@@ -64,15 +87,29 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
 
 function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
-  const colorClass = isSunday ? 'text-red-600' : 'text-blue-600'
   return (
-    <div className={`text-sm font-semibold text-center uppercase ${colorClass}`}>
+    <div
+      className="text-sm font-semibold text-center uppercase"
+      style={{ color: isSunday ? '#dc2626' : '#2563eb' }}
+    >
       {label}
     </div>
   )
 }
 
-function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
+function CustomToolbar({
+  label,
+  onNavigate,
+  onView,
+  views,
+  view,
+  date,
+  eventos,
+  statusFiltro,
+  onStatusFiltroChange,
+  buscaPaciente,
+  onBuscaPacienteChange
+}) {
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
 
   const renderLabel = () => {
@@ -87,48 +124,59 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
     return label
   }
 
-  const contar = () => {
-    let eventosFiltrados = eventos
-
-    if (view === 'week') {
-      eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
-    } else if (view === 'day') {
-      eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
-    }
-
-    const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
-    const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
-
-    return `${agendados} agendamentos · ${disponiveis} horários disponíveis`
-  }
+  const agendados = eventos.filter(e => e.status === 'agendado').length
+  const disponiveis = eventos.filter(e => e.status === 'disponivel').length
 
   return (
-    <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
-      <div className="flex items-center gap-2">
-        <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
-          <ChevronLeft size={20} />
-        </button>
-        <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
-          <ChevronRight size={20} />
-        </button>
-        <span className="text-sm font-medium text-gray-700">{renderLabel()}</span>
+    <div className="flex flex-col gap-2 mb-2">
+      <div className="flex justify-between items-center px-2 border-b border-gray-200 pb-2">
+        <div className="flex items-center gap-2">
+          <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
+            <ChevronLeft size={20} />
+          </button>
+          <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
+            <ChevronRight size={20} />
+          </button>
+          <span className="text-sm font-medium text-gray-700">{renderLabel()}</span>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-gray-500 italic">
+            {agendados} agendamentos · {disponiveis} horários disponíveis
+          </span>
+          <div className="flex gap-1">
+            {views.map((v) => (
+              <button
+                key={v}
+                onClick={() => onView(v)}
+                className={`text-sm px-2 py-1 rounded ${
+                  view === v ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                {v.charAt(0).toUpperCase() + v.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-500 italic">{contar()}</span>
-        <div className="flex gap-1">
-          {views.map((v) => (
-            <button
-              key={v}
-              onClick={() => onView(v)}
-              className={`text-sm px-2 py-1 rounded ${
-                view === v ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              {v.charAt(0).toUpperCase() + v.slice(1)}
-            </button>
-          ))}
-        </div>
+      <div className="flex justify-between items-center px-2">
+        <input
+          type="text"
+          value={buscaPaciente}
+          onChange={(e) => onBuscaPacienteChange(e.target.value)}
+          placeholder="Buscar paciente..."
+          className="border px-2 py-1 rounded text-sm w-1/2"
+        />
+        <select
+          value={statusFiltro}
+          onChange={(e) => onStatusFiltroChange(e.target.value)}
+          className="border px-2 py-1 rounded text-sm"
+        >
+          <option>Todos</option>
+          <option>Agendado</option>
+          <option>Disponivel</option>
+        </select>
       </div>
     </div>
   )
