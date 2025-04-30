@@ -6,7 +6,6 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
   const [termoBusca, setTermoBusca] = useState('')
   const [pacientes, setPacientes] = useState([])
 
-  // 🔎 Buscar usuários com role=paciente conforme o termo
   useEffect(() => {
     const buscar = async () => {
       if (termoBusca.trim() === '') {
@@ -39,7 +38,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-6">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-6 max-h-[90vh] overflow-hidden">
 
         <h2 className="text-blue-600 text-2xl font-bold">Buscar Paciente</h2>
 
@@ -54,7 +53,8 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        {/* Lista com rolagem controlada */}
+        <div className="overflow-y-auto max-h-[300px]">
           {termoBusca.trim() && pacientes.length > 0 ? (
             <ul className="space-y-4">
               {pacientes.map((paciente) => (
