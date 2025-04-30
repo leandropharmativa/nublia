@@ -14,7 +14,8 @@
     "lucide-react": "^0.293.0",
     "react-big-calendar": "^1.6.0",
     "@tippyjs/react": "^4.2.6",
-    "date-fns": "^3.6.0"
+    "date-fns": "^3.6.0",
+     "framer-motion": "^11.0.0", 
   },
   "devDependencies": {
     "vite": "^4.0.0",
