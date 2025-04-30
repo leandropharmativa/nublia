@@ -1,9 +1,8 @@
-// 📄 AgendaPrescritor.jsx
-
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { addHours, isSameDay } from 'date-fns'
 import { toast, ToastContainer } from 'react-toastify'
+import { Search } from 'lucide-react'
 import 'react-toastify/dist/ReactToastify.css'
 
 import CalendarioAgenda from '../components/CalendarioAgenda'
@@ -21,7 +20,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   const [pacienteId, setPacienteId] = useState(null)
   const [horarioSelecionado, setHorarioSelecionado] = useState(null)
   const [filtroPaciente, setFiltroPaciente] = useState('')
-  const [pacienteFiltradoId, setPacienteFiltradoId] = useState(null)
+  const [resultadosBusca, setResultadosBusca] = useState([])
 
   const user = JSON.parse(localStorage.getItem('user'))
 
@@ -166,58 +165,63 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     }
   }
 
-  const buscarPaciente = async (nome) => {
-    if (!nome || nome.length < 2) {
-      setPacienteFiltradoId(null)
+  const buscarPorPaciente = (texto) => {
+    setFiltroPaciente(texto)
+    if (texto.length < 2) {
+      setResultadosBusca([])
       return
     }
 
-    try {
-      const res = await axios.get('https://nublia-backend.onrender.com/users/all')
-      const paciente = res.data.find(
-        (p) => p.role === 'paciente' && p.name.toLowerCase().includes(nome.toLowerCase())
-      )
+    const resultados = eventos.filter((ev) =>
+      ev.title.toLowerCase().includes(texto.toLowerCase())
+    )
 
-      if (paciente) {
-        setPacienteFiltradoId(paciente.id)
-      } else {
-        setPacienteFiltradoId(null)
-      }
-    } catch (error) {
-      console.error('Erro ao buscar paciente:', error)
-    }
+    setResultadosBusca(resultados)
   }
 
-  const eventosFiltrados = eventos.map((ev) => {
-    if (pacienteFiltradoId && ev.paciente_id === pacienteFiltradoId) {
-      return {
-        ...ev,
-        title: `${ev.title} ★`,
-        backgroundColor: '#facc15'
-      }
-    }
-    return ev
-  })
-
   return (
-    <div className="w-full h-[72vh] flex flex-col gap-2">
+    <div className="w-full h-[72vh] flex flex-col gap-2 relative">
       {/* 🔍 Campo de filtro por paciente */}
-      <div className="px-6 pt-2">
-        <input
-          type="text"
-          placeholder="Buscar por nome do paciente..."
-          value={filtroPaciente}
-          onChange={(e) => {
-            setFiltroPaciente(e.target.value)
-            buscarPaciente(e.target.value)
-          }}
-          className="border border-gray-300 rounded px-3 py-2 text-sm w-full"
-        />
+      <div className="px-6 pt-2 w-80">
+        <div className="relative">
+          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Busca por nome do paciente..."
+            value={filtroPaciente}
+            onChange={(e) => buscarPorPaciente(e.target.value)}
+            className="pl-10 border border-gray-300 rounded px-3 py-2 text-sm w-full"
+          />
+        </div>
       </div>
+
+      {/* 🔍 Lista de resultados (tipo modal flutuante) */}
+      {resultadosBusca.length > 0 && (
+        <div className="absolute left-6 top-20 bg-white rounded shadow border border-gray-200 z-50 w-[320px] max-h-64 overflow-y-auto text-sm">
+          <ul>
+            {resultadosBusca.map(ev => (
+              <li key={ev.id} className="px-4 py-2 hover:bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                <div>
+                  <p className="font-semibold">{ev.title}</p>
+                  <p className="text-gray-500">
+                    {ev.start.toLocaleDateString('pt-BR')} às {ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleEventoClick(ev)}
+                  className="text-blue-600 hover:underline text-sm"
+                >
+                  Abrir
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* 📆 Calendário */}
       <CalendarioAgenda
-        eventos={eventosFiltrados}
+        eventos={eventos}
         aoSelecionarSlot={handleNovoSlot}
         aoSelecionarEvento={handleEventoClick}
         onAdicionarRapido={handleAdicionarRapido}
@@ -254,7 +258,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         />
       )}
 
-      {/* ✅ Toast container */}
+      {/* ✅ Toast */}
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar />
     </div>
   )
