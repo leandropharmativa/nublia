@@ -47,8 +47,8 @@ export default function ModalAgendarHorario({
           </h2>
 
           {statusAtual === 'agendado' && pacienteAtual && (
-            <div className="mb-4 flex items-center justify-between">
-              <div className="text-base font-semibold text-gray-800">{pacienteAtual}</div>
+            <div className="mb-4 flex items-center gap-2">
+              <span className="text-base font-semibold text-gray-800">{pacienteAtual}</span>
               <button
                 onClick={() => onDesagendar(agendamentoId)}
                 className="text-red-600 hover:text-red-700"
@@ -86,12 +86,14 @@ export default function ModalAgendarHorario({
 
           <div className="flex justify-between items-center mt-6">
             <div className="flex flex-col gap-1">
-              <button
-                onClick={() => setMostrarCadastro(true)}
-                className="text-sm text-blue-600 hover:underline"
-              >
-                + Cadastrar novo paciente
-              </button>
+              {!selecionado && (
+                <button
+                  onClick={() => setMostrarCadastro(true)}
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  + Cadastrar novo paciente
+                </button>
+              )}
               {statusAtual === 'disponivel' && (
                 <button
                   onClick={() => onRemover(agendamentoId)}
