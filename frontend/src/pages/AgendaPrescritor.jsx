@@ -116,15 +116,15 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       )}
 
       {modalAgendar && (
-      <ModalAgendarHorario
-      agendamentoId={agendamentoSelecionado}
-      onConfirmar={confirmarAgendamento}
-      onCancelar={() => {
-      setModalAgendar(false)
-      setAgendamentoSelecionado(null)
-      }}
-      onRemover={removerHorario}
-      />
+<ModalAgendarHorario
+  agendamentoId={agendamentoSelecionado}
+  onConfirmar={confirmarAgendamento}
+  onCancelar={() => {
+    setModalAgendar(false)
+    setAgendamentoSelecionado(null)
+  }}
+  onRemover={removerHorario}
+/>
       )}
       </div>
   )
