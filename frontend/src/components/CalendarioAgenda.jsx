@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useEffect } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
@@ -18,6 +18,10 @@ const localizer = dateFnsLocalizer({
 })
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [eventos])
+
   return (
     <div className="h-full p-6 bg-white rounded shadow overflow-hidden">
       <Calendar
@@ -74,7 +78,7 @@ function EventWithTooltip({ event }) {
   })
 
   return (
-    <div data-tip={`Horário: ${hora}`} data-for="agenda-tooltip">
+    <div data-for="agenda-tooltip" data-tip={`Horário: ${hora}`}>
       {event.title}
     </div>
   )
