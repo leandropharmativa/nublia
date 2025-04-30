@@ -151,7 +151,7 @@ export default function PrescritorDashboard() {
         >
           {mostrarAgenda ? <XCircle size={32} /> : <CalendarDays size={32} />}
           <span className="text-xs mt-1">
-            {mostrarAgenda ? 'Fechar Agenda' : 'Agenda'}
+            {mostrarAgenda ? 'Agenda' : 'Agenda'}
           </span>
         </button>
         <button className="flex flex-col items-center text-blue-600 hover:underline">
