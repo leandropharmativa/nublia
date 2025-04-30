@@ -19,6 +19,7 @@ const localizer = dateFnsLocalizer({
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   const [view, setView] = useState('month')
+  const tooltipKey = `${view}-${eventos.length}`
 
   useEffect(() => {
     ReactTooltip.rebuild()
@@ -69,7 +70,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           }
         }}
       />
-      <ReactTooltip id="agenda-tooltip" effect="solid" place="top" />
+      <ReactTooltip key={tooltipKey} id="agenda-tooltip" effect="solid" place="top" />
     </div>
   )
 }
