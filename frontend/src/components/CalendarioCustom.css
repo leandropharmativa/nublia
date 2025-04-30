@@ -23,8 +23,8 @@
 
 /* Remove a borda inferior da última linha do mês 
 .rbc-month-row:last-child {
-  border-bottom: none !important; */
-}
+  border-bottom: none !important; 
+} */
 
 .rbc-month-row {
   min-height: 70px;
