@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
-import { Search, User, XCircle } from 'lucide-react'
+import { Search, User, X } from 'lucide-react'
 
 export default function ModalAgendarHorario({
   agendamentoId,
@@ -45,14 +45,22 @@ export default function ModalAgendarHorario({
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden">
+        <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative">
 
-          <h2 className="text-lg font-semibold text-blue-600">
+          {/* Ícone de fechar no canto superior direito */}
+          <button
+            onClick={onCancelar}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          >
+            <X size={20} />
+          </button>
+
+          <h2 className="text-lg font-semibold text-blue-600 pr-6">
             {statusAtual === 'agendado' ? 'Editar agendamento' : 'Agendar horário'}
           </h2>
 
           {horarioSelecionado && (
-            <p className="text-sm text-gray-500 -mt-2">
+            <p className="text-sm text-gray-500 -mt-2 pr-6">
               {horarioSelecionado.toLocaleDateString('pt-BR', {
                 weekday: 'long',
                 day: '2-digit',
@@ -67,7 +75,7 @@ export default function ModalAgendarHorario({
             <div className="text-sm text-gray-700 flex items-center justify-between border rounded px-3 py-2 bg-gray-50">
               <span><strong>Paciente atual:</strong> {pacienteAtual}</span>
               <button onClick={() => onDesagendar(agendamentoId)} className="text-red-500 hover:text-red-600">
-                <XCircle size={18} />
+                <X size={16} />
               </button>
             </div>
           )}
@@ -114,13 +122,8 @@ export default function ModalAgendarHorario({
             </>
           )}
 
-          <div className="flex justify-between pt-4">
-            <button
-              onClick={onCancelar}
-              className="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded"
-            >
-              Cancelar
-            </button>
+          {/* Rodapé com botões */}
+          <div className="flex justify-end pt-4">
             <button
               onClick={() => setMostrarCadastro(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
