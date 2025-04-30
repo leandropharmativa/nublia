@@ -181,7 +181,7 @@ export default function PrescritorDashboard() {
         <main className="flex-1 flex flex-col items-start p-4 overflow-hidden">
           {mostrarAgenda ? (
             <div className="w-full h-full">
-              <AgendaPrescritor />
+              <AgendaPrescritor mostrarAgenda={mostrarAgenda} />
             </div>
           ) : pacienteSelecionado ? (
             <div className="w-full h-full">
