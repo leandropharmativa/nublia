@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { addHours, isSameDay } from 'date-fns'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 import CalendarioAgenda from '../components/CalendarioAgenda'
 import ModalNovoHorario from '../components/ModalNovoHorario'
 import ModalAgendarHorario from '../components/ModalAgendarHorario'
@@ -84,6 +87,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         status: 'disponivel'
       })
 
+      toast.success(`Horário ${hora} cadastrado com sucesso!`)
       carregarEventos()
 
       if (!manterAberto) {
@@ -92,6 +96,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       }
     } catch (error) {
       console.error('Erro ao salvar horário:', error)
+      toast.error('Erro ao cadastrar horário.')
     }
   }
 
@@ -125,11 +130,13 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         paciente_id: pacienteId
       })
 
+      toast.success('Paciente agendado com sucesso!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
       carregarEventos()
     } catch (error) {
       console.error('Erro ao agendar:', error)
+      toast.error('Erro ao agendar paciente.')
     }
   }
 
@@ -177,13 +184,12 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     }
   }
 
-  // Aplicar destaque condicional
   const eventosFiltrados = eventos.map((ev) => {
     if (pacienteFiltradoId && ev.paciente_id === pacienteFiltradoId) {
       return {
         ...ev,
         title: `${ev.title} ★`,
-        backgroundColor: '#facc15' // amarelo
+        backgroundColor: '#facc15'
       }
     }
     return ev
@@ -243,6 +249,9 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           onAtualizarAgenda={carregarEventos}
         />
       )}
+
+      {/* ✅ Toast container */}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   )
 }
