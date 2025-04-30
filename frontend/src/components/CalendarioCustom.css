@@ -1,7 +1,6 @@
 /* Cor padrão para dias da semana (segunda a sábado) */
 .rbc-header {
   color: #2563eb !important; /* azul padrão Tailwind */
-  text-transform: uppercase;
   font-weight: 600;
   font-size: 0.875rem;
   text-align: center;
@@ -10,4 +9,29 @@
 /* Cor para domingo (1ª coluna) */
  .rbc-header:last-child {
   color: #dc2626 !important; /* vermelho padrão Tailwind */
+}
+/* Remove as bordas externas do calendário */
+.rbc-time-view,
+.rbc-time-content,
+.rbc-timeslot-group,
+.rbc-time-header,
+.rbc-time-header-content,
+.rbc-header,
+.rbc-month-view {
+  border: none !important;
+}
+
+/* Remove a borda inferior da última linha do mês */
+.rbc-month-row:last-child {
+  border-bottom: none !important;
+}
+
+/* Remove linhas verticais entre os dias */
+.rbc-day-bg {
+  border-right: none !important;
+}
+
+/* Remove a borda da agenda semanal/dia */
+.rbc-agenda-view table {
+  border: none !important;
 }
