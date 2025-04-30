@@ -17,15 +17,13 @@ export default function AgendaPrescritor() {
   const carregarEventos = async () => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-      const eventosFormatados = response.data.map(ev => {
-        return {
-          id: ev.id,
-          title: ev.status === 'agendado' ? 'Agendado' : 'Disponível',
-          start: new Date(`${ev.data}T${ev.hora}`),
-          end: new Date(`${ev.data}T${ev.hora}`), // mesma hora (ajuste visual no calendário)
-          status: ev.status
-        }
-      })
+      const eventosFormatados = response.data.map(ev => ({
+        id: ev.id,
+        title: ev.status === 'agendado' ? 'Agendado' : 'Disponível',
+        start: new Date(`${ev.data}T${ev.hora}`),
+        end: new Date(`${ev.data}T${ev.hora}`),
+        status: ev.status
+      }))
       setEventos(eventosFormatados)
     } catch (error) {
       console.error('Erro ao carregar eventos:', error)
@@ -37,9 +35,9 @@ export default function AgendaPrescritor() {
     setModalAberto(true)
   }
 
-  const confirmarHorario = async () => {
+  const confirmarHorario = async (horaDigitada) => {
     const data = slotSelecionado.toISOString().split('T')[0]
-    const hora = slotSelecionado.toTimeString().slice(0, 5)
+    const hora = horaDigitada
 
     try {
       await axios.post('https://nublia-backend.onrender.com/agenda/disponibilizar', {
@@ -62,7 +60,7 @@ export default function AgendaPrescritor() {
       <CalendarioAgenda
         eventos={eventos}
         aoSelecionarSlot={handleNovoSlot}
-        aoSelecionarEvento={(e) => {}}
+        aoSelecionarEvento={() => {}}
       />
 
       {modalAberto && (
