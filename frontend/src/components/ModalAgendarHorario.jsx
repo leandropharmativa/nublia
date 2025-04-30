@@ -46,15 +46,15 @@ export default function ModalAgendarHorario({
           </h2>
 
           {statusAtual === 'agendado' && pacienteAtual && (
-            <div className="mb-4 text-sm text-gray-700">
-              Paciente atual: <strong>ID {pacienteAtual}</strong>
-              <button
-                onClick={() => onDesagendar(agendamentoId)}
-                className="ml-3 text-red-600 hover:underline text-xs"
-              >
-                Remover paciente
-              </button>
-            </div>
+          <div className="mb-4 text-sm text-gray-700">
+          Paciente atual: <strong>{pacienteAtual}</strong>
+          <button
+          onClick={() => onDesagendar(agendamentoId)}
+          className="ml-3 text-red-600 hover:underline text-xs"
+          >
+          Remover paciente
+          </button>
+          </div>
           )}
 
           <input
@@ -82,21 +82,24 @@ export default function ModalAgendarHorario({
             )}
           </div>
 
-          <div className="flex justify-between items-center mb-3">
-            <button
-              onClick={() => setMostrarCadastro(true)}
-              className="text-sm text-blue-600 hover:underline"
-            >
-              + Cadastrar novo paciente
-            </button>
-
-            <button
-              onClick={() => onRemover(agendamentoId)}
-              className="text-sm text-red-500 hover:underline"
-            >
-              🗑 Remover horário
-            </button>
+          <div className="flex flex-col items-start gap-2 mb-3">
+          <button
+          onClick={() => setMostrarCadastro(true)}
+          className="text-sm text-blue-600 hover:underline"
+          >
+          + Cadastrar novo paciente
+          </button>
+  
+          {statusAtual === 'disponivel' && (
+          <button
+          onClick={() => onRemover(agendamentoId)}
+          className="text-sm text-red-600 hover:underline"
+          >
+          - Cancelar disponibilidade
+          </button>
+          )}
           </div>
+
 
           <div className="flex justify-end gap-2">
             <button
