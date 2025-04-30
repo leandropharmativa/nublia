@@ -26,10 +26,10 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         return {
         style: {
         backgroundColor: cor,
-        borderRadius: '0px',
+        borderRadius: '2px',
         color: 'white',
         border: 'none',
-        padding: '2px 3px',
+        padding: '6px 3px',
                 },
               }
         }}
