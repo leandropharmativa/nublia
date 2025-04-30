@@ -140,7 +140,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   }
 
   return (
-    <div className="w-full h-[72vh] p-2">
+    <div className="w-full h-[72vh]">
       <CalendarioAgenda
         eventos={eventos}
         aoSelecionarSlot={handleNovoSlot}
