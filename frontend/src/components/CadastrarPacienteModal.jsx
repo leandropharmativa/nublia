@@ -13,12 +13,12 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(false)
 
-  // 🔄 Atualiza os campos do formulário conforme o usuário digita
+  // 🔄 Atualiza o formulário conforme os inputs mudam
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  // 🛠 Envia o formulário para o backend (cadastra paciente)
+  // 🛠 Envia os dados para o backend
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErro('')
@@ -31,17 +31,19 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
         password: null
       }
 
-      // ✅ Envia os dados para /register
       const response = await axios.post('https://nublia-backend.onrender.com/register', payload)
 
-      const pacienteCriado = {
-        ...payload,
-        id: response.data.id
-      }
+      if (response.data?.id) {
+        const pacienteCriado = {
+          ...payload,
+          id: response.data.id
+        }
 
-      // ✅ Informa ao componente pai que o paciente foi cadastrado com sucesso
-      onPacienteCadastrado(pacienteCriado)
-      onClose()
+        onPacienteCadastrado(pacienteCriado)
+        onClose()
+      } else {
+        setErro("Erro inesperado: resposta sem ID.")
+      }
     } catch (error) {
       console.error(error)
       setErro("Erro ao cadastrar paciente. Verifique os dados.")
@@ -55,7 +57,6 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
       <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-2xl mx-4">
         <h2 className="text-blue-600 text-2xl font-bold mb-4">Cadastrar Paciente</h2>
 
-        {/* 🔴 Exibe erro, se houver */}
         {erro && <p className="text-red-500 text-center">{erro}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -109,7 +110,6 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
             className="border px-3 py-2 w-full"
           />
 
-          {/* 🔘 Botões de ação */}
           <div className="flex justify-between pt-4">
             <button
               type="button"
