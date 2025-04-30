@@ -111,16 +111,16 @@ export default function ModalAgendarHorario({
             </>
           )}
 
-          {statusAtual === 'disponivel' && !selecionado && (
-            <div className="flex justify-between items-center text-sm text-blue-600 mt-2">
-              <button onClick={() => setMostrarCadastro(true)} className="hover:underline">
-                + Cadastrar novo paciente
-              </button>
-              <button onClick={() => onRemover(agendamentoId)} className="text-red-600 hover:underline">
-                - Cancelar disponibilidade
-              </button>
-            </div>
-          )}
+         {statusAtual === 'disponivel' && !selecionado && (
+         <div className="flex flex-col gap-1 text-sm text-blue-600 mt-2">
+          <button onClick={() => setMostrarCadastro(true)} className="hover:underline text-left">
+            + Cadastrar novo paciente
+          </button>
+          <button onClick={() => onRemover(agendamentoId)} className="hover:underline text-left">
+            - Cancelar disponibilidade
+          </button>
+        </div>
+        )}
 
           <div className="flex justify-end gap-2 pt-4">
             <button
