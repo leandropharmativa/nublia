@@ -32,11 +32,16 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
   }, [horario])
 
   const handleConfirmar = async () => {
-    await onConfirmar(horaDigitada, true) // manter modal aberto
-    setMensagem(`Horário ${horaDigitada} cadastrado com sucesso!`)
-    setHoraDigitada('')
-    setTimeout(() => setMensagem(''), 3000)
-    carregarHorariosDoDia()
+  if (horariosExistentes.includes(horaDigitada)) {
+    setMensagem(`Horário ${horaDigitada} já está cadastrado.`)
+    return
+  }
+
+  await onConfirmar(horaDigitada, true) // manter aberto
+  setMensagem(`Horário ${horaDigitada} cadastrado com sucesso!`)
+  setHoraDigitada('')
+  setTimeout(() => setMensagem(''), 3000)
+  carregarHorariosDoDia()
   }
 
   return (
