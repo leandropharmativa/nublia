@@ -20,6 +20,20 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
   return (
     <div className="h-full p-2 bg-white rounded-xl shadow">
       <Calendar
+        
+        eventPropGetter={(event) => {
+        const cor = event.status === 'agendado' ? '#ef4444' : '#2563eb' // vermelho e azul do Tailwind
+        return {
+        style: {
+        backgroundColor: cor,
+        borderRadius: '6px',
+        color: 'white',
+        border: 'none',
+        padding: '2px 6px',
+                },
+              }
+        }}
+
         localizer={localizer}
         events={eventos}
         startAccessor="start"
