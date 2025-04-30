@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
 import { XCircle } from 'lucide-react'
+import { User } from 'lucide-react'
 import { format } from 'date-fns'
 
 export default function ModalAgendarHorario({
