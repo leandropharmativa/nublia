@@ -4,15 +4,17 @@ import axios from 'axios'
 import CalendarioAgenda from '../components/CalendarioAgenda'
 import ModalNovoHorario from '../components/ModalNovoHorario'
 
-export default function AgendaPrescritor() {
+  export default function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
   const [modalAberto, setModalAberto] = useState(false)
   const [slotSelecionado, setSlotSelecionado] = useState(null)
   const user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
+  if (mostrarAgenda) {
     carregarEventos()
-  }, [])
+  }
+  }, [mostrarAgenda])
 
   const carregarEventos = async () => {
     try {
