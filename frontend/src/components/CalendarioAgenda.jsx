@@ -64,8 +64,9 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
 
 function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
+  const colorClass = isSunday ? 'text-red-600' : 'text-blue-600'
   return (
-    <div className={`text-sm font-semibold text-center ${isSunday ? 'text-red-600' : 'text-blue-600'}`}>
+    <div className={`text-sm font-semibold text-center uppercase ${colorClass}`}>
       {label}
     </div>
   )
@@ -98,7 +99,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
     const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
     const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
 
-    return `${agendados} agendamentos · ${disponiveis} disponíveis`
+    return `${agendados} agendamentos · ${disponiveis} horários disponíveis`
   }
 
   return (
