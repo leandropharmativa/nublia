@@ -178,7 +178,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           }}
           onRemover={removerHorario}
           onDesagendar={desagendarHorario}
-          onAtualizarAgenda={carregarEventos} {/* ✅ atualização automática */}
+          onAtualizarAgenda={carregarEventos} /* ✅ atualização automática */
         />
       )}
     </div>
