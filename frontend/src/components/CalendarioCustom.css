@@ -1,25 +1,13 @@
-/* Remove linhas de grade e bordas internas */
-.rbc-day-slot .rbc-time-slot {
-  border-top: none !important;
-  border-bottom: none !important;
-}
-
-.rbc-time-content {
-  border-left: none !important;
-}
-
-.rbc-timeslot-group {
-  border-bottom: none !important;
-}
-
-.rbc-day-bg {
-  border-right: none !important;
-}
-
-.rbc-time-header-cell {
-  border-bottom: none !important;
-}
-
+/* Cor padrão para dias da semana (segunda a sábado) */
 .rbc-header {
-  border-right: none !important;
+  color: #2563eb !important; /* azul padrão Tailwind */
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Cor para domingo (1ª coluna) */
+.rbc-header:first-child {
+  color: #dc2626 !important; /* vermelho padrão Tailwind */
 }
