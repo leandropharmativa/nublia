@@ -14,7 +14,9 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   const user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
-    if (mostrarAgenda) carregarEventos()
+    if (mostrarAgenda) {
+      carregarEventos()
+    }
   }, [mostrarAgenda])
 
   const carregarEventos = async () => {
@@ -86,15 +88,15 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   }
 
   const removerHorario = async (id) => {
-  try {
-    await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
-    setModalAgendar(false)
-    setAgendamentoSelecionado(null)
-    carregarEventos()
-  } catch (error) {
-    console.error('Erro ao remover horário:', error)
+    try {
+      await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
+      setModalAgendar(false)
+      setAgendamentoSelecionado(null)
+      carregarEventos()
+    } catch (error) {
+      console.error('Erro ao remover horário:', error)
+    }
   }
-}
 
   return (
     <div className="w-full h-[72vh] p-2">
@@ -116,16 +118,16 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       )}
 
       {modalAgendar && (
-<ModalAgendarHorario
-  agendamentoId={agendamentoSelecionado}
-  onConfirmar={confirmarAgendamento}
-  onCancelar={() => {
-    setModalAgendar(false)
-    setAgendamentoSelecionado(null)
-  }}
-  onRemover={removerHorario}
-/>
+        <ModalAgendarHorario
+          agendamentoId={agendamentoSelecionado}
+          onConfirmar={confirmarAgendamento}
+          onCancelar={() => {
+            setModalAgendar(false)
+            setAgendamentoSelecionado(null)
+          }}
+          onRemover={removerHorario}
+        />
       )}
-      </div>
+    </div>
   )
 }
