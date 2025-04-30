@@ -17,6 +17,7 @@ import FichaAtendimento from '../components/FichaAtendimento'
 import AtendimentosRecentes from '../components/AtendimentosRecentes'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
+import AgendaPrescritor from './AgendaPrescritor' // ✅ novo import
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
@@ -31,6 +32,7 @@ export default function PrescritorDashboard() {
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
+  const [mostrarAgenda, setMostrarAgenda] = useState(false) // ✅ novo estado
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
@@ -144,7 +146,7 @@ export default function PrescritorDashboard() {
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button
           className="flex flex-col items-center text-blue-600 hover:underline"
-          onClick={() => navigate('/agenda')}
+          onClick={() => setMostrarAgenda(true)} // ✅ trocado
         >
           <CalendarDays size={32} />
           <span className="text-xs mt-1">Agenda</span>
@@ -174,13 +176,15 @@ export default function PrescritorDashboard() {
         />
 
         <main className="flex-1 flex flex-col items-start p-4 overflow-hidden">
-          {pacienteSelecionado ? (
+          {mostrarAgenda ? (
+            <div className="w-full h-full">
+              <AgendaPrescritor />
+            </div>
+          ) : pacienteSelecionado ? (
             <div className="w-full h-full">
               <FichaAtendimento
                 paciente={pacienteSelecionado}
-                onFinalizar={() => {
-                  setPacienteSelecionado(null)
-                }}
+                onFinalizar={() => setPacienteSelecionado(null)}
                 onAtendimentoSalvo={() => carregarAtendimentos(user?.id)}
               />
             </div>
