@@ -46,3 +46,21 @@ def remover_agendamento(dados: RemoverAgendamentoRequest, session: Session = Dep
     session.commit()
     return True
 
+class AgendarHorarioRequest(BaseModel):
+    id: int
+    paciente_id: int
+
+@router.post("/agendar")
+def agendar_horario(dados: AgendarHorarioRequest, session: Session = Depends(get_session)):
+    agendamento = session.get(Agendamento, dados.id)
+    if not agendamento:
+        raise HTTPException(status_code=404, detail="Horário não encontrado")
+
+    if agendamento.status != "disponivel":
+        raise HTTPException(status_code=400, detail="Horário já está agendado")
+
+    agendamento.paciente_id = dados.paciente_id
+    agendamento.status = "agendado"
+    session.add(agendamento)
+    session.commit()
+    return agendamento
