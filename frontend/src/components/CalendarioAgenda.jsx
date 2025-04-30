@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
@@ -19,35 +19,11 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
   const [statusFiltro, setStatusFiltro] = useState('Todos')
   const [buscaPaciente, setBuscaPaciente] = useState('')
 
-  const eventosFiltrados = useMemo(() => {
-    return eventos.filter(e => {
-      const nome = e.title?.toLowerCase() || ''
-      const correspondeBusca = buscaPaciente.length === 0 || nome.includes(buscaPaciente.toLowerCase())
-      const correspondeStatus =
-        statusFiltro === 'Todos' || e.status === statusFiltro.toLowerCase()
-      return correspondeBusca && correspondeStatus
-    })
-  }, [eventos, statusFiltro, buscaPaciente])
-
-  const Toolbar = useCallback(
-    (props) => (
-      <CustomToolbar
-        {...props}
-        eventos={eventosFiltrados}
-        statusFiltro={statusFiltro}
-        onStatusFiltroChange={setStatusFiltro}
-        buscaPaciente={buscaPaciente}
-        onBuscaPacienteChange={setBuscaPaciente}
-      />
-    ),
-    [eventosFiltrados, statusFiltro, buscaPaciente]
-  )
-
   return (
     <div className="h-full px-4 py-4 bg-white rounded-xl shadow overflow-hidden">
       <Calendar
         localizer={localizer}
-        events={eventosFiltrados}
+        events={eventos}
         startAccessor="start"
         endAccessor="end"
         defaultView="week"
@@ -69,7 +45,16 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           noEventsInRange: 'Sem eventos neste período.',
         }}
         components={{
-          toolbar: Toolbar,
+          toolbar: (props) => (
+            <CustomToolbar
+              {...props}
+              eventos={eventos}
+              statusFiltro={statusFiltro}
+              onStatusFiltroChange={setStatusFiltro}
+              buscaPaciente={buscaPaciente}
+              onBuscaPacienteChange={setBuscaPaciente}
+            />
+          ),
           day: { header: CustomDayHeader },
         }}
         eventPropGetter={(event) => {
@@ -129,8 +114,16 @@ function CustomToolbar({
     return label
   }
 
-  const agendados = eventos.filter(e => e.status === 'agendado').length
-  const disponiveis = eventos.filter(e => e.status === 'disponivel').length
+  const eventosFiltrados = eventos.filter(e => {
+    const nome = e.title?.toLowerCase() || ''
+    const correspondeBusca = buscaPaciente.length === 0 || nome.includes(buscaPaciente.toLowerCase())
+    const correspondeStatus =
+      statusFiltro === 'Todos' || e.status === statusFiltro.toLowerCase()
+    return correspondeBusca && correspondeStatus
+  })
+
+  const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
+  const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
 
   return (
     <div className="flex flex-col gap-2 mb-2">
@@ -165,11 +158,11 @@ function CustomToolbar({
         </div>
       </div>
 
-      <div className="flex flex-col items-start gap-2">
+      <div className="flex items-center gap-4 px-0">
         <select
           value={statusFiltro}
           onChange={(e) => onStatusFiltroChange(e.target.value)}
-          className="border px-2 py-1 rounded text-sm w-52"
+          className="border px-2 py-1 rounded text-sm w-48"
         >
           <option>Todos</option>
           <option>Agendado</option>
