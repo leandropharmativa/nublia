@@ -39,7 +39,6 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
 
     try {
       await onConfirmar(horaDigitada, true)
-      toast.success(`Horário ${horaDigitada} cadastrado com sucesso!`)
       setHoraDigitada('00:00')
       carregarHorariosDoDia()
     } catch (error) {
