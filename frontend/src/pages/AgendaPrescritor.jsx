@@ -19,8 +19,7 @@ export default function AgendaPrescritor() {
   }
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">Agenda do Prescritor</h2>
+    <div className="w-full h-[72vh] p-2"> {/* 🔹 altura ajustada + margem reduzida */}
       <CalendarioAgenda
         eventos={eventos}
         aoSelecionarSlot={handleNovoHorario}
