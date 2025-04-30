@@ -82,25 +82,27 @@ def desagendar_horario(dados: DesagendarRequest, session: Session = Depends(get_
 
 @router.post("/reagendar", response_model=Agendamento)
 def reagendar_horario(dados: ReagendarRequest, session: Session = Depends(get_session)):
-    agendamento_atual = session.get(Agendamento, dados.de_id)
-    agendamento_novo = session.get(Agendamento, dados.para_id)
+    horario_antigo = session.get(Agendamento, dados.de_id)
+    novo_horario = session.get(Agendamento, dados.para_id)
 
-    if not agendamento_atual or not agendamento_novo:
-        raise HTTPException(status_code=404, detail="Agendamento(s) não encontrado(s)")
+    if not horario_antigo or not novo_horario:
+        raise HTTPException(status_code=404, detail="Agendamento não encontrado.")
 
-    if agendamento_novo.status != "disponivel":
-        raise HTTPException(status_code=400, detail="Novo horário não está disponível")
+    if novo_horario.status != "disponivel":
+        raise HTTPException(status_code=400, detail="O novo horário já está agendado ou indisponível.")
 
-    agendamento_novo.paciente_id = agendamento_atual.paciente_id
-    agendamento_novo.status = "agendado"
+    # Transferir paciente
+    novo_horario.paciente_id = horario_antigo.paciente_id
+    novo_horario.status = "agendado"
 
-    agendamento_atual.paciente_id = None
-    agendamento_atual.status = "disponivel"
+    # Remover paciente do horário antigo
+    horario_antigo.paciente_id = None
+    horario_antigo.status = "disponivel"
 
-    session.add(agendamento_atual)
-    session.add(agendamento_novo)
+    session.add(novo_horario)
+    session.add(horario_antigo)
     session.commit()
-    session.refresh(agendamento_novo)
+    session.refresh(novo_horario)
 
-    return agendamento_novo
+    return novo_horario
 
