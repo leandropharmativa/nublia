@@ -1,12 +1,13 @@
 // 📄 src/components/ModalNovoHorario.jsx
 
-import { format, isSameDay, parseISO } from 'date-fns'
+import { format, isSameDay } from 'date-fns'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
-  const [horaDigitada, setHoraDigitada] = useState(format(horario, 'HH:mm'))
+  const [horaDigitada, setHoraDigitada] = useState('00:00')
   const [mensagem, setMensagem] = useState('')
+  const [tipoMensagem, setTipoMensagem] = useState('') // 'erro' ou 'sucesso'
   const [horariosExistentes, setHorariosExistentes] = useState([])
 
   const user = JSON.parse(localStorage.getItem('user'))
@@ -32,16 +33,18 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
   }, [horario])
 
   const handleConfirmar = async () => {
-  if (horariosExistentes.includes(horaDigitada)) {
-    setMensagem(`Horário ${horaDigitada} já está cadastrado.`)
-    return
-  }
+    if (horariosExistentes.includes(horaDigitada)) {
+      setMensagem(`Horário ${horaDigitada} já está cadastrado.`)
+      setTipoMensagem('erro')
+      return
+    }
 
-  await onConfirmar(horaDigitada, true) // manter aberto
-  setMensagem(`Horário ${horaDigitada} cadastrado com sucesso!`)
-  setHoraDigitada('')
-  setTimeout(() => setMensagem(''), 3000)
-  carregarHorariosDoDia()
+    await onConfirmar(horaDigitada, true)
+    setMensagem(`Horário ${horaDigitada} cadastrado com sucesso!`)
+    setTipoMensagem('sucesso')
+    setHoraDigitada('00:00')
+    setTimeout(() => setMensagem(''), 3000)
+    carregarHorariosDoDia()
   }
 
   return (
@@ -64,7 +67,9 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
         />
 
         {mensagem && (
-          <p className="text-sm text-green-600 mb-3">{mensagem}</p>
+          <p className={`text-sm mb-3 ${tipoMensagem === 'erro' ? 'text-red-600' : 'text-green-600'}`}>
+            {mensagem}
+          </p>
         )}
 
         {horariosExistentes.length > 0 && (
