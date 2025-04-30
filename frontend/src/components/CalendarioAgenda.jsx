@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
@@ -29,19 +29,22 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
     })
   }, [eventos, statusFiltro, buscaPaciente])
 
-  const Toolbar = (props) => (
-    <CustomToolbar
-      {...props}
-      eventos={eventosFiltrados}
-      statusFiltro={statusFiltro}
-      onStatusFiltroChange={setStatusFiltro}
-      buscaPaciente={buscaPaciente}
-      onBuscaPacienteChange={setBuscaPaciente}
-    />
+  const Toolbar = useCallback(
+    (props) => (
+      <CustomToolbar
+        {...props}
+        eventos={eventosFiltrados}
+        statusFiltro={statusFiltro}
+        onStatusFiltroChange={setStatusFiltro}
+        buscaPaciente={buscaPaciente}
+        onBuscaPacienteChange={setBuscaPaciente}
+      />
+    ),
+    [eventosFiltrados, statusFiltro, buscaPaciente]
   )
 
   return (
-    <div className="h-full px-6 py-4 bg-white rounded-xl shadow overflow-hidden">
+    <div className="h-full px-4 py-4 bg-white rounded-xl shadow overflow-hidden">
       <Calendar
         localizer={localizer}
         events={eventosFiltrados}
@@ -131,7 +134,7 @@ function CustomToolbar({
 
   return (
     <div className="flex flex-col gap-2 mb-2">
-      <div className="flex justify-between items-center px-2 border-b border-gray-200 pb-2">
+      <div className="flex justify-between items-center border-b border-gray-200 pb-2">
         <div className="flex items-center gap-2">
           <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
             <ChevronLeft size={20} />
@@ -162,11 +165,11 @@ function CustomToolbar({
         </div>
       </div>
 
-      <div className="flex justify-between items-center gap-4 px-2">
+      <div className="flex flex-col items-start gap-2">
         <select
           value={statusFiltro}
           onChange={(e) => onStatusFiltroChange(e.target.value)}
-          className="border px-2 py-1 rounded text-sm"
+          className="border px-2 py-1 rounded text-sm w-52"
         >
           <option>Todos</option>
           <option>Agendado</option>
@@ -178,7 +181,7 @@ function CustomToolbar({
           value={buscaPaciente}
           onChange={(e) => onBuscaPacienteChange(e.target.value)}
           placeholder="Buscar paciente..."
-          className="border px-2 py-1 rounded text-sm w-1/2"
+          className="border px-2 py-1 rounded text-sm w-64"
         />
       </div>
     </div>
