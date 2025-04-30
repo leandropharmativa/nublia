@@ -8,7 +8,8 @@ import {
   BookOpenText,
   Leaf,
   Settings,
-  PlusCircle
+  PlusCircle,
+  XCircle // ✅ novo ícone para alternar agenda
 } from 'lucide-react'
 
 import BuscarPacienteModal from '../components/BuscarPacienteModal'
@@ -17,7 +18,7 @@ import FichaAtendimento from '../components/FichaAtendimento'
 import AtendimentosRecentes from '../components/AtendimentosRecentes'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
-import AgendaPrescritor from './AgendaPrescritor' // ✅ novo import
+import AgendaPrescritor from './AgendaPrescritor'
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
@@ -32,7 +33,7 @@ export default function PrescritorDashboard() {
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
-  const [mostrarAgenda, setMostrarAgenda] = useState(false) // ✅ novo estado
+  const [mostrarAgenda, setMostrarAgenda] = useState(false)
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
@@ -146,10 +147,12 @@ export default function PrescritorDashboard() {
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
         <button
           className="flex flex-col items-center text-blue-600 hover:underline"
-          onClick={() => setMostrarAgenda(true)} // ✅ trocado
+          onClick={() => setMostrarAgenda(!mostrarAgenda)}
         >
-          <CalendarDays size={32} />
-          <span className="text-xs mt-1">Agenda</span>
+          {mostrarAgenda ? <XCircle size={32} /> : <CalendarDays size={32} />}
+          <span className="text-xs mt-1">
+            {mostrarAgenda ? 'Fechar Agenda' : 'Agenda'}
+          </span>
         </button>
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <BookOpenText size={32} />
