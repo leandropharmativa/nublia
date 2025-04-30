@@ -29,6 +29,17 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
     })
   }, [eventos, statusFiltro, buscaPaciente])
 
+  const Toolbar = (props) => (
+    <CustomToolbar
+      {...props}
+      eventos={eventosFiltrados}
+      statusFiltro={statusFiltro}
+      onStatusFiltroChange={setStatusFiltro}
+      buscaPaciente={buscaPaciente}
+      onBuscaPacienteChange={setBuscaPaciente}
+    />
+  )
+
   return (
     <div className="h-full px-6 py-4 bg-white rounded-xl shadow overflow-hidden">
       <Calendar
@@ -55,16 +66,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           noEventsInRange: 'Sem eventos neste período.',
         }}
         components={{
-          toolbar: (props) => (
-            <CustomToolbar
-              {...props}
-              eventos={eventosFiltrados}
-              statusFiltro={statusFiltro}
-              onStatusFiltroChange={setStatusFiltro}
-              buscaPaciente={buscaPaciente}
-              onBuscaPacienteChange={setBuscaPaciente}
-            />
-          ),
+          toolbar: Toolbar,
           day: { header: CustomDayHeader },
         }}
         eventPropGetter={(event) => {
@@ -108,7 +110,7 @@ function CustomToolbar({
   statusFiltro,
   onStatusFiltroChange,
   buscaPaciente,
-  onBuscaPacienteChange
+  onBuscaPacienteChange,
 }) {
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
 
@@ -160,14 +162,7 @@ function CustomToolbar({
         </div>
       </div>
 
-      <div className="flex justify-between items-center px-2">
-        <input
-          type="text"
-          value={buscaPaciente}
-          onChange={(e) => onBuscaPacienteChange(e.target.value)}
-          placeholder="Buscar paciente..."
-          className="border px-2 py-1 rounded text-sm w-1/2"
-        />
+      <div className="flex justify-between items-center gap-4 px-2">
         <select
           value={statusFiltro}
           onChange={(e) => onStatusFiltroChange(e.target.value)}
@@ -177,6 +172,14 @@ function CustomToolbar({
           <option>Agendado</option>
           <option>Disponivel</option>
         </select>
+
+        <input
+          type="text"
+          value={buscaPaciente}
+          onChange={(e) => onBuscaPacienteChange(e.target.value)}
+          placeholder="Buscar paciente..."
+          className="border px-2 py-1 rounded text-sm w-1/2"
+        />
       </div>
     </div>
   )
