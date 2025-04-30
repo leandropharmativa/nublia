@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 from app.models import Formula, FormulaCreate
 from app.database import engine, get_session
+from app.models import User
 
 router = APIRouter()
 
@@ -60,3 +61,41 @@ def atualizar_formula(data: FormulaUpdateRequest, session: Session = Depends(get
     session.commit()
     session.refresh(formula)
     return formula
+
+# 🔵 Listar todas as fórmulas com nome da farmácia ou prescritor
+@router.get("/formulas/todas")
+def listar_todas_formulas(session: Session = Depends(get_session)):
+    formulas = session.exec(select(Formula)).all()
+    resultado = []
+
+    for f in formulas:
+        if f.farmacia_id:
+            farmacia = session.exec(select(User).where(User.id == f.farmacia_id)).first()
+            autor = farmacia.name if farmacia else "Farmácia desconhecida"
+        elif f.usuario_id:
+            prescritor = session.exec(select(User).where(User.id == f.usuario_id)).first()
+            autor = prescritor.name if prescritor else "Prescritor desconhecido"
+        else:
+            autor = "Autor desconhecido"
+
+        resultado.append({
+            "id": f.id,
+            "nome": f.nome,
+            "composicao": f.composicao,
+            "indicacao": f.indicacao,
+            "posologia": f.posologia,
+            "autor": autor,
+            "farmacia_id": f.farmacia_id,
+            "usuario_id": f.usuario_id
+        })
+
+    return resultado
+
+
+# 🔵 Listar fórmulas criadas por um prescritor
+@router.get("/formulas/prescritor/{prescritor_id}")
+def listar_formulas_por_prescritor(prescritor_id: int, session: Session = Depends(get_session)):
+    formulas = session.exec(
+        select(Formula).where(Formula.usuario_id == prescritor_id)
+    ).all()
+    return formulas
