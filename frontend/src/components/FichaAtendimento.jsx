@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Save, ArrowLeft, Eye } from 'lucide-react'
 import axios from 'axios'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
+import ModalConfirmacao from './ModalConfirmacao' // ✅ componente padrão
 
 export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoSalvo }) {
   const [abaAtiva, setAbaAtiva] = useState('paciente')
@@ -16,10 +17,10 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
 
   const [atendimentosAnteriores, setAtendimentosAnteriores] = useState([])
   const [modalVisualizar, setModalVisualizar] = useState(null)
+  const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] = useState(false)
 
   const abas = ['paciente', 'anamnese', 'antropometria', 'dieta', 'receita']
 
-  // 🔄 Carrega atendimentos anteriores ao abrir a ficha
   useEffect(() => {
     const carregarAnteriores = async () => {
       const user = JSON.parse(localStorage.getItem('user'))
@@ -76,29 +77,59 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
     }
   }
 
+  // 🔢 Cálculo da idade a partir da data de nascimento
+  const calcularIdade = (data) => {
+    if (!data) return null
+    const hoje = new Date()
+    const nascimento = new Date(data)
+    let idade = hoje.getFullYear() - nascimento.getFullYear()
+    const m = hoje.getMonth() - nascimento.getMonth()
+    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+      idade--
+    }
+    return idade
+  }
+
+  // 🧠 Verifica se algum campo do formulário foi preenchido
+  const houveAlteracao = Object.values(formulario).some(valor => valor.trim() !== '')
+
+  // 🟠 Ao clicar no botão "Voltar"
+  const tentarSair = () => {
+    if (houveAlteracao && !atendimentoId) {
+      setMostrarConfirmacaoSaida(true)
+    } else {
+      onFinalizar()
+    }
+  }
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-full">
       {/* Cabeçalho */}
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold text-blue-600">Ficha de Atendimento</h2>
-          <button onClick={handleSalvar} className="text-blue-600 hover:text-blue-800" title="Salvar">
-            <Save size={24} />
-          </button>
-          <button onClick={onFinalizar} className="text-gray-600 hover:text-gray-800" title="Voltar">
-            <ArrowLeft size={24} />
-          </button>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-blue-600">Ficha de Atendimento</h2>
+            <button onClick={handleSalvar} className="text-blue-600 hover:text-blue-800" title="Salvar">
+              <Save size={24} />
+            </button>
+            <button onClick={tentarSair} className="text-gray-600 hover:text-gray-800" title="Voltar">
+              <ArrowLeft size={24} />
+            </button>
+          </div>
+          {/* Nome + idade */}
+          <p className="text-sm text-gray-700 font-semibold mt-1">
+            {paciente.name} {calcularIdade(paciente.data_nascimento) ? `• ${calcularIdade(paciente.data_nascimento)} anos` : ''}
+          </p>
         </div>
       </div>
 
-      {/* Mensagem de sucesso ou erro */}
       {mensagem && (
         <div className={`mb-4 p-3 rounded text-center ${mensagem.tipo === 'sucesso' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
           {mensagem.texto}
         </div>
       )}
 
-      {/* Abas de navegação */}
+      {/* Abas */}
       <div className="flex border-b mb-6">
         {abas.map((aba) => (
           <button
@@ -111,39 +142,18 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         ))}
       </div>
 
-      {/* Conteúdo da aba selecionada */}
+      {/* Conteúdo da aba */}
       <div className="space-y-4">
         {abaAtiva === 'paciente' ? (
           <>
-            {/* Dados do paciente */}
             <div className="space-y-2 text-sm text-gray-700">
-              <div>
-                <p className="font-semibold text-gray-800">Nome:</p>
-                <p>{paciente.name || 'Não informado'}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-gray-800">Email:</p>
-                <p>{paciente.email || 'Não informado'}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-gray-800">Telefone:</p>
-                <p>{paciente.telefone || 'Não informado'}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-gray-800">Sexo:</p>
-                <p>{paciente.sexo || 'Não informado'}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-gray-800">Data de Nascimento:</p>
-                <p>{paciente.data_nascimento || 'Não informada'}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-gray-800">Observações:</p>
-                <p className="whitespace-pre-wrap">{paciente.observacoes || 'Nenhuma observação registrada.'}</p>
-              </div>
+              <div><strong>Email:</strong> {paciente.email || 'Não informado'}</div>
+              <div><strong>Telefone:</strong> {paciente.telefone || 'Não informado'}</div>
+              <div><strong>Sexo:</strong> {paciente.sexo || 'Não informado'}</div>
+              <div><strong>Data de Nascimento:</strong> {paciente.data_nascimento || 'Não informada'}</div>
+              <div><strong>Observações:</strong> {paciente.observacoes || 'Nenhuma observação registrada.'}</div>
             </div>
 
-            {/* Atendimentos anteriores */}
             {atendimentosAnteriores.length > 0 && (
               <div className="mt-6">
                 <h3 className="text-md font-semibold text-blue-600 mb-2">Atendimentos anteriores</h3>
@@ -180,6 +190,19 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         <VisualizarAtendimentoModal
           atendimento={modalVisualizar}
           onClose={() => setModalVisualizar(null)}
+        />
+      )}
+
+      {/* Modal de confirmação ao tentar sair */}
+      {mostrarConfirmacaoSaida && (
+        <ModalConfirmacao
+          titulo="Descartar alterações?"
+          mensagem="Você digitou informações no atendimento. Deseja realmente sair e perder os dados?"
+          onConfirmar={() => {
+            setMostrarConfirmacaoSaida(false)
+            onFinalizar()
+          }}
+          onCancelar={() => setMostrarConfirmacaoSaida(false)}
         />
       )}
     </div>
