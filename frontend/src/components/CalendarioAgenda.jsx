@@ -1,10 +1,8 @@
 // src/components/CalendarioAgenda.jsx
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay } from 'date-fns'
-import 'react-big-calendar/lib/css/react-big-calendar.css'
 import ptBR from 'date-fns/locale/pt-BR'
-
-import { useState } from 'react'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 const locales = {
   'pt-BR': ptBR,
@@ -19,20 +17,19 @@ const localizer = dateFnsLocalizer({
 })
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
-  const [eventosAgenda, setEventosAgenda] = useState(eventos)
-
   return (
-    <div className="h-[80vh] p-4 bg-white rounded-xl shadow">
+    <div className="h-full p-2 bg-white rounded-xl shadow">
       <Calendar
         localizer={localizer}
-        events={eventosAgenda}
+        events={eventos}
         startAccessor="start"
         endAccessor="end"
         style={{ height: '100%' }}
+        defaultView="week" // ✅ exibe visualização semanal por padrão
+        views={['month', 'week', 'day', 'agenda']}
         selectable
         onSelectSlot={aoSelecionarSlot}
         onSelectEvent={aoSelecionarEvento}
-        views={['month', 'week', 'day', 'agenda']}
         messages={{
           next: 'Próximo',
           previous: 'Anterior',
@@ -43,6 +40,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           agenda: 'Agenda',
           noEventsInRange: 'Sem eventos neste período.',
         }}
+        culture="pt-BR" // ✅ garante idioma no calendário
       />
     </div>
   )
