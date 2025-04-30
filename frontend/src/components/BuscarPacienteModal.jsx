@@ -38,7 +38,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-6 max-h-[90vh] overflow-hidden">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-6 max-h-[72vh] overflow-hidden">
 
         <h2 className="text-blue-600 text-2xl font-bold">Buscar Paciente</h2>
 
