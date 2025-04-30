@@ -19,6 +19,7 @@ import ModalNovoHorario from '../components/ModalNovoHorario'
   const carregarEventos = async () => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+      console.log('Eventos recebidos:', response.data) 
       const eventosFormatados = response.data.map(ev => ({
         id: ev.id,
         title: ev.status === 'agendado' ? 'Agendado' : 'Disponível',
