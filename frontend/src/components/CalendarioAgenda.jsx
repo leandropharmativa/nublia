@@ -16,7 +16,7 @@ const localizer = dateFnsLocalizer({
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   return (
-    <div className="h-full px-4 py-4 bg-white rounded-xl shadow overflow-hidden">
+    <div className="h-full px-6 py-4 bg-white rounded-xl shadow overflow-hidden">
       <Calendar
         localizer={localizer}
         events={eventos}
@@ -41,7 +41,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           noEventsInRange: 'Sem eventos neste período.',
         }}
         components={{
-          toolbar: CustomToolbar,
+          toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
           day: { header: CustomDayHeader },
         }}
         eventPropGetter={(event) => {
@@ -64,17 +64,15 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
 
 function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
+  const colorClass = isSunday ? 'text-red-600' : 'text-blue-600'
   return (
-    <div
-      className="text-sm font-semibold text-center uppercase"
-      style={{ color: isSunday ? '#dc2626' : '#2563eb' }}
-    >
+    <div className={`text-sm font-semibold text-center uppercase ${colorClass}`}>
       {label}
     </div>
   )
 }
 
-function CustomToolbar({ label, onNavigate, onView, views, view, date, events }) {
+function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
 
   const renderLabel = () => {
@@ -89,8 +87,20 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, events })
     return label
   }
 
-  const agendados = events.filter(e => e.status === 'agendado').length
-  const disponiveis = events.filter(e => e.status === 'disponivel').length
+  const contar = () => {
+    let eventosFiltrados = eventos
+
+    if (view === 'week') {
+      eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
+    } else if (view === 'day') {
+      eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
+    }
+
+    const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
+    const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
+
+    return `${agendados} agendamentos · ${disponiveis} horários disponíveis`
+  }
 
   return (
     <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
@@ -105,9 +115,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, events })
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-500 italic">
-          {agendados} agendamentos · {disponiveis} horários disponíveis
-        </span>
+        <span className="text-sm text-gray-500 italic">{contar()}</span>
         <div className="flex gap-1">
           {views.map((v) => (
             <button
