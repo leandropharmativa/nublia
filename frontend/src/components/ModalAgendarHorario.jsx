@@ -38,10 +38,13 @@ export default function ModalAgendarHorario({
     buscarPacientes()
   }, [filtro])
 
+  const mostrarBotaoCadastro =
+    !pacienteAtual && !selecionado && statusAtual === 'disponivel'
+
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl p-6 shadow-lg max-w-xl w-full">
+        <div className="bg-white rounded-xl p-6 shadow-lg max-w-xl w-full min-h-[500px]">
           <h2 className="text-lg font-semibold mb-4 text-blue-600">
             {statusAtual === 'agendado' ? 'Editar agendamento' : 'Agendar horário'}
           </h2>
@@ -84,9 +87,9 @@ export default function ModalAgendarHorario({
             )}
           </div>
 
-          <div className="flex justify-between items-center mt-6">
+          <div className="flex justify-between items-end mt-6">
             <div className="flex flex-col gap-1">
-              {!selecionado && (
+              {mostrarBotaoCadastro && (
                 <button
                   onClick={() => setMostrarCadastro(true)}
                   className="text-sm text-blue-600 hover:underline"
@@ -94,6 +97,7 @@ export default function ModalAgendarHorario({
                   + Cadastrar novo paciente
                 </button>
               )}
+
               {statusAtual === 'disponivel' && (
                 <button
                   onClick={() => onRemover(agendamentoId)}
