@@ -146,6 +146,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           agendamentoId={agendamentoSelecionado}
           statusAtual={agendamentoStatus}
           pacienteAtual={pacienteAtual}
+          horarioSelecionado={slotSelecionado}
           onConfirmar={confirmarAgendamento}
           onCancelar={() => {
             setModalAgendar(false)
