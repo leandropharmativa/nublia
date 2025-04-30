@@ -85,6 +85,17 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     }
   }
 
+  const removerHorario = async (id) => {
+  try {
+    await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
+    setModalAgendar(false)
+    setAgendamentoSelecionado(null)
+    carregarEventos()
+  } catch (error) {
+    console.error('Erro ao remover horário:', error)
+  }
+}
+
   return (
     <div className="w-full h-[72vh] p-2">
       <CalendarioAgenda
@@ -105,15 +116,16 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       )}
 
       {modalAgendar && (
-        <ModalAgendarHorario
-          agendamentoId={agendamentoSelecionado}
-          onConfirmar={confirmarAgendamento}
-          onCancelar={() => {
-            setModalAgendar(false)
-            setAgendamentoSelecionado(null)
-          }}
-        />
+      <ModalAgendarHorario
+      agendamentoId={agendamentoSelecionado}
+      onConfirmar={confirmarAgendamento}
+      onCancelar={() => {
+      setModalAgendar(false)
+      setAgendamentoSelecionado(null)
+      }}
+      onRemover={removerHorario}
+      />
       )}
-    </div>
+      </div>
   )
 }
