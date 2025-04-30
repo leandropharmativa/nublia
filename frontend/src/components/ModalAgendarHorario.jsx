@@ -46,9 +46,9 @@ export default function ModalAgendarHorario({
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-xl mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative">
+        <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-lg mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative">
 
-          {/* Botão de fechar (X) */}
+          {/* Botão de fechar */}
           <button
             onClick={onCancelar}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -136,7 +136,7 @@ export default function ModalAgendarHorario({
                 Cancelar disponibilidade
               </button>
             )}
-            {!selecionado && (
+            {statusAtual !== 'agendado' && (
               <button
                 onClick={() => setMostrarCadastro(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
