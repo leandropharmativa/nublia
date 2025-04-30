@@ -1,32 +1,39 @@
-// src/pages/AgendaPrescritor.jsx
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { addHours } from 'date-fns'
 import CalendarioAgenda from '../components/CalendarioAgenda'
 import ModalNovoHorario from '../components/ModalNovoHorario'
 
-  export default function AgendaPrescritor({ mostrarAgenda }) {
+export default function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
   const [modalAberto, setModalAberto] = useState(false)
   const [slotSelecionado, setSlotSelecionado] = useState(null)
   const user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
-  if (mostrarAgenda) {
-    carregarEventos()
-  }
+    if (mostrarAgenda) {
+      carregarEventos()
+    }
   }, [mostrarAgenda])
 
   const carregarEventos = async () => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-      console.log('Eventos recebidos:', response.data) 
-      const eventosFormatados = response.data.map(ev => ({
-        id: ev.id,
-        title: ev.status === 'agendado' ? 'Agendado' : 'Disponível',
-        start: new Date(`${ev.data}T${ev.hora}`),
-        end: new Date(`${ev.data}T${ev.hora}`),
-        status: ev.status
-      }))
+      console.log('Eventos recebidos:', response.data)
+
+      const eventosFormatados = response.data.map(ev => {
+        const start = new Date(`${ev.data}T${ev.hora}`)
+        const end = addHours(start, 1)
+
+        return {
+          id: ev.id,
+          title: ev.status === 'agendado' ? 'Agendado' : 'Disponível',
+          start,
+          end,
+          status: ev.status
+        }
+      })
+
       setEventos(eventosFormatados)
     } catch (error) {
       console.error('Erro ao carregar eventos:', error)
