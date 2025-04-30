@@ -1,3 +1,5 @@
+// 📄 ModalAgendarHorario.jsx
+
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
@@ -13,7 +15,8 @@ export default function ModalAgendarHorario({
   onConfirmar,
   onCancelar,
   onRemover,
-  onDesagendar
+  onDesagendar,
+  onAtualizarAgenda // ✅ novo
 }) {
   const [pacientes, setPacientes] = useState([])
   const [filtro, setFiltro] = useState('')
@@ -76,6 +79,7 @@ export default function ModalAgendarHorario({
         de_id: agendamentoId,
         para_id: novoHorarioId
       })
+      if (onAtualizarAgenda) onAtualizarAgenda() // ✅ atualiza agenda no pai
       onCancelar()
     } catch (error) {
       console.error('Erro ao reagendar:', error)
@@ -87,7 +91,6 @@ export default function ModalAgendarHorario({
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
         <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-lg mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative">
 
-          {/* Botão de fechar */}
           <button
             onClick={onCancelar}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -205,7 +208,6 @@ export default function ModalAgendarHorario({
             </>
           )}
 
-          {/* Rodapé com ações */}
           <div className="flex justify-between pt-4">
             {statusAtual === 'disponivel' && (
               <button
