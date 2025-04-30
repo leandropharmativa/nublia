@@ -4,8 +4,9 @@ import axios from 'axios'
 export default function VisualizarAtendimentoModal({ atendimento, onClose }) {
   const [paciente, setPaciente] = useState(null)
   const [erro, setErro] = useState('')
+  const [abaAtiva, setAbaAtiva] = useState('anamnese')
 
-  // 🔄 Ao abrir o modal, busca os dados do paciente
+  // 🔄 Buscar dados do paciente ao abrir o modal
   useEffect(() => {
     const buscarPaciente = async () => {
       try {
@@ -22,15 +23,17 @@ export default function VisualizarAtendimentoModal({ atendimento, onClose }) {
     }
   }, [atendimento])
 
+  const abas = ['anamnese', 'antropometria', 'dieta', 'receita']
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl mx-4 overflow-y-auto max-h-[90vh]">
         <h2 className="text-2xl font-bold text-blue-600 mb-4">Visualizar Atendimento</h2>
 
-        {/* 🔴 Caso erro na busca */}
+        {/* ❌ Mensagem de erro */}
         {erro && <p className="text-red-600 mb-4">{erro}</p>}
 
-        {/* 🔵 Dados do paciente */}
+        {/* ✅ Dados do paciente */}
         {paciente && (
           <div className="mb-6 border-b pb-4">
             <p className="text-lg font-semibold">{paciente.name}</p>
@@ -40,26 +43,30 @@ export default function VisualizarAtendimentoModal({ atendimento, onClose }) {
           </div>
         )}
 
-        {/* 🔵 Data do atendimento */}
-        <div className="mb-6">
-          <p className="text-sm text-gray-500 italic">
-            Data do atendimento: {new Date(atendimento.criado_em).toLocaleString('pt-BR')}
-          </p>
+        {/* 📅 Data do atendimento */}
+        <div className="mb-6 text-sm text-gray-500 italic">
+          Data do atendimento: {new Date(atendimento.criado_em).toLocaleString('pt-BR')}
         </div>
 
-        {/* 🔵 Conteúdo do atendimento */}
-        {["anamnese", "antropometria", "dieta", "receita"].map((campo) => (
-          <div key={campo} className="mb-6">
-            <h3 className="text-lg font-semibold text-blue-600 capitalize mb-2">
-              {campo}
-            </h3>
-            <div className="bg-gray-100 p-4 rounded text-sm text-gray-800 whitespace-pre-wrap">
-              {atendimento[campo] || "Não preenchido."}
-            </div>
-          </div>
-        ))}
+        {/* 🔘 Abas de navegação */}
+        <div className="flex border-b mb-4">
+          {abas.map((aba) => (
+            <button
+              key={aba}
+              onClick={() => setAbaAtiva(aba)}
+              className={`px-4 py-2 capitalize ${abaAtiva === aba ? 'border-b-2 border-blue-600 font-bold text-blue-600' : 'text-gray-600'}`}
+            >
+              {aba}
+            </button>
+          ))}
+        </div>
 
-        {/* 🔘 Botão para fechar */}
+        {/* 📝 Conteúdo da aba selecionada */}
+        <div className="bg-gray-100 p-4 rounded text-sm text-gray-800 whitespace-pre-wrap min-h-[150px]">
+          {atendimento[abaAtiva] || 'Não preenchido.'}
+        </div>
+
+        {/* 🔘 Botão fechar */}
         <div className="text-right mt-8">
           <button
             onClick={onClose}
