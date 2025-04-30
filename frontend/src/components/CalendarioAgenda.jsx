@@ -26,21 +26,21 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         return {
         style: {
         backgroundColor: cor,
-        borderRadius: '6px',
+        borderRadius: '0px',
         color: 'white',
         border: 'none',
-        padding: '2px 6px',
+        padding: '2px 3px',
                 },
               }
         }}
 
         localizer={localizer}
         events={eventos}
+        step={15}
+        timeslots={1}
         startAccessor="start"
         endAccessor="end"
         style={{ height: '100%' }}
-        step={15}
-        timeslots={1}
         defaultView="week" // ✅ exibe visualização semanal por padrão
         views={['month', 'week', 'day', 'agenda']}
         selectable
