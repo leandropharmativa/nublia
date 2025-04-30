@@ -1,5 +1,3 @@
-// 📄 ModalAgendarHorario.jsx
-
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
@@ -84,16 +82,16 @@ export default function ModalAgendarHorario({
         para_id: novoHorarioId
       })
 
-      // toast agora só será disparado no componente pai
+      toast.success('Paciente transferido para outro horário!')
       if (onAtualizarAgenda) onAtualizarAgenda()
       setCarregando(false)
       onCancelar()
     } catch (error) {
       console.error('Erro ao reagendar:', error)
       if (error?.response?.status === 400) {
-        toast.error('Este horário já está ocupado. Escolha outro.')
+        toast.error('Este horário já está ocupado.')
       } else {
-        toast.error('Erro ao reagendar. Tente novamente.')
+        toast.error('Erro ao reagendar.')
       }
       setCarregando(false)
     }
