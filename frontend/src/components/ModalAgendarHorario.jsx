@@ -3,7 +3,6 @@ import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
 import PerfilPacienteModal from './PerfilPacienteModal'
 import { Search, User, X } from 'lucide-react'
-import Eye from 'lucide-react/icons/eye'
 
 export default function ModalAgendarHorario({
   agendamentoId,
@@ -121,7 +120,7 @@ export default function ModalAgendarHorario({
                     onClick={() => setMostrarPerfil(true)}
                     className="text-blue-600 hover:text-blue-800"
                   >
-                    <Eye size={18} />
+                    <User size={18} />
                   </button>
                   <button
                     onClick={() => onDesagendar(agendamentoId)}
