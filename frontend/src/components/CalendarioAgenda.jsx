@@ -39,6 +39,8 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         startAccessor="start"
         endAccessor="end"
         style={{ height: '100%' }}
+        step={15}
+        timeslots={1}
         defaultView="week" // ✅ exibe visualização semanal por padrão
         views={['month', 'week', 'day', 'agenda']}
         selectable
