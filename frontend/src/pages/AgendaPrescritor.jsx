@@ -11,12 +11,12 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   const [modalAgendar, setModalAgendar] = useState(false)
   const [slotSelecionado, setSlotSelecionado] = useState(null)
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null)
+  const [agendamentoStatus, setAgendamentoStatus] = useState(null)
+  const [pacienteAtual, setPacienteAtual] = useState(null)
   const user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
-    if (mostrarAgenda) {
-      carregarEventos()
-    }
+    if (mostrarAgenda) carregarEventos()
   }, [mostrarAgenda])
 
   const carregarEventos = async () => {
@@ -31,7 +31,8 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           title: ev.status === 'agendado' ? 'Agendado' : 'Disponível',
           start,
           end,
-          status: ev.status
+          status: ev.status,
+          paciente_id: ev.paciente_id
         }
       })
       setEventos(eventosFormatados)
@@ -66,10 +67,10 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   }
 
   const handleEventoClick = (evento) => {
-    if (evento.status === 'disponivel') {
-      setAgendamentoSelecionado(evento.id)
-      setModalAgendar(true)
-    }
+    setAgendamentoSelecionado(evento.id)
+    setAgendamentoStatus(evento.status)
+    setPacienteAtual(evento.paciente_id || null)
+    setModalAgendar(true)
   }
 
   const confirmarAgendamento = async (agendamentoId, pacienteId) => {
@@ -84,6 +85,17 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       carregarEventos()
     } catch (error) {
       console.error('Erro ao agendar:', error)
+    }
+  }
+
+  const desagendarHorario = async (id) => {
+    try {
+      await axios.post('https://nublia-backend.onrender.com/agenda/desagendar', { id })
+      setModalAgendar(false)
+      setAgendamentoSelecionado(null)
+      carregarEventos()
+    } catch (error) {
+      console.error('Erro ao desagendar horário:', error)
     }
   }
 
@@ -120,12 +132,15 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       {modalAgendar && (
         <ModalAgendarHorario
           agendamentoId={agendamentoSelecionado}
+          statusAtual={agendamentoStatus}
+          pacienteAtual={pacienteAtual}
           onConfirmar={confirmarAgendamento}
           onCancelar={() => {
             setModalAgendar(false)
             setAgendamentoSelecionado(null)
           }}
           onRemover={removerHorario}
+          onDesagendar={desagendarHorario}
         />
       )}
     </div>
