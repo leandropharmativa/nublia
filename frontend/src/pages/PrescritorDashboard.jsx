@@ -142,7 +142,10 @@ export default function PrescritorDashboard() {
       </header>
 
       <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
+        <button
+          className="flex flex-col items-center text-blue-600 hover:underline"
+          onClick={() => navigate('/agenda')}
+        >
           <CalendarDays size={32} />
           <span className="text-xs mt-1">Agenda</span>
         </button>
@@ -176,7 +179,6 @@ export default function PrescritorDashboard() {
               <FichaAtendimento
                 paciente={pacienteSelecionado}
                 onFinalizar={() => {
-                  // ✅ Essa função será chamada somente após confirmação dentro da ficha
                   setPacienteSelecionado(null)
                 }}
                 onAtendimentoSalvo={() => carregarAtendimentos(user?.id)}
