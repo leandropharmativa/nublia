@@ -189,19 +189,25 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         />
       )}
 
-      <ModalConfirmacao
-        aberto={mostrarConfirmacaoSaida}
-        titulo="Deseja salvar o atendimento?"
-        mensagem="Se você sair agora, o atendimento não poderá mais ser editado. Deseja salvar antes de sair?"
-        textoBotaoConfirmar="Salvar e sair"
-        textoBotaoCancelar="Cancelar"
-        onConfirmar={async () => {
-          await handleSalvar()
-          setMostrarConfirmacaoSaida(false)
-          onFinalizar()
-        }}
-        onCancelar={() => setMostrarConfirmacaoSaida(false)}
-      />
+  <ModalConfirmacao
+  aberto={mostrarConfirmacaoSaida}
+  titulo="Deseja salvar o atendimento?"
+  mensagem="Se você sair agora, o atendimento não poderá mais ser editado. Deseja salvar antes de sair?"
+  textoBotaoConfirmar="Salvar e sair"
+  textoBotaoCancelar="Cancelar"
+  textoBotaoExtra="Sair sem salvar"
+  onConfirmar={async () => {
+    await handleSalvar()
+    setMostrarConfirmacaoSaida(false)
+    onFinalizar()
+  }}
+  onSairSemSalvar={() => {
+    setMostrarConfirmacaoSaida(false)
+    onFinalizar()
+  }}
+  onCancelar={() => setMostrarConfirmacaoSaida(false)}
+/>
+
     </div>
   )
 }
