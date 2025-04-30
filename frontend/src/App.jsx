@@ -8,6 +8,7 @@ import Register from './pages/Register'
 import Admin from './pages/Admin'
 import PrescritorDashboard from './pages/PrescritorDashboard'
 import FarmaciaDashboard from './pages/FarmaciaDashboard' // 🏥 Farmácia!
+import AgendaPrescritor from './pages/AgendaPrescritor'
 
 function AppContent() {
   const [user, setUser] = useState(null)
@@ -40,6 +41,9 @@ function AppContent() {
 
       {/* Rota de registro */}
       <Route path="/register" element={<Register />} />
+      
+      {/* Rota da agenda */}
+      <Route path="/agenda" element={<AgendaPrescritor />} />
 
       {/* Painel Admin */}
       <Route
