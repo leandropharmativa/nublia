@@ -1,0 +1,25 @@
+/* Remove linhas de grade e bordas internas */
+.rbc-day-slot .rbc-time-slot {
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+.rbc-time-content {
+  border-left: none !important;
+}
+
+.rbc-timeslot-group {
+  border-bottom: none !important;
+}
+
+.rbc-day-bg {
+  border-right: none !important;
+}
+
+.rbc-time-header-cell {
+  border-bottom: none !important;
+}
+
+.rbc-header {
+  border-right: none !important;
+}
