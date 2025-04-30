@@ -5,6 +5,7 @@ import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
 import PerfilPacienteModal from './PerfilPacienteModal'
 import { Search, User, X, Loader2 } from 'lucide-react'
+import { toast } from 'react-toastify'
 
 export default function ModalAgendarHorario({
   agendamentoId,
@@ -26,7 +27,6 @@ export default function ModalAgendarHorario({
   const [horariosDisponiveis, setHorariosDisponiveis] = useState([])
   const [novoHorarioId, setNovoHorarioId] = useState(null)
   const [carregando, setCarregando] = useState(false)
-  const [erroReagendamento, setErroReagendamento] = useState('')
 
   const inputRef = useRef(null)
   const user = JSON.parse(localStorage.getItem('user'))
@@ -72,27 +72,29 @@ export default function ModalAgendarHorario({
 
   const agendar = (pacienteId) => {
     onConfirmar(agendamentoId, pacienteId)
+    toast.success('Paciente agendado com sucesso!')
   }
 
   const reagendar = async () => {
     if (!novoHorarioId) return
     setCarregando(true)
-    setErroReagendamento('')
 
     try {
       await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
         de_id: agendamentoId,
         para_id: novoHorarioId
       })
+
+      toast.success('Horário reagendado com sucesso!')
       if (onAtualizarAgenda) onAtualizarAgenda()
       setCarregando(false)
       onCancelar()
     } catch (error) {
       console.error('Erro ao reagendar:', error)
       if (error?.response?.status === 400) {
-        setErroReagendamento('Este horário já está ocupado. Escolha outro.')
+        toast.error('Este horário já está ocupado. Escolha outro.')
       } else {
-        setErroReagendamento('Erro ao reagendar. Tente novamente.')
+        toast.error('Erro ao reagendar. Tente novamente.')
       }
       setCarregando(false)
     }
@@ -162,10 +164,6 @@ export default function ModalAgendarHorario({
                     </option>
                   ))}
                 </select>
-
-                {erroReagendamento && (
-                  <p className="text-sm text-red-600 mt-1">{erroReagendamento}</p>
-                )}
 
                 {novoHorarioId && (
                   <button
