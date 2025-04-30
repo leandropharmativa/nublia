@@ -65,7 +65,8 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     setModalAberto(true)
   }
 
-  const confirmarHorario = async (horaDigitada) => {
+  // ✅ agora aceita manterAberto: boolean
+  const confirmarHorario = async (horaDigitada, manterAberto = false) => {
     const data = slotSelecionado.toISOString().split('T')[0]
     const hora = horaDigitada
 
@@ -77,9 +78,12 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         status: 'disponivel'
       })
 
-      setModalAberto(false)
-      setSlotSelecionado(null)
       carregarEventos()
+
+      if (!manterAberto) {
+        setModalAberto(false)
+        setSlotSelecionado(null)
+      }
     } catch (error) {
       console.error('Erro ao salvar horário:', error)
     }
@@ -178,7 +182,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           }}
           onRemover={removerHorario}
           onDesagendar={desagendarHorario}
-          onAtualizarAgenda={carregarEventos} /* ✅ atualização automática */
+          onAtualizarAgenda={carregarEventos}
         />
       )}
     </div>
