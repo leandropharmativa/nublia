@@ -1,11 +1,10 @@
-// 📄 CalendarioAgenda.jsx
-
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarioCustom.css'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { FaUser, FaRegCalendarAlt } from 'react-icons/fa'
 
 const locales = { 'pt-BR': ptBR }
 
@@ -28,7 +27,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         defaultView="month"
         views={['month', 'week', 'day', 'agenda']}
         selectable
-        step={60}
+        step={15}
         timeslots={1}
         culture="pt-BR"
         onSelectSlot={aoSelecionarSlot}
@@ -170,9 +169,9 @@ function ContagemPorDia({ data, eventos }) {
   if (agendados === 0 && disponiveis === 0) return null
 
   return (
-    <span className="text-[10px] text-gray-400 ml-1">
-      {agendados > 0 && <span>{agendados}🧑 </span>}
-      {disponiveis > 0 && <span>{disponiveis}📆</span>}
+    <span className="text-[10px] text-gray-400 ml-1 flex items-center gap-1">
+      {agendados > 0 && <span className="flex items-center gap-1"><FaUser size={10} />{agendados}</span>}
+      {disponiveis > 0 && <span className="flex items-center gap-1"><FaRegCalendarAlt size={10} />{disponiveis}</span>}
     </span>
   )
 }
