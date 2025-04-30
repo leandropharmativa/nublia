@@ -24,19 +24,33 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   const carregarEventos = async () => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-      const eventosFormatados = response.data.map(ev => {
-        const start = new Date(`${ev.data}T${ev.hora}`)
-        const end = addHours(start, 1)
 
-        return {
-          id: ev.id,
-          title: ev.status === 'agendado' ? 'Agendado' : 'Disponível',
-          start,
-          end,
-          status: ev.status,
-          paciente_id: ev.paciente_id
-        }
-      })
+      const eventosFormatados = await Promise.all(
+        response.data.map(async (ev) => {
+          const start = new Date(`${ev.data}T${ev.hora}`)
+          const end = addHours(start, 1)
+          let title = 'Disponível'
+
+          if (ev.status === 'agendado' && ev.paciente_id) {
+            try {
+              const paciente = await axios.get(`https://nublia-backend.onrender.com/users/${ev.paciente_id}`)
+              title = paciente.data.name
+            } catch {
+              title = 'Agendado'
+            }
+          }
+
+          return {
+            id: ev.id,
+            title,
+            start,
+            end,
+            status: ev.status,
+            paciente_id: ev.paciente_id
+          }
+        })
+      )
+
       setEventos(eventosFormatados)
     } catch (error) {
       console.error('Erro ao carregar eventos:', error)
@@ -69,25 +83,24 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   }
 
   const handleEventoClick = async (evento) => {
-  setAgendamentoSelecionado(evento.id)
-  setAgendamentoStatus(evento.status)
-  setHorarioSelecionado(evento.start)
+    setAgendamentoSelecionado(evento.id)
+    setAgendamentoStatus(evento.status)
+    setHorarioSelecionado(evento.start)
 
-  if (evento.status === 'agendado' && evento.paciente_id) {
-    try {
-      const res = await axios.get(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
-      setPacienteAtual(res.data.name)
-    } catch (error) {
-      console.error('Erro ao buscar nome do paciente:', error)
-      setPacienteAtual('Paciente não encontrado')
+    if (evento.status === 'agendado' && evento.paciente_id) {
+      try {
+        const res = await axios.get(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
+        setPacienteAtual(res.data.name)
+      } catch (error) {
+        console.error('Erro ao buscar nome do paciente:', error)
+        setPacienteAtual('Paciente não encontrado')
+      }
+    } else {
+      setPacienteAtual(null)
     }
-  } else {
-    setPacienteAtual(null)
-  }
 
-  setModalAgendar(true)
+    setModalAgendar(true)
   }
-
 
   const confirmarAgendamento = async (agendamentoId, pacienteId) => {
     try {
