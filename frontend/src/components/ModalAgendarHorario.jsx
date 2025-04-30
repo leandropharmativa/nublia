@@ -81,17 +81,24 @@ export default function ModalAgendarHorario({
               />
 
               <div className="max-h-40 overflow-y-auto mb-4 border border-gray-200 rounded">
-                {pacientes.map((p) => (
-                  <div
-                    key={p.id}
-                    className={`p-2 cursor-pointer text-sm ${
-                      selecionado?.id === p.id ? 'bg-blue-100' : 'hover:bg-gray-100'
-                    }`}
-                    onClick={() => setSelecionado(p)}
-                  >
-                    {p.name}
-                  </div>
-                ))}
+              {pacientes.map((paciente) => (
+              <div
+              key={paciente.id}
+              className="flex justify-between items-center bg-gray-100 p-3 rounded mb-2"
+              >
+              <div>
+              <p className="font-semibold">{paciente.name}</p>
+              <p className="text-sm text-gray-500">{paciente.email}</p>
+              </div>
+              <button
+              onClick={() => setSelecionado(paciente)}
+              className="text-blue-600 hover:underline flex items-center gap-1 text-sm"
+              >
+              <User size={18} /> Selecionar
+              </button>
+              </div>
+              ))}
+
                 {filtro.length >= 2 && pacientes.length === 0 && (
                   <div className="text-sm text-gray-500 p-2 italic">Nenhum paciente encontrado</div>
                 )}
