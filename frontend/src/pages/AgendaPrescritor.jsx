@@ -183,13 +183,13 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     <div className="w-full h-[72vh] flex flex-col gap-2 relative">
       <div className="pt-2 w-72 relative">
         <div className="relative">
-          <Search className="pl-10 absolute left-3 top-3 text-gray-400" size={18} />
+          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
           <input
             type="text"
             placeholder="Busca por nome do paciente..."
             value={filtroPaciente}
             onChange={(e) => buscarPorPaciente(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-sm w-full"
+            className="pl-10 border border-gray-300 rounded px-3 py-2 text-sm w-full"
           />
         </div>
 
