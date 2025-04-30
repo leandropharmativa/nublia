@@ -13,6 +13,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null)
   const [agendamentoStatus, setAgendamentoStatus] = useState(null)
   const [pacienteAtual, setPacienteAtual] = useState(null)
+  const [pacienteId, setPacienteId] = useState(null)
   const [horarioSelecionado, setHorarioSelecionado] = useState(null)
 
   const user = JSON.parse(localStorage.getItem('user'))
@@ -91,12 +92,15 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       try {
         const res = await axios.get(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
         setPacienteAtual(res.data.name)
+        setPacienteId(res.data.id)
       } catch (error) {
         console.error('Erro ao buscar nome do paciente:', error)
         setPacienteAtual('Paciente não encontrado')
+        setPacienteId(null)
       }
     } else {
       setPacienteAtual(null)
+      setPacienteId(null)
     }
 
     setModalAgendar(true)
@@ -163,6 +167,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           agendamentoId={agendamentoSelecionado}
           statusAtual={agendamentoStatus}
           pacienteAtual={pacienteAtual}
+          pacienteId={pacienteId}
           horarioSelecionado={horarioSelecionado}
           onConfirmar={confirmarAgendamento}
           onCancelar={() => {
