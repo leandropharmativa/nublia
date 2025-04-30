@@ -13,29 +13,33 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(false)
 
-  // 🔄 Atualiza o formulário conforme os inputs mudam
+  // 🔄 Atualiza o estado do formulário
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  // 🛠 Envia os dados para o backend
+  // 🛠 Envia o formulário para o backend
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErro('')
     setCarregando(true)
 
     try {
+      // ✅ Estrutura correta esperada pelo backend
       const payload = {
-        ...form,
-        role: 'paciente',
-        password: null
+        user: {
+          ...form,
+          role: 'paciente',
+          password: null
+        },
+        codigo_ativacao: null
       }
 
       const response = await axios.post('https://nublia-backend.onrender.com/register', payload)
 
       if (response.data?.id) {
         const pacienteCriado = {
-          ...payload,
+          ...payload.user,
           id: response.data.id
         }
 
