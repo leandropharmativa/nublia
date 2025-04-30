@@ -45,16 +45,6 @@ class Agendamento(SQLModel, table=True):
     status: str = "disponivel"
     observacao: Optional[str] = None
 
-# 🔵 Modelo usado apenas para criação de Agendamento (sem ID)
-class Agendamento(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    prescritor_id: int
-    paciente_id: Optional[int] = None
-    data: date
-    hora: time
-    status: str = "disponivel"  # ou "agendado", "cancelado"
-    observacao: Optional[str] = None
-
 # 🔵 Modelo da tabela de Código de Ativação
 class CodigoAtivacao(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
