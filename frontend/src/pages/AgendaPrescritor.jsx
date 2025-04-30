@@ -251,7 +251,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       )}
 
       {/* ✅ Toast container */}
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+      <ToastContainer position="bottom-right" autoClose={2500} hideProgressBar />
     </div>
   )
 }
