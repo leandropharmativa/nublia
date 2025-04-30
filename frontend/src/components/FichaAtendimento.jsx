@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Save, ArrowLeft, Eye } from 'lucide-react'
 import axios from 'axios'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
-import ModalConfirmacao from './ModalConfirmacao' // ✅ componente padrão
+import ModalConfirmacao from './ModalConfirmacao'
 
 export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoSalvo }) {
   const [abaAtiva, setAbaAtiva] = useState('paciente')
@@ -77,7 +77,6 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
     }
   }
 
-  // 🔢 Cálculo da idade a partir da data de nascimento
   const calcularIdade = (data) => {
     if (!data) return null
     const hoje = new Date()
@@ -90,13 +89,11 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
     return idade
   }
 
-  // 🧠 Verifica se algum campo do formulário foi preenchido
   const houveAlteracao = Object.values(formulario).some(valor => valor.trim() !== '')
 
-  // 🟠 Ao clicar no botão "Voltar"
   const tentarSair = () => {
     if (houveAlteracao && !atendimentoId) {
-      setConfirmacaoSaida(true)
+      setMostrarConfirmacaoSaida(true)
     } else {
       onFinalizar()
     }
@@ -185,7 +182,6 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         )}
       </div>
 
-      {/* Modal de visualização de atendimento anterior */}
       {modalVisualizar && (
         <VisualizarAtendimentoModal
           atendimento={modalVisualizar}
@@ -193,19 +189,16 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         />
       )}
 
-      {/* Modal de confirmação ao tentar sair */}
       <ModalConfirmacao
-      aberto={mostrarConfirmacaoSaida}
-      titulo="Descartar alterações?"
-      mensagem="Você digitou informações no atendimento. Deseja realmente sair e perder os dados?"
-      onConfirmar={() => {
-      setMostrarConfirmacaoSaida(false)
-      onFinalizar()
-      }}
-      onCancelar={() => setMostrarConfirmacaoSaida(false)}
+        aberto={mostrarConfirmacaoSaida}
+        titulo="Descartar alterações?"
+        mensagem="Você digitou informações no atendimento. Deseja realmente sair e perder os dados?"
+        onConfirmar={() => {
+          setMostrarConfirmacaoSaida(false)
+          onFinalizar()
+        }}
+        onCancelar={() => setMostrarConfirmacaoSaida(false)}
       />
-
-      )}
     </div>
   )
 }
