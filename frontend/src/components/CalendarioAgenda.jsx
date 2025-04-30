@@ -1,5 +1,5 @@
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
-import { format, parse, startOfWeek, getDay } from 'date-fns'
+import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -16,7 +16,7 @@ const localizer = dateFnsLocalizer({
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   return (
-    <div className="h-full p-2 bg-white rounded-xl shadow">
+    <div className="h-full px-6 py-4 bg-white rounded-xl shadow">
       <Calendar
         localizer={localizer}
         events={eventos}
@@ -41,7 +41,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           noEventsInRange: 'Sem eventos neste período.',
         }}
         components={{
-          toolbar: CustomToolbar,
+          toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
         }}
         eventPropGetter={(event) => {
           const cor = event.status === 'agendado' ? '#dc2626' : '#2563eb'
@@ -61,21 +61,26 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
   )
 }
 
-function CustomToolbar({ label, onNavigate, onView, views, view, date }) {
-  const renderLabel = () => {
-    const f = (d, fmt) => format(d, fmt, { locale: ptBR })
+function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
+  const f = (d, fmt) => format(d, fmt, { locale: ptBR })
 
+  const renderLabel = () => {
     if (view === 'month') return f(date, 'MMMM yyyy')
     if (view === 'day') return f(date, "dd 'de' MMMM yyyy")
-
     if (view === 'week') {
       const start = startOfWeek(date, { weekStartsOn: 1 })
       const end = new Date(start)
       end.setDate(end.getDate() + 6)
       return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
     }
-
     return label
+  }
+
+  const contarAgendamentos = () => {
+    if (view === 'month') return eventos.filter(e => e.status === 'agendado').length
+    if (view === 'week') return eventos.filter(e => e.status === 'agendado' && isSameWeek(e.start, date, { weekStartsOn: 1 })).length
+    if (view === 'day') return eventos.filter(e => e.status === 'agendado' && isSameDay(e.start, date)).length
+    return eventos.filter(e => e.status === 'agendado').length
   }
 
   return (
@@ -90,18 +95,23 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date }) {
         <span className="text-sm font-medium text-gray-700">{renderLabel()}</span>
       </div>
 
-      <div className="flex gap-1">
-        {views.map((v) => (
-          <button
-            key={v}
-            onClick={() => onView(v)}
-            className={`text-sm px-2 py-1 rounded ${
-              view === v ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            {v.charAt(0).toUpperCase() + v.slice(1)}
-          </button>
-        ))}
+      <div className="flex items-center gap-3">
+        <span className="text-sm text-gray-500 italic">
+          {contarAgendamentos()} agendamentos
+        </span>
+        <div className="flex gap-1">
+          {views.map((v) => (
+            <button
+              key={v}
+              onClick={() => onView(v)}
+              className={`text-sm px-2 py-1 rounded ${
+                view === v ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              {v.charAt(0).toUpperCase() + v.slice(1)}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )
