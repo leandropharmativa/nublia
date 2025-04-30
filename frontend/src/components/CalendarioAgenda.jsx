@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarioCustom.css'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import ReactTooltip from 'react-tooltip'
+import Tippy from '@tippyjs/react'
+import 'tippy.js/dist/tippy.css'
 
 const locales = { 'pt-BR': ptBR }
 
@@ -19,11 +20,6 @@ const localizer = dateFnsLocalizer({
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   const [view, setView] = useState('month')
-  const tooltipKey = `${view}-${eventos.length}`
-
-  useEffect(() => {
-    ReactTooltip.rebuild()
-  }, [eventos, view])
 
   return (
     <div className="h-full p-6 bg-white rounded shadow overflow-hidden">
@@ -70,7 +66,6 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           }
         }}
       />
-      <ReactTooltip key={tooltipKey} id="agenda-tooltip" effect="solid" place="top" />
     </div>
   )
 }
@@ -82,9 +77,9 @@ function EventWithTooltip({ event }) {
   })
 
   return (
-    <div data-for="agenda-tooltip" data-tip={`Horário: ${hora}`}>
-      {event.title}
-    </div>
+    <Tippy content={`Horário: ${hora}`} placement="top">
+      <div>{event.title}</div>
+    </Tippy>
   )
 }
 
