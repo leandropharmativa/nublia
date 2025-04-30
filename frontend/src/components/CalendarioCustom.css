@@ -26,6 +26,15 @@
   border-bottom: none !important;
 }
 
+.rbc-month-row {
+  min-height: 80px;
+}
+.rbc-event {
+  padding: 1px 4px !important;
+  font-size: 0.7rem !important;
+  line-height: 1rem;
+}
+
 /* Remove linhas verticais entre os dias 
 .rbc-day-bg {
   border-right: none !important;
