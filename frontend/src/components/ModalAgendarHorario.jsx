@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
-import { Search, User, X } from 'lucide-react'
+import { Search, User, XCircle } from 'lucide-react'
 
 export default function ModalAgendarHorario({
   agendamentoId,
@@ -15,7 +15,6 @@ export default function ModalAgendarHorario({
 }) {
   const [pacientes, setPacientes] = useState([])
   const [filtro, setFiltro] = useState('')
-  const [selecionado, setSelecionado] = useState(null)
   const [mostrarCadastro, setMostrarCadastro] = useState(false)
 
   useEffect(() => {
@@ -39,10 +38,14 @@ export default function ModalAgendarHorario({
     buscarPacientes()
   }, [filtro])
 
+  const agendar = (pacienteId) => {
+    onConfirmar(agendamentoId, pacienteId)
+  }
+
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl p-6 shadow-lg max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col gap-4">
+        <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden">
 
           <h2 className="text-lg font-semibold text-blue-600">
             {statusAtual === 'agendado' ? 'Editar agendamento' : 'Agendar horário'}
@@ -64,7 +67,7 @@ export default function ModalAgendarHorario({
             <div className="text-sm text-gray-700 flex items-center justify-between border rounded px-3 py-2 bg-gray-50">
               <span><strong>Paciente atual:</strong> {pacienteAtual}</span>
               <button onClick={() => onDesagendar(agendamentoId)} className="text-red-500 hover:text-red-600">
-                <X size={16} />
+                <XCircle size={18} />
               </button>
             </div>
           )}
@@ -82,7 +85,7 @@ export default function ModalAgendarHorario({
                 />
               </div>
 
-              <div className="overflow-y-auto max-h-[240px]">
+              <div className="overflow-y-auto max-h-[300px]">
                 {pacientes.map((paciente) => (
                   <div
                     key={paciente.id}
@@ -94,7 +97,7 @@ export default function ModalAgendarHorario({
                     </div>
                     <button
                       type="button"
-                      onClick={() => setSelecionado(paciente)}
+                      onClick={() => agendar(paciente.id)}
                       className="text-blue-600 hover:underline flex items-center gap-1 text-sm"
                     >
                       <User size={18} /> Selecionar
@@ -111,32 +114,32 @@ export default function ModalAgendarHorario({
             </>
           )}
 
-         {statusAtual === 'disponivel' && !selecionado && (
-         <div className="flex flex-col gap-1 text-sm text-blue-600 mt-2">
-          <button onClick={() => setMostrarCadastro(true)} className="hover:underline text-left">
-            + Cadastrar novo paciente
-          </button>
-          <button onClick={() => onRemover(agendamentoId)} className="hover:underline text-left">
-            - Cancelar disponibilidade
-          </button>
-        </div>
-        )}
-
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex justify-between pt-4">
             <button
               onClick={onCancelar}
-              className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded"
+              className="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded"
             >
               Cancelar
             </button>
             <button
-              disabled={!selecionado}
-              onClick={() => onConfirmar(agendamentoId, selecionado.id)}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50"
+              onClick={() => setMostrarCadastro(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
             >
-              Confirmar
+              Cadastrar Novo Paciente
             </button>
           </div>
+
+          {statusAtual === 'disponivel' && (
+            <div className="text-sm text-red-600 text-center mt-2">
+              - Cancelar disponibilidade de horário
+              <button
+                onClick={() => onRemover(agendamentoId)}
+                className="block mx-auto mt-1 text-red-600 underline hover:text-red-700"
+              >
+                Confirmar cancelamento
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -144,8 +147,7 @@ export default function ModalAgendarHorario({
         <CadastrarPacienteModal
           onClose={() => setMostrarCadastro(false)}
           onPacienteCadastrado={(paciente) => {
-            setSelecionado(paciente)
-            setFiltro(paciente.name)
+            agendar(paciente.id)
             setMostrarCadastro(false)
           }}
         />
