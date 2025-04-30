@@ -32,3 +32,13 @@ def agendar_horario(id: int, paciente_id: int, session: Session = Depends(get_se
     session.commit()
     session.refresh(agendamento)
     return agendamento
+
+@router.post("/remover", response_model=bool)
+def remover_agendamento(id: int, session: Session = Depends(get_session)):
+    agendamento = session.get(Agendamento, id)
+    if not agendamento:
+        raise HTTPException(status_code=404, detail="Agendamento não encontrado")
+    session.delete(agendamento)
+    session.commit()
+    return True
+
