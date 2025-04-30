@@ -1,16 +1,42 @@
 // 📄 src/components/ModalNovoHorario.jsx
-import { format } from 'date-fns'
-import { useState } from 'react'
+
+import { format, isSameDay, parseISO } from 'date-fns'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
   const [horaDigitada, setHoraDigitada] = useState(format(horario, 'HH:mm'))
   const [mensagem, setMensagem] = useState('')
+  const [horariosExistentes, setHorariosExistentes] = useState([])
+
+  const user = JSON.parse(localStorage.getItem('user'))
+
+  const carregarHorariosDoDia = async () => {
+    try {
+      const res = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+      const lista = res.data
+        .filter((item) =>
+          isSameDay(new Date(`${item.data}T${item.hora}`), horario)
+        )
+        .map((item) => item.hora.slice(0, 5))
+        .sort()
+
+      setHorariosExistentes(lista)
+    } catch (error) {
+      console.error('Erro ao carregar horários existentes:', error)
+    }
+  }
+
+  useEffect(() => {
+    carregarHorariosDoDia()
+  }, [horario])
 
   const handleConfirmar = async () => {
-    await onConfirmar(horaDigitada)
+    await onConfirmar(horaDigitada, true) // manter modal aberto
     setMensagem(`Horário ${horaDigitada} cadastrado com sucesso!`)
-    setHoraDigitada('') // Limpa o campo para novo horário
+    setHoraDigitada('')
     setTimeout(() => setMensagem(''), 3000)
+    carregarHorariosDoDia()
   }
 
   return (
@@ -34,6 +60,24 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
 
         {mensagem && (
           <p className="text-sm text-green-600 mb-3">{mensagem}</p>
+        )}
+
+        {horariosExistentes.length > 0 && (
+          <div className="mb-3">
+            <p className="text-sm text-gray-700 font-semibold mb-1">
+              Horários já cadastrados:
+            </p>
+            <ul className="text-sm text-gray-600 flex flex-wrap gap-2">
+              {horariosExistentes.map((hora, idx) => (
+                <li
+                  key={idx}
+                  className="bg-gray-100 px-2 py-1 rounded border border-gray-300"
+                >
+                  {hora}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
 
         <div className="flex justify-end gap-4">
