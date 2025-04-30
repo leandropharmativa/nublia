@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
 import { XCircle } from 'lucide-react'
+import { format } from 'date-fns'
 
 export default function ModalAgendarHorario({
   agendamentoId,
   statusAtual,
   pacienteAtual,
+  horarioSelecionado, // <-- agora obrigatório para exibir data/hora
   onConfirmar,
   onCancelar,
   onRemover,
@@ -44,10 +46,16 @@ export default function ModalAgendarHorario({
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl p-6 shadow-lg max-w-xl w-full min-h-[500px]">
-          <h2 className="text-lg font-semibold mb-4 text-blue-600">
+        <div className="bg-white rounded-xl p-6 shadow-lg max-w-xl w-full">
+          <h2 className="text-lg font-semibold mb-1 text-blue-600">
             {statusAtual === 'agendado' ? 'Editar agendamento' : 'Agendar horário'}
           </h2>
+
+          {horarioSelecionado && (
+            <div className="mb-4 text-sm text-gray-700">
+              {format(horarioSelecionado, "dd/MM/yyyy 'às' HH:mm")}
+            </div>
+          )}
 
           {statusAtual === 'agendado' && pacienteAtual && (
             <div className="mb-4 flex items-center gap-2">
@@ -62,32 +70,36 @@ export default function ModalAgendarHorario({
             </div>
           )}
 
-          <input
-            type="text"
-            placeholder="Buscar paciente..."
-            value={filtro}
-            onChange={(e) => setFiltro(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 mb-3"
-          />
+          {!pacienteAtual && (
+            <>
+              <input
+                type="text"
+                placeholder="Buscar paciente..."
+                value={filtro}
+                onChange={(e) => setFiltro(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2 mb-3"
+              />
 
-          <div className="max-h-40 overflow-y-auto mb-4 border border-gray-200 rounded">
-            {pacientes.map((p) => (
-              <div
-                key={p.id}
-                className={`p-2 cursor-pointer text-sm ${
-                  selecionado?.id === p.id ? 'bg-blue-100' : 'hover:bg-gray-100'
-                }`}
-                onClick={() => setSelecionado(p)}
-              >
-                {p.name}
+              <div className="max-h-40 overflow-y-auto mb-4 border border-gray-200 rounded">
+                {pacientes.map((p) => (
+                  <div
+                    key={p.id}
+                    className={`p-2 cursor-pointer text-sm ${
+                      selecionado?.id === p.id ? 'bg-blue-100' : 'hover:bg-gray-100'
+                    }`}
+                    onClick={() => setSelecionado(p)}
+                  >
+                    {p.name}
+                  </div>
+                ))}
+                {filtro.length >= 2 && pacientes.length === 0 && (
+                  <div className="text-sm text-gray-500 p-2 italic">Nenhum paciente encontrado</div>
+                )}
               </div>
-            ))}
-            {filtro.length >= 2 && pacientes.length === 0 && (
-              <div className="text-sm text-gray-500 p-2 italic">Nenhum paciente encontrado</div>
-            )}
-          </div>
+            </>
+          )}
 
-          <div className="flex justify-between items-end mt-6">
+          <div className="flex justify-between items-end mt-4">
             <div className="flex flex-col gap-1">
               {mostrarBotaoCadastro && (
                 <button
