@@ -1,6 +1,14 @@
-// 📄 src/components/ModalConfirmacao.jsx (v2.4.0)
+// 📄 src/components/ModalConfirmacao.jsx (v2.4.1)
 
-export default function ModalConfirmacao({ aberto, titulo, mensagem, onConfirmar, onCancelar }) {
+export default function ModalConfirmacao({
+  aberto,
+  titulo,
+  mensagem,
+  onConfirmar,
+  onCancelar,
+  textoBotaoConfirmar = 'Confirmar',
+  textoBotaoCancelar = 'Cancelar'
+}) {
   if (!aberto) return null;
 
   return (
@@ -13,13 +21,13 @@ export default function ModalConfirmacao({ aberto, titulo, mensagem, onConfirmar
             onClick={onCancelar}
             className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
           >
-            Cancelar
+            {textoBotaoCancelar}
           </button>
           <button
             onClick={onConfirmar}
             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
           >
-            Confirmar
+            {textoBotaoConfirmar}
           </button>
         </div>
       </div>
