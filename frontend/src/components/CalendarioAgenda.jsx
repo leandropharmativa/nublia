@@ -17,7 +17,7 @@ const localizer = dateFnsLocalizer({
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   return (
-    <div className="h-full px-6 py-4 bg-white rounded-xl shadow overflow-hidden">
+    <div className="h-screen px-6 py-6 bg-white rounded-xl shadow overflow-hidden">
       <Calendar
         localizer={localizer}
         events={eventos}
