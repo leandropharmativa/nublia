@@ -21,6 +21,10 @@ class RemoverAgendamentoRequest(BaseModel):
 class DesagendarRequest(BaseModel):
     id: int
 
+class ReagendarRequest(BaseModel):
+    de_id: int  # ID do horário atual
+    para_id: int  # ID do novo horário (disponível)
+
 # ✅ Criar horário disponível
 @router.post("/disponibilizar", response_model=Agendamento)
 def disponibilizar_horario(agendamento: Agendamento, session: Session = Depends(get_session)):
@@ -75,4 +79,28 @@ def desagendar_horario(dados: DesagendarRequest, session: Session = Depends(get_
     session.commit()
     session.refresh(agendamento)
     return agendamento
+
+@router.post("/reagendar", response_model=Agendamento)
+def reagendar_horario(dados: ReagendarRequest, session: Session = Depends(get_session)):
+    agendamento_atual = session.get(Agendamento, dados.de_id)
+    agendamento_novo = session.get(Agendamento, dados.para_id)
+
+    if not agendamento_atual or not agendamento_novo:
+        raise HTTPException(status_code=404, detail="Agendamento(s) não encontrado(s)")
+
+    if agendamento_novo.status != "disponivel":
+        raise HTTPException(status_code=400, detail="Novo horário não está disponível")
+
+    agendamento_novo.paciente_id = agendamento_atual.paciente_id
+    agendamento_novo.status = "agendado"
+
+    agendamento_atual.paciente_id = None
+    agendamento_atual.status = "disponivel"
+
+    session.add(agendamento_atual)
+    session.add(agendamento_novo)
+    session.commit()
+    session.refresh(agendamento_novo)
+
+    return agendamento_novo
 
