@@ -1,3 +1,4 @@
+// 📄 frontend/src/pages/PrescritorDashboard.jsx
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -9,7 +10,7 @@ import {
   Leaf,
   Settings,
   PlusCircle,
-  XCircle // ✅ novo ícone para alternar agenda
+  XCircle
 } from 'lucide-react'
 
 import BuscarPacienteModal from '../components/BuscarPacienteModal'
@@ -19,6 +20,8 @@ import AtendimentosRecentes from '../components/AtendimentosRecentes'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
 import AgendaPrescritor from './AgendaPrescritor'
+import FormulasSugeridas from '../components/FormulasSugeridas'
+import MinhasFormulas from '../components/MinhasFormulas'
 
 export default function PrescritorDashboard() {
   const navigate = useNavigate()
@@ -34,6 +37,7 @@ export default function PrescritorDashboard() {
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
   const [mostrarAgenda, setMostrarAgenda] = useState(false)
+  const [mostrarFormulas, setMostrarFormulas] = useState(false)
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
@@ -150,13 +154,14 @@ export default function PrescritorDashboard() {
           onClick={() => setMostrarAgenda(!mostrarAgenda)}
         >
           {mostrarAgenda ? <XCircle size={32} /> : <CalendarDays size={32} />}
-          <span className="text-xs mt-1">
-            {mostrarAgenda ? 'Agenda' : 'Agenda'}
-          </span>
+          <span className="text-xs mt-1">Agenda</span>
         </button>
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <BookOpenText size={32} />
-          <span className="text-xs mt-1">Fórmulas</span>
+        <button
+          className="flex flex-col items-center text-blue-600 hover:underline"
+          onClick={() => setMostrarFormulas(!mostrarFormulas)}
+        >
+          {mostrarFormulas ? <XCircle size={32} /> : <BookOpenText size={32} />}
+          <span className="text-xs mt-1">{mostrarFormulas ? 'Fechar' : 'Fórmulas'}</span>
         </button>
         <button className="flex flex-col items-center text-blue-600 hover:underline">
           <Leaf size={32} />
@@ -180,17 +185,20 @@ export default function PrescritorDashboard() {
 
         <main className="flex-1 flex flex-col items-start p-4 overflow-hidden">
           {mostrarAgenda ? (
-            <div className="w-full h-full">
-              <AgendaPrescritor mostrarAgenda={mostrarAgenda} />
+            <AgendaPrescritor mostrarAgenda={mostrarAgenda} />
+          ) : mostrarFormulas ? (
+            <div className="w-full h-full overflow-auto">
+              <h2 className="text-xl font-bold mb-4">Fórmulas sugeridas</h2>
+              <FormulasSugeridas />
+              <h2 className="text-xl font-bold mt-8 mb-4">Minhas fórmulas</h2>
+              <MinhasFormulas usuarioId={user?.id} />
             </div>
           ) : pacienteSelecionado ? (
-            <div className="w-full h-full">
-              <FichaAtendimento
-                paciente={pacienteSelecionado}
-                onFinalizar={() => setPacienteSelecionado(null)}
-                onAtendimentoSalvo={() => carregarAtendimentos(user?.id)}
-              />
-            </div>
+            <FichaAtendimento
+              paciente={pacienteSelecionado}
+              onFinalizar={() => setPacienteSelecionado(null)}
+              onAtendimentoSalvo={() => carregarAtendimentos(user?.id)}
+            />
           ) : (
             <div className="flex-1 flex items-center justify-center w-full">
               <button
