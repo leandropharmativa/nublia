@@ -26,12 +26,12 @@
   border-bottom: none !important;
 }
 
-/* Remove linhas verticais entre os dias */
+/* Remove linhas verticais entre os dias 
 .rbc-day-bg {
   border-right: none !important;
-}
+} */
 
-/* Remove a borda da agenda semanal/dia */
+/* Remove a borda da agenda semanal/dia 
 .rbc-agenda-view table {
   border: none !important;
-}
+} */
