@@ -1,8 +1,11 @@
+
+// 📄 AgendaPrescritor.jsx
+
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { addHours, isSameDay } from 'date-fns'
+import { addHours } from 'date-fns'
 import { toast, ToastContainer } from 'react-toastify'
-import { Search } from 'lucide-react'
+import { Search, User, Eye } from 'lucide-react'
 import 'react-toastify/dist/ReactToastify.css'
 
 import CalendarioAgenda from '../components/CalendarioAgenda'
@@ -31,7 +34,6 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   const carregarEventos = async () => {
     try {
       const response = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-
       const eventosFormatados = await Promise.all(
         response.data.map(async (ev) => {
           const start = new Date(`${ev.data}T${ev.hora}`)
@@ -57,7 +59,6 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           }
         })
       )
-
       setEventos(eventosFormatados)
     } catch (error) {
       console.error('Erro ao carregar eventos:', error)
@@ -66,11 +67,6 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
 
   const handleNovoSlot = (slotInfo) => {
     setSlotSelecionado(slotInfo.start)
-    setModalAberto(true)
-  }
-
-  const handleAdicionarRapido = (date) => {
-    setSlotSelecionado(date)
     setModalAberto(true)
   }
 
@@ -110,7 +106,6 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         setPacienteAtual(res.data.name)
         setPacienteId(res.data.id)
       } catch (error) {
-        console.error('Erro ao buscar nome do paciente:', error)
         setPacienteAtual('Paciente não encontrado')
         setPacienteId(null)
       }
@@ -134,7 +129,6 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       setAgendamentoSelecionado(null)
       carregarEventos()
     } catch (error) {
-      console.error('Erro ao agendar:', error)
       toast.error('Erro ao agendar paciente.')
     }
   }
@@ -147,7 +141,6 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       setAgendamentoSelecionado(null)
       carregarEventos()
     } catch (error) {
-      console.error('Erro ao desagendar horário:', error)
       toast.error('Erro ao desagendar.')
     }
   }
@@ -160,7 +153,6 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       setAgendamentoSelecionado(null)
       carregarEventos()
     } catch (error) {
-      console.error('Erro ao remover horário:', error)
       toast.error('Erro ao remover horário.')
     }
   }
@@ -179,10 +171,17 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     setResultadosBusca(resultados)
   }
 
+  const abrirPerfilPaciente = (id) => {
+    setPacienteId(id)
+    setPacienteAtual(null)
+    setModalAgendar(true)
+    setAgendamentoSelecionado(null)
+    setAgendamentoStatus('agendado')
+  }
+
   return (
     <div className="w-full h-[72vh] flex flex-col gap-2 relative">
-      {/* 🔍 Campo de filtro por paciente */}
-      <div className="px-6 pt-2 w-80">
+      <div className="pl-6 pt-2 w-72 relative">
         <div className="relative">
           <Search className="absolute left-3 top-3 text-gray-400" size={18} />
           <input
@@ -193,41 +192,49 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
             className="pl-10 border border-gray-300 rounded px-3 py-2 text-sm w-full"
           />
         </div>
+
+        {resultadosBusca.length > 0 && (
+          <div className="absolute top-12 left-0 bg-white rounded shadow border border-gray-200 z-50 w-full max-h-64 overflow-y-auto text-sm">
+            <ul>
+              {resultadosBusca.map(ev => (
+                <li key={ev.id} className="px-4 py-2 hover:bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                  <div>
+                    <p className="font-semibold">{ev.title}</p>
+                    <p className="text-gray-500">
+                      {ev.start.toLocaleDateString('pt-BR')} às {ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    {ev.paciente_id && (
+                      <button
+                        onClick={() => abrirPerfilPaciente(ev.paciente_id)}
+                        title="Ver perfil"
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <User size={18} />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleEventoClick(ev)}
+                      title="Ver agendamento"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <Eye size={18} />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
-      {/* 🔍 Lista de resultados (tipo modal flutuante) */}
-      {resultadosBusca.length > 0 && (
-        <div className="absolute left-6 top-20 bg-white rounded shadow border border-gray-200 z-50 w-[320px] max-h-64 overflow-y-auto text-sm">
-          <ul>
-            {resultadosBusca.map(ev => (
-              <li key={ev.id} className="px-4 py-2 hover:bg-gray-50 border-b border-gray-100 flex justify-between items-center">
-                <div>
-                  <p className="font-semibold">{ev.title}</p>
-                  <p className="text-gray-500">
-                    {ev.start.toLocaleDateString('pt-BR')} às {ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleEventoClick(ev)}
-                  className="text-blue-600 hover:underline text-sm"
-                >
-                  Abrir
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* 📆 Calendário */}
       <CalendarioAgenda
         eventos={eventos}
         aoSelecionarSlot={handleNovoSlot}
         aoSelecionarEvento={handleEventoClick}
-        onAdicionarRapido={handleAdicionarRapido}
       />
 
-      {/* ➕ Modal de adicionar horário */}
       {modalAberto && (
         <ModalNovoHorario
           horario={slotSelecionado}
@@ -239,7 +246,6 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         />
       )}
 
-      {/* 📝 Modal de reagendamento/agendamento */}
       {modalAgendar && (
         <ModalAgendarHorario
           agendamentoId={agendamentoSelecionado}
@@ -258,7 +264,6 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         />
       )}
 
-      {/* ✅ Toast */}
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar />
     </div>
   )
