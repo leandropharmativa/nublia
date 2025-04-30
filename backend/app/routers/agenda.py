@@ -18,6 +18,9 @@ class AgendarHorarioRequest(BaseModel):
 class RemoverAgendamentoRequest(BaseModel):
     id: int
 
+class DesagendarRequest(BaseModel):
+    id: int
+
 # ✅ Criar horário disponível
 @router.post("/disponibilizar", response_model=Agendamento)
 def disponibilizar_horario(agendamento: Agendamento, session: Session = Depends(get_session)):
@@ -60,4 +63,16 @@ def remover_agendamento(dados: RemoverAgendamentoRequest, session: Session = Dep
     session.commit()
     return True
 
+@router.post("/desagendar", response_model=Agendamento)
+def desagendar_horario(dados: DesagendarRequest, session: Session = Depends(get_session)):
+    agendamento = session.get(Agendamento, dados.id)
+    if not agendamento:
+        raise HTTPException(status_code=404, detail="Agendamento não encontrado")
+
+    agendamento.paciente_id = None
+    agendamento.status = "disponivel"
+    session.add(agendamento)
+    session.commit()
+    session.refresh(agendamento)
+    return agendamento
 
