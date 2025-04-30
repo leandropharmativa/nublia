@@ -18,7 +18,7 @@ const localizer = dateFnsLocalizer({
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   return (
-    <div className="h-full p-2 bg-white rounded-xl shadow">
+    <div className="h-full p-3 bg-white rounded-xl shadow">
       <Calendar
         
         eventPropGetter={(event) => {
@@ -26,10 +26,10 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         return {
         style: {
         backgroundColor: cor,
-        borderRadius: '2px',
+        borderRadius: '6px',
         color: 'white',
         border: 'none',
-        padding: '6px 3px',
+        padding: '3px 3px',
                 },
               }
         }}
