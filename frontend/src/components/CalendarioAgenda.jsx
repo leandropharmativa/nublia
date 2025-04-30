@@ -1,7 +1,7 @@
 // 📄 CalendarioAgenda.jsx
 
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
-import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay, isSameDay as sameDay } from 'date-fns'
+import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarioCustom.css'
@@ -19,7 +19,7 @@ const localizer = dateFnsLocalizer({
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   return (
-    <div className="h-full p-6 bg-white rounded shadow overflow-hidden custom-calendar">
+    <div className="h-full p-6 bg-white rounded shadow overflow-hidden">
       <Calendar
         localizer={localizer}
         events={eventos}
@@ -47,14 +47,14 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
           day: { header: CustomDayHeader },
           event: EventCompacto,
-          dateCellWrapper: ({ value, children }) => (
-            <div className="relative">
-              <div className="absolute top-0 right-0 text-[10px] text-gray-400 pr-1 pt-1">
-                <ContagemPorDia data={value} eventos={eventos} />
+          month: {
+            dateHeader: (props) => (
+              <div className="flex justify-between items-start px-1">
+                <span>{props.label}</span>
+                <ContagemPorDia data={props.date} eventos={eventos} />
               </div>
-              {children}
-            </div>
-          ),
+            )
+          }
         }}
         eventPropGetter={(event) => {
           const cor = event.status === 'agendado' ? '#dc2626' : '#2563eb'
@@ -163,14 +163,14 @@ function EventCompacto({ event }) {
 }
 
 function ContagemPorDia({ data, eventos }) {
-  const doDia = eventos.filter(ev => sameDay(ev.start, data))
+  const doDia = eventos.filter(ev => ev.start.toDateString() === data.toDateString())
   const agendados = doDia.filter(ev => ev.status === 'agendado').length
   const disponiveis = doDia.filter(ev => ev.status === 'disponivel').length
 
   if (agendados === 0 && disponiveis === 0) return null
 
   return (
-    <span className="text-[10px]">
+    <span className="text-[10px] text-gray-400 ml-1">
       {agendados > 0 && <span>{agendados}🧑 </span>}
       {disponiveis > 0 && <span>{disponiveis}📆</span>}
     </span>
