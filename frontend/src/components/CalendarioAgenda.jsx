@@ -1,12 +1,11 @@
-// 📄 src/components/CalendarioAgenda.jsx
+// 📄 CalendarioAgenda.jsx
 
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
-import { format, parse, startOfWeek, getDay, isSameDay, isSameWeek } from 'date-fns'
+import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarioCustom.css'
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
-import { useState } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
 
@@ -15,17 +14,12 @@ const localizer = dateFnsLocalizer({
   parse,
   startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
   getDay,
-  locales
+  locales,
 })
 
-export default function CalendarioAgenda({
-  eventos = [],
-  aoSelecionarSlot,
-  aoSelecionarEvento,
-  onAdicionarRapido
-}) {
+export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   return (
-    <div className="h-full px-6 py-4 bg-white rounded-xl shadow overflow-hidden">
+    <div className="h-full p-6 bg-white rounded shadow overflow-hidden">
       <Calendar
         localizer={localizer}
         events={eventos}
@@ -47,16 +41,12 @@ export default function CalendarioAgenda({
           week: 'Semana',
           day: 'Dia',
           agenda: 'Agenda',
-          noEventsInRange: 'Sem eventos neste período.'
+          noEventsInRange: 'Sem eventos neste período.',
         }}
         components={{
           toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
-          day: { header: (props) => <CustomDayHeader {...props} onAdd={onAdicionarRapido} /> },
-          month: {
-            dateHeader: (props) => (
-              <CustomMonthDateHeader {...props} eventos={eventos} />
-            )
-          }
+          day: { header: CustomDayHeader },
+          event: EventCompacto,
         }}
         eventPropGetter={(event) => {
           const cor = event.status === 'agendado' ? '#dc2626' : '#2563eb'
@@ -67,8 +57,9 @@ export default function CalendarioAgenda({
               fontSize: '0.75rem',
               padding: '2px 4px',
               borderRadius: '4px',
-              border: 'none'
-            }
+              border: 'none',
+              whiteSpace: 'nowrap'
+            },
           }
         }}
       />
@@ -76,42 +67,16 @@ export default function CalendarioAgenda({
   )
 }
 
-// ✅ Cabeçalho dos dias da semana (ex: SEG, TER... com botão +)
-function CustomDayHeader({ label, date, onAdd }) {
+function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
-  const isToday = isSameDay(date, new Date())
   const colorClass = isSunday ? 'text-red-600' : 'text-blue-600'
-
   return (
-    <div className={`text-xs font-semibold uppercase flex items-center justify-between px-1 ${colorClass} ${isToday ? 'border-b-2 border-blue-300' : ''}`}>
-      <span>{label}</span>
-      <button onClick={() => onAdd?.(date)} className="text-blue-400 hover:text-blue-600" title="Adicionar horário">
-        <Plus size={14} />
-      </button>
+    <div className={`text-sm font-semibold text-center uppercase ${colorClass}`}>
+      {label}
     </div>
   )
 }
 
-// ✅ Cabeçalho do mês com contagem de agendados/disponíveis
-function CustomMonthDateHeader({ label, date, eventos }) {
-  const isToday = isSameDay(date, new Date())
-  const eventosDoDia = eventos.filter(ev => isSameDay(ev.start, date))
-  const agendados = eventosDoDia.filter(e => e.status === 'agendado').length
-  const disponiveis = eventosDoDia.filter(e => e.status === 'disponivel').length
-
-  return (
-    <div className={`text-xs leading-tight ${isToday ? 'text-blue-600 font-bold' : 'text-gray-700'}`}>
-      <div>{label}</div>
-      {agendados > 0 || disponiveis > 0 ? (
-        <div className="text-[10px] text-gray-500">
-          {agendados} agendados · {disponiveis} disponíveis
-        </div>
-      ) : null}
-    </div>
-  )
-}
-
-// ✅ Cabeçalho do topo do calendário com label e botões
 function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
 
@@ -171,5 +136,18 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         </div>
       </div>
     </div>
+  )
+}
+
+function EventCompacto({ event }) {
+  const hora = event.start.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+
+  return (
+    <span className="text-xs leading-tight whitespace-nowrap">
+      {hora} {event.title}
+    </span>
   )
 }
