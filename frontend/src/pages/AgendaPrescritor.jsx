@@ -181,9 +181,9 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
 
   return (
     <div className="w-full h-[72vh] flex flex-col gap-2 relative">
-      <div className="pl-6 pt-2 w-72 relative">
+      <div className="pt-2 w-72 relative">
         <div className="relative">
-          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+          <Search className="pl-10 absolute left-3 top-3 text-gray-400" size={18} />
           <input
             type="text"
             placeholder="Busca por nome do paciente..."
