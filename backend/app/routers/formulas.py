@@ -1,13 +1,11 @@
 # 📄 backend/app/routers/formulas.py
-# v1.0.1
+# v1.1.0 — inclui listagem geral e por prescritor com paginação
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlmodel import Session, select
-from app.models import Formula, FormulaCreate
+from app.models import Formula, FormulaCreate, User
 from app.database import engine, get_session
-from app.models import User
-from fastapi import Query
 
 router = APIRouter()
 
@@ -58,17 +56,19 @@ def atualizar_formula(data: FormulaUpdateRequest, session: Session = Depends(get
     formula.composicao = data.composicao
     formula.indicacao = data.indicacao
     formula.posologia = data.posologia
-    
+
     session.commit()
     session.refresh(formula)
     return formula
 
-# 🔵 Listar todas as fórmulas com nome da farmácia ou prescritor (com paginação)
+# ✅ NOVOS ENDPOINTS
+
+# 🔵 Listar todas as fórmulas com autor (farmácia ou prescritor)
 @router.get("/formulas/todas")
 def listar_todas_formulas(
-    session: Session = Depends(get_session),
-    limit: int = Query(50, ge=1, le=100),  # padrão: 50, máximo: 100
-    offset: int = Query(0, ge=0)
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    session: Session = Depends(get_session)
 ):
     formulas = session.exec(
         select(Formula).offset(offset).limit(limit)
@@ -98,14 +98,13 @@ def listar_todas_formulas(
 
     return resultado
 
-
-# 🔵 Listar fórmulas de um prescritor específico (com paginação)
+# 🔵 Listar fórmulas criadas por um prescritor (com paginação)
 @router.get("/formulas/prescritor/{prescritor_id}")
 def listar_formulas_por_prescritor(
     prescritor_id: int,
-    session: Session = Depends(get_session),
     limit: int = Query(50, ge=1, le=100),
-    offset: int = Query(0, ge=0)
+    offset: int = Query(0, ge=0),
+    session: Session = Depends(get_session)
 ):
     formulas = session.exec(
         select(Formula)
