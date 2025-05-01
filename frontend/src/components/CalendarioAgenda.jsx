@@ -1,3 +1,4 @@
+// Importações mantidas como no original
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
@@ -9,6 +10,7 @@ import {
   ChevronRight,
   User,
   Calendar as CalendarIcon,
+  Clock
 } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
@@ -61,19 +63,22 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           },
         }}
         eventPropGetter={(event) => {
-          const cor = event.status === 'agendado' ? '#dc2626' : '#2563eb'
+          const cores = {
+            agendado: '#dc2626',    // vermelho
+            disponivel: '#2563eb',  // azul
+          }
+          const cor = cores[event.status] || '#6b7280' // cinza para status desconhecido
           return {
             style: {
               backgroundColor: cor,
               color: 'white',
-              fontSize: '0.7rem',
-              lineHeight: '1rem',
-              padding: '1px 3px',
-              borderRadius: '3px',
-              marginBottom: '1px',
-              border: 'none',
+              fontSize: '0.75rem',
+              padding: '2px 6px',
+              borderRadius: '4px',
+              marginBottom: '2px',
               whiteSpace: 'nowrap',
-            },
+              cursor: 'pointer',
+            }
           }
         }}
       />
@@ -157,8 +162,14 @@ function EventCompacto({ event }) {
     hour: '2-digit',
     minute: '2-digit'
   })
+
+  const icone = event.status === 'agendado' ? <User size={12} className="inline-block mr-1" /> :
+                 event.status === 'disponivel' ? <Clock size={12} className="inline-block mr-1" /> :
+                 null
+
   return (
     <span className="text-xs leading-tight whitespace-nowrap">
+      {icone}
       {hora} {event.title}
     </span>
   )
