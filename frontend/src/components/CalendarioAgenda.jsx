@@ -83,29 +83,29 @@ function HeaderComEventos({ data, label, eventos }) {
             ? `${hora} ${ev.title}`
             : `${hora} Disponível`
 
-          const cor = ev.status === 'agendado'
-            ? 'bg-orange-100 text-orange-600 hover:bg-orange-200'
-            : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-
           const icone = ev.status === 'agendado'
-            ? <User size={12} />
-            : <Clock size={12} />
+            ? <User size={14} />
+            : <Clock size={14} />
+
+          const cor = ev.status === 'agendado'
+            ? 'text-orange-600'
+            : 'text-blue-600'
 
           return (
-            <span
-              key={ev.id}
-              title={tooltip}
-              className={`inline-flex items-center justify-center w-5 h-5 rounded-full ${cor} cursor-pointer transition`}
-            >
-              {icone}
-            </span>
+            <div key={ev.id} className="relative group cursor-pointer">
+              <span className={`inline-flex items-center justify-center ${cor}`}>
+                {icone}
+              </span>
+              <div className="absolute z-50 bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 transform scale-95 group-hover:scale-100 bg-white text-gray-700 text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
+                {tooltip}
+              </div>
+            </div>
           )
         })}
       </div>
     </div>
   )
 }
-
 
 function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
