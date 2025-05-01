@@ -46,13 +46,17 @@
 /* Ícones como bolinhas inline (sem barras visuais) */
 .rbc-month-view .rbc-event {
   display: inline-flex !important;
-  white-space: normal !important;
-  overflow: visible !important;
+  justify-content: center;
+  align-items: center;
+  width: 1rem;
+  height: 1rem;
+  margin: 1px !important;
   padding: 0 !important;
-  margin: 2px !important;
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
+  overflow: visible !important;
+  white-space: normal !important;
 }
 
 /* ===== Outros ajustes opcionais (comentados) ===== */
@@ -65,3 +69,11 @@
   border: none !important;
 }
 */
+/* Força layout flexível por célula de dia no modo mês */
+.rbc-month-row .rbc-row-segment {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+  gap: 4px;
+  padding: 2px;
+}
