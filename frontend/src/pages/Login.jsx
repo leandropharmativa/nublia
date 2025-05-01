@@ -81,7 +81,7 @@ export default function Login({ onLogin }) {
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
-        <div className="absolute top-24 left-10">
+        <div className="absolute top-36 left-10">
           <h1 className="text-5xl font-bold text-left leading-snug">
             Bem vindo(a)<br />à Nublia
           </h1>
@@ -95,9 +95,8 @@ export default function Login({ onLogin }) {
           <p className="text-sm text-gray-600">Novo no Nublia?</p>
           <button
             onClick={() => navigate('/register')}
-            className="relative overflow-hidden bg-[#E0F2FE] text-gray-800 text-sm px-4 py-1 rounded-full transition hover:bg-blue-200 focus:outline-none"
+            className="relative overflow-hidden bg-[#E0F2FE] text-gray-800 text-sm px-4 py-1 rounded-full hover:bg-blue-200 transition focus:outline-none"
           >
-            <span className="absolute inset-0 bg-white opacity-0 hover:opacity-10 transition duration-300 rounded-full"></span>
             Criar conta
           </button>
         </div>
@@ -147,10 +146,16 @@ export default function Login({ onLogin }) {
 
           <button
             type="submit"
-            className="bg-blue-600 text-white w-full py-2 rounded-lg hover:bg-blue-700 transition"
+            className="bg-[#E0F2FE] text-gray-800 w-full py-2 rounded-lg hover:bg-blue-200 transition flex items-center justify-center gap-2 font-medium"
             disabled={carregando}
           >
-            {carregando ? "Carregando..." : temSenha === false ? "Criar Senha" : "Entrar"}
+            {carregando && (
+              <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
+              </svg>
+            )}
+            {temSenha === false ? "Criar Senha" : "Entrar"}
           </button>
         </form>
       </div>
