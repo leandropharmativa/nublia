@@ -1,78 +1,60 @@
-// 📄 frontend/src/App.jsx
-
-import { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Admin from './pages/Admin'
+import FarmaciaDashboard from './pages/FarmaciaDashboard'
 import PrescritorDashboard from './pages/PrescritorDashboard'
-import FarmaciaDashboard from './pages/FarmaciaDashboard' // 🏥 Farmácia!
-import AgendaPrescritor from './pages/AgendaPrescritor'
+import PrivateRoute from './routes/PrivateRoute'
 
-function AppContent() {
-  const [user, setUser] = useState(null)
-  const location = useLocation()
-
-  // 🔵 Sempre que a página mudar, checar o localStorage
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user')
-    setUser(savedUser ? JSON.parse(savedUser) : null)
-  }, [location])
-
-  const handleLogin = (newUser) => {
-    setUser(newUser)
-  }
-
+// Página de acesso negado
+function AcessoNegado() {
   return (
-    <Routes>
-      {/* Rota de login */}
-      <Route
-        path="/"
-        element={!user ? (
-          <Login onLogin={handleLogin} />
-        ) : (
-          user.role === "admin" ? <Navigate to="/admin" replace /> :
-          user.role === "prescritor" ? <Navigate to="/prescritor" replace /> :
-          user.role === "farmacia" ? <Navigate to="/farmacia" replace /> :
-          <div className="flex items-center justify-center min-h-screen">Acesso não autorizado</div>
-        )}
-      />
+    <div className="flex items-center justify-center h-screen font-sans text-red-600">
+      <h1 className="text-2xl font-semibold">Acesso negado</h1>
+    </div>
+  )
+}
 
-      {/* Rota de registro */}
-      <Route path="/register" element={<Register />} />
-      
-      {/* Rota da agenda */}
-      <Route path="/agenda" element={<AgendaPrescritor />} />
-
-      {/* Painel Admin */}
-      <Route
-        path="/admin"
-        element={user?.role === "admin" ? <Admin /> : <Navigate to="/" replace />}
-      />
-
-      {/* Painel Prescritor */}
-      <Route
-        path="/prescritor"
-        element={user?.role === "prescritor" ? <PrescritorDashboard /> : <Navigate to="/" replace />}
-      />
-
-      {/* Painel Farmácia */}
-      <Route
-        path="/farmacia"
-        element={user?.role === "farmacia" ? <FarmaciaDashboard /> : <Navigate to="/" replace />}
-      />
-
-      {/* Qualquer rota inválida */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+// Página 404
+function NotFound() {
+  return (
+    <div className="flex items-center justify-center h-screen font-sans text-gray-600">
+      <h1 className="text-2xl font-semibold">Página não encontrada</h1>
+    </div>
   )
 }
 
 export default function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <Routes>
+      {/* Rotas públicas */}
+      <Route path="/" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Rotas protegidas */}
+      <Route path="/admin" element={
+        <PrivateRoute allowedRoles={['admin']}>
+          <Admin />
+        </PrivateRoute>
+      } />
+
+      <Route path="/farmacia" element={
+        <PrivateRoute allowedRoles={['farmacia']}>
+          <FarmaciaDashboard />
+        </PrivateRoute>
+      } />
+
+      <Route path="/prescritor" element={
+        <PrivateRoute allowedRoles={['prescritor']}>
+          <PrescritorDashboard />
+        </PrivateRoute>
+      } />
+
+      {/* Acesso negado */}
+      <Route path="/acesso-negado" element={<AcessoNegado />} />
+
+      {/* Fallback para páginas inexistentes */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   )
 }
