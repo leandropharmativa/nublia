@@ -18,6 +18,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
   const [modalVisualizar, setModalVisualizar] = useState(null)
   const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] = useState(false)
   const [mostrarTodos, setMostrarTodos] = useState(false)
+  const [salvoUltimaVersao, setSalvoUltimaVersao] = useState(true)
 
   const abas = ['paciente', 'anamnese', 'antropometria', 'dieta', 'receita']
 
@@ -43,12 +44,12 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
 
   const handleChange = (e) => {
     setFormulario({ ...formulario, [abaAtiva]: e.target.value })
+    setSalvoUltimaVersao(false)
   }
 
   const handleSalvar = async () => {
     try {
       const user = JSON.parse(localStorage.getItem('user'))
-
       const dadosAtendimento = {
         paciente_id: paciente.id,
         prescritor_id: user?.id,
@@ -65,6 +66,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
       }
 
+      setSalvoUltimaVersao(true)
       toastSucesso('Atendimento salvo com sucesso!')
       if (onAtendimentoSalvo) onAtendimentoSalvo()
     } catch (error) {
@@ -82,7 +84,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
   const houveAlteracao = Object.values(formulario).some(valor => valor.trim() !== '')
 
   const handleDescartar = () => {
-    if (houveAlteracao && !atendimentoId) {
+    if (!salvoUltimaVersao && houveAlteracao) {
       setMostrarConfirmacaoSaida(true)
     } else {
       onFinalizar()
@@ -166,38 +168,38 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
               <div><strong>Observações:</strong> {paciente.observacoes || 'Nenhuma observação registrada.'}</div>
             </div>
 
-{atendimentosAnteriores.length > 0 && (
-  <div className="mt-6">
-    <h3 className="text-sm font-semibold text-nublia-accent mb-2 flex items-center gap-2">
-      <List size={16} /> Atendimentos anteriores
-    </h3>
-    <ul className="text-sm text-gray-700 divide-y divide-gray-200">
-      {(mostrarTodos ? atendimentosAnteriores : atendimentosAnteriores.slice(0, 5)).map((a) => (
-        <li key={a.id} className="flex items-center justify-between py-1">
-          <button
-            className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1 text-sm"
-            onClick={() => setModalVisualizar(a)}
-          >
-            <Eye size={16} />
-            <span className="text-xs text-gray-600">
-              {new Date(a.criado_em).toLocaleDateString('pt-BR')} • {new Date(a.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
-            </span>
-          </button>
-        </li>
-      ))}
-    </ul>
+            {atendimentosAnteriores.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-sm font-semibold text-nublia-accent mb-2 flex items-center gap-2">
+                  <List size={16} /> Atendimentos anteriores
+                </h3>
+                <ul className="text-sm text-gray-700 divide-y divide-gray-200">
+                  {(mostrarTodos ? atendimentosAnteriores : atendimentosAnteriores.slice(0, 5)).map((a) => (
+                    <li key={a.id} className="flex items-center justify-between py-1">
+                      <button
+                        className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1 text-sm"
+                        onClick={() => setModalVisualizar(a)}
+                      >
+                        <Eye size={16} />
+                        <span className="text-xs text-gray-600">
+                          {new Date(a.criado_em).toLocaleDateString('pt-BR')} • {new Date(a.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
 
-{atendimentosAnteriores.length > 5 && (
-  <button
-    onClick={() => setMostrarTodos(!mostrarTodos)}
-    className="mt-3 px-4 py-1 text-xs font-semibold rounded-full border border-nublia-accent text-nublia-accent hover:bg-nublia-accent hover:text-white transform hover:scale-[1.03] transition flex items-center gap-2"
-  >
-    {mostrarTodos ? <ListMinus size={14} /> : <ListPlus size={14} />}
-    {mostrarTodos ? 'Mostrar menos' : 'Ver todos'}
-  </button>
-)}
-  </div>
-)}
+                {atendimentosAnteriores.length > 5 && (
+                  <button
+                    onClick={() => setMostrarTodos(!mostrarTodos)}
+                    className="mt-3 px-4 py-1 text-xs font-semibold rounded-full border border-nublia-accent text-nublia-accent hover:bg-nublia-accent hover:text-white transform hover:scale-[1.03] transition flex items-center gap-2"
+                  >
+                    {mostrarTodos ? <ListMinus size={14} /> : <ListPlus size={14} />}
+                    {mostrarTodos ? 'Mostrar menos' : 'Ver todos'}
+                  </button>
+                )}
+              </div>
+            )}
           </>
         ) : (
           <textarea
