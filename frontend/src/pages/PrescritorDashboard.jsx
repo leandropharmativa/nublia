@@ -145,24 +145,31 @@ export default function PrescritorDashboard() {
               <div className='absolute bottom-0 right-0 h-[6px] bg-nublia-accent rounded-l-full w-[calc(100%+80px)]'></div>
             </Tab.List>
 
-            <Tab.Panels className="w-full">
-              <Tab.Panel>
-                <div>
-                  <h2 className="text-xl font-bold mb-2">Pacientes marcados para hoje</h2>
-                  <ul className="space-y-2 text-sm text-gray-800">
-                    {atendimentos
-                      .filter((a) => a.data?.startsWith(new Date().toISOString().split('T')[0]))
-                      .map((a) => (
-                        <li key={a.id} className="bg-white border rounded px-4 py-2">
-                          {a.nomePaciente} – {a.data?.slice(11, 16) || 'horário não definido'}
-                        </li>
-                      ))}
-                    {atendimentos.filter(a => a.data?.startsWith(new Date().toISOString().split('T')[0])).length === 0 && (
-                      <li className="italic text-gray-500">Nenhum paciente agendado para hoje.</li>
-                    )}
-                  </ul>
-                </div>
-              </Tab.Panel>
+<Tab.Panel>
+  <div className="space-y-4">
+    <Botao
+      texto="Iniciar Atendimento"
+      iconeInicio={<PlusCircle size={18} />}
+      onClick={() => setMostrarBuscarPacienteModal(true)}
+      className="px-6 py-3 rounded-full"
+    />
+
+    <h2 className="text-xl font-bold">Pacientes marcados para hoje</h2>
+    <ul className="space-y-2 text-sm text-gray-800">
+      {atendimentos
+        .filter((a) => a.data?.startsWith(new Date().toISOString().split('T')[0]))
+        .map((a) => (
+          <li key={a.id} className="bg-white border rounded px-4 py-2">
+            {a.nomePaciente} – {a.data?.slice(11, 16) || 'horário não definido'}
+          </li>
+        ))}
+      {atendimentos.filter(a => a.data?.startsWith(new Date().toISOString().split('T')[0])).length === 0 && (
+        <li className="italic text-gray-500">Nenhum paciente agendado para hoje.</li>
+      )}
+    </ul>
+  </div>
+</Tab.Panel>
+
 
               <Tab.Panel>
                 <AgendaPrescritor mostrarAgenda={true} />
