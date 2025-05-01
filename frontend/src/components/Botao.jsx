@@ -1,5 +1,7 @@
 // src/components/Botao.jsx
 export default function Botao({
+  texto,
+  iconeInicio,
   children,
   type = "button",
   onClick,
@@ -16,7 +18,8 @@ export default function Botao({
       className={`btn-primary flex items-center justify-center gap-2 ${full ? "w-full" : ""} ${className}`}
       {...props}
     >
-      {children}
+      {iconeInicio}
+      {texto || children}
     </button>
   )
 }
