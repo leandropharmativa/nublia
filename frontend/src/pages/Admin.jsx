@@ -1,76 +1,125 @@
 import Layout from '../components/Layout'
+import { useState } from 'react'
+import CampoTexto from '../components/CampoTexto'
+import Botao from '../components/Botao'
+import { LogOut, Feather } from 'lucide-react'
 
 export default function AdminDashboard() {
+  const [tipoUsuario, setTipoUsuario] = useState('prescritor')
+  const [emailUsuario, setEmailUsuario] = useState('')
+  const [codigo, setCodigo] = useState('')
+  const [erro, setErro] = useState('')
+  const [sucesso, setSucesso] = useState('')
+  const [carregando, setCarregando] = useState(false)
+
+  const gerarCodigo = async () => {
+    setErro('')
+    setSucesso('')
+    setCarregando(true)
+
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) throw new Error("Token não encontrado.")
+
+      const payload = {
+        tipo_usuario: tipoUsuario,
+        email_usuario: emailUsuario
+      }
+
+      const response = await fetch('https://nublia-backend.onrender.com/generate_code', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+
+      const data = await response.json()
+      if (response.ok) {
+        setCodigo(data.codigo)
+        setSucesso("Código gerado com sucesso!")
+      } else {
+        throw new Error(data.detail || "Erro ao gerar código")
+      }
+    } catch (err) {
+      setErro("Erro ao gerar código. Verifique os dados.")
+      setCodigo('')
+    } finally {
+      setCarregando(false)
+    }
+  }
+
   return (
     <Layout>
-      <h2 className="text-title mb-6">Painel Administrativo</h2>
-
-      {/* Cards resumo */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded shadow-sm">
-          <p className="text-sm text-gray-500">Prescritores</p>
-          <p className="text-2xl font-bold">38</p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center text-nublia-orange text-2xl font-bold">
+          <Feather className="w-7 h-7 mr-2" />
+          Nublia
         </div>
-        <div className="bg-white p-4 rounded shadow-sm">
-          <p className="text-sm text-gray-500">Pacientes</p>
-          <p className="text-2xl font-bold">812</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow-sm">
-          <p className="text-sm text-gray-500">Farmácias</p>
-          <p className="text-2xl font-bold">12</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow-sm">
-          <p className="text-sm text-gray-500">Códigos gerados</p>
-          <p className="text-2xl font-bold">57</p>
-        </div>
+        <button
+          onClick={() => {
+            localStorage.clear()
+            window.location.href = '/'
+          }}
+          className="btn-primary rounded-full flex items-center gap-2 px-4 py-1 text-sm"
+        >
+          <LogOut className="w-4 h-4" />
+          Sair
+        </button>
       </div>
 
-      {/* Área futura: Filtros e Tabela de Usuários */}
-      <div className="bg-white p-6 rounded shadow-sm">
-        <h3 className="text-lg font-semibold mb-4">Usuários cadastrados</h3>
+      <div className="max-w-md mx-auto bg-white rounded shadow-md p-6 mb-8">
+        <h2 className="text-title mb-4">Gerar Código de Acesso</h2>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-4">
-          <select className="input-base">
-            <option>Todos os tipos</option>
-            <option>Prescritores</option>
-            <option>Pacientes</option>
-            <option>Farmácias</option>
-            <option>Clínicas</option>
-            <option>Academias</option>
-          </select>
+        {erro && <div className="alert-warning">{erro}</div>}
+        {sucesso && <div className="alert-success">{sucesso}</div>}
 
-          <input
-            type="text"
-            placeholder="Buscar por nome ou email"
+        <div className="mb-3">
+          <label className="text-sm block mb-1">Tipo de usuário</label>
+          <select
+            value={tipoUsuario}
+            onChange={(e) => setTipoUsuario(e.target.value)}
             className="input-base"
-          />
+          >
+            <option value="prescritor">Prescritor</option>
+            <option value="clinica">Clínica</option>
+            <option value="farmacia">Farmácia</option>
+            <option value="academia">Academia</option>
+          </select>
         </div>
 
-        {/* Mock tabela */}
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b text-left">
-              <th className="py-2">Nome</th>
-              <th className="py-2">Email</th>
-              <th className="py-2">Tipo</th>
-              <th className="py-2">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b hover:bg-gray-50">
-              <td className="py-2">Dra. Marina Lopes</td>
-              <td className="py-2">marina@nutri.com</td>
-              <td className="py-2">Prescritor</td>
-              <td className="py-2 text-green-600">Ativo</td>
-            </tr>
-            <tr className="border-b hover:bg-gray-50">
-              <td className="py-2">Clínica Equilíbrio</td>
-              <td className="py-2">contato@equilibrio.com</td>
-              <td className="py-2">Clínica</td>
-              <td className="py-2 text-yellow-600">Pendente</td>
-            </tr>
-          </tbody>
-        </table>
+        <CampoTexto
+          type="email"
+          name="emailUsuario"
+          placeholder="Email do usuário"
+          value={emailUsuario}
+          onChange={(e) => setEmailUsuario(e.target.value)}
+          required
+          className="mb-3"
+        />
+
+        <Botao onClick={gerarCodigo} disabled={carregando} className="mb-3">
+          {carregando && (
+            <svg
+              className="animate-spin h-5 w-5 text-blue-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
+            </svg>
+          )}
+          <span>Gerar Código</span>
+        </Botao>
+
+        {codigo && (
+          <div className="mt-4 p-4 border border-dashed rounded bg-gray-50 text-center">
+            <p className="text-sm text-gray-600">Código gerado:</p>
+            <p className="font-mono font-bold text-lg">{codigo}</p>
+          </div>
+        )}
       </div>
     </Layout>
   )
