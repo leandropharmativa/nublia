@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Save, ArrowLeft, Eye } from 'lucide-react'
+import { Save, CheckCircle, Eye } from 'lucide-react'
 import axios from 'axios'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
@@ -104,16 +104,16 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
             <button
               onClick={handleSalvar}
               className="text-nublia-accent hover:text-nublia-orange transition"
-              title="Salvar"
+              title="Salvar atendimento"
             >
               <Save size={24} />
             </button>
             <button
               onClick={tentarSair}
-              className="text-gray-600 hover:text-gray-800 transition"
-              title="Voltar"
+              className="text-green-600 hover:text-green-700 font-semibold text-sm border border-green-600 px-4 py-2 rounded-full transition"
+              title="Finalizar atendimento"
             >
-              <ArrowLeft size={24} />
+              <CheckCircle size={18} className="inline mr-1 -mt-0.5" /> Finalizar
             </button>
           </div>
           <p className="text-sm text-gray-700 font-semibold mt-1">
@@ -204,11 +204,11 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
 
       <ModalConfirmacao
         aberto={mostrarConfirmacaoSaida}
-        titulo="Deseja salvar o atendimento?"
-        mensagem="Se você sair agora, o atendimento não poderá mais ser editado. Deseja salvar antes de sair?"
-        textoBotaoConfirmar="Salvar e sair"
+        titulo="Deseja finalizar o atendimento?"
+        mensagem="Se você sair agora, o atendimento não poderá mais ser editado. Deseja salvar antes de finalizar?"
+        textoBotaoConfirmar="Salvar e finalizar"
         textoBotaoCancelar="Cancelar"
-        textoBotaoExtra="Sair sem salvar"
+        textoBotaoExtra="Finalizar sem salvar"
         onConfirmar={async () => {
           await handleSalvar()
           setMostrarConfirmacaoSaida(false)
