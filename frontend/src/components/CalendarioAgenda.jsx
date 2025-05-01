@@ -19,8 +19,7 @@ import {
   ChevronRight,
   UserRoundCheck,
   Calendar as CalendarIcon,
-  Clock,
-  CalendarDays
+  Clock
 } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
@@ -95,31 +94,21 @@ function HeaderComEventos({ data, label, eventos }) {
   }
 
   return (
-    <div className="flex flex-col items-start px-1 overflow-visible relative h-full">
-      <div className="w-full flex justify-between items-center text-[10px] text-gray-500">
-        <div className="flex gap-2">
-          {agendados > 0 && (
-            <span className="flex items-center gap-1 text-orange-500">
-              <UserRoundCheck size={10} /> {agendados}
-            </span>
-          )}
-          {disponiveis > 0 && (
-            <span className="flex items-center gap-1 text-blue-500">
-              <Clock size={10} /> {disponiveis}
-            </span>
-          )}
-        </div>
-        <span
-          onClick={() =>
-            document.querySelector('[role="toolbar"] button:nth-child(2)')?.click() || null
-          }
-            onDoubleClick={(e) => e.stopPropagation()}
-            className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
-        >
-          {label}
-        </span>
-
+    <div className="flex flex-col items-start px-1 overflow-visible relative">
+      <div className="flex items-center gap-2 text-[10px] text-gray-500">
+        {agendados > 0 && (
+          <span className="flex items-center gap-1 text-orange-500">
+            <UserRoundCheck size={10} /> {agendados}
+          </span>
+        )}
+        {disponiveis > 0 && (
+          <span className="flex items-center gap-1 text-blue-500">
+            <Clock size={10} /> {disponiveis}
+          </span>
+        )}
       </div>
+
+      <span className="text-xs font-medium">{label}</span>
 
       <div className="flex flex-wrap gap-[4px] mt-1 overflow-visible">
         {doDia.map(ev => {
@@ -215,11 +204,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
           <ChevronRight size={20} />
         </button>
-        <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
-          <CalendarDays size={16} className="text-nublia-accent" />
-          {renderLabel()}
-        </span>
-
+        <span className="text-sm font-medium text-gray-700">{renderLabel()}</span>
       </div>
 
       <div className="flex items-center gap-3">
