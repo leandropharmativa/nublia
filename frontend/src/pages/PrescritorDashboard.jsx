@@ -41,7 +41,20 @@ export default function PrescritorDashboard() {
       const res = await fetch('https://nublia-backend.onrender.com/atendimentos/')
       const data = await res.json()
       const atendimentosFiltrados = data.filter(a => a.prescritor_id === id)
-      setAtendimentos(atendimentosFiltrados.reverse())
+
+      const atendimentosComNomes = await Promise.all(
+        atendimentosFiltrados.map(async (a) => {
+          try {
+            const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${a.paciente_id}`)
+            const paciente = await resPaciente.json()
+            return { ...a, nomePaciente: paciente.name }
+          } catch {
+            return { ...a, nomePaciente: 'Paciente não encontrado' }
+          }
+        })
+      )
+
+      setAtendimentos(atendimentosComNomes.reverse())
     } catch (err) {
       console.error('Erro ao carregar atendimentos:', err)
     }
