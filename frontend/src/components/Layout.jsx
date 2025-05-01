@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Feather, LogOut } from 'lucide-react'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function Layout({ children }) {
   const navigate = useNavigate()
@@ -34,6 +36,9 @@ export default function Layout({ children }) {
               Sair
             </button>
           </div>
+
+        {/* Toasts */}
+        <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar />
 
           {/* Linha vertical azul escuro */}
           <div className="h-10 border-l-2 border-blue-700" />
