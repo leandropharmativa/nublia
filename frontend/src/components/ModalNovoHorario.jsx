@@ -2,11 +2,11 @@ import { format, isSameDay } from 'date-fns'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { Trash } from 'lucide-react'
 
 export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
   const [horaDigitada, setHoraDigitada] = useState('00:00')
   const [horariosExistentes, setHorariosExistentes] = useState([])
-
   const user = JSON.parse(localStorage.getItem('user'))
 
   const carregarHorariosDoDia = async () => {
@@ -16,8 +16,11 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
         .filter((item) =>
           isSameDay(new Date(`${item.data}T${item.hora}`), horario)
         )
-        .map((item) => item.hora.slice(0, 5))
-        .sort()
+        .map((item) => ({
+          id: item.id,
+          hora: item.hora.slice(0, 5)
+        }))
+        .sort((a, b) => a.hora.localeCompare(b.hora))
 
       setHorariosExistentes(lista)
     } catch (error) {
@@ -30,7 +33,7 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
   }, [horario])
 
   const handleConfirmar = async () => {
-    if (horariosExistentes.includes(horaDigitada)) {
+    if (horariosExistentes.some((h) => h.hora === horaDigitada)) {
       toast.error(`Horário ${horaDigitada} já está cadastrado.`)
       return
     }
@@ -44,10 +47,20 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
     }
   }
 
+  const removerHorario = async (id) => {
+    try {
+      await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
+      toast.success('Horário removido com sucesso!')
+      carregarHorariosDoDia()
+    } catch (error) {
+      toast.error('Erro ao remover horário.')
+    }
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Cadastrar horário disponível</h2>
+        <h2 className="text-xl font-semibold text-nublia-accent mb-4">Cadastrar horário disponível</h2>
 
         <p className="mb-4 text-sm text-gray-600">
           Data selecionada: <strong>{format(horario, 'dd/MM/yyyy')}</strong>
@@ -66,13 +79,20 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
             <p className="text-sm text-gray-700 font-semibold mb-1">
               Horários já cadastrados:
             </p>
-            <ul className="flex flex-wrap gap-2 text-sm text-gray-600">
-              {horariosExistentes.map((hora, idx) => (
+            <ul className="flex flex-col gap-2 text-sm text-gray-600">
+              {horariosExistentes.map((item) => (
                 <li
-                  key={idx}
-                  className="bg-gray-100 px-3 py-1 rounded-full border border-gray-300"
+                  key={item.id}
+                  className="bg-gray-100 px-3 py-2 rounded-xl border border-gray-300 flex justify-between items-center"
                 >
-                  {hora}
+                  <span>{item.hora}</span>
+                  <button
+                    onClick={() => removerHorario(item.id)}
+                    title="Remover horário"
+                    className="text-gray-400 hover:text-red-500"
+                  >
+                    <Trash size={16} />
+                  </button>
                 </li>
               ))}
             </ul>
