@@ -19,8 +19,8 @@ export default function PerfilPacienteModal({ paciente, pacienteId, onClose }) {
   if (!dados) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md">
-          <p className="text-gray-700 text-center">Carregando perfil do paciente...</p>
+        <div className="bg-white p-6 rounded-2xl w-full max-w-md mx-4">
+          <p className="text-gray-600 text-center">Carregando perfil do paciente...</p>
         </div>
       </div>
     )
@@ -28,8 +28,8 @@ export default function PerfilPacienteModal({ paciente, pacienteId, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl mx-4">
-        <h2 className="text-2xl font-bold text-blue-600 mb-4">Perfil do Paciente</h2>
+      <div className="bg-white p-6 rounded-2xl w-full max-w-xl mx-4">
+        <h2 className="text-xl font-bold text-nublia-accent mb-4">Perfil do Paciente</h2>
 
         <div className="space-y-4 text-sm text-gray-700">
           <div>
@@ -60,10 +60,10 @@ export default function PerfilPacienteModal({ paciente, pacienteId, onClose }) {
           </div>
         </div>
 
-        <div className="text-right mt-8">
+        <div className="text-right mt-6">
           <button
             onClick={onClose}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded"
+            className="bg-nublia-accent hover:brightness-110 text-white text-sm px-6 py-2 rounded-full"
           >
             Fechar
           </button>
