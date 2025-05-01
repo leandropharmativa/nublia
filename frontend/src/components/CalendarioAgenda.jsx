@@ -54,7 +54,6 @@ export default function CalendarioAgenda({
         onNavigate={setDataAtual}
         defaultView="month"
         views={['month', 'week', 'day', 'agenda']}
-        // 🔒 Bloqueia abertura de modal no modo mês
         selectable={view !== 'month'}
         step={15}
         timeslots={1}
@@ -130,32 +129,32 @@ function HeaderComEventos({
 
   return (
     <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-1">
-          <span
-            onClick={(e) => {
-              e.stopPropagation()
-              onView('day')
-              onNavigate(data)
-            }}
-            className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
-          >
-            {label}
-          </span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              aoAdicionarHorario({ start: data })
-            }}
-            className="text-gray-400 hover:text-nublia-accent"
-            title="Adicionar horário"
-          >
-            <CalendarClock size={14} />
-          </button>
-        </div>
+      {/* TOPO DIREITA: Dia + ícone */}
+      <div className="absolute top-1 right-1 flex items-center gap-1">
+        <span
+          onClick={(e) => {
+            e.stopPropagation()
+            onView('day')
+            onNavigate(data)
+          }}
+          className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
+        >
+          {label}
+        </span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            aoAdicionarHorario({ start: data })
+          }}
+          className="text-gray-400 hover:text-nublia-accent"
+          title="Adicionar horário"
+        >
+          <CalendarClock size={14} />
+        </button>
       </div>
 
-      <div className="flex flex-wrap gap-[4px] mt-1 overflow-visible">
+      {/* Ícones dos eventos */}
+      <div className="flex flex-wrap gap-[4px] mt-6 overflow-visible">
         {doDia.map(ev => {
           const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
           const text = ev.status === 'agendado'
@@ -187,7 +186,7 @@ function HeaderComEventos({
         })}
       </div>
 
-      {/* Contagem de horários no rodapé inferior esquerdo */}
+      {/* BASE ESQUERDA: Contagem de horários */}
       <div className="absolute bottom-1 left-1 text-[10px] text-gray-500 flex gap-2">
         {agendados > 0 && (
           <span className="flex items-center gap-1 text-orange-500">
