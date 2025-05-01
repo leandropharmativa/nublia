@@ -139,7 +139,7 @@ export default function PrescritorDashboard() {
 
             <Tab.Panels className="w-full">
               <Tab.Panel>
-                 <div className="min-h-[calc(100vh-250px)] flex justify-center items-center">
+                <div className="flex flex-col justify-center items-center py-16">
                   <Botao
                     texto="Iniciar atendimento"
                     iconeInicio={<PlusCircle size={18} />}
@@ -164,11 +164,15 @@ export default function PrescritorDashboard() {
               </Tab.Panel>
 
               <Tab.Panel>
-                <div className="text-gray-500 italic">Área de dietas (em breve)</div>
+                <div className="flex flex-col justify-center items-center py-16 text-gray-500 italic">
+                  Área de dietas (em breve)
+                </div>
               </Tab.Panel>
 
               <Tab.Panel>
-                <div className="text-gray-500 italic">Configurações da conta (em breve)</div>
+                <div className="flex flex-col justify-center items-center py-16 text-gray-500 italic">
+                  Configurações da conta (em breve)
+                </div>
               </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
