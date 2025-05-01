@@ -1,5 +1,3 @@
-// 📄 CalendarioAgenda.jsx
-
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
@@ -25,7 +23,7 @@ const localizer = dateFnsLocalizer({
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   return (
-    <div className="h-full p-6 bg-white rounded shadow overflow-hidden">
+    <div className="h-full p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
         events={eventos}
@@ -110,17 +108,14 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
 
   const contar = () => {
     let eventosFiltrados = eventos
-
     if (view === 'week') {
       eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
     } else if (view === 'day') {
       eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
     }
-
     const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
     const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
-
-    return `${agendados} agendamentos · ${disponiveis} horários disponíveis`
+    return `${agendados} agendamentos · ${disponiveis} disponíveis`
   }
 
   return (
@@ -142,8 +137,10 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
             <button
               key={v}
               onClick={() => onView(v)}
-              className={`text-sm px-2 py-1 rounded ${
-                view === v ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+              className={`text-sm px-2 py-1 rounded-full transition ${
+                view === v
+                  ? 'bg-nublia-accent text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               {v.charAt(0).toUpperCase() + v.slice(1)}
@@ -160,7 +157,6 @@ function EventCompacto({ event }) {
     hour: '2-digit',
     minute: '2-digit'
   })
-
   return (
     <span className="text-xs leading-tight whitespace-nowrap">
       {hora} {event.title}
@@ -178,12 +174,12 @@ function ContagemPorDia({ data, eventos }) {
   return (
     <span className="text-[10px] text-gray-400 ml-1 flex items-center gap-1">
       {agendados > 0 && (
-        <span className="flex items-center gap-1">
+        <span className="flex items-center gap-1 text-red-500">
           <User size={10} />{agendados}
         </span>
       )}
       {disponiveis > 0 && (
-        <span className="flex items-center gap-1">
+        <span className="flex items-center gap-1 text-blue-500">
           <CalendarIcon size={10} />{disponiveis}
         </span>
       )}
