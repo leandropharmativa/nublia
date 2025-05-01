@@ -65,7 +65,7 @@ export default function Register() {
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
-        <div className="absolute top-36 left-10">
+        <div className="absolute top-56 left-20">
           <h1 className="text-5xl font-bold text-left leading-snug mb-4">
             Bem vindo(a)<br />à Nublia
           </h1>
@@ -131,27 +131,17 @@ export default function Register() {
             <option value="clinica">Clínica</option>
           </select>
 
-          <AnimatePresence>
-            {precisaDeCodigo && (
-              <motion.div
-                key="codigoAtivacao"
-                layout
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden mb-3"
-              >
-                <input
-                  type="text"
-                  name="codigoAtivacao"
-                  placeholder="Código de ativação"
-                  className="input-base"
-                  required
-                  onChange={handleChange}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className={`transition-all duration-300 ${precisaDeCodigo ? 'opacity-100 max-h-40 mb-3' : 'opacity-0 max-h-0 overflow-hidden'}`}>
+          <input
+          type="text"
+          name="codigoAtivacao"
+          placeholder="Código de ativação"
+          className="input-base"
+          required={precisaDeCodigo}
+          onChange={handleChange}
+          />
+          </div>
+
 
           <button type="submit" className="btn-primary w-full flex justify-center">
             Registrar
