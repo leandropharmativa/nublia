@@ -20,6 +20,7 @@ import {
   UserRoundCheck,
   Calendar as CalendarIcon,
   CalendarDays,
+  CalendarClock,
   Clock
 } from 'lucide-react'
 
@@ -36,7 +37,8 @@ const localizer = dateFnsLocalizer({
 export default function CalendarioAgenda({
   eventos = [],
   aoSelecionarSlot,
-  aoSelecionarEvento
+  aoSelecionarEvento,
+  aoAdicionarHorario
 }) {
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
@@ -60,7 +62,7 @@ export default function CalendarioAgenda({
         culture="pt-BR"
         onSelectSlot={({ start }) => {
           if (view !== 'month') {
-            aoSelecionarSlot({ start }) // fora do mês, pode abrir o modal
+            aoSelecionarSlot({ start })
           }
         }}
         onSelectEvent={aoSelecionarEvento}
@@ -88,6 +90,7 @@ export default function CalendarioAgenda({
                 onView={setView}
                 onNavigate={setDataAtual}
                 aoSelecionarEvento={aoSelecionarEvento}
+                aoAdicionarHorario={aoAdicionarHorario}
               />
             )
           }
@@ -103,7 +106,8 @@ function HeaderComEventos({
   eventos,
   onView,
   onNavigate,
-  aoSelecionarEvento
+  aoSelecionarEvento,
+  aoAdicionarHorario
 }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
 
@@ -140,16 +144,28 @@ function HeaderComEventos({
             </span>
           )}
         </div>
-        <span
-          onClick={(e) => {
-            e.stopPropagation()
-            onView('day')
-            onNavigate(data)
-          }}
-          className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
-        >
-          {label}
-        </span>
+        <div className="flex items-center gap-1">
+          <span
+            onClick={(e) => {
+              e.stopPropagation()
+              onView('day')
+              onNavigate(data)
+            }}
+            className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
+          >
+            {label}
+          </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              aoAdicionarHorario(data)
+            }}
+            className="text-gray-400 hover:text-nublia-accent"
+            title="Adicionar horário"
+          >
+            <CalendarClock size={14} />
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-[4px] mt-1 overflow-visible">
