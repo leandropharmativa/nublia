@@ -171,20 +171,29 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
       <List size={16} /> Atendimentos anteriores
     </h3>
     <ul className="text-sm text-gray-700 divide-y divide-gray-200">
-      {atendimentosAnteriores.map((a) => (
+      {atendimentosAnteriores.slice(0, 5).map((a) => (
         <li key={a.id} className="flex items-center justify-between py-1">
           <button
             className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1 text-sm"
             onClick={() => setModalVisualizar(a)}
           >
-            <Eye size={14} /> Ver
+            <Eye size={16} />
+            <span className="text-xs text-gray-600">
+              {new Date(a.criado_em).toLocaleDateString('pt-BR')} • {new Date(a.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+            </span>
           </button>
-          <span className="text-xs text-gray-500">
-            {new Date(a.criado_em).toLocaleDateString('pt-BR')} • {new Date(a.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
-          </span>
         </li>
       ))}
     </ul>
+
+    {atendimentosAnteriores.length > 5 && (
+      <button
+        className="mt-2 text-xs text-blue-600 hover:underline"
+        onClick={() => setModalVisualizar('todos')}
+      >
+        Ver todos
+      </button>
+    )}
   </div>
 )}
           </>
