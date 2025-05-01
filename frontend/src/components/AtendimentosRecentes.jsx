@@ -1,4 +1,4 @@
-import { User, FileText, Search } from 'lucide-react'
+import { User, FileText, Search, CalendarCheck2 } from 'lucide-react'
 
 export default function AtendimentosRecentes({
   atendimentos,
@@ -15,16 +15,16 @@ export default function AtendimentosRecentes({
 
   return (
     <aside className="h-full w-full bg-white flex flex-col">
-      <div className="px-4 pt-4 pb-2">
-        <h2 className="text-nublia-accent text-lg font-semibold">Atendimentos Recentes</h2>
+      <div className="px-4 pt-4 pb-2 flex items-center gap-2 text-nublia-accent text-base font-semibold">
+        <CalendarCheck2 size={18} />
+        Atendimentos recentes
       </div>
 
-      {/* Lista de atendimentos com linha à direita */}
       <ul className="flex-1 overflow-auto divide-y divide-gray-200 px-4 pb-2 border-r border-gray-200">
         {atendimentos.map((a) => {
           const nome = getNomePaciente(a.paciente_id)
           return (
-            <li key={a.id} className="flex items-center gap-2 py-2 text-sm text-gray-800">
+            <li key={a.id} className="flex items-center gap-2 py-2 text-sm text-gray-600">
               <span className="truncate flex items-center gap-1">
                 {nome}
                 <button
@@ -50,7 +50,6 @@ export default function AtendimentosRecentes({
         )}
       </ul>
 
-      {/* Campo de busca no rodapé */}
       <div className="p-4 bg-white">
         <div className="relative">
           <input
