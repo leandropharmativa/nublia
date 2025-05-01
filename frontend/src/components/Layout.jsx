@@ -36,11 +36,6 @@ export default function Layout({ children }) {
               Sair
             </button>
           </div>
-
-        {/* Toasts */}
-        <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar />
-
-          {/* Linha vertical azul escuro */}
           <div className="h-10 border-l-2 border-blue-700" />
         </div>
       </header>
@@ -48,6 +43,17 @@ export default function Layout({ children }) {
       <main className="flex-1 p-6">
         {children}
       </main>
+
+      {/* Toasts globais */}
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
     </div>
   )
 }
