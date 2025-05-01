@@ -37,7 +37,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
     <div className="h-full p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={[]} // eventos vazios para controle manual via dateHeader
+        events={[]} // eventos controlados manualmente no modo mês
         startAccessor="start"
         endAccessor="end"
         defaultView="month"
@@ -156,7 +156,6 @@ function HeaderComEventos({ data, label, eventos }) {
   )
 }
 
-
 function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
   const colorClass = isSunday ? 'text-red-600' : 'text-blue-600'
@@ -217,52 +216,6 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
             <Clock size={12} className="text-blue-500" /> {disponiveis} horários disponíveis
           </span>
         </div>
-        <div className="flex gap-1">
-          {views.map((v) => (
-            <button
-              key={v}
-              onClick={() => onView(v)}
-              className={`text-sm px-2 py-1 rounded-full transition ${
-                view === v
-                  ? 'bg-nublia-accent text-white'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              {v.charAt(0).toUpperCase() + v.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-  const contar = () => {
-    let eventosFiltrados = eventos
-    if (view === 'week') {
-      eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
-    } else if (view === 'day') {
-      eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
-    }
-    const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
-    const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
-    return `${agendados} agendamentos · ${disponiveis} disponíveis`
-  }
-
-  return (
-    <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
-      <div className="flex items-center gap-2">
-        <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
-          <ChevronLeft size={20} />
-        </button>
-        <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
-          <ChevronRight size={20} />
-        </button>
-        <span className="text-sm font-medium text-gray-700">{renderLabel()}</span>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-500 italic">{contar()}</span>
         <div className="flex gap-1">
           {views.map((v) => (
             <button
