@@ -264,7 +264,10 @@ export default function PrescritorDashboard() {
       {mostrarBuscarPacienteModal && (
         <BuscarPacienteModal
           onClose={() => setMostrarBuscarPacienteModal(false)}
-          onSelecionarPaciente={() => setMostrarBuscarPacienteModal(false)}
+          onSelecionarPaciente={(paciente) => {
+          setPacienteSelecionado(paciente)
+          setMostrarBuscarPacienteModal(false)
+        }}
         />
       )}
 
