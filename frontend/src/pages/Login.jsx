@@ -1,4 +1,3 @@
-// frontend/src/pages/Login.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -75,10 +74,10 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className="flex h-screen">
-      {/* Esquerda com degradê e logo */}
-      <div className="w-1/2 bg-gradient-to-br from-purple-400 to-indigo-600 text-white flex flex-col justify-between p-10">
-        <div className="flex items-center text-orange-400 text-3xl font-bold">
+    <div className="flex h-screen font-sans">
+      {/* Esquerda com azul claro e logo */}
+      <div className="w-1/2 bg-[#E0F2FE] text-gray-800 flex flex-col justify-between p-10">
+        <div className="flex items-center text-orange-500 text-3xl font-bold">
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
@@ -86,12 +85,12 @@ export default function Login({ onLogin }) {
           <h1 className="text-5xl font-bold leading-tight text-left mb-4">
             Bem vindo(a)<br />à Nublia
           </h1>
-          <p className="text-sm text-left">se conecte com quem se cuida.</p>
+          <p className="text-sm text-left text-gray-600">se conecte com quem se cuida.</p>
         </div>
       </div>
 
-      {/* Direita com fundo turquesa e login centralizado */}
-      <div className="w-1/2 bg-[#CFFAFE] relative flex flex-col justify-center items-center px-10">
+      {/* Direita com fundo branco e login centralizado */}
+      <div className="w-1/2 bg-white relative flex flex-col justify-center items-center px-10">
         <div className="absolute top-10 right-10 flex items-center gap-2">
           <p className="text-sm text-gray-700">Novo no Nublia?</p>
           <button
@@ -106,7 +105,7 @@ export default function Login({ onLogin }) {
           onSubmit={temSenha === false ? handleCriarSenha : handleLogin}
           className="w-full max-w-md"
         >
-          <h2 className="text-3xl font-bold text-blue-800 mb-6 text-left">Entrar na Nublia</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-left">Entrar na Nublia</h2>
 
           {mensagem && <p className="text-green-700 text-sm mb-3">{mensagem}</p>}
           {erro && <p className="text-red-600 text-sm mb-3">{erro}</p>}
