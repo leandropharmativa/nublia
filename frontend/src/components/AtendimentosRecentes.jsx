@@ -24,25 +24,25 @@ export default function AtendimentosRecentes({
         {atendimentos.map((a) => (
           <li
             key={a.id}
-            className="flex justify-between items-center py-2 text-sm text-gray-800 hover:text-blue-500 transition-colors"
+            className="flex items-center gap-2 py-2 text-sm text-gray-800 hover:text-blue-500 transition-colors"
           >
-            <span className="truncate pr-2">{getNomePaciente(a.paciente_id)}</span>
-            <div className="flex gap-2 flex-shrink-0">
+            <span className="truncate flex items-center gap-1">
+              {getNomePaciente(a.paciente_id)}
               <button
                 onClick={() => onVerPerfil(a.paciente_id)}
                 title="Ver perfil"
                 className="text-nublia-accent hover:text-blue-500"
               >
-                <User size={18} />
+                <User size={16} />
               </button>
               <button
                 onClick={() => onVerAtendimento(a)}
                 title="Ver atendimento"
                 className="text-nublia-accent hover:text-blue-500"
               >
-                <FileText size={18} />
+                <FileText size={16} />
               </button>
-            </div>
+            </span>
           </li>
         ))}
         {atendimentos.length === 0 && (
