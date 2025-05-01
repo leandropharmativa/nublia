@@ -141,6 +141,10 @@ export default function PrescritorDashboard() {
 
   const hojeSlot = new Date()
 
+  const atendimentosFiltrados = atendimentos.filter((item) =>
+    item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
+  )
+
   return (
     <Layout>
       <div className="flex h-[calc(100vh-160px)]">
@@ -156,7 +160,7 @@ export default function PrescritorDashboard() {
           </div>
           <div className="flex-1 overflow-hidden">
             <AtendimentosRecentes
-              atendimentos={atendimentos}
+              atendimentos={atendimentosFiltrados}
               pacientes={pacientes}
               pesquisa={pesquisa}
               onPesquisar={(texto) => setPesquisa(texto)}
@@ -283,7 +287,7 @@ export default function PrescritorDashboard() {
           onSelecionarPaciente={(paciente) => {
             setPacienteSelecionado(paciente)
             setMostrarBuscarPacienteModal(false)
-            setAbaSelecionada(tabs.length) // ativa a tab invisível da ficha
+            setAbaSelecionada(tabs.length)
           }}
         />
       )}
