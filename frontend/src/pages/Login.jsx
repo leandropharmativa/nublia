@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios'
 import { Feather } from 'lucide-react'
+import CampoTexto from '../components/CampoTexto'
+import Botao from '../components/Botao'
 
 export default function Login({ onLogin }) {
   const navigate = useNavigate()
@@ -75,22 +76,22 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="flex h-screen font-sans text-gray-800">
-      {/* Lado esquerdo azul acinzentado */}
+      {/* Lado esquerdo com degradê */}
       <div className="w-1/2 bg-gradient-to-br from-nublia-accent to-nublia-primary p-10 flex flex-col relative">
         <div className="flex items-center text-nublia-orange text-3xl font-bold">
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
-        <div className="absolute top-56 left-20">
+        <div className="absolute top-36 left-10">
           <h1 className="text-5xl font-bold text-left leading-snug">
             Bem vindo(a)<br />à Nublia
           </h1>
         </div>
       </div>
 
-      {/* Lado direito branco com formulário */}
+      {/* Lado direito com formulário */}
       <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
-        {/* topo direito com botão */}
+        {/* topo direito com botão para cadastro */}
         <div className="absolute top-6 right-6 flex items-center gap-2">
           <p className="text-subtle">Novo no Nublia?</p>
           <button
@@ -111,43 +112,36 @@ export default function Login({ onLogin }) {
           {mensagem && <div className="alert-success">{mensagem}</div>}
           {erro && <div className="alert-warning">{erro}</div>}
 
-          <div className="mb-4">
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onBlur={checarEmail}
+          <CampoTexto
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onBlur={checarEmail}
+            required
+          />
+
+          <div className={`transition-all duration-300 ${temSenha !== null ? 'opacity-100 max-h-40 mb-3' : 'opacity-0 max-h-0 overflow-hidden'}`}>
+            <CampoTexto
+              type="password"
+              name={temSenha ? "senha" : "novaSenha"}
+              placeholder={temSenha ? "Senha" : "Crie sua senha"}
+              value={temSenha ? senha : novaSenha}
+              onChange={(e) => temSenha ? setSenha(e.target.value) : setNovaSenha(e.target.value)}
               required
-              className="input-base"
             />
           </div>
 
-          <div className={`mb-4 transition-all duration-300 ${temSenha !== null ? 'opacity-100 max-h-40' : 'opacity-0 max-h-0 overflow-hidden'}`}>
-          <input
-          type="password"
-          placeholder={temSenha ? "Senha" : "Crie sua senha"}
-          value={temSenha ? senha : novaSenha}
-          onChange={(e) => temSenha ? setSenha(e.target.value) : setNovaSenha(e.target.value)}
-          required
-          className="input-base"
-          />
-          </div>
-
-
-          <button
-            type="submit"
-            className="btn-primary w-full flex items-center justify-center gap-2"
-            disabled={carregando}
-          >
+          <Botao type="submit" disabled={carregando}>
             {carregando && (
-              <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin h-5 w-5 text-blue-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
               </svg>
             )}
             {temSenha === false ? "Criar Senha" : "Entrar"}
-          </button>
+          </Botao>
         </form>
       </div>
     </div>
