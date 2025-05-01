@@ -132,7 +132,7 @@ export default function PrescritorDashboard() {
                   key={idx}
                   className={({ selected }) =>
                     `flex flex-col items-center px-4 py-2 text-sm transition duration-300 ${
-                      selected ? 'text-blue-600 scale-105 bg-white rounded shadow' : 'text-gray-500 hover:text-blue-600'
+                      selected ? 'text-white bg-nublia-accent rounded' : 'text-gray-500 hover:text-blue-600'
                     }`
                   }
                 >
