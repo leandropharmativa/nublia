@@ -93,19 +93,21 @@ export default function PrescritorDashboard() {
 
   return (
     <Layout>
-      <div className="flex">
-        {/* Lateral com componente real */}
-        <AtendimentosRecentes
-          atendimentos={atendimentosFiltrados}
-          pacientes={pacientes}
-          pesquisa={pesquisa}
-          onPesquisar={(texto) => setPesquisa(texto)}
-          onVerPerfil={handleVerPerfil}
-          onVerAtendimento={handleVerAtendimento}
-        />
+      <div className="flex h-[calc(100vh-160px)]">
+        {/* Lateral grudada na esquerda, altura total da janela */}
+        <div className="h-full">
+          <AtendimentosRecentes
+            atendimentos={atendimentosFiltrados}
+            pacientes={pacientes}
+            pesquisa={pesquisa}
+            onPesquisar={(texto) => setPesquisa(texto)}
+            onVerPerfil={handleVerPerfil}
+            onVerAtendimento={handleVerAtendimento}
+          />
+        </div>
 
         {/* Conteúdo principal com tabs */}
-        <div className="flex-1 pl-6">
+        <div className="flex-1 pl-6 overflow-y-auto">
           <Tab.Group>
             <Tab.List className="flex gap-4 border-b pb-2 mb-6">
               <Tab className={({ selected }) =>
