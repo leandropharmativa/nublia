@@ -28,7 +28,7 @@
     @apply text-sm text-gray-500;
   }
   .alert-success {
-    @apply text-sm text-blue-600 mb-3 font-medium;
+    @apply text-sm text-blue-200 mb-3 font-medium;
   }
 
   .alert-warning {
