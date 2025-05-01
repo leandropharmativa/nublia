@@ -19,6 +19,7 @@ import {
   ChevronRight,
   UserRoundCheck,
   Calendar as CalendarIcon,
+  CalendarDays,
   Clock
 } from 'lucide-react'
 
@@ -33,20 +34,30 @@ const localizer = dateFnsLocalizer({
 })
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
+  const [view, setView] = useState('month')
+  const [dataAtual, setDataAtual] = useState(new Date())
+
   return (
     <div className="h-full p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={[]} // eventos controlados manualmente no modo mês
+        events={[]} // eventos visuais no modo mês são personalizados
         startAccessor="start"
         endAccessor="end"
+        view={view}
+        date={dataAtual}
+        onView={setView}
+        onNavigate={setDataAtual}
         defaultView="month"
         views={['month', 'week', 'day', 'agenda']}
         selectable
         step={15}
         timeslots={1}
         culture="pt-BR"
-        onSelectSlot={aoSelecionarSlot}
+        onSelectSlot={({ start }) => {
+          // Ao clicar em área vazia → abre modal
+          aoSelecionarSlot({ start })
+        }}
         onSelectEvent={aoSelecionarEvento}
         messages={{
           next: <ChevronRight size={20} />,
@@ -59,11 +70,22 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           noEventsInRange: 'Sem eventos neste período.',
         }}
         components={{
-          toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
+          toolbar: (props) => (
+            <CustomToolbar
+              {...props}
+              eventos={eventos}
+            />
+          ),
           day: { header: CustomDayHeader },
           month: {
             dateHeader: (props) => (
-              <HeaderComEventos data={props.date} label={props.label} eventos={eventos} />
+              <HeaderComEventos
+                data={props.date}
+                label={props.label}
+                eventos={eventos}
+                onView={setView}
+                onNavigate={setDataAtual}
+              />
             )
           }
         }}
@@ -72,7 +94,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
   )
 }
 
-function HeaderComEventos({ data, label, eventos }) {
+function HeaderComEventos({ data, label, eventos, onView, onNavigate }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
 
   const doDia = eventos.filter(ev => isSameCalendarDay(ev.start, data))
@@ -94,21 +116,31 @@ function HeaderComEventos({ data, label, eventos }) {
   }
 
   return (
-    <div className="flex flex-col items-start px-1 overflow-visible relative">
-      <div className="flex items-center gap-2 text-[10px] text-gray-500">
-        {agendados > 0 && (
-          <span className="flex items-center gap-1 text-orange-500">
-            <UserRoundCheck size={10} /> {agendados}
-          </span>
-        )}
-        {disponiveis > 0 && (
-          <span className="flex items-center gap-1 text-blue-500">
-            <Clock size={10} /> {disponiveis}
-          </span>
-        )}
+    <div className="flex flex-col items-start px-1 overflow-visible relative h-full">
+      <div className="w-full flex justify-between items-center text-[10px] text-gray-500">
+        <div className="flex gap-2">
+          {agendados > 0 && (
+            <span className="flex items-center gap-1 text-orange-500">
+              <UserRoundCheck size={10} /> {agendados}
+            </span>
+          )}
+          {disponiveis > 0 && (
+            <span className="flex items-center gap-1 text-blue-500">
+              <Clock size={10} /> {disponiveis}
+            </span>
+          )}
+        </div>
+        <span
+          onClick={(e) => {
+            e.stopPropagation()
+            onView('day')
+            onNavigate(data)
+          }}
+          className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
+        >
+          {label}
+        </span>
       </div>
-
-      <span className="text-xs font-medium">{label}</span>
 
       <div className="flex flex-wrap gap-[4px] mt-1 overflow-visible">
         {doDia.map(ev => {
@@ -204,7 +236,10 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
           <ChevronRight size={20} />
         </button>
-        <span className="text-sm font-medium text-gray-700">{renderLabel()}</span>
+        <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <CalendarDays size={16} className="text-nublia-accent" />
+          {renderLabel()}
+        </span>
       </div>
 
       <div className="flex items-center gap-3">
