@@ -77,3 +77,7 @@
   gap: 4px;
   padding: 2px;
 }
+
+.rbc-month-view .rbc-row.rbc-month-header {
+  min-height: 36px;
+}
