@@ -281,7 +281,10 @@ useEffect(() => {
 >
   <option value="">Selecione um novo horário</option>
   {horariosDisponiveis.map((h) => {
-    const dataHora = new Date(`${h.dia}T${h.hora}`)
+    const [ano, mes, dia] = h.dia.split('-').map(Number)
+    const [hora, minuto] = h.hora.split(':').map(Number)
+    const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
+
     return (
       <option key={h.id} value={h.id}>
         {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
