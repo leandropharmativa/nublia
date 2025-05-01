@@ -1,5 +1,5 @@
-// src/components/Layout.jsx
 import { useNavigate } from 'react-router-dom'
+import { Feather, LogOut } from 'lucide-react'
 
 export default function Layout({ children }) {
   const navigate = useNavigate()
@@ -11,21 +11,27 @@ export default function Layout({ children }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-gray-800">
+    <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-gray-50">
       {/* Topo */}
-      <header className="bg-nublia-accent text-gray-800 px-6 py-4 flex justify-between items-center shadow-sm">
-        <h1 className="text-xl font-bold">Painel Nublia</h1>
+      <header className="bg-nublia-accent text-gray-800 px-6 py-6 flex justify-between items-center shadow-sm">
+        <div className="flex items-center text-nublia-orange text-2xl font-bold">
+          <Feather className="w-7 h-7 mr-2" />
+          Nublia
+        </div>
         <button
           onClick={sair}
-          className="text-sm bg-white text-gray-700 px-3 py-1 rounded hover:bg-gray-100"
+          className="bg-white text-blue-600 px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-gray-100"
         >
+          <LogOut className="w-4 h-4" />
           Sair
         </button>
       </header>
 
-      {/* Conteúdo */}
-      <main className="flex-1 p-6 bg-gray-50">
-        {children}
+      {/* Conteúdo centralizado e com limite de largura */}
+      <main className="flex-1 p-6">
+        <div className="max-w-screen-xl mx-auto">
+          {children}
+        </div>
       </main>
     </div>
   )
