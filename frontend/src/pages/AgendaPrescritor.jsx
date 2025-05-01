@@ -1,306 +1,203 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useEffect, useState } from 'react'
+import { Save, CheckCircle, Eye } from 'lucide-react'
 import axios from 'axios'
-import { addHours } from 'date-fns'
-import { toast, ToastContainer } from 'react-toastify'
-import { Search, User, Eye } from 'lucide-react'
-import 'react-toastify/dist/ReactToastify.css'
+import { toast } from 'react-toastify'
+import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 
-import CalendarioAgenda from '../components/CalendarioAgenda'
-import ModalNovoHorario from '../components/ModalNovoHorario'
-import ModalAgendarHorario from '../components/ModalAgendarHorario'
-import PerfilPacienteModal from '../components/PerfilPacienteModal'
+export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoSalvo }) {
+  const [abaAtiva, setAbaAtiva] = useState('paciente')
+  const [formulario, setFormulario] = useState({
+    anamnese: '',
+    antropometria: '',
+    dieta: '',
+    receita: '',
+  })
+  const [mensagem, setMensagem] = useState(null)
+  const [atendimentoId, setAtendimentoId] = useState(null)
+  const [atendimentosAnteriores, setAtendimentosAnteriores] = useState([])
+  const [modalVisualizar, setModalVisualizar] = useState(null)
 
-export default function AgendaPrescritor({ mostrarAgenda }) {
-  const [eventos, setEventos] = useState([])
-  const [modalAberto, setModalAberto] = useState(false)
-  const [modalAgendar, setModalAgendar] = useState(false)
-  const [slotSelecionado, setSlotSelecionado] = useState(null)
-  const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null)
-  const [agendamentoStatus, setAgendamentoStatus] = useState(null)
-  const [pacienteAtual, setPacienteAtual] = useState(null)
-  const [pacienteId, setPacienteId] = useState(null)
-  const [horarioSelecionado, setHorarioSelecionado] = useState(null)
-  const [filtroPaciente, setFiltroPaciente] = useState('')
-  const [resultadosBusca, setResultadosBusca] = useState([])
-  const [mostrarPerfil, setMostrarPerfil] = useState(false)
-
-  const user = JSON.parse(localStorage.getItem('user'))
-
-  const dropdownRef = useRef(null)
-  const debounceTimeout = useRef(null)
+  const abas = ['paciente', 'anamnese', 'antropometria', 'dieta', 'receita']
 
   useEffect(() => {
-    if (mostrarAgenda) carregarEventos()
-  }, [mostrarAgenda])
+    const carregarAnteriores = async () => {
+      const user = JSON.parse(localStorage.getItem('user'))
+      if (!user || !paciente?.id) return
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setFiltroPaciente('')
-        setResultadosBusca([])
-      }
-    }
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') {
-        setFiltroPaciente('')
-        setResultadosBusca([])
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('keydown', handleEsc)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('keydown', handleEsc)
-    }
-  }, [])
-
-  const carregarEventos = async () => {
-    try {
-      const response = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-      const eventosFormatados = await Promise.all(
-        response.data.map(async (ev) => {
-          const start = new Date(`${ev.data}T${ev.hora}`)
-          const end = addHours(start, 1)
-          let title = 'Disponível'
-
-          if (ev.status === 'agendado' && ev.paciente_id) {
-            try {
-              const paciente = await axios.get(`https://nublia-backend.onrender.com/users/${ev.paciente_id}`)
-              title = paciente.data.name
-            } catch {
-              title = 'Agendado'
-            }
-          }
-
-          return {
-            id: ev.id,
-            title,
-            start,
-            end,
-            status: ev.status,
-            paciente_id: ev.paciente_id
-          }
-        })
-      )
-      setEventos(eventosFormatados)
-    } catch (error) {
-      console.error('Erro ao carregar eventos:', error)
-    }
-  }
-
-  const handleNovoSlot = (slotInfo) => {
-    setSlotSelecionado(slotInfo.start)
-    setModalAberto(true)
-  }
-
-  const confirmarHorario = async (horaDigitada, manterAberto = false) => {
-    const data = slotSelecionado.toISOString().split('T')[0]
-    const hora = horaDigitada
-
-    try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/disponibilizar', {
-        prescritor_id: user.id,
-        data,
-        hora,
-        status: 'disponivel'
-      })
-
-      toast.success(`Horário ${hora} cadastrado com sucesso!`)
-      carregarEventos()
-
-      if (!manterAberto) {
-        setModalAberto(false)
-        setSlotSelecionado(null)
-      }
-    } catch {
-      toast.error('Erro ao cadastrar horário.')
-    }
-  }
-
-  const handleEventoClick = async (evento) => {
-    setAgendamentoSelecionado(evento.id)
-    setAgendamentoStatus(evento.status)
-    setHorarioSelecionado(evento.start)
-
-    if (evento.status === 'agendado' && evento.paciente_id) {
       try {
-        const res = await axios.get(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
-        setPacienteAtual(res.data.name)
-        setPacienteId(res.data.id)
-      } catch {
-        setPacienteAtual('Paciente não encontrado')
-        setPacienteId(null)
+        const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
+        const anteriores = response.data
+          .filter((a) => a.paciente_id === paciente.id && a.prescritor_id === user.id)
+          .sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em))
+
+        setAtendimentosAnteriores(anteriores)
+      } catch (error) {
+        console.error('Erro ao buscar atendimentos anteriores:', error)
       }
-    } else {
-      setPacienteAtual(null)
-      setPacienteId(null)
     }
 
-    setModalAgendar(true)
+    carregarAnteriores()
+  }, [paciente])
+
+  const handleChange = (e) => {
+    setFormulario({ ...formulario, [abaAtiva]: e.target.value })
+    setMensagem(null)
   }
 
-  const confirmarAgendamento = async (agendamentoId, pacienteId) => {
+  const handleSalvar = async () => {
     try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/agendar', {
-        id: agendamentoId,
-        paciente_id: pacienteId
-      })
+      const user = JSON.parse(localStorage.getItem('user'))
 
-      toast.success('Paciente agendado com sucesso!')
-      setModalAgendar(false)
-      setAgendamentoSelecionado(null)
-      carregarEventos()
-    } catch {
-      toast.error('Erro ao agendar paciente.')
-    }
-  }
-
-  const desagendarHorario = async (id) => {
-    try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/desagendar', { id })
-      toast.success('Paciente removido do horário!')
-      setModalAgendar(false)
-      setAgendamentoSelecionado(null)
-      carregarEventos()
-    } catch {
-      toast.error('Erro ao desagendar.')
-    }
-  }
-
-  const removerHorario = async (id) => {
-    try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
-      toast.success('Horário removido com sucesso!')
-      setModalAgendar(false)
-      setAgendamentoSelecionado(null)
-      carregarEventos()
-    } catch {
-      toast.error('Erro ao remover horário.')
-    }
-  }
-
-  const buscarPorPaciente = useCallback((texto) => {
-    setFiltroPaciente(texto)
-
-    if (debounceTimeout.current) clearTimeout(debounceTimeout.current)
-
-    debounceTimeout.current = setTimeout(() => {
-      if (texto.length < 2) {
-        setResultadosBusca([])
-        return
+      const dadosAtendimento = {
+        paciente_id: paciente.id,
+        prescritor_id: user?.id,
+        anamnese: formulario.anamnese,
+        antropometria: formulario.antropometria,
+        dieta: formulario.dieta,
+        receita: formulario.receita
       }
 
-      const resultados = eventos.filter((ev) =>
-        ev.title.toLowerCase().includes(texto.toLowerCase())
-      )
-      setResultadosBusca(resultados)
-    }, 300)
-  }, [eventos])
+      if (!atendimentoId) {
+        const response = await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
+        setAtendimentoId(response.data.id)
+      } else {
+        await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
+      }
 
-  const abrirPerfilPaciente = (id) => {
-    setPacienteId(id)
-    setMostrarPerfil(true)
+      setMensagem({ tipo: 'sucesso', texto: 'Atendimento salvo com sucesso!' })
+      toast.success('Atendimento salvo com sucesso!')
+
+      if (onAtendimentoSalvo) onAtendimentoSalvo()
+    } catch (error) {
+      console.error('Erro ao salvar atendimento:', error.response?.data || error.message)
+      setMensagem({ tipo: 'erro', texto: 'Erro ao salvar atendimento. Verifique os dados.' })
+      toast.error('Erro ao salvar atendimento.')
+    }
+  }
+
+  const handleFinalizar = async () => {
+    await handleSalvar()
+    toast.success('Atendimento finalizado!')
+    onFinalizar()
+  }
+
+  const calcularIdade = (data) => {
+    if (!data) return null
+    const hoje = new Date()
+    const nascimento = new Date(data)
+    let idade = hoje.getFullYear() - nascimento.getFullYear()
+    const m = hoje.getMonth() - nascimento.getMonth()
+    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) idade--
+    return idade
   }
 
   return (
-    <div className="w-full h-[72vh] flex flex-col gap-2 relative">
-      <div className="pt-2 w-72 relative">
-        <div className="relative">
-          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-          <input
-            type="text"
-            placeholder="Busca por nome do paciente..."
-            value={filtroPaciente}
-            onChange={(e) => buscarPorPaciente(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
-          />
-        </div>
-
-        {resultadosBusca.length > 0 && (
-          <div
-            ref={dropdownRef}
-            className="absolute top-12 left-0 w-full max-h-64 overflow-y-auto z-50 bg-white border border-gray-200 shadow-lg rounded-lg text-sm"
-          >
-            <ul>
-              {resultadosBusca.map(ev => (
-                <li
-                  key={ev.id}
-                  className="px-4 py-3 border-b border-gray-100 hover:bg-gray-50 flex justify-between items-center"
-                >
-                  <div>
-                    <p className="font-semibold text-gray-800">{ev.title}</p>
-                    <p className="text-gray-500 text-xs">
-                      {ev.start.toLocaleDateString('pt-BR')} às {ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    {ev.paciente_id && (
-                      <button
-                        onClick={() => abrirPerfilPaciente(ev.paciente_id)}
-                        title="Ver perfil"
-                        className="text-nublia-accent hover:text-nublia-orange"
-                      >
-                        <User size={18} />
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleEventoClick(ev)}
-                      title="Ver agendamento"
-                      className="text-nublia-accent hover:text-nublia-orange"
-                    >
-                      <Eye size={18} />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+    <div className="bg-white p-6 rounded-2xl w-full">
+      {/* Cabeçalho */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-nublia-accent">Ficha de Atendimento</h2>
+            <button
+              onClick={handleSalvar}
+              className="text-nublia-accent hover:text-nublia-orange transition"
+              title="Salvar atendimento"
+            >
+              <Save size={24} />
+            </button>
+            <button
+              onClick={handleFinalizar}
+              className="text-white bg-nublia-accent hover:bg-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2"
+              title="Finalizar atendimento"
+            >
+              <CheckCircle size={18} /> Finalizar
+            </button>
           </div>
+          <p className="text-sm text-gray-700 font-semibold mt-1">
+            {paciente.name} {calcularIdade(paciente.data_nascimento) ? `• ${calcularIdade(paciente.data_nascimento)} anos` : ''}
+          </p>
+        </div>
+      </div>
+
+      {mensagem && (
+        <div className={`mb-4 text-sm text-center rounded-full px-4 py-2 font-medium ${
+          mensagem.tipo === 'sucesso'
+            ? 'text-blue-600 bg-blue-50'
+            : 'text-orange-600 bg-orange-50'
+        }`}>
+          {mensagem.texto}
+        </div>
+      )}
+
+      {/* Abas */}
+      <div className="flex border-b mb-6">
+        {abas.map((aba) => (
+          <button
+            key={aba}
+            onClick={() => setAbaAtiva(aba)}
+            className={`px-4 py-2 capitalize transition ${
+              abaAtiva === aba
+                ? 'border-b-2 border-nublia-accent font-semibold text-nublia-accent'
+                : 'text-gray-600 hover:text-nublia-accent'
+            }`}
+          >
+            {aba}
+          </button>
+        ))}
+      </div>
+
+      {/* Conteúdo da aba */}
+      <div className="space-y-4">
+        {abaAtiva === 'paciente' ? (
+          <>
+            <div className="space-y-2 text-sm text-gray-700">
+              <div><strong>Email:</strong> {paciente.email || 'Não informado'}</div>
+              <div><strong>Telefone:</strong> {paciente.telefone || 'Não informado'}</div>
+              <div><strong>Sexo:</strong> {paciente.sexo || 'Não informado'}</div>
+              <div><strong>Data de Nascimento:</strong> {paciente.data_nascimento || 'Não informada'}</div>
+              <div><strong>Observações:</strong> {paciente.observacoes || 'Nenhuma observação registrada.'}</div>
+            </div>
+
+            {atendimentosAnteriores.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-md font-semibold text-nublia-accent mb-2">Atendimentos anteriores</h3>
+                <ul className="space-y-2">
+                  {atendimentosAnteriores.map((a) => (
+                    <li
+                      key={a.id}
+                      className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm"
+                    >
+                      <span>
+                        {new Date(a.criado_em).toLocaleDateString('pt-BR')} às {new Date(a.criado_em).toLocaleTimeString('pt-BR')}
+                      </span>
+                      <button
+                        className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1"
+                        onClick={() => setModalVisualizar(a)}
+                      >
+                        <Eye size={16} /> Ver
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
+        ) : (
+          <textarea
+            placeholder={`Escreva as informações de ${abaAtiva}...`}
+            value={formulario[abaAtiva]}
+            onChange={handleChange}
+            className="w-full h-80 p-4 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+          />
         )}
       </div>
 
-      <CalendarioAgenda
-        eventos={eventos}
-        aoSelecionarSlot={handleNovoSlot}
-        aoSelecionarEvento={handleEventoClick}
-      />
-
-      {modalAberto && (
-        <ModalNovoHorario
-          horario={slotSelecionado}
-          onConfirmar={confirmarHorario}
-          onCancelar={() => {
-            setModalAberto(false)
-            setSlotSelecionado(null)
-          }}
+      {modalVisualizar && (
+        <VisualizarAtendimentoModal
+          atendimento={modalVisualizar}
+          onClose={() => setModalVisualizar(null)}
         />
       )}
-
-      {modalAgendar && (
-        <ModalAgendarHorario
-          agendamentoId={agendamentoSelecionado}
-          statusAtual={agendamentoStatus}
-          pacienteAtual={pacienteAtual}
-          pacienteId={pacienteId}
-          horarioSelecionado={horarioSelecionado}
-          onConfirmar={confirmarAgendamento}
-          onCancelar={() => {
-            setModalAgendar(false)
-            setAgendamentoSelecionado(null)
-          }}
-          onRemover={removerHorario}
-          onDesagendar={desagendarHorario}
-          onAtualizarAgenda={carregarEventos}
-        />
-      )}
-
-      {mostrarPerfil && pacienteId && (
-        <PerfilPacienteModal
-          pacienteId={pacienteId}
-          onClose={() => setMostrarPerfil(false)}
-        />
-      )}
-
-      <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar />
     </div>
   )
 }
