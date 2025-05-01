@@ -282,6 +282,7 @@ useEffect(() => {
 >
   <option value="">Selecione um novo horário</option>
   {horariosDisponiveis.map((h) => {
+    console.log('Horário com possível problema:', h)
     if (!h.dia || !h.hora) return null
 
     const [ano, mes, dia] = h.dia.split('-').map(Number)
