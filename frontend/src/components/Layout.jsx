@@ -16,7 +16,7 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-white">
-      <header className="bg-nublia-accent text-gray-800 px-6 py-8 flex justify-between items-center shadow-md">
+      <header className="bg-nublia-accent text-gray-800 px-6 py-8 flex justify-between items-center">
         <div className="flex items-center text-nublia-orange text-3xl font-bold">
           <Feather className="w-9 h-9 mr-2" />
           Nublia
@@ -26,17 +26,17 @@ export default function Layout({ children }) {
           <div className="text-right">
             <div className="text-sm font-medium text-gray-700">{nome}</div>
             <div className="text-xs text-gray-500 capitalize">{role}</div>
+            <button
+              onClick={sair}
+              className="mt-2 bg-white text-blue-600 px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-gray-100"
+            >
+              <LogOut className="w-4 h-4" />
+              Sair
+            </button>
           </div>
           <div className="bg-white p-2 rounded-full">
-            <User2 className="w-5 h-5 text-gray-500" />
+            <User2 className="w-7 h-7 text-gray-500" />
           </div>
-          <button
-            onClick={sair}
-            className="bg-white text-blue-600 px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-gray-100"
-          >
-            <LogOut className="w-4 h-4" />
-            Sair
-          </button>
         </div>
       </header>
 
