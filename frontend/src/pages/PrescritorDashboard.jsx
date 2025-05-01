@@ -11,7 +11,7 @@ import {
   CalendarClock,
   User,
   Eye,
-  Plus
+  CalendarPlus
 } from 'lucide-react'
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
@@ -198,9 +198,9 @@ export default function PrescritorDashboard() {
                         <li key={a.id} className="flex items-center gap-2 border-b pb-2">
                           <User size={16} className="text-nublia-accent" />
                           <span className="font-medium">{a.nome}</span>
-                          <span className="text-gray-500 ml-2 text-sm">{a.hora?.slice(0, 5)}h</span>
+                          <span className="text-gray-500 text-sm">{a.hora?.slice(0, 5)}h</span>
                           <button
-                            className="ml-auto text-nublia-accent hover:text-nublia-orange"
+                            className="text-nublia-accent hover:text-nublia-orange ml-1"
                             title="Ver agendamento"
                             onClick={() => handleVerAtendimento(a)}
                           >
@@ -214,7 +214,7 @@ export default function PrescritorDashboard() {
                   <div className="mt-6">
                     <Botao
                       texto="Incluir agendamento"
-                      iconeInicio={<Plus size={16} />}
+                      iconeInicio={<CalendarPlus size={16} />}
                       onClick={() => setMostrarNovoHorario(true)}
                       full={false}
                       className="rounded-full"
