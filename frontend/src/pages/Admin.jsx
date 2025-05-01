@@ -69,7 +69,17 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      <div className="max-w-md mx-auto bg-white rounded shadow-md p-6 mb-8">
+      {/* Abas futuras para organização */}
+      <div className="mb-8">
+        <ul className="flex gap-4 border-b pb-2">
+          <li className="font-medium text-blue-600 border-b-2 border-blue-600">Geração de códigos</li>
+          <li className="text-gray-500">Usuários</li>
+          <li className="text-gray-500">Relatórios</li>
+        </ul>
+      </div>
+
+      {/* Seção: Geração de códigos */}
+      <div className="max-w-md mx-auto bg-white rounded shadow-md p-6 mb-12">
         <h2 className="text-title mb-4">Gerar Código de Acesso</h2>
 
         {erro && <div className="alert-warning">{erro}</div>}
@@ -120,6 +130,33 @@ export default function AdminDashboard() {
             <p className="font-mono font-bold text-lg">{codigo}</p>
           </div>
         )}
+      </div>
+
+      {/* Mockup de futuras funcionalidades */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white p-4 rounded shadow-sm">
+          <p className="text-sm text-gray-500">Prescritores</p>
+          <p className="text-2xl font-bold">38</p>
+        </div>
+        <div className="bg-white p-4 rounded shadow-sm">
+          <p className="text-sm text-gray-500">Pacientes</p>
+          <p className="text-2xl font-bold">812</p>
+        </div>
+        <div className="bg-white p-4 rounded shadow-sm">
+          <p className="text-sm text-gray-500">Farmácias</p>
+          <p className="text-2xl font-bold">12</p>
+        </div>
+        <div className="bg-white p-4 rounded shadow-sm">
+          <p className="text-sm text-gray-500">Códigos gerados</p>
+          <p className="text-2xl font-bold">57</p>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded shadow-sm">
+        <h3 className="text-lg font-semibold mb-4">Usuários cadastrados (em breve)</h3>
+        <div className="text-sm text-gray-500">
+          A tabela de usuários com filtros e ações será implementada aqui.
+        </div>
       </div>
     </Layout>
   )
