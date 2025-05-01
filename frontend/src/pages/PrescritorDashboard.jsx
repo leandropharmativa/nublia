@@ -237,7 +237,7 @@ export default function PrescritorDashboard() {
     title="Editar agendamento"
     onClick={() => {
       setAgendamentoSelecionado(a.id)
-      setMostrarAgendamentoModal(true)
+      setMostrarNovoHorario(true)
     }}
   >
     <Eye size={16} />
