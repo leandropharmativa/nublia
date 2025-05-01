@@ -165,29 +165,27 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
               <div><strong>Observações:</strong> {paciente.observacoes || 'Nenhuma observação registrada.'}</div>
             </div>
 
-            {atendimentosAnteriores.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-md font-semibold text-nublia-accent mb-2">Atendimentos anteriores</h3>
-                <ul className="space-y-2">
-                  {atendimentosAnteriores.map((a) => (
-                    <li
-                      key={a.id}
-                      className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm"
-                    >
-                      <span>
-                        {new Date(a.criado_em).toLocaleDateString('pt-BR')} às {new Date(a.criado_em).toLocaleTimeString('pt-BR')}
-                      </span>
-                      <button
-                        className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1"
-                        onClick={() => setModalVisualizar(a)}
-                      >
-                        <Eye size={16} /> Ver
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+{atendimentosAnteriores.length > 0 && (
+  <div className="mt-6">
+    <h3 className="text-sm font-semibold text-nublia-accent mb-2">Atendimentos anteriores</h3>
+    <ul className="text-sm text-gray-700 divide-y divide-gray-200">
+      {atendimentosAnteriores.map((a) => (
+        <li key={a.id} className="flex items-center justify-between py-1">
+          <span className="text-sm">
+            {new Date(a.criado_em).toLocaleDateString('pt-BR')} • {new Date(a.criado_em).toLocaleTimeString('pt-BR')}
+          </span>
+          <button
+            className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1 text-sm"
+            onClick={() => setModalVisualizar(a)}
+          >
+            <Eye size={14} /> Ver
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
           </>
         ) : (
           <textarea
