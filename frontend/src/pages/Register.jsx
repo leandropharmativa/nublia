@@ -22,6 +22,7 @@ export default function Register() {
 
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState(false)
+  const [carregando, setCarregando] = useState(false)
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -29,6 +30,10 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setErro('')
+    setSucesso(false)
+    setCarregando(true)
+
     try {
       const payload = {
         user: {
@@ -47,11 +52,11 @@ export default function Register() {
 
       await axios.post('https://nublia-backend.onrender.com/register', payload)
       setSucesso(true)
-      setErro('')
       setTimeout(() => navigate('/'), 1500)
     } catch {
       setErro("Erro ao registrar. Verifique os dados.")
-      setSucesso(false)
+    } finally {
+      setCarregando(false)
     }
   }
 
@@ -77,7 +82,6 @@ export default function Register() {
 
       {/* Lado direito com formulário */}
       <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
-        {/* topo direito com botão para login */}
         <div className="absolute top-6 right-6 flex items-center gap-2">
           <p className="text-subtle">Já tem conta?</p>
           <button
@@ -94,32 +98,9 @@ export default function Register() {
           {erro && <div className="alert-warning">{erro}</div>}
           {sucesso && <div className="alert-success">Cadastro realizado com sucesso!</div>}
 
-          <CampoTexto
-            name="name"
-            placeholder="Nome completo"
-            value={form.name}
-            onChange={handleChange}
-            required
-            className="mb-3"
-          />
-          <CampoTexto
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            className="mb-3"
-          />
-          <CampoTexto
-            type="password"
-            name="password"
-            placeholder="Senha"
-            value={form.password}
-            onChange={handleChange}
-            required
-            className="mb-3"
-          />
+          <CampoTexto name="name" placeholder="Nome completo" value={form.name} onChange={handleChange} required className="mb-3" />
+          <CampoTexto type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} required className="mb-3" />
+          <CampoTexto type="password" name="password" placeholder="Senha" value={form.password} onChange={handleChange} required className="mb-3" />
 
           <select
             name="role"
@@ -146,21 +127,20 @@ export default function Register() {
             />
           </div>
 
-        <Botao type="submit" disabled={sucesso} className="mb-3">
-        {sucesso && (
-        <svg
-        className="animate-spin h-5 w-5 text-blue-600"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        >
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
-        </svg>
-        )}
-  <span>Registrar</span>
-</Botao>
-
+          <Botao type="submit" className="mb-3" disabled={carregando}>
+            {carregando && (
+              <svg
+                className="animate-spin h-5 w-5 text-blue-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
+              </svg>
+            )}
+            <span>Registrar</span>
+          </Botao>
         </form>
       </div>
     </div>
