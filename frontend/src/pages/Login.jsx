@@ -1,3 +1,4 @@
+// Login.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -76,7 +77,6 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="flex h-screen font-sans text-gray-800">
-      {/* Lado esquerdo com degradê */}
       <div className="w-1/2 bg-gradient-to-br from-nublia-accent to-nublia-primary p-10 flex flex-col relative">
         <div className="flex items-center text-nublia-orange text-3xl font-bold">
           <Feather className="w-8 h-8 mr-2" />
@@ -89,9 +89,7 @@ export default function Login({ onLogin }) {
         </div>
       </div>
 
-      {/* Lado direito com formulário */}
       <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
-        {/* topo direito com botão para cadastro */}
         <div className="absolute top-6 right-6 flex items-center gap-2">
           <p className="text-subtle">Novo no Nublia?</p>
           <button
@@ -102,7 +100,6 @@ export default function Login({ onLogin }) {
           </button>
         </div>
 
-        {/* formulário centralizado */}
         <form
           onSubmit={temSenha === false ? handleCriarSenha : handleLogin}
           className="w-full max-w-sm"
