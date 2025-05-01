@@ -1,27 +1,16 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import Layout from '../components/Layout'
+import { useState } from 'react'
 import CampoTexto from '../components/CampoTexto'
 import Botao from '../components/Botao'
+import { LogOut, Feather } from 'lucide-react'
 
-export default function Admin() {
-  const navigate = useNavigate()
-
+export default function AdminDashboard() {
   const [tipoUsuario, setTipoUsuario] = useState('prescritor')
   const [emailUsuario, setEmailUsuario] = useState('')
   const [codigo, setCodigo] = useState('')
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState('')
   const [carregando, setCarregando] = useState(false)
-
-  // ✅ Reforço de segurança no frontend
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'))
-    if (!user || user.role !== 'admin') {
-      navigate('/acesso-negado', { replace: true })
-    }
-  }, [navigate])
 
   const gerarCodigo = async () => {
     setErro('')
@@ -37,19 +26,22 @@ export default function Admin() {
         email_usuario: emailUsuario
       }
 
-      const response = await axios.post(
-        'https://nublia-backend.onrender.com/generate_code',
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      )
+      const response = await fetch('https://nublia-backend.onrender.com/generate_code', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
 
-      setCodigo(response.data.codigo)
-      setSucesso("Código gerado com sucesso!")
+      const data = await response.json()
+      if (response.ok) {
+        setCodigo(data.codigo)
+        setSucesso("Código gerado com sucesso!")
+      } else {
+        throw new Error(data.detail || "Erro ao gerar código")
+      }
     } catch (err) {
       setErro("Erro ao gerar código. Verifique os dados.")
       setCodigo('')
@@ -60,7 +52,34 @@ export default function Admin() {
 
   return (
     <Layout>
-      <div className="max-w-md mx-auto bg-white rounded shadow-md p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center text-nublia-orange text-2xl font-bold">
+          <Feather className="w-7 h-7 mr-2" />
+          Nublia
+        </div>
+        <button
+          onClick={() => {
+            localStorage.clear()
+            window.location.href = '/'
+          }}
+          className="btn-primary rounded-full flex items-center gap-2 px-4 py-1 text-sm"
+        >
+          <LogOut className="w-4 h-4" />
+          Sair
+        </button>
+      </div>
+
+      {/* Abas futuras para organização */}
+      <div className="mb-8">
+        <ul className="flex gap-4 border-b pb-2">
+          <li className="font-medium text-blue-600 border-b-2 border-blue-600">Geração de códigos</li>
+          <li className="text-gray-500">Usuários</li>
+          <li className="text-gray-500">Relatórios</li>
+        </ul>
+      </div>
+
+      {/* Seção: Geração de códigos */}
+      <div className="max-w-md mx-auto bg-white rounded shadow-md p-6 mb-12">
         <h2 className="text-title mb-4">Gerar Código de Acesso</h2>
 
         {erro && <div className="alert-warning">{erro}</div>}
@@ -111,6 +130,33 @@ export default function Admin() {
             <p className="font-mono font-bold text-lg">{codigo}</p>
           </div>
         )}
+      </div>
+
+      {/* Mockup de futuras funcionalidades */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white p-4 rounded shadow-sm">
+          <p className="text-sm text-gray-500">Prescritores</p>
+          <p className="text-2xl font-bold">38</p>
+        </div>
+        <div className="bg-white p-4 rounded shadow-sm">
+          <p className="text-sm text-gray-500">Pacientes</p>
+          <p className="text-2xl font-bold">812</p>
+        </div>
+        <div className="bg-white p-4 rounded shadow-sm">
+          <p className="text-sm text-gray-500">Farmácias</p>
+          <p className="text-2xl font-bold">12</p>
+        </div>
+        <div className="bg-white p-4 rounded shadow-sm">
+          <p className="text-sm text-gray-500">Códigos gerados</p>
+          <p className="text-2xl font-bold">57</p>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded shadow-sm">
+        <h3 className="text-lg font-semibold mb-4">Usuários cadastrados (em breve)</h3>
+        <div className="text-sm text-gray-500">
+          A tabela de usuários com filtros e ações será implementada aqui.
+        </div>
       </div>
     </Layout>
   )
