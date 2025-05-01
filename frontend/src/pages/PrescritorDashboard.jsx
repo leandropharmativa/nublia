@@ -31,8 +31,7 @@ const tabs = [
   { icon: CalendarDays, label: 'Agenda' },
   { icon: BookOpenText, label: 'Fórmulas' },
   { icon: Leaf, label: 'Dietas' },
-  { icon: Settings, label: 'Configurações' },
-  { icon: null, label: 'Ficha' } // aba invisível para ficha
+  { icon: Settings, label: 'Configurações' }
 ]
 
 export default function PrescritorDashboard() {
@@ -73,7 +72,7 @@ export default function PrescritorDashboard() {
       const atendimentosComNomes = await Promise.all(
         atendimentosFiltrados.map(async (a) => {
           try {
-            const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${a.paciente_id}`)
+            const resPaciente = await fetch(https://nublia-backend.onrender.com/users/${a.paciente_id})
             const paciente = await resPaciente.json()
             return { ...a, nomePaciente: paciente.name }
           } catch {
@@ -100,14 +99,14 @@ export default function PrescritorDashboard() {
 
   const carregarAgenda = async (id) => {
     try {
-      const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${id}`)
+      const res = await fetch(https://nublia-backend.onrender.com/agenda/prescritor/${id})
       const data = await res.json()
       const eventosComNome = await Promise.all(
         data.map(async (e) => {
           let nome = 'Agendado'
           if (e.status === 'agendado' && e.paciente_id) {
             try {
-              const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${e.paciente_id}`)
+              const resPaciente = await fetch(https://nublia-backend.onrender.com/users/${e.paciente_id})
               const paciente = await resPaciente.json()
               nome = paciente.name
             } catch {}
@@ -123,7 +122,7 @@ export default function PrescritorDashboard() {
 
   const handleVerPerfil = async (pacienteId) => {
     try {
-      const response = await fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+      const response = await fetch(https://nublia-backend.onrender.com/users/${pacienteId})
       const paciente = await response.json()
       if (!paciente || paciente.role !== 'paciente') throw new Error('Usuário inválido')
       setPacientePerfil(paciente)
@@ -174,9 +173,9 @@ export default function PrescritorDashboard() {
                 <Tab
                   key={idx}
                   className={({ selected }) =>
-                    `flex flex-col items-center px-4 py-2 text-sm transition duration-300 ${
+                    flex flex-col items-center px-4 py-2 text-sm transition duration-300 ${
                       selected ? 'text-white bg-nublia-accent rounded' : 'text-gray-500 hover:text-blue-600'
-                    }`
+                    }
                   }
                 >
                   <tab.icon size={32} />
@@ -260,22 +259,6 @@ export default function PrescritorDashboard() {
                   Configurações da conta (em breve)
                 </div>
               </Tab.Panel>
-              <Tab.Panel>
-                {pacienteSelecionado ? (
-                  <FichaAtendimento
-                    paciente={pacienteSelecionado}
-                    onFinalizar={() => {
-                    setPacienteSelecionado(null)
-                    setAbaSelecionada(0)
-                  }}
-                    onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
-                  />
-                  ) : (
-                <div className="text-center text-gray-400 py-10 italic">
-                    Nenhum paciente selecionado.
-                </div>
-                )}
-              </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
         </div>
@@ -295,7 +278,6 @@ export default function PrescritorDashboard() {
           onSelecionarPaciente={(paciente) => {
             setPacienteSelecionado(paciente)
             setMostrarBuscarPacienteModal(false)
-            setTimeout(() => setAbaSelecionada(tabs.length - 1), 0)
           }}
         />
       )}
