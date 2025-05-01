@@ -334,16 +334,47 @@ onClick={() => {
 )}
 
 
-      {mostrarAgendamentoModal && agendamentoSelecionado && (
-        <ModalAgendarHorario
-          agendamentoId={agendamentoSelecionado}
-          onCancelar={() => {
-            setAgendamentoSelecionado(null)
-            setMostrarAgendamentoModal(false)
-          }}
-          onAtualizarAgenda={() => carregarAgenda(user.id)}
-        />
-      )}
+{mostrarAgendamentoModal && agendamentoSelecionado && (
+  <ModalAgendarHorario
+    agendamentoId={agendamentoSelecionado.id}
+    statusAtual={agendamentoSelecionado.status}
+    pacienteAtual={agendamentoSelecionado.pacienteNome}
+    pacienteId={agendamentoSelecionado.pacienteId}
+    horarioSelecionado={agendamentoSelecionado.dataHora}
+    onCancelar={() => {
+      setAgendamentoSelecionado(null)
+      setMostrarAgendamentoModal(false)
+    }}
+    onAtualizarAgenda={() => carregarAgenda(user.id)}
+    onRemover={(id) => {
+      fetch(`https://nublia-backend.onrender.com/agenda/${id}`, {
+        method: 'DELETE'
+      }).then(() => {
+        toast.success('Horário removido com sucesso!')
+        setAgendamentoSelecionado(null)
+        setMostrarAgendamentoModal(false)
+        carregarAgenda(user.id)
+      }).catch(() => {
+        toast.error('Erro ao remover horário.')
+      })
+    }}
+    onDesagendar={(id) => {
+      fetch(`https://nublia-backend.onrender.com/agenda/desagendar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      }).then(() => {
+        toast.success('Agendamento cancelado!')
+        setAgendamentoSelecionado(null)
+        setMostrarAgendamentoModal(false)
+        carregarAgenda(user.id)
+      }).catch(() => {
+        toast.error('Erro ao desagendar.')
+      })
+    }}
+  />
+)}
+
     </Layout>
   )
 }
