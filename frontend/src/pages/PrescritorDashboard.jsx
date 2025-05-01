@@ -235,10 +235,16 @@ export default function PrescritorDashboard() {
   <button
     className="text-nublia-accent hover:text-nublia-orange ml-1"
     title="Editar agendamento"
-    onClick={() => {
-      setAgendamentoSelecionado(a.id)
-      setMostrarAgendamentoModal(true)
-    }}
+onClick={() => {
+  setAgendamentoSelecionado({
+    id: a.id,
+    status: a.status,
+    pacienteId: a.paciente_id,
+    pacienteNome: a.nome,
+    dataHora: new Date(`${a.data}T${a.hora}`)
+  })
+  setMostrarAgendamentoModal(true)
+}}
   >
     <Eye size={16} />
   </button>
