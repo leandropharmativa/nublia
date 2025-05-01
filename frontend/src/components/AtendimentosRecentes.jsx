@@ -15,13 +15,14 @@ export default function AtendimentosRecentes({
 
   return (
     <aside className="h-full w-full bg-white flex flex-col">
+      {/* Título */}
       <div className="px-4 pt-4 pb-2 flex items-center gap-2 text-nublia-accent text-base font-semibold">
         <CalendarCheck2 size={18} />
         Atendimentos recentes
       </div>
 
-      {/* Lista que cresce conforme necessário */}
-      <div className="px-4 pb-2 border-r border-gray-200 flex-1">
+      {/* Lista com altura máxima ajustada para manter busca visível */}
+      <div className="px-4 pb-2 border-r border-gray-200 max-h-[calc(100vh-280px)] overflow-auto">
         <ul className="divide-y divide-gray-200">
           {atendimentos.map((a) => {
             const nome = getNomePaciente(a.paciente_id)
@@ -53,8 +54,8 @@ export default function AtendimentosRecentes({
         </ul>
       </div>
 
-      {/* Campo de busca fixo no final */}
-      <div className="p-4 border-t bg-white">
+      {/* Campo de busca fixo */}
+      <div className="p-4">
         <div className="relative">
           <input
             type="text"
