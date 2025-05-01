@@ -293,7 +293,8 @@ export default function PrescritorDashboard() {
           onSelecionarPaciente={(paciente) => {
             setPacienteSelecionado(paciente)
             setMostrarBuscarPacienteModal(false)
-            setAbaSelecionada(tabs.length - 1)
+            // aguarda um ciclo de render para mudar a aba
+            setTimeout(() => setAbaSelecionada(tabs.length - 1), 0)
           }}
         />
       )}
