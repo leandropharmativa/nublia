@@ -1,4 +1,3 @@
-// Importações mantidas como no original
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
@@ -62,25 +61,15 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
             ),
           },
         }}
-        eventPropGetter={(event) => {
-          const cores = {
-            agendado: '#dc2626',    // vermelho
-            disponivel: '#2563eb',  // azul
+        eventPropGetter={() => ({
+          style: {
+            backgroundColor: 'transparent',
+            border: 'none',
+            padding: 0,
+            margin: 0,
+            boxShadow: 'none',
           }
-          const cor = cores[event.status] || '#6b7280' // cinza para status desconhecido
-          return {
-            style: {
-              backgroundColor: cor,
-              color: 'white',
-              fontSize: '0.75rem',
-              padding: '2px 6px',
-              borderRadius: '4px',
-              marginBottom: '2px',
-              whiteSpace: 'nowrap',
-              cursor: 'pointer',
-            }
-          }
-        }}
+        })}
       />
     </div>
   )
@@ -168,13 +157,22 @@ function EventCompacto({ event }) {
     : `${hora} Disponível`
 
   const icone = event.status === 'agendado'
-    ? <User size={14} className="text-red-600" />
+    ? <User size={12} />
     : event.status === 'disponivel'
-    ? <Clock size={14} className="text-blue-600" />
-    : <CalendarIcon size={14} className="text-gray-400" />
+    ? <Clock size={12} />
+    : <CalendarIcon size={12} />
+
+  const corBg = event.status === 'agendado'
+    ? 'bg-red-100 text-red-600 hover:bg-red-200'
+    : event.status === 'disponivel'
+    ? 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+    : 'bg-gray-100 text-gray-500'
 
   return (
-    <span title={tooltip} className="flex items-center justify-center w-full h-full">
+    <span
+      title={tooltip}
+      className={`inline-flex items-center justify-center w-5 h-5 m-0.5 rounded-full ${corBg} transition`}
+    >
       {icone}
     </span>
   )
