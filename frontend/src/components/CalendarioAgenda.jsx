@@ -52,6 +52,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
           day: { header: CustomDayHeader },
           event: EventCompacto,
+          eventWrapper: EventoFlexWrapper,
           month: {
             dateHeader: (props) => (
               <div className="flex justify-between items-start px-1">
@@ -71,6 +72,17 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           }
         })}
       />
+    </div>
+  )
+}
+
+function EventoFlexWrapper({ children }) {
+  return (
+    <div
+      className="flex flex-wrap gap-[4px] p-1 items-start justify-start"
+      style={{ minHeight: '20px' }}
+    >
+      {children}
     </div>
   )
 }
@@ -171,8 +183,7 @@ function EventCompacto({ event }) {
   return (
     <span
       title={tooltip}
-      className={`inline-flex items-center justify-center w-4 h-4 mr-1 mb-1 rounded-full ${corBg} transition`}
-      style={{ display: 'inline-block' }}
+      className={`inline-flex items-center justify-center w-4 h-4 rounded-full ${corBg} transition`}
     >
       {icone}
     </span>
@@ -187,17 +198,4 @@ function ContagemPorDia({ data, eventos }) {
   if (agendados === 0 && disponiveis === 0) return null
 
   return (
-    <span className="text-[10px] text-gray-400 ml-1 flex items-center gap-1">
-      {agendados > 0 && (
-        <span className="flex items-center gap-1 text-red-500">
-          <User size={10} />{agendados}
-        </span>
-      )}
-      {disponiveis > 0 && (
-        <span className="flex items-center gap-1 text-blue-500">
-          <CalendarIcon size={10} />{disponiveis}
-        </span>
-      )}
-    </span>
-  )
-}
+    <span className="text-[10px] text-gray-400 ml
