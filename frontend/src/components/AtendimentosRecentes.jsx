@@ -19,8 +19,8 @@ export default function AtendimentosRecentes({
         <h2 className="text-nublia-accent text-lg font-semibold">Atendimentos Recentes</h2>
       </div>
 
-      {/* Lista de atendimentos */}
-      <ul className="flex-1 overflow-auto divide-y divide-gray-200 px-4 pb-2">
+      {/* Lista de atendimentos com linha à direita */}
+      <ul className="flex-1 overflow-auto divide-y divide-gray-200 px-4 pb-2 border-r border-gray-200">
         {atendimentos.map((a) => {
           const nome = getNomePaciente(a.paciente_id)
           return (
