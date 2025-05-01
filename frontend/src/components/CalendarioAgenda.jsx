@@ -19,8 +19,8 @@ import {
   ChevronRight,
   UserRoundCheck,
   Calendar as CalendarIcon,
-  Clock,
-  CalendarDays
+  CalendarDays,
+  Clock
 } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
@@ -34,20 +34,30 @@ const localizer = dateFnsLocalizer({
 })
 
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
+  const [view, setView] = useState('month')
+  const [dataAtual, setDataAtual] = useState(new Date())
+
   return (
     <div className="h-full p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={[]} // eventos controlados manualmente no modo mês
+        events={[]} // eventos visuais no modo mês são personalizados
         startAccessor="start"
         endAccessor="end"
+        view={view}
+        date={dataAtual}
+        onView={setView}
+        onNavigate={setDataAtual}
         defaultView="month"
         views={['month', 'week', 'day', 'agenda']}
         selectable
         step={15}
         timeslots={1}
         culture="pt-BR"
-        onSelectSlot={aoSelecionarSlot}
+        onSelectSlot={({ start }) => {
+          // Ao clicar em área vazia → abre modal
+          aoSelecionarSlot({ start })
+        }}
         onSelectEvent={aoSelecionarEvento}
         messages={{
           next: <ChevronRight size={20} />,
@@ -60,11 +70,22 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           noEventsInRange: 'Sem eventos neste período.',
         }}
         components={{
-          toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
+          toolbar: (props) => (
+            <CustomToolbar
+              {...props}
+              eventos={eventos}
+            />
+          ),
           day: { header: CustomDayHeader },
           month: {
             dateHeader: (props) => (
-              <HeaderComEventos data={props.date} label={props.label} eventos={eventos} />
+              <HeaderComEventos
+                data={props.date}
+                label={props.label}
+                eventos={eventos}
+                onView={setView}
+                onNavigate={setDataAtual}
+              />
             )
           }
         }}
@@ -73,7 +94,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
   )
 }
 
-function HeaderComEventos({ data, label, eventos }) {
+function HeaderComEventos({ data, label, eventos, onView, onNavigate }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
 
   const doDia = eventos.filter(ev => isSameCalendarDay(ev.start, data))
@@ -110,15 +131,15 @@ function HeaderComEventos({ data, label, eventos }) {
           )}
         </div>
         <span
-          onClick={() =>
-            document.querySelector('[role="toolbar"] button:nth-child(2)')?.click() || null
-          }
-            onDoubleClick={(e) => e.stopPropagation()}
-            className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation()
+            onView('day')
+            onNavigate(data)
+          }}
+          className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
         >
           {label}
         </span>
-
       </div>
 
       <div className="flex flex-wrap gap-[4px] mt-1 overflow-visible">
@@ -219,7 +240,6 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
           <CalendarDays size={16} className="text-nublia-accent" />
           {renderLabel()}
         </span>
-
       </div>
 
       <div className="flex items-center gap-3">
