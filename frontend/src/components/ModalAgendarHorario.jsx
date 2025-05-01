@@ -274,6 +274,7 @@ useEffect(() => {
                 <>
                   <p className="text-sm text-gray-600 mt-1">Paciente atual: <strong>{pacienteAtual}</strong></p>
                   <label className="text-sm text-gray-600 mb-1 mt-2">Transferir para outro horário:</label>
+
 <select
   value={novoHorarioId || ''}
   onChange={(e) => setNovoHorarioId(parseInt(e.target.value))}
@@ -281,6 +282,8 @@ useEffect(() => {
 >
   <option value="">Selecione um novo horário</option>
   {horariosDisponiveis.map((h) => {
+    if (!h.dia || !h.hora) return null
+
     const [ano, mes, dia] = h.dia.split('-').map(Number)
     const [hora, minuto] = h.hora.split(':').map(Number)
     const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
@@ -292,6 +295,7 @@ useEffect(() => {
     )
   })}
 </select>
+
 
                   <div className="flex gap-2 mt-3">
                     <button
