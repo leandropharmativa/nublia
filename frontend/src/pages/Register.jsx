@@ -1,9 +1,10 @@
-// Importações principais
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { Feather } from 'lucide-react'
 
 export default function Register() {
-  // Estados para armazenar o formulário
+  const navigate = useNavigate()
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -17,20 +18,16 @@ export default function Register() {
     codigoAtivacao: ''
   })
 
-  // Estados para feedbacks ao usuário
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState(false)
 
-  // Função que atualiza os campos do formulário
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  // Função para enviar os dados para o backend
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      // Prepara o payload da requisição no formato correto
       const payload = {
         user: {
           name: form.name,
@@ -46,91 +43,103 @@ export default function Register() {
         codigo_ativacao: form.codigoAtivacao || null
       }
 
-      // Faz o POST para o backend
       await axios.post('https://nublia-backend.onrender.com/register', payload)
-
-      // Se deu tudo certo
       setSucesso(true)
       setErro('')
+      setTimeout(() => navigate('/'), 1500)
     } catch (error) {
       console.error(error)
       setErro("Erro ao registrar. Verifique os dados.")
+      setSucesso(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md w-96 space-y-4">
-        <h2 className="text-2xl font-bold text-center text-blue-600">Registrar-se</h2>
+    <div className="flex h-screen font-sans text-gray-800">
+      {/* Lado esquerdo com degradê */}
+      <div className="w-1/2 bg-gradient-to-br from-nublia-accent to-nublia-primary p-10 flex flex-col relative">
+        <div className="flex items-center text-nublia-orange text-3xl font-bold">
+          <Feather className="w-8 h-8 mr-2" />
+          Nublia
+        </div>
+        <div className="absolute top-36 left-10">
+          <h1 className="text-5xl font-bold text-left leading-snug">
+            Crie sua<br />conta
+          </h1>
+        </div>
+      </div>
 
-        {/* Mensagens de erro ou sucesso */}
-        {erro && <p className="text-red-500 text-center">{erro}</p>}
-        {sucesso && <p className="text-green-500 text-center">Cadastro realizado com sucesso!</p>}
+      {/* Lado direito com formulário */}
+      <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
+        <form onSubmit={handleSubmit} className="w-full max-w-sm">
+          <h2 className="text-title mb-6">Cadastro</h2>
 
-        {/* Campos do formulário */}
-        <input
-          type="text"
-          name="name"
-          placeholder="Nome completo"
-          required
-          className="border px-3 py-2 w-full"
-          onChange={handleChange}
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-          className="border px-3 py-2 w-full"
-          onChange={handleChange}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Senha"
-          required
-          className="border px-3 py-2 w-full"
-          onChange={handleChange}
-        />
+          {erro && <div className="alert-warning">{erro}</div>}
+          {sucesso && <div className="alert-success">Cadastro realizado com sucesso!</div>}
 
-        {/* Seleção do tipo de usuário */}
-        <select
-          name="role"
-          className="border px-3 py-2 w-full"
-          onChange={handleChange}
-          required
-        >
-          <option value="paciente">Paciente</option>
-          <option value="prescritor">Prescritor</option>
-          <option value="farmacia">Farmácia</option>
-          <option value="academia">Academia</option>
-          <option value="clinica">Clínica</option>
-        </select>
-
-        {/* Campo de código de ativação (aparece apenas para tipos especiais) */}
-        {["prescritor", "farmacia", "academia", "clinica"].includes(form.role) && (
           <input
             type="text"
-            name="codigoAtivacao"
-            placeholder="Código de ativação"
-            className="border px-3 py-2 w-full"
+            name="name"
+            placeholder="Nome completo"
+            required
+            className="input-base mb-3"
+            onChange={handleChange}
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            required
+            className="input-base mb-3"
+            onChange={handleChange}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Senha"
+            required
+            className="input-base mb-3"
+            onChange={handleChange}
+          />
+          <select
+            name="role"
+            className="input-base mb-3"
             onChange={handleChange}
             required
-          />
-        )}
+          >
+            <option value="paciente">Paciente</option>
+            <option value="prescritor">Prescritor</option>
+            <option value="farmacia">Farmácia</option>
+            <option value="academia">Academia</option>
+            <option value="clinica">Clínica</option>
+          </select>
 
-        {/* Botão de envio */}
-        <button type="submit" className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 w-full">
-          Registrar
-        </button>
+          {["prescritor", "farmacia", "academia", "clinica"].includes(form.role) && (
+            <input
+              type="text"
+              name="codigoAtivacao"
+              placeholder="Código de ativação"
+              required
+              className="input-base mb-3"
+              onChange={handleChange}
+            />
+          )}
 
-        {/* Link para voltar ao login */}
-        <div className="text-center mt-4">
-          <a href="/" className="text-blue-600 hover:underline text-sm">
-            Já tem conta? Faça login
-          </a>
-        </div>
-      </form>
+          <button type="submit" className="btn-primary w-full flex justify-center">
+            Registrar
+          </button>
+
+          <div className="text-center mt-4">
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-sm"
+              onClick={() => navigate('/')}
+            >
+              Já tem conta? Faça login
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }
