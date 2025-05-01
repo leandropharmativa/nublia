@@ -20,9 +20,9 @@ import AtendimentosRecentes from '../components/AtendimentosRecentes'
 import BuscarPacienteModal from '../components/BuscarPacienteModal'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
+import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import Botao from '../components/Botao'
 import ModalNovoHorario from '../components/ModalNovoHorario'
-import ModalAgendarHorario from '../components/ModalAgendarHorario'
 
 const tabs = [
   { icon: Home, label: 'Início' },
@@ -37,15 +37,17 @@ export default function PrescritorDashboard() {
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
   const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
-  const [mostrarAgendamentoModal, setMostrarAgendamentoModal] = useState(false)
   const [mostrarNovoHorario, setMostrarNovoHorario] = useState(false)
+  const [mostrarAgendamentoModal, setMostrarAgendamentoModal] = useState(false)
+
   const [pacientePerfil, setPacientePerfil] = useState(null)
-  const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null)
+  const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
+
   const [atendimentos, setAtendimentos] = useState([])
+  const [agendaEventos, setAgendaEventos] = useState([])
   const [pacientes, setPacientes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
-  const [agendaEventos, setAgendaEventos] = useState([])
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
@@ -82,6 +84,16 @@ export default function PrescritorDashboard() {
     }
   }
 
+  const carregarPacientes = async () => {
+    try {
+      const res = await fetch('https://nublia-backend.onrender.com/users/all')
+      const data = await res.json()
+      setPacientes(data.filter(u => u.role === 'paciente'))
+    } catch (err) {
+      console.error('Erro ao carregar pacientes:', err)
+    }
+  }
+
   const carregarAgenda = async (id) => {
     try {
       const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${id}`)
@@ -102,16 +114,6 @@ export default function PrescritorDashboard() {
       setAgendaEventos(eventosComNome)
     } catch (err) {
       console.error('Erro ao carregar agenda:', err)
-    }
-  }
-
-  const carregarPacientes = async () => {
-    try {
-      const res = await fetch('https://nublia-backend.onrender.com/users/all')
-      const data = await res.json()
-      setPacientes(data.filter(u => u.role === 'paciente'))
-    } catch (err) {
-      console.error('Erro ao carregar pacientes:', err)
     }
   }
 
@@ -160,7 +162,7 @@ export default function PrescritorDashboard() {
           </div>
         </div>
 
-        {/* Conteúdo à direita */}
+        {/* Conteúdo principal */}
         <div className="flex-1 flex flex-col items-end pr-6 ml-6 overflow-y-auto bg-white">
           <Tab.Group>
             <Tab.List className="relative flex gap-8 mb-6 transition-all duration-300">
@@ -194,12 +196,18 @@ export default function PrescritorDashboard() {
                     <ul className="space-y-[6px] text-sm text-gray-800 w-full max-w-xl">
                       {agendamentosHoje.map((a) => (
                         <li key={a.id} className="flex items-center gap-2 border-b border-gray-200 pb-1">
-                          <User size={16} className="text-nublia-accent" />
+                          <button
+                            onClick={() => handleVerPerfil(a.paciente_id)}
+                            title="Ver perfil"
+                            className="text-nublia-accent hover:text-nublia-orange"
+                          >
+                            <User size={16} />
+                          </button>
                           <span className="font-medium">{a.nome}</span>
                           <span className="text-gray-500 text-sm">{a.hora?.slice(0, 5)}h</span>
                           <button
                             className="text-nublia-accent hover:text-nublia-orange ml-1"
-                            title="Ver agendamento"
+                            title="Editar agendamento"
                             onClick={() => {
                               setAgendamentoSelecionado(a.id)
                               setMostrarAgendamentoModal(true)
