@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
@@ -238,7 +239,16 @@ export default function ModalAgendarHorario({
                       <ArrowLeftRight size={18} />
                     </button>
                     <button
-                      onClick={() => setReagendando(true)}
+                      onClick={() => {
+                      setReagendando(true)
+                      axios
+                        .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+                        .then(res => {
+                          const disponiveis = res.data.filter(h => h.status === 'disponivel')
+                          setHorariosDisponiveis(disponiveis)
+                        })
+                        .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
+                    }
                       className="text-nublia-accent hover:text-nublia-orange"
                       title="Transferir paciente"
                     >
