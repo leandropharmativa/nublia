@@ -4,7 +4,7 @@ import { BadgeCheck, XCircle, Info, AlertTriangle } from 'lucide-react'
 export function toastSucesso(mensagem = 'Salvo com sucesso') {
   toast.success(mensagem, {
     icon: <BadgeCheck size={18} className="text-nublia-orange" />,
-    className: 'bg-white border border-gray-200 text-gray-500 rounded-xl',
+    className: 'bg-white border border-gray-200 text-gray-200 rounded-xl',
     progressClassName: 'bg-nublia-accent',
     bodyClassName: 'text-sm font-medium',
   })
