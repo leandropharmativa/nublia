@@ -312,16 +312,21 @@ export default function PrescritorDashboard() {
         />
       )}
 
-      {mostrarNovoHorario && (
-        <ModalNovoHorario
-          horario={hojeSlot}
-          onCancelar={() => setMostrarNovoHorario(false)}
-          onConfirmar={() => {
-            setMostrarNovoHorario(false)
-            carregarAgenda(user.id)
-          }}
-        />
-      )}
+{mostrarNovoHorario && agendamentoSelecionado && (
+  <ModalNovoHorario
+    horario={agendamentoSelecionado}
+    onCancelar={() => {
+      setMostrarNovoHorario(false)
+      setAgendamentoSelecionado(null)
+    }}
+    onConfirmar={() => {
+      setMostrarNovoHorario(false)
+      setAgendamentoSelecionado(null)
+      carregarAgenda(user.id)
+    }}
+  />
+)}
+
 
       {mostrarAgendamentoModal && agendamentoSelecionado && (
         <ModalAgendarHorario
