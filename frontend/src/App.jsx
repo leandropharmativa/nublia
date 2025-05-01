@@ -1,10 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
-//import Admin from './pages/Admin'
-//import FarmaciaDashboard from './pages/FarmaciaDashboard'
-//import PrescritorDashboard from './pages/PrescritorDashboard'
-//import PrivateRoute from './routes/PrivateRoute'
+import Admin from './pages/Admin'
+import FarmaciaDashboard from './pages/FarmaciaDashboard'
+import PrescritorDashboard from './pages/PrescritorDashboard'
+import PrivateRoute from './routes/PrivateRoute'
 
 // Página de acesso negado
 function AcessoNegado() {
@@ -14,6 +14,7 @@ function AcessoNegado() {
     </div>
   )
 }
+
 
 // Página 404
 function NotFound() {
@@ -31,8 +32,25 @@ export default function App() {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
+      {/* Rotas protegidas */}
+      <Route path="/admin" element={
+        <PrivateRoute allowedRoles={['admin']}>
+          <Admin />
+        </PrivateRoute>
+      } />
 
+      <Route path="/farmacia" element={
+        <PrivateRoute allowedRoles={['farmacia']}>
+          <FarmaciaDashboard />
+        </PrivateRoute>
+      } />
 
+      <Route path="/prescritor" element={
+        <PrivateRoute allowedRoles={['prescritor']}>
+          <PrescritorDashboard />
+        </PrivateRoute>
+      } />
+      
       {/* Acesso negado */}
       <Route path="/acesso-negado" element={<AcessoNegado />} />
 
