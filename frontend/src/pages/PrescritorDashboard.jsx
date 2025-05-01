@@ -243,7 +243,7 @@ export default function PrescritorDashboard() {
     <Eye size={16} />
   </button>
   <button
-    className="text-green-600 hover:text-green-800 ml-1"
+    className="text-nublia-accent hover:text-nublia-orange ml-1"
     title="Iniciar atendimento"
     onClick={() => {
       const paciente = pacientes.find(p => p.id === a.paciente_id)
@@ -253,7 +253,7 @@ export default function PrescritorDashboard() {
       }
     }}
   >
-    <PlayCircle size={16} />
+    <PlayCircle size={15} />
   </button>
 </li>
 
