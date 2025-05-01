@@ -123,27 +123,17 @@ export default function Login({ onLogin }) {
             />
           </div>
 
-          <AnimatePresence>
-            {temSenha !== null && (
-              <motion.div
-                key="senha"
-                layout
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-4 overflow-hidden"
-              >
-                <input
-                  type="password"
-                  placeholder={temSenha ? "Senha" : "Crie sua senha"}
-                  value={temSenha ? senha : novaSenha}
-                  onChange={(e) => temSenha ? setSenha(e.target.value) : setNovaSenha(e.target.value)}
-                  required
-                  className="input-base"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className={`mb-4 transition-all duration-300 ${temSenha !== null ? 'opacity-100 max-h-40' : 'opacity-0 max-h-0 overflow-hidden'}`}>
+          <input
+          type="password"
+          placeholder={temSenha ? "Senha" : "Crie sua senha"}
+          value={temSenha ? senha : novaSenha}
+          onChange={(e) => temSenha ? setSenha(e.target.value) : setNovaSenha(e.target.value)}
+          required
+          className="input-base"
+          />
+          </div>
+
 
           <button
             type="submit"
