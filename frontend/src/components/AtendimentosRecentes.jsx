@@ -20,39 +20,41 @@ export default function AtendimentosRecentes({
         Atendimentos recentes
       </div>
 
-      {/* Lista com altura automática, sem rolagem */}
-      <ul className="divide-y divide-gray-200 px-4 pb-2 border-r border-gray-200">
-        {atendimentos.map((a) => {
-          const nome = getNomePaciente(a.paciente_id)
-          return (
-            <li key={a.id} className="flex items-center gap-2 py-2 text-sm text-gray-600">
-              <span className="truncate flex items-center gap-1">
-                {nome}
-                <button
-                  onClick={() => onVerPerfil(a.paciente_id)}
-                  title={`Ver perfil de ${nome}`}
-                  className="text-nublia-accent hover:text-nublia-orange"
-                >
-                  <User size={16} />
-                </button>
-                <button
-                  onClick={() => onVerAtendimento(a)}
-                  title={`Ver atendimento de ${nome}`}
-                  className="text-nublia-accent hover:text-nublia-orange"
-                >
-                  <FileText size={16} />
-                </button>
-              </span>
-            </li>
-          )
-        })}
-        {atendimentos.length === 0 && (
-          <li className="text-sm italic text-gray-500 py-4">Nenhum atendimento encontrado.</li>
-        )}
-      </ul>
+      {/* Lista que cresce conforme necessário */}
+      <div className="px-4 pb-2 border-r border-gray-200 flex-1">
+        <ul className="divide-y divide-gray-200">
+          {atendimentos.map((a) => {
+            const nome = getNomePaciente(a.paciente_id)
+            return (
+              <li key={a.id} className="flex items-center gap-2 py-2 text-sm text-gray-600">
+                <span className="truncate flex items-center gap-1">
+                  {nome}
+                  <button
+                    onClick={() => onVerPerfil(a.paciente_id)}
+                    title={`Ver perfil de ${nome}`}
+                    className="text-nublia-accent hover:text-nublia-orange"
+                  >
+                    <User size={16} />
+                  </button>
+                  <button
+                    onClick={() => onVerAtendimento(a)}
+                    title={`Ver atendimento de ${nome}`}
+                    className="text-nublia-accent hover:text-nublia-orange"
+                  >
+                    <FileText size={16} />
+                  </button>
+                </span>
+              </li>
+            )
+          })}
+          {atendimentos.length === 0 && (
+            <li className="text-sm italic text-gray-500 py-4">Nenhum atendimento encontrado.</li>
+          )}
+        </ul>
+      </div>
 
-      {/* Campo de busca */}
-      <div className="p-4 bg-white mt-auto">
+      {/* Campo de busca fixo no final */}
+      <div className="p-4 border-t bg-white">
         <div className="relative">
           <input
             type="text"
