@@ -285,14 +285,16 @@ export default function ModalAgendarHorario({
                     className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
                   >
                     <option value="">Selecione um novo horário</option>
-                    {horariosDisponiveis.map((h) => {
-                      const dataHora = new Date(h.data_hora.replace(' ', 'T'))
-                      return (
-                        <option key={h.id} value={h.id}>
-                          {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                        </option>
-                      )
-                    })}
+                    {horariosDisponiveis
+                      .filter(h => typeof h.data_hora === 'string')
+                      .map((h) => {
+                        const dataHora = new Date(h.data_hora.replace(' ', 'T'))
+                        return (
+                          <option key={h.id} value={h.id}>
+                            {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                          </option>
+                        )
+                      })}
                   </select>
 
                   <div className="flex gap-2 mt-3">
