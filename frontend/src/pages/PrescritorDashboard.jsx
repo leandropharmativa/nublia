@@ -36,6 +36,8 @@ const tabs = [
 
 export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
+  const [abaSelecionada, setAbaSelecionada] = useState(0)
+
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
   const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
@@ -142,7 +144,6 @@ export default function PrescritorDashboard() {
   return (
     <Layout>
       <div className="flex h-[calc(100vh-160px)]">
-        {/* Lateral esquerda */}
         <div className="h-full w-72 flex flex-col">
           <div className="p-4 pb-0">
             <Botao
@@ -165,9 +166,8 @@ export default function PrescritorDashboard() {
           </div>
         </div>
 
-        {/* Conteúdo principal */}
         <div className="flex-1 flex flex-col items-end pr-6 ml-6 overflow-y-auto bg-white">
-          <Tab.Group>
+          <Tab.Group selectedIndex={abaSelecionada} onChange={setAbaSelecionada}>
             <Tab.List className="relative flex gap-8 mb-6 transition-all duration-300">
               {tabs.map((tab, idx) => (
                 <Tab
@@ -259,18 +259,23 @@ export default function PrescritorDashboard() {
                   Configurações da conta (em breve)
                 </div>
               </Tab.Panel>
+
+              {pacienteSelecionado && (
+                <Tab.Panel>
+                  <FichaAtendimento
+                    paciente={pacienteSelecionado}
+                    onFinalizar={() => {
+                      setPacienteSelecionado(null)
+                      setAbaSelecionada(0)
+                    }}
+                    onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
+                  />
+                </Tab.Panel>
+              )}
             </Tab.Panels>
           </Tab.Group>
         </div>
       </div>
-
-      {pacienteSelecionado && (
-        <FichaAtendimento
-          paciente={pacienteSelecionado}
-          onFinalizar={() => setPacienteSelecionado(null)}
-          onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
-        />
-      )}
 
       {mostrarBuscarPacienteModal && (
         <BuscarPacienteModal
@@ -278,6 +283,7 @@ export default function PrescritorDashboard() {
           onSelecionarPaciente={(paciente) => {
             setPacienteSelecionado(paciente)
             setMostrarBuscarPacienteModal(false)
+            setAbaSelecionada(tabs.length) // ativa a tab invisível da ficha
           }}
         />
       )}
