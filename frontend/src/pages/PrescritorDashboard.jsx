@@ -139,7 +139,7 @@ export default function PrescritorDashboard() {
 
             <Tab.Panels className="w-full">
               <Tab.Panel>
-                <div className="h-full flex justify-center items-center">
+                 <div className="min-h-[calc(100vh-250px)] flex justify-center items-center">
                   <Botao
                     texto="Iniciar atendimento"
                     iconeInicio={<PlusCircle size={18} />}
