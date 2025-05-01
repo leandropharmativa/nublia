@@ -36,6 +36,7 @@ export default function PrescritorDashboard() {
   const [atendimentos, setAtendimentos] = useState([])
   const [pacientes, setPacientes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
+  const [agendaEventos, setAgendaEventos] = useState([])
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
@@ -44,6 +45,7 @@ export default function PrescritorDashboard() {
       setUser(usuario)
       carregarAtendimentos(usuario.id)
       carregarPacientes()
+      carregarAgenda(usuario.id)
     }
   }, [])
 
@@ -68,6 +70,29 @@ export default function PrescritorDashboard() {
       setAtendimentos(atendimentosComNomes.reverse())
     } catch (err) {
       console.error('Erro ao carregar atendimentos:', err)
+    }
+  }
+
+  const carregarAgenda = async (id) => {
+    try {
+      const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${id}`)
+      const data = await res.json()
+      const eventosComNome = await Promise.all(
+        data.map(async (e) => {
+          let nome = 'Agendado'
+          if (e.status === 'agendado' && e.paciente_id) {
+            try {
+              const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${e.paciente_id}`)
+              const paciente = await resPaciente.json()
+              nome = paciente.name
+            } catch {}
+          }
+          return { ...e, nome }
+        })
+      )
+      setAgendaEventos(eventosComNome)
+    } catch (err) {
+      console.error('Erro ao carregar agenda:', err)
     }
   }
 
@@ -102,10 +127,10 @@ export default function PrescritorDashboard() {
     item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
   )
 
-  const agendamentosHoje = atendimentos.filter(a => {
-    const hoje = new Date().toISOString().split('T')[0]
-    return a.data?.startsWith(hoje) && a.status === 'agendado'
-  })
+  const hoje = new Date().toISOString().split('T')[0]
+  const agendamentosHoje = agendaEventos.filter(
+    (e) => e.status === 'agendado' && e.data === hoje
+  )
 
   return (
     <Layout>
@@ -160,7 +185,7 @@ export default function PrescritorDashboard() {
                       <ul className="space-y-2 text-sm">
                         {agendamentosHoje.map((a) => (
                           <li key={a.id} className="border rounded px-4 py-2 bg-white">
-                            {a.nomePaciente} – {a.data?.slice(11, 16) || 'Horário indefinido'}
+                            {a.nome} – {a.hora?.slice(0, 5)}
                           </li>
                         ))}
                       </ul>
