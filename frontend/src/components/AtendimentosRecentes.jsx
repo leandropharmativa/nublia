@@ -21,10 +21,10 @@ export default function AtendimentosRecentes({
         Atendimentos recentes
       </div>
 
-      {/* Lista com altura máxima ajustada para manter busca visível */}
-      <div className="px-4 pb-2 border-r border-gray-200 max-h-[calc(100vh-280px)] overflow-auto">
-        <ul className="divide-y divide-gray-200">
-          {atendimentos.map((a) => {
+      {/* Lista de atendimentos */}
+      <div className="px-4 pb-2 border-r border-gray-200 flex-grow">
+        <ul className="divide-y divide-gray-200 max-h-full">
+          {atendimentos.slice(0, 6).map((a) => {
             const nome = getNomePaciente(a.paciente_id)
             return (
               <li key={a.id} className="flex items-center gap-2 py-2 text-sm text-gray-600">
@@ -54,8 +54,8 @@ export default function AtendimentosRecentes({
         </ul>
       </div>
 
-      {/* Campo de busca fixo */}
-      <div className="p-4">
+      {/* Barra de busca fixa */}
+      <div className="p-4 bg-white">
         <div className="relative">
           <input
             type="text"
