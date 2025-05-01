@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Save, CheckCircle, Eye } from 'lucide-react'
+import { Save, CheckCircle, ClipboardX, Eye } from 'lucide-react'
 import axios from 'axios'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
 
@@ -12,7 +14,6 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
     dieta: '',
     receita: '',
   })
-  const [mensagem, setMensagem] = useState(null)
   const [atendimentoId, setAtendimentoId] = useState(null)
   const [atendimentosAnteriores, setAtendimentosAnteriores] = useState([])
   const [modalVisualizar, setModalVisualizar] = useState(null)
@@ -42,7 +43,6 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
 
   const handleChange = (e) => {
     setFormulario({ ...formulario, [abaAtiva]: e.target.value })
-    setMensagem(null)
   }
 
   const handleSalvar = async () => {
@@ -65,12 +65,28 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
       }
 
-      setMensagem({ tipo: 'sucesso', texto: 'Atendimento salvo com sucesso!' })
+      toast.success('Atendimento salvo com sucesso!')
 
       if (onAtendimentoSalvo) onAtendimentoSalvo()
     } catch (error) {
       console.error('Erro ao salvar atendimento:', error.response?.data || error.message)
-      setMensagem({ tipo: 'erro', texto: 'Erro ao salvar atendimento. Verifique os dados.' })
+      toast.error('Erro ao salvar atendimento. Verifique os dados.')
+    }
+  }
+
+  const handleFinalizar = async () => {
+    await handleSalvar()
+    toast.success('Atendimento finalizado!')
+    onFinalizar()
+  }
+
+  const houveAlteracao = Object.values(formulario).some(valor => valor.trim() !== '')
+
+  const handleDescartar = () => {
+    if (houveAlteracao && !atendimentoId) {
+      setMostrarConfirmacaoSaida(true)
+    } else {
+      onFinalizar()
     }
   }
 
@@ -84,23 +100,14 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
     return idade
   }
 
-  const houveAlteracao = Object.values(formulario).some(valor => valor.trim() !== '')
-
-  const tentarSair = () => {
-    if (houveAlteracao && !atendimentoId) {
-      setMostrarConfirmacaoSaida(true)
-    } else {
-      onFinalizar()
-    }
-  }
-
   return (
     <div className="bg-white p-6 rounded-2xl w-full">
       {/* Cabeçalho */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <h2 className="text-2xl font-bold text-nublia-accent">Ficha de Atendimento</h2>
+
             <button
               onClick={handleSalvar}
               className="text-nublia-accent hover:text-nublia-orange transition"
@@ -108,12 +115,21 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
             >
               <Save size={24} />
             </button>
+
             <button
-              onClick={tentarSair}
-              className="text-green-600 hover:text-green-700 font-semibold text-sm border border-green-600 px-4 py-2 rounded-full transition"
+              onClick={handleFinalizar}
+              className="text-white bg-nublia-accent hover:bg-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2"
               title="Finalizar atendimento"
             >
-              <CheckCircle size={18} className="inline mr-1 -mt-0.5" /> Finalizar
+              <CheckCircle size={18} /> Finalizar
+            </button>
+
+            <button
+              onClick={handleDescartar}
+              className="text-nublia-accent hover:text-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2 border border-nublia-accent"
+              title="Descartar atendimento"
+            >
+              <ClipboardX size={18} /> Descartar
             </button>
           </div>
           <p className="text-sm text-gray-700 font-semibold mt-1">
@@ -121,16 +137,6 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
           </p>
         </div>
       </div>
-
-      {mensagem && (
-        <div className={`mb-4 text-sm text-center rounded-full px-4 py-2 font-medium ${
-          mensagem.tipo === 'sucesso'
-            ? 'text-blue-600 bg-blue-50'
-            : 'text-orange-600 bg-orange-50'
-        }`}>
-          {mensagem.texto}
-        </div>
-      )}
 
       {/* Abas */}
       <div className="flex border-b mb-6">
@@ -204,17 +210,11 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
 
       <ModalConfirmacao
         aberto={mostrarConfirmacaoSaida}
-        titulo="Deseja finalizar o atendimento?"
-        mensagem="Se você sair agora, o atendimento não poderá mais ser editado. Deseja salvar antes de finalizar?"
-        textoBotaoConfirmar="Salvar e finalizar"
-        textoBotaoCancelar="Cancelar"
-        textoBotaoExtra="Finalizar sem salvar"
-        onConfirmar={async () => {
-          await handleSalvar()
-          setMostrarConfirmacaoSaida(false)
-          onFinalizar()
-        }}
-        onSairSemSalvar={() => {
+        titulo="Descartar atendimento?"
+        mensagem="Há informações preenchidas na ficha. Deseja realmente sair e perder os dados?"
+        textoBotaoConfirmar="Sim, descartar"
+        textoBotaoExtra="Continuar preenchendo"
+        onConfirmar={() => {
           setMostrarConfirmacaoSaida(false)
           onFinalizar()
         }}
