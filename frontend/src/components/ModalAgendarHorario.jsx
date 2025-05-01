@@ -3,7 +3,7 @@ import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
 import PerfilPacienteModal from './PerfilPacienteModal'
 import { Search, User, X, Loader2 } from 'lucide-react'
-import { toast } from 'react-toastify'
+import { toastSucesso, toastErro } from '../utils/toastUtils'
 
 export default function ModalAgendarHorario({
   agendamentoId,
@@ -36,14 +36,18 @@ export default function ModalAgendarHorario({
   }, [statusAtual])
 
   useEffect(() => {
-    if (statusAtual === 'agendado' || statusAtual === 'novo_agendamento') {
+    if (
+      statusAtual === 'agendado' ||
+      statusAtual === 'novo_agendamento' ||
+      statusAtual === 'disponivel'
+    ) {
       axios
         .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
         .then(res => {
           const disponiveis = res.data.filter(h => h.status === 'disponivel')
           setHorariosDisponiveis(disponiveis)
         })
-        .catch(err => console.error('Erro ao buscar horários disponíveis:', err))
+        .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
     }
   }, [statusAtual, user.id])
 
@@ -60,8 +64,8 @@ export default function ModalAgendarHorario({
           (p) => p.role === 'paciente' && p.name.toLowerCase().includes(filtro.toLowerCase())
         )
         setPacientes(apenasPacientes)
-      } catch (error) {
-        console.error('Erro ao buscar pacientes:', error)
+      } catch {
+        toastErro('Erro ao buscar pacientes.')
       }
     }
 
@@ -82,16 +86,84 @@ export default function ModalAgendarHorario({
         para_id: novoHorarioId
       })
 
-      toast.success('Paciente transferido para outro horário!')
+      toastSucesso('Paciente transferido para outro horário!')
       if (onAtualizarAgenda) onAtualizarAgenda()
       setCarregando(false)
       onCancelar()
     } catch (error) {
-      console.error('Erro ao reagendar:', error)
-      toast.error(error?.response?.status === 400 ? 'Este horário já está ocupado.' : 'Erro ao reagendar.')
+      toastErro(error?.response?.status === 400 ? 'Este horário já está ocupado.' : 'Erro ao reagendar.')
       setCarregando(false)
     }
   }
+
+  const renderBuscaPaciente = () => (
+    <>
+      <label className="text-sm text-gray-600 mb-1">Paciente:</label>
+      {selecionado ? (
+        <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
+          <div>
+            <p className="font-medium">{selecionado.name}</p>
+            <p className="text-xs text-gray-500">{selecionado.email || 'Sem e-mail'}</p>
+          </div>
+          <button
+            onClick={() => {
+              setSelecionado(null)
+              setFiltro('')
+              setPacientes([])
+            }}
+            className="text-nublia-accent hover:text-nublia-orange text-sm"
+          >
+            Trocar
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="relative">
+            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Buscar pacientes..."
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+              className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+            />
+          </div>
+
+          <div className="overflow-y-auto max-h-[300px] mt-2">
+            {pacientes.map((paciente) => (
+              <div
+                key={paciente.id}
+                className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
+              >
+                <div>
+                  <p className="font-medium text-gray-800">{paciente.name}</p>
+                  <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelecionado(paciente)
+                    setFiltro('')
+                    setPacientes([])
+                  }}
+                  className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+                >
+                  <User size={18} /> Selecionar
+                </button>
+              </div>
+            ))}
+
+            {filtro.length >= 2 && pacientes.length === 0 && (
+              <p className="text-sm text-gray-500 italic text-center mt-2">
+                Nenhum paciente encontrado.
+              </p>
+            )}
+          </div>
+        </>
+      )}
+    </>
+  )
 
   return (
     <>
@@ -198,76 +270,12 @@ export default function ModalAgendarHorario({
               </div>
 
               <div className="mt-4">
-                <label className="text-sm text-gray-600 mb-1">Paciente:</label>
-
-                {selecionado ? (
-                  <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">{selecionado.name}</p>
-                      <p className="text-xs text-gray-500">{selecionado.email || 'Sem e-mail'}</p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setSelecionado(null)
-                        setFiltro('')
-                        setPacientes([])
-                      }}
-                      className="text-nublia-accent hover:text-nublia-orange text-sm"
-                    >
-                      Trocar
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        placeholder="Buscar pacientes..."
-                        value={filtro}
-                        onChange={(e) => setFiltro(e.target.value)}
-                        className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
-                      />
-                    </div>
-
-                    <div className="overflow-y-auto max-h-[300px] mt-2">
-                      {pacientes.map((paciente) => (
-                        <div
-                          key={paciente.id}
-                          className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
-                        >
-                          <div>
-                            <p className="font-medium text-gray-800">{paciente.name}</p>
-                            <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelecionado(paciente)
-                              setFiltro('')
-                              setPacientes([])
-                            }}
-                            className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
-                          >
-                            <User size={18} /> Selecionar
-                          </button>
-                        </div>
-                      ))}
-
-                      {filtro.length >= 2 && pacientes.length === 0 && (
-                        <p className="text-sm text-gray-500 italic text-center mt-2">
-                          Nenhum paciente encontrado.
-                        </p>
-                      )}
-                    </div>
-                  </>
-                )}
+                {renderBuscaPaciente()}
 
                 <button
                   onClick={() => {
                     if (!novoHorarioId || !selecionado) {
-                      toast.error('Selecione um horário e um paciente.')
+                      toastErro('Selecione um horário e um paciente.')
                       return
                     }
                     onConfirmar(novoHorarioId, selecionado.id)
@@ -286,20 +294,23 @@ export default function ModalAgendarHorario({
           )}
 
           {statusAtual === 'disponivel' && (
-            <div className="flex justify-between pt-4">
-              <button
-                onClick={() => onRemover(agendamentoId)}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm"
-              >
-                Remover horário
-              </button>
-              <button
-                onClick={() => setMostrarCadastro(true)}
-                className="bg-nublia-accent text-white hover:brightness-110 px-4 py-2 rounded-full text-sm"
-              >
-                Novo paciente
-              </button>
-            </div>
+            <>
+              {renderBuscaPaciente()}
+              <div className="flex justify-between pt-4">
+                <button
+                  onClick={() => onRemover(agendamentoId)}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm"
+                >
+                  Remover horário
+                </button>
+                <button
+                  onClick={() => setMostrarCadastro(true)}
+                  className="bg-nublia-accent text-white hover:brightness-110 px-4 py-2 rounded-full text-sm"
+                >
+                  Novo paciente
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>
