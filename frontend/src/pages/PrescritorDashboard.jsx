@@ -17,7 +17,7 @@ import {
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
 import MinhasFormulas from '../components/MinhasFormulas'
-import AtendimentosRecentes from '../components/AtendimentosRecentes'
+import AtendimentosRecentes from '../components/AtendimentosRecents'
 import BuscarPacienteModal from '../components/BuscarPacienteModal'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
@@ -25,15 +25,6 @@ import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import ModalNovoHorario from '../components/ModalNovoHorario'
 import FichaAtendimento from '../components/FichaAtendimento'
 import Botao from '../components/Botao'
-
-const tabs = [
-  { icon: Home, label: 'Início' },
-  { icon: CalendarDays, label: 'Agenda' },
-  { icon: BookOpenText, label: 'Fórmulas' },
-  { icon: Leaf, label: 'Dietas' },
-  { icon: Settings, label: 'Configurações' },
-  { icon: null, label: 'Ficha' } // aba invisível
-]
 
 export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
@@ -55,6 +46,12 @@ export default function PrescritorDashboard() {
   const [pacientes, setPacientes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
 
+  const hoje = new Date().toISOString().split('T')[0]
+  const hojeSlot = new Date()
+  const agendamentosHoje = agendaEventos.filter(
+    (e) => e.status === 'agendado' && e.data === hoje
+  )
+
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
@@ -70,10 +67,10 @@ export default function PrescritorDashboard() {
     try {
       const res = await fetch('https://nublia-backend.onrender.com/atendimentos/')
       const data = await res.json()
-      const atendimentosFiltrados = data.filter(a => a.prescritor_id === id)
+      const filtrados = data.filter(a => a.prescritor_id === id)
 
-      const atendimentosComNomes = await Promise.all(
-        atendimentosFiltrados.map(async (a) => {
+      const comNomes = await Promise.all(
+        filtrados.map(async (a) => {
           try {
             const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${a.paciente_id}`)
             const paciente = await resPaciente.json()
@@ -84,7 +81,7 @@ export default function PrescritorDashboard() {
         })
       )
 
-      setAtendimentos(atendimentosComNomes.reverse())
+      setAtendimentos(comNomes.reverse())
     } catch (err) {
       console.error('Erro ao carregar atendimentos:', err)
     }
@@ -104,7 +101,7 @@ export default function PrescritorDashboard() {
     try {
       const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${id}`)
       const data = await res.json()
-      const eventosComNome = await Promise.all(
+      const eventos = await Promise.all(
         data.map(async (e) => {
           let nome = 'Agendado'
           if (e.status === 'agendado' && e.paciente_id) {
@@ -117,7 +114,7 @@ export default function PrescritorDashboard() {
           return { ...e, nome }
         })
       )
-      setAgendaEventos(eventosComNome)
+      setAgendaEventos(eventos)
     } catch (err) {
       console.error('Erro ao carregar agenda:', err)
     }
@@ -125,8 +122,8 @@ export default function PrescritorDashboard() {
 
   const handleVerPerfil = async (pacienteId) => {
     try {
-      const response = await fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-      const paciente = await response.json()
+      const res = await fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+      const paciente = await res.json()
       if (!paciente || paciente.role !== 'paciente') throw new Error('Usuário inválido')
       setPacientePerfil(paciente)
       setMostrarPerfilPacienteModal(true)
@@ -135,16 +132,18 @@ export default function PrescritorDashboard() {
     }
   }
 
-  const hoje = new Date().toISOString().split('T')[0]
-  const agendamentosHoje = agendaEventos.filter(
-    (e) => e.status === 'agendado' && e.data === hoje
-  )
-
-  const hojeSlot = new Date()
-
   const atendimentosFiltrados = atendimentos.filter((item) =>
     item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
   )
+
+  const abas = [
+    { icon: Home, label: 'Início' },
+    { icon: CalendarDays, label: 'Agenda' },
+    { icon: BookOpenText, label: 'Fórmulas' },
+    { icon: Leaf, label: 'Dietas' },
+    { icon: Settings, label: 'Configurações' },
+    ...(pacienteSelecionado ? [{ icon: PlusCircle, label: 'Ficha' }] : [])
+  ]
 
   return (
     <Layout>
@@ -174,7 +173,7 @@ export default function PrescritorDashboard() {
         <div className="flex-1 flex flex-col items-end pr-6 ml-6 overflow-y-auto bg-white">
           <Tab.Group selectedIndex={abaSelecionada} onChange={setAbaSelecionada}>
             <Tab.List className="relative flex gap-8 mb-6 transition-all duration-300">
-              {tabs.slice(0, -1).map((tab, idx) => (
+              {abas.map((tab, idx) => (
                 <Tab
                   key={idx}
                   className={({ selected }) =>
@@ -183,7 +182,7 @@ export default function PrescritorDashboard() {
                     }`
                   }
                 >
-                  <tab.icon size={32} />
+                  {tab.icon && <tab.icon size={32} />}
                   <span className="text-xs mt-1">{tab.label}</span>
                 </Tab>
               ))}
@@ -265,9 +264,8 @@ export default function PrescritorDashboard() {
                 </div>
               </Tab.Panel>
 
-              {/* Aba invisível para ficha */}
-              <Tab.Panel>
-                {pacienteSelecionado ? (
+              {pacienteSelecionado && (
+                <Tab.Panel>
                   <FichaAtendimento
                     paciente={pacienteSelecionado}
                     onFinalizar={() => {
@@ -276,12 +274,8 @@ export default function PrescritorDashboard() {
                     }}
                     onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
                   />
-                ) : (
-                  <div className="text-center text-gray-400 py-10 italic">
-                    Nenhum paciente selecionado.
-                  </div>
-                )}
-              </Tab.Panel>
+                </Tab.Panel>
+              )}
             </Tab.Panels>
           </Tab.Group>
         </div>
@@ -293,7 +287,7 @@ export default function PrescritorDashboard() {
           onSelecionarPaciente={(paciente) => {
             setPacienteSelecionado(paciente)
             setMostrarBuscarPacienteModal(false)
-            setTimeout(() => setAbaSelecionada(tabs.length - 1), 0)
+            setTimeout(() => setAbaSelecionada(tabs.length), 0)
           }}
         />
       )}
