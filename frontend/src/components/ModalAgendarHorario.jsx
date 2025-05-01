@@ -42,6 +42,7 @@ export default function ModalAgendarHorario({
       axios
         .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
         .then(res => {
+          console.log('Horários recebidos:', res.data)
           const disponiveis = res.data.filter(h => h.status === 'disponivel')
           setHorariosDisponiveis(disponiveis)
         })
