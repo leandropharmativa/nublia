@@ -78,38 +78,50 @@ export default function ModalAgendarHorario({
     onConfirmar(agendamentoId, pacienteId)
   }
 
-const reagendar = async () => {
-  if (!agendamentoId || !novoHorarioId) {
-    toastErro('Erro: Dados incompletos para reagendamento.')
-    return
+  const reagendar = async () => {
+    if (!agendamentoId || !novoHorarioId) {
+      toastErro('Erro: Dados incompletos para reagendamento.')
+      return
+    }
+
+    if (agendamentoId === novoHorarioId) {
+      toastErro('Selecione um horário diferente do atual.')
+      return
+    }
+
+    setCarregando(true)
+
+    try {
+      await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
+        de_id: agendamentoId,
+        para_id: novoHorarioId
+      })
+
+      toastSucesso('Paciente transferido para outro horário!')
+      if (onAtualizarAgenda) onAtualizarAgenda()
+      setCarregando(false)
+      onCancelar()
+    } catch (error) {
+      toastErro(
+        error?.response?.status === 400
+          ? 'Este horário já está ocupado ou inválido.'
+          : 'Erro ao reagendar.'
+      )
+      setCarregando(false)
+    }
   }
 
-  if (agendamentoId === novoHorarioId) {
-    toastErro('Selecione um horário diferente do atual.')
-    return
+  const trocarPaciente = async () => {
+    try {
+      await onDesagendar(agendamentoId)
+      setSelecionado(null)
+      setFiltro('')
+      setPacientes([])
+      setTrocandoPaciente(true)
+    } catch {
+      toastErro('Erro ao trocar paciente.')
+    }
   }
-
-  setCarregando(true)
-
-  try {
-    await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
-      de_id: agendamentoId,
-      para_id: novoHorarioId
-    })
-
-    toastSucesso('Paciente transferido para outro horário!')
-    if (onAtualizarAgenda) onAtualizarAgenda()
-    setCarregando(false)
-    onCancelar()
-  } catch (error) {
-    toastErro(
-      error?.response?.status === 400
-        ? 'Este horário já está ocupado ou inválido.'
-        : 'Erro ao reagendar.'
-    )
-    setCarregando(false)
-  }
-}
 
   const renderBuscaPaciente = () => (
     <>
@@ -228,10 +240,7 @@ const reagendar = async () => {
                       <User size={18} />
                     </button>
                     <button
-                      onClick={() => {
-                        setTrocandoPaciente(true)
-                        setSelecionado(null)
-                      }}
+                      onClick={trocarPaciente}
                       className="text-nublia-accent hover:text-nublia-orange"
                       title="Trocar paciente"
                     >
@@ -259,39 +268,6 @@ const reagendar = async () => {
                   )}
                 </>
               )}
-
-              <div>
-                <label className="text-sm text-gray-600 mt-3 block">Alterar para outro horário:</label>
-                <select
-                  value={novoHorarioId || ''}
-                  onChange={(e) => setNovoHorarioId(Number(e.target.value))}
-                  className="w-full border rounded-full px-4 py-2 mt-1 text-sm"
-                >
-                  <option value="">Selecione um horário disponível</option>
-                  {horariosDisponiveis.map(h => (
-                    <option key={h.id} value={h.id}>
-                      {new Date(`${h.data}T${h.hora}`).toLocaleString('pt-BR', {
-                        weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
-                      })}
-                    </option>
-                  ))}
-                </select>
-
-                {novoHorarioId && (
-                  <button
-                    onClick={reagendar}
-                    disabled={carregando}
-                    className={`mt-3 w-full rounded-full py-2 text-sm text-white flex justify-center items-center gap-2 ${
-                      carregando
-                        ? 'bg-nublia-accent/60 cursor-not-allowed'
-                        : 'bg-nublia-accent hover:brightness-110'
-                    }`}
-                  >
-                    {carregando && <Loader2 className="animate-spin" size={16} />}
-                    Confirmar novo horário
-                  </button>
-                )}
-              </div>
             </>
           )}
 
