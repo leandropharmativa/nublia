@@ -18,7 +18,6 @@ import {
   ChevronLeft,
   ChevronRight,
   UserRoundCheck,
-  Calendar as CalendarIcon,
   CalendarDays,
   CalendarClock,
   Clock
@@ -37,8 +36,7 @@ const localizer = dateFnsLocalizer({
 export default function CalendarioAgenda({
   eventos = [],
   aoSelecionarSlot,
-  aoSelecionarEvento,
-  aoAdicionarHorario
+  aoSelecionarEvento
 }) {
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
@@ -47,7 +45,7 @@ export default function CalendarioAgenda({
     <div className="h-full p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={[]} // usamos renderização personalizada no modo mês
+        events={[]} // renderização personalizada no modo mês
         startAccessor="start"
         endAccessor="end"
         view={view}
@@ -90,7 +88,7 @@ export default function CalendarioAgenda({
                 onView={setView}
                 onNavigate={setDataAtual}
                 aoSelecionarEvento={aoSelecionarEvento}
-                aoAdicionarHorario={aoAdicionarHorario}
+                aoAdicionarHorario={aoSelecionarSlot} // ← importante
               />
             )
           }
@@ -158,7 +156,7 @@ function HeaderComEventos({
           <button
             onClick={(e) => {
               e.stopPropagation()
-              aoAdicionarHorario(data)
+              aoAdicionarHorario({ start: data })
             }}
             className="text-gray-400 hover:text-nublia-accent"
             title="Adicionar horário"
