@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
@@ -23,6 +22,7 @@ export default function ModalAgendarHorario({
   const [mostrarCadastro, setMostrarCadastro] = useState(false)
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
   const [selecionado, setSelecionado] = useState(null)
+  const [trocandoPaciente, setTrocandoPaciente] = useState(false)
   const [horariosDisponiveis, setHorariosDisponiveis] = useState([])
   const [novoHorarioId, setNovoHorarioId] = useState(null)
   const [carregando, setCarregando] = useState(false)
@@ -32,10 +32,10 @@ export default function ModalAgendarHorario({
   const user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
-    if (statusAtual !== 'agendado' && inputRef.current) {
+    if ((statusAtual === 'disponivel' || trocandoPaciente) && inputRef.current) {
       inputRef.current.focus()
     }
-  }, [statusAtual])
+  }, [statusAtual, trocandoPaciente])
 
   useEffect(() => {
     if (
@@ -95,18 +95,6 @@ export default function ModalAgendarHorario({
     } catch (error) {
       toastErro(error?.response?.status === 400 ? 'Este horário já está ocupado.' : 'Erro ao reagendar.')
       setCarregando(false)
-    }
-  }
-
-  const trocarPaciente = async () => {
-    try {
-      await onDesagendar(agendamentoId)
-      setSelecionado(null)
-      setFiltro('')
-      setPacientes([])
-      setStatusAtual('disponivel')
-    } catch {
-      toastErro('Erro ao trocar paciente.')
     }
   }
 
@@ -212,7 +200,7 @@ export default function ModalAgendarHorario({
 
           {statusAtual === 'agendado' && pacienteAtual && (
             <>
-              {!selecionado ? (
+              {!trocandoPaciente && !selecionado ? (
                 <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
                   <div>
                     <p className="font-medium">{pacienteAtual}</p>
@@ -227,7 +215,10 @@ export default function ModalAgendarHorario({
                       <User size={18} />
                     </button>
                     <button
-                      onClick={trocarPaciente}
+                      onClick={() => {
+                        setTrocandoPaciente(true)
+                        setSelecionado(null)
+                      }}
                       className="text-nublia-accent hover:text-nublia-orange"
                       title="Trocar paciente"
                     >
@@ -243,7 +234,17 @@ export default function ModalAgendarHorario({
                   </div>
                 </div>
               ) : (
-                renderBuscaPaciente()
+                <>
+                  {renderBuscaPaciente()}
+                  {selecionado && (
+                    <button
+                      onClick={() => agendar(selecionado.id)}
+                      className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110"
+                    >
+                      Confirmar troca de paciente
+                    </button>
+                  )}
+                </>
               )}
 
               <div>
