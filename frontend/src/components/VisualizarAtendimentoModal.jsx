@@ -9,7 +9,7 @@ import {
   PlusCircle,
   Home
 } from 'lucide-react'
-import AgendaPrescritor from './AgendaPrescritor'
+import AgendaPrescritor from '../pages/AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
 import MinhasFormulas from '../components/MinhasFormulas'
 import AtendimentosRecentes from '../components/AtendimentosRecentes'
