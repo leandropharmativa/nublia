@@ -76,12 +76,12 @@ export default function Login({ onLogin }) {
   return (
     <div className="flex h-screen font-sans text-gray-800">
       {/* Lado esquerdo azul acinzentado */}
-      <div className="w-1/2 bg-[#BFDBFE] p-10 flex flex-col relative">
-        <div className="flex items-center text-orange-500 text-3xl font-bold">
+      <div className="w-1/2 bg-nublia-accent p-10 flex flex-col relative">
+        <div className="flex items-center text-nublia-orange text-3xl font-bold">
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
-        <div className="absolute top-56 left-20">
+        <div className="absolute top-36 left-10">
           <h1 className="text-5xl font-bold text-left leading-snug">
             Bem vindo(a)<br />à Nublia
           </h1>
@@ -92,10 +92,10 @@ export default function Login({ onLogin }) {
       <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
         {/* topo direito com botão */}
         <div className="absolute top-6 right-6 flex items-center gap-2">
-          <p className="text-sm text-gray-600">Novo no Nublia?</p>
+          <p className="text-subtle">Novo no Nublia?</p>
           <button
             onClick={() => navigate('/register')}
-            className="relative overflow-hidden bg-[#E0F2FE] text-gray-800 text-sm px-4 py-1 rounded-full hover:bg-blue-200 transition focus:outline-none"
+            className="btn-primary rounded-full text-sm px-4 py-1"
           >
             Criar conta
           </button>
@@ -106,7 +106,7 @@ export default function Login({ onLogin }) {
           onSubmit={temSenha === false ? handleCriarSenha : handleLogin}
           className="w-full max-w-sm"
         >
-          <h2 className="text-2xl font-semibold mb-6 text-left">Entrar na Nublia</h2>
+          <h2 className="text-title mb-6">Entrar na Nublia</h2>
 
           {mensagem && <p className="text-green-700 text-sm mb-3">{mensagem}</p>}
           {erro && <p className="text-red-600 text-sm mb-3">{erro}</p>}
@@ -119,7 +119,7 @@ export default function Login({ onLogin }) {
               onChange={(e) => setEmail(e.target.value)}
               onBlur={checarEmail}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition placeholder:text-gray-400"
+              className="input-base"
             />
           </div>
 
@@ -138,7 +138,7 @@ export default function Login({ onLogin }) {
                   value={temSenha ? senha : novaSenha}
                   onChange={(e) => temSenha ? setSenha(e.target.value) : setNovaSenha(e.target.value)}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition placeholder:text-gray-400"
+                  className="input-base"
                 />
               </motion.div>
             )}
@@ -146,7 +146,7 @@ export default function Login({ onLogin }) {
 
           <button
             type="submit"
-            className="bg-[#E0F2FE] text-gray-800 w-full py-2 rounded-lg hover:bg-blue-200 transition flex items-center justify-center gap-2 font-medium"
+            className="btn-primary w-full flex items-center justify-center gap-2"
             disabled={carregando}
           >
             {carregando && (
