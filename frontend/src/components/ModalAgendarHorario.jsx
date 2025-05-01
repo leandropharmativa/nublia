@@ -7,7 +7,7 @@ import { toastSucesso, toastErro } from '../utils/toastUtils'
 
 export default function ModalAgendarHorario({
   agendamentoId,
-  statusAtual,
+  statusAtual: statusInicial,
   pacienteAtual,
   pacienteId,
   horarioSelecionado,
@@ -25,6 +25,7 @@ export default function ModalAgendarHorario({
   const [horariosDisponiveis, setHorariosDisponiveis] = useState([])
   const [novoHorarioId, setNovoHorarioId] = useState(null)
   const [carregando, setCarregando] = useState(false)
+  const [statusAtual, setStatusAtual] = useState(statusInicial)
 
   const inputRef = useRef(null)
   const user = JSON.parse(localStorage.getItem('user'))
@@ -93,6 +94,18 @@ export default function ModalAgendarHorario({
     } catch (error) {
       toastErro(error?.response?.status === 400 ? 'Este horário já está ocupado.' : 'Erro ao reagendar.')
       setCarregando(false)
+    }
+  }
+
+  const trocarPaciente = async () => {
+    try {
+      await onDesagendar(agendamentoId)
+      setSelecionado(null)
+      setFiltro('')
+      setPacientes([])
+      setStatusAtual('disponivel')
+    } catch {
+      toastErro('Erro ao trocar paciente.')
     }
   }
 
@@ -213,11 +226,7 @@ export default function ModalAgendarHorario({
                       <User size={18} />
                     </button>
                     <button
-                      onClick={() => {
-                        setSelecionado(null)
-                        setFiltro('')
-                        setPacientes([])
-                      }}
+                      onClick={trocarPaciente}
                       className="text-nublia-accent hover:text-nublia-orange"
                       title="Trocar paciente"
                     >
