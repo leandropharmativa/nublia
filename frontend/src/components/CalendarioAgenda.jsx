@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import {
   format,
@@ -15,10 +17,9 @@ import './CalendarioCustom.css'
 import {
   ChevronLeft,
   ChevronRight,
-  User,
+  UserRoundCheck,
   Calendar as CalendarIcon,
-  Clock,
-  UserRoundCheck
+  Clock
 } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
@@ -36,7 +37,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
     <div className="h-full p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={[]} // importante: não usar os eventos normais no modo mês
+        events={[]} // eventos vazios para controle manual via dateHeader
         startAccessor="start"
         endAccessor="end"
         defaultView="month"
@@ -72,15 +73,31 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
 }
 
 function HeaderComEventos({ data, label, eventos }) {
+  const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
+
   const doDia = eventos.filter(ev => isSameCalendarDay(ev.start, data))
 
+  const showTooltip = (e, text) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    setTooltip({
+      visible: true,
+      text,
+      x: rect.left + rect.width / 2,
+      y: rect.top,
+    })
+  }
+
+  const hideTooltip = () => {
+    setTooltip({ visible: false, text: '', x: 0, y: 0 })
+  }
+
   return (
-    <div className="flex flex-col items-start px-1 overflow-visible">
+    <div className="flex flex-col items-start px-1 overflow-visible relative">
       <span className="text-xs font-medium">{label}</span>
       <div className="flex flex-wrap gap-[4px] mt-1 overflow-visible">
         {doDia.map(ev => {
           const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-          const tooltip = ev.status === 'agendado'
+          const text = ev.status === 'agendado'
             ? `${hora} ${ev.title}`
             : `${hora} Disponível`
 
@@ -93,17 +110,32 @@ function HeaderComEventos({ data, label, eventos }) {
             : 'text-blue-600'
 
           return (
-            <div key={ev.id} className="relative group cursor-pointer overflow-visible">
-              <span className={`inline-flex items-center justify-center ${cor}`}>
-                {icone}
-              </span>
-              <div className="absolute z-[999] bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 transform scale-95 group-hover:scale-100 bg-white text-gray-700 text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap max-w-[200px] overflow-visible">
-                {tooltip}
-              </div>
-            </div>
+            <span
+              key={ev.id}
+              className={`inline-flex items-center justify-center ${cor} cursor-pointer`}
+              onMouseEnter={(e) => showTooltip(e, text)}
+              onMouseLeave={hideTooltip}
+            >
+              {icone}
+            </span>
           )
         })}
       </div>
+
+      {tooltip.visible &&
+        createPortal(
+          <div
+            className="fixed z-[9999] bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
+            style={{
+              top: tooltip.y - 30,
+              left: tooltip.x,
+              transform: 'translateX(-50%)',
+            }}
+          >
+            {tooltip.text}
+          </div>,
+          document.body
+        )}
     </div>
   )
 }
