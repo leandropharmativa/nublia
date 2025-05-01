@@ -157,10 +157,10 @@ function EventCompacto({ event }) {
     : `${hora} Disponível`
 
   const icone = event.status === 'agendado'
-    ? <User size={12} />
+    ? <User size={10} />
     : event.status === 'disponivel'
-    ? <Clock size={12} />
-    : <CalendarIcon size={12} />
+    ? <Clock size={10} />
+    : <CalendarIcon size={10} />
 
   const corBg = event.status === 'agendado'
     ? 'bg-red-100 text-red-600 hover:bg-red-200'
@@ -171,7 +171,8 @@ function EventCompacto({ event }) {
   return (
     <span
       title={tooltip}
-      className={`inline-flex items-center justify-center w-5 h-5 m-0.5 rounded-full ${corBg} transition`}
+      className={`inline-flex items-center justify-center w-4 h-4 mr-1 mb-1 rounded-full ${corBg} transition`}
+      style={{ display: 'inline-block' }}
     >
       {icone}
     </span>
