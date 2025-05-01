@@ -19,7 +19,8 @@ import {
   ChevronRight,
   UserRoundCheck,
   Calendar as CalendarIcon,
-  Clock
+  Clock,
+  CalendarDays
 } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
@@ -108,7 +109,16 @@ function HeaderComEventos({ data, label, eventos }) {
             </span>
           )}
         </div>
-        <span className="text-xs font-medium text-gray-700">{label}</span>
+        <span
+          onClick={() =>
+            document.querySelector('[role="toolbar"] button:nth-child(2)')?.click() || null
+          }
+            onDoubleClick={(e) => e.stopPropagation()}
+            className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
+        >
+          {label}
+        </span>
+
       </div>
 
       <div className="flex flex-wrap gap-[4px] mt-1 overflow-visible">
@@ -205,7 +215,11 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
           <ChevronRight size={20} />
         </button>
-        <span className="text-sm font-medium text-gray-700">{renderLabel()}</span>
+        <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <CalendarDays size={16} className="text-nublia-accent" />
+          {renderLabel()}
+        </span>
+
       </div>
 
       <div className="flex items-center gap-3">
