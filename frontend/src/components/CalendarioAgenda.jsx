@@ -129,32 +129,46 @@ function HeaderComEventos({
 
   return (
     <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
-      {/* TOPO DIREITA: Dia + ícone */}
-      <div className="absolute top-1 right-1 flex items-center gap-1">
-        <span
-          onClick={(e) => {
-            e.stopPropagation()
-            onView('day')
-            onNavigate(data)
-          }}
-          className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
-        >
-          {label}
-        </span>
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            aoAdicionarHorario({ start: data })
-          }}
-          className="text-gray-400 hover:text-nublia-accent"
-          title="Adicionar horário"
-        >
-          <CalendarClock size={14} />
-        </button>
+      {/* Linha superior: contagem (esquerda) + data (direita) */}
+      <div className="w-full flex justify-between items-center text-[10px] mt-1">
+        <div className="flex gap-2 text-gray-500">
+          {agendados > 0 && (
+            <span className="flex items-center gap-1 text-orange-500">
+              <UserRoundCheck size={10} /> {agendados}
+            </span>
+          )}
+          {disponiveis > 0 && (
+            <span className="flex items-center gap-1 text-blue-500">
+              <Clock size={10} /> {disponiveis}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-1">
+          <span
+            onClick={(e) => {
+              e.stopPropagation()
+              onView('day')
+              onNavigate(data)
+            }}
+            className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
+          >
+            {label}
+          </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              aoAdicionarHorario({ start: data })
+            }}
+            className="text-gray-400 hover:text-nublia-accent"
+            title="Adicionar horário"
+          >
+            <CalendarClock size={14} />
+          </button>
+        </div>
       </div>
 
       {/* Ícones dos eventos */}
-      <div className="flex flex-wrap gap-[4px] mt-6 overflow-visible">
+      <div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
         {doDia.map(ev => {
           const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
           const text = ev.status === 'agendado'
@@ -184,20 +198,6 @@ function HeaderComEventos({
             </span>
           )
         })}
-      </div>
-
-      {/* BASE ESQUERDA: Contagem de horários */}
-      <div className="absolute bottom-1 left-1 text-[10px] text-gray-500 flex gap-2">
-        {agendados > 0 && (
-          <span className="flex items-center gap-1 text-orange-500">
-            <UserRoundCheck size={10} /> {agendados}
-          </span>
-        )}
-        {disponiveis > 0 && (
-          <span className="flex items-center gap-1 text-blue-500">
-            <Clock size={10} /> {disponiveis}
-          </span>
-        )}
       </div>
 
       {tooltip.visible &&
