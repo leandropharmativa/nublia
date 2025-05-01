@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
@@ -244,6 +245,39 @@ export default function ModalAgendarHorario({
               ) : (
                 renderBuscaPaciente()
               )}
+
+              <div>
+                <label className="text-sm text-gray-600 mt-3 block">Alterar para outro horário:</label>
+                <select
+                  value={novoHorarioId || ''}
+                  onChange={(e) => setNovoHorarioId(Number(e.target.value))}
+                  className="w-full border rounded-full px-4 py-2 mt-1 text-sm"
+                >
+                  <option value="">Selecione um horário disponível</option>
+                  {horariosDisponiveis.map(h => (
+                    <option key={h.id} value={h.id}>
+                      {new Date(`${h.data}T${h.hora}`).toLocaleString('pt-BR', {
+                        weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                      })}
+                    </option>
+                  ))}
+                </select>
+
+                {novoHorarioId && (
+                  <button
+                    onClick={reagendar}
+                    disabled={carregando}
+                    className={`mt-3 w-full rounded-full py-2 text-sm text-white flex justify-center items-center gap-2 ${
+                      carregando
+                        ? 'bg-nublia-accent/60 cursor-not-allowed'
+                        : 'bg-nublia-accent hover:brightness-110'
+                    }`}
+                  >
+                    {carregando && <Loader2 className="animate-spin" size={16} />}
+                    Confirmar novo horário
+                  </button>
+                )}
+              </div>
             </>
           )}
 
