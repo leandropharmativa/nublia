@@ -1,4 +1,3 @@
-// ... importações mantidas
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
@@ -42,7 +41,8 @@ export default function ModalAgendarHorario({
     if (
       statusAtual === 'agendado' ||
       statusAtual === 'novo_agendamento' ||
-      statusAtual === 'disponivel'
+      statusAtual === 'disponivel' ||
+      trocandoPaciente
     ) {
       axios
         .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
@@ -52,7 +52,7 @@ export default function ModalAgendarHorario({
         })
         .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
     }
-  }, [statusAtual, user.id])
+  }, [statusAtual, user.id, trocandoPaciente])
 
   useEffect(() => {
     if (filtro.length < 2) {
@@ -77,19 +77,16 @@ export default function ModalAgendarHorario({
 
   const reagendarOuTrocar = async () => {
     if (!selecionado?.id) return toastErro('Selecione um paciente')
-
     setCarregando(true)
 
     try {
       if (novoHorarioId) {
-        // Trocar paciente para outro horário
         await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
           de_id: agendamentoId,
           para_id: novoHorarioId,
         })
         toastSucesso('Paciente transferido para outro horário!')
       } else {
-        // Trocar paciente mantendo o mesmo horário
         await axios.post('https://nublia-backend.onrender.com/agenda/trocar-paciente', {
           id: agendamentoId,
           novo_paciente_id: selecionado.id,
@@ -110,16 +107,11 @@ export default function ModalAgendarHorario({
     }
   }
 
-  const trocarPaciente = async () => {
-    try {
-      await onDesagendar(agendamentoId)
-      setSelecionado(null)
-      setFiltro('')
-      setPacientes([])
-      setTrocandoPaciente(true)
-    } catch {
-      toastErro('Erro ao trocar paciente.')
-    }
+  const trocarPaciente = () => {
+    setTrocandoPaciente(true)
+    setSelecionado(null)
+    setFiltro('')
+    setPacientes([])
   }
 
   const agendar = (pacienteId) => {
@@ -222,7 +214,10 @@ export default function ModalAgendarHorario({
                 month: '2-digit',
                 year: 'numeric',
               })}{' '}
-              às {horarioSelecionado.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+              às {horarioSelecionado.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
             </p>
           )}
 
@@ -268,7 +263,11 @@ export default function ModalAgendarHorario({
                         disabled={carregando}
                         className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
                       >
-                        {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar alteração'}
+                        {carregando
+                          ? <Loader2 className="animate-spin mx-auto" />
+                          : novoHorarioId
+                          ? 'Transferir para outro horário'
+                          : 'Trocar paciente'}
                       </button>
                       <div className="mt-4">
                         <label className="text-sm text-gray-600 mb-1">Transferir para outro horário:</label>
@@ -280,7 +279,11 @@ export default function ModalAgendarHorario({
                           <option value="">Manter horário atual</option>
                           {horariosDisponiveis.map((h) => (
                             <option key={h.id} value={h.id}>
-                              {new Date(h.data_hora).toLocaleDateString('pt-BR')} - {new Date(h.data_hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(h.data_hora).toLocaleDateString('pt-BR')} -{' '}
+                              {new Date(h.data_hora).toLocaleTimeString('pt-BR', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
                             </option>
                           ))}
                         </select>
