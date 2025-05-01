@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import Layout from '../components/Layout'
 import { Tab } from '@headlessui/react'
@@ -7,7 +6,8 @@ import {
   BookOpenText,
   Leaf,
   Settings,
-  PlusCircle
+  PlusCircle,
+  Home
 } from 'lucide-react'
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
@@ -16,8 +16,7 @@ import AtendimentosRecentes from '../components/AtendimentosRecentes'
 import BuscarPacienteModal from '../components/BuscarPacienteModal'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
-
-import { Home } from 'lucide-react'
+import Botao from '../components/Botao'
 
 const tabs = [
   { icon: Home, label: 'Início' },
@@ -106,16 +105,14 @@ export default function PrescritorDashboard() {
   return (
     <Layout>
       <div className="flex h-[calc(100vh-160px)]">
-        {/* Lateral grudada na esquerda, altura total da janela */}
         <div className="h-full w-72 flex flex-col">
           <div className="p-4">
-            <button
+            <Botao
+              texto="Iniciar Atendimento"
+              iconeInicio={<PlusCircle size={18} />}
               onClick={() => setMostrarBuscarPacienteModal(true)}
-              className="w-full flex items-center justify-center gap-2 bg-nublia-accent text-white px-5 py-3 rounded-full text-sm font-semibold hover:brightness-110 transition"
-            >
-              <PlusCircle size={18} />
-              Iniciar Atendimento
-            </button>
+              className="w-full justify-center py-3"
+            />
           </div>
           <div className="flex-1 overflow-hidden">
             <AtendimentosRecentes
@@ -129,51 +126,48 @@ export default function PrescritorDashboard() {
           </div>
         </div>
 
-        {/* Conteúdo principal com tabs alinhadas à direita */}
         <div className="flex-1 flex flex-col items-end pr-6 ml-6 overflow-y-auto bg-white">
           <Tab.Group>
             <Tab.List className="relative flex gap-8 mb-6 transition-all duration-300">
-  {tabs.map((tab, idx) => (
-    <Tab
-      key={idx}
-      className={({ selected }) =>
-        `flex flex-col items-center px-4 py-2 text-sm transition duration-300 ${
-          selected ? 'text-white bg-nublia-accent rounded' : 'text-gray-500 hover:text-blue-600'
-        }`
-      }
-    >
-      <tab.icon size={32} />
-      <span className="text-xs mt-1">{tab.label}</span>
-    </Tab>
-  ))}
-  <div className='absolute bottom-0 right-0 h-[6px] bg-nublia-accent rounded-l-full w-[calc(100%+80px)]'></div>
-</Tab.List>
+              {tabs.map((tab, idx) => (
+                <Tab
+                  key={idx}
+                  className={({ selected }) =>
+                    `flex flex-col items-center px-4 py-2 text-sm transition duration-300 ${
+                      selected ? 'text-white bg-nublia-accent rounded' : 'text-gray-500 hover:text-blue-600'
+                    }`
+                  }
+                >
+                  <tab.icon size={32} />
+                  <span className="text-xs mt-1">{tab.label}</span>
+                </Tab>
+              ))}
+              <div className='absolute bottom-0 right-0 h-[6px] bg-nublia-accent rounded-l-full w-[calc(100%+80px)]'></div>
+            </Tab.List>
 
             <Tab.Panels className="w-full">
               <Tab.Panel>
-  <div>
-    <h2 className="text-xl font-bold mb-2">Pacientes marcados para hoje</h2>
-    <ul className="space-y-2 text-sm text-gray-800">
-      {atendimentos
-        .filter((a) => {
-          const hoje = new Date().toISOString().split('T')[0]
-          return a.data?.startsWith(hoje)
-        })
-        .map((a) => (
-          <li key={a.id} className="bg-white border rounded px-4 py-2">
-            {a.nomePaciente} – {a.data?.slice(11, 16) || 'horário não definido'}
-          </li>
-        ))}
-      {atendimentos.filter(a => a.data?.startsWith(new Date().toISOString().split('T')[0])).length === 0 && (
-        <li className="italic text-gray-500">Nenhum paciente agendado para hoje.</li>
-      )}
-    </ul>
-  </div>
-</Tab.Panel>
+                <div>
+                  <h2 className="text-xl font-bold mb-2">Pacientes marcados para hoje</h2>
+                  <ul className="space-y-2 text-sm text-gray-800">
+                    {atendimentos
+                      .filter((a) => a.data?.startsWith(new Date().toISOString().split('T')[0]))
+                      .map((a) => (
+                        <li key={a.id} className="bg-white border rounded px-4 py-2">
+                          {a.nomePaciente} – {a.data?.slice(11, 16) || 'horário não definido'}
+                        </li>
+                      ))}
+                    {atendimentos.filter(a => a.data?.startsWith(new Date().toISOString().split('T')[0])).length === 0 && (
+                      <li className="italic text-gray-500">Nenhum paciente agendado para hoje.</li>
+                    )}
+                  </ul>
+                </div>
+              </Tab.Panel>
 
               <Tab.Panel>
                 <AgendaPrescritor mostrarAgenda={true} />
               </Tab.Panel>
+
               <Tab.Panel>
                 <div>
                   <h2 className="text-xl font-bold mb-4">Fórmulas sugeridas</h2>
@@ -182,9 +176,11 @@ export default function PrescritorDashboard() {
                   <MinhasFormulas usuarioId={user?.id} />
                 </div>
               </Tab.Panel>
+
               <Tab.Panel>
                 <div className="text-gray-500 italic">Área de dietas (em breve)</div>
               </Tab.Panel>
+
               <Tab.Panel>
                 <div className="text-gray-500 italic">Configurações da conta (em breve)</div>
               </Tab.Panel>
