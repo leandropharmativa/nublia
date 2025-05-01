@@ -31,7 +31,8 @@ const tabs = [
   { icon: CalendarDays, label: 'Agenda' },
   { icon: BookOpenText, label: 'Fórmulas' },
   { icon: Leaf, label: 'Dietas' },
-  { icon: Settings, label: 'Configurações' }
+  { icon: Settings, label: 'Configurações' },
+  { icon: null, label: 'Ficha' } // Aba invisível
 ]
 
 export default function PrescritorDashboard() {
@@ -173,7 +174,7 @@ export default function PrescritorDashboard() {
         <div className="flex-1 flex flex-col items-end pr-6 ml-6 overflow-y-auto bg-white">
           <Tab.Group selectedIndex={abaSelecionada} onChange={setAbaSelecionada}>
             <Tab.List className="relative flex gap-8 mb-6 transition-all duration-300">
-              {tabs.map((tab, idx) => (
+              {tabs.slice(0, -1).map((tab, idx) => (
                 <Tab
                   key={idx}
                   className={({ selected }) =>
@@ -264,24 +265,23 @@ export default function PrescritorDashboard() {
                 </div>
               </Tab.Panel>
 
-              {pacienteSelecionado && (
-               <Tab.Panel>
-  {pacienteSelecionado ? (
-    <FichaAtendimento
-      paciente={pacienteSelecionado}
-      onFinalizar={() => {
-        setPacienteSelecionado(null)
-        setAbaSelecionada(0)
-      }}
-      onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
-    />
-  ) : (
-    <div className="text-center text-gray-400 py-10 italic">
-      Nenhum paciente selecionado.
-    </div>
-  )}
-</Tab.Panel>
-              )}
+              {/* Aba invisível: Ficha de Atendimento */}
+              <Tab.Panel>
+                {pacienteSelecionado ? (
+                  <FichaAtendimento
+                    paciente={pacienteSelecionado}
+                    onFinalizar={() => {
+                      setPacienteSelecionado(null)
+                      setAbaSelecionada(0)
+                    }}
+                    onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
+                  />
+                ) : (
+                  <div className="text-center text-gray-400 py-10 italic">
+                    Nenhum paciente selecionado.
+                  </div>
+                )}
+              </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
         </div>
@@ -293,7 +293,7 @@ export default function PrescritorDashboard() {
           onSelecionarPaciente={(paciente) => {
             setPacienteSelecionado(paciente)
             setMostrarBuscarPacienteModal(false)
-            setAbaSelecionada(tabs.length)
+            setAbaSelecionada(tabs.length - 1)
           }}
         />
       )}
