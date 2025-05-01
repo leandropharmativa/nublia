@@ -77,7 +77,7 @@ export default function Login({ onLogin }) {
     <div className="flex h-screen font-sans">
       {/* Lado esquerdo azul acinzentado */}
       <div className="w-1/2 bg-[#BFDBFE] text-gray-800 flex flex-col justify-between p-10">
-        <div className="flex items-center text-orange-500 text-3xl font-bold">
+        <div className="flex items-center text-orange-500 text-3xl">
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
