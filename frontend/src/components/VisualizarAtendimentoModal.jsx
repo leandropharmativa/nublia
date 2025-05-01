@@ -1,223 +1,78 @@
-import { useState, useEffect } from 'react'
-import Layout from '../components/Layout'
-import { Tab } from '@headlessui/react'
-import {
-  CalendarDays,
-  BookOpenText,
-  Leaf,
-  Settings,
-  PlusCircle,
-  Home
-} from 'lucide-react'
-import AgendaPrescritor from '../pages/AgendaPrescritor'
-import FormulasSugeridas from '../components/FormulasSugeridas'
-import MinhasFormulas from '../components/MinhasFormulas'
-import AtendimentosRecentes from '../components/AtendimentosRecentes'
-import BuscarPacienteModal from '../components/BuscarPacienteModal'
-import PerfilPacienteModal from '../components/PerfilPacienteModal'
-import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
-import Botao from '../components/Botao'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
-const tabs = [
-  { icon: Home, label: 'Início' },
-  { icon: CalendarDays, label: 'Agenda' },
-  { icon: BookOpenText, label: 'Fórmulas' },
-  { icon: Leaf, label: 'Dietas' },
-  { icon: Settings, label: 'Configurações' }
-]
-
-export default function PrescritorDashboard() {
-  const [user, setUser] = useState(null)
-  const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
-  const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
-  const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
-  const [pacientePerfil, setPacientePerfil] = useState(null)
-  const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
-  const [atendimentos, setAtendimentos] = useState([])
-  const [pacientes, setPacientes] = useState([])
-  const [pesquisa, setPesquisa] = useState('')
+export default function VisualizarAtendimentoModal({ atendimento, onClose }) {
+  const [paciente, setPaciente] = useState(null)
+  const [erro, setErro] = useState('')
+  const [abaAtiva, setAbaAtiva] = useState('anamnese')
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user')
-    if (savedUser) {
-      const usuario = JSON.parse(savedUser)
-      setUser(usuario)
-      carregarAtendimentos(usuario.id)
-      carregarPacientes()
+    const buscarPaciente = async () => {
+      try {
+        const response = await axios.get(`https://nublia-backend.onrender.com/users/${atendimento.paciente_id}`)
+        setPaciente(response.data)
+      } catch (error) {
+        console.error("Erro ao buscar paciente:", error)
+        setErro("Paciente não encontrado.")
+      }
     }
-  }, [])
 
-  const carregarAtendimentos = async (id) => {
-    try {
-      const res = await fetch('https://nublia-backend.onrender.com/atendimentos/')
-      const data = await res.json()
-      const atendimentosFiltrados = data.filter(a => a.prescritor_id === id)
-
-      const atendimentosComNomes = await Promise.all(
-        atendimentosFiltrados.map(async (a) => {
-          try {
-            const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${a.paciente_id}`)
-            const paciente = await resPaciente.json()
-            return { ...a, nomePaciente: paciente.name }
-          } catch {
-            return { ...a, nomePaciente: 'Paciente não encontrado' }
-          }
-        })
-      )
-
-      setAtendimentos(atendimentosComNomes.reverse())
-    } catch (err) {
-      console.error('Erro ao carregar atendimentos:', err)
+    if (atendimento?.paciente_id) {
+      buscarPaciente()
     }
-  }
+  }, [atendimento])
 
-  const carregarPacientes = async () => {
-    try {
-      const res = await fetch('https://nublia-backend.onrender.com/users/all')
-      const data = await res.json()
-      setPacientes(data.filter(u => u.role === 'paciente'))
-    } catch (err) {
-      console.error('Erro ao carregar pacientes:', err)
-    }
-  }
-
-  const handleVerPerfil = async (pacienteId) => {
-    try {
-      const response = await fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-      const paciente = await response.json()
-      if (!paciente || paciente.role !== 'paciente') throw new Error('Usuário inválido')
-      setPacientePerfil(paciente)
-      setMostrarPerfilPacienteModal(true)
-    } catch (err) {
-      console.error('Erro ao carregar perfil do paciente:', err)
-    }
-  }
-
-  const handleVerAtendimento = (atendimento) => {
-    setAtendimentoSelecionado(atendimento)
-    setMostrarVisualizarAtendimentoModal(true)
-  }
-
-  const atendimentosFiltrados = atendimentos.filter((item) =>
-    item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
-  )
-
-  const agendamentosHoje = atendimentos.filter(a => {
-    const hoje = new Date().toISOString().split('T')[0]
-    return a.data?.startsWith(hoje) && a.status === 'agendado'
-  })
+  const abas = ['anamnese', 'antropometria', 'dieta', 'receita']
 
   return (
-    <Layout>
-      <div className="flex h-[calc(100vh-160px)]">
-        <div className="h-full w-72 flex flex-col">
-          <div className="flex-1 overflow-hidden">
-            <AtendimentosRecentes
-              atendimentos={atendimentosFiltrados}
-              pacientes={pacientes}
-              pesquisa={pesquisa}
-              onPesquisar={(texto) => setPesquisa(texto)}
-              onVerPerfil={handleVerPerfil}
-              onVerAtendimento={handleVerAtendimento}
-            />
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-2xl w-full max-w-3xl mx-4 overflow-y-auto max-h-[90vh]">
+        <h2 className="text-xl font-bold text-nublia-accent mb-4">Visualizar Atendimento</h2>
+
+        {erro && <p className="text-orange-600 text-sm mb-4 text-center">{erro}</p>}
+
+        {paciente && (
+          <div className="mb-6 border-b pb-4">
+            <p className="text-base font-semibold text-gray-800">{paciente.name}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {paciente.email || 'Sem email'} • {paciente.telefone || 'Sem telefone'} • {paciente.sexo || 'Sem sexo'} • {paciente.data_nascimento || 'Sem data de nascimento'}
+            </p>
           </div>
+        )}
+
+        <div className="mb-4 text-sm text-gray-500 italic">
+          Data do atendimento: {new Date(atendimento.criado_em).toLocaleString('pt-BR')}
         </div>
 
-        <div className="flex-1 flex flex-col items-end pr-6 ml-6 overflow-y-auto bg-white">
-          <Tab.Group>
-            <Tab.List className="relative flex gap-8 mb-6 transition-all duration-300">
-              {tabs.map((tab, idx) => (
-                <Tab
-                  key={idx}
-                  className={({ selected }) =>
-                    `flex flex-col items-center px-4 py-2 text-sm transition duration-300 ${
-                      selected ? 'text-white bg-nublia-accent rounded' : 'text-gray-500 hover:text-blue-600'
-                    }`
-                  }
-                >
-                  <tab.icon size={32} />
-                  <span className="text-xs mt-1">{tab.label}</span>
-                </Tab>
-              ))}
-              <div className='absolute bottom-0 right-0 h-[6px] bg-nublia-accent rounded-l-full w-[calc(100%+80px)]'></div>
-            </Tab.List>
+        <div className="flex border-b mb-4">
+          {abas.map((aba) => (
+            <button
+              key={aba}
+              onClick={() => setAbaAtiva(aba)}
+              className={`px-4 py-2 capitalize text-sm transition ${
+                abaAtiva === aba
+                  ? 'border-b-2 border-nublia-accent font-semibold text-nublia-accent'
+                  : 'text-gray-600 hover:text-nublia-accent'
+              }`}
+            >
+              {aba}
+            </button>
+          ))}
+        </div>
 
-            <Tab.Panels className="w-full">
-              <Tab.Panel>
-                <div className="flex flex-col justify-center items-center py-10">
-                  <Botao
-                    texto="Iniciar atendimento"
-                    iconeInicio={<PlusCircle size={18} />}
-                    onClick={() => setMostrarBuscarPacienteModal(true)}
-                    full={false}
-                    className="px-6 py-3 rounded-full mb-6"
-                  />
-                  <div className="w-full max-w-xl space-y-4">
-                    <h2 className="text-lg font-semibold text-nublia-accent">Agendamentos para hoje</h2>
-                    {agendamentosHoje.length === 0 ? (
-                      <p className="text-sm text-gray-500 italic">Nenhum paciente agendado para hoje.</p>
-                    ) : (
-                      <ul className="space-y-2 text-sm">
-                        {agendamentosHoje.map((a) => (
-                          <li key={a.id} className="border rounded px-4 py-2 bg-white">
-                            {a.nomePaciente} – {a.data?.slice(11, 16) || 'Horário indefinido'}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                </div>
-              </Tab.Panel>
+        <div className="bg-gray-50 p-4 rounded-xl text-sm text-gray-800 whitespace-pre-wrap min-h-[150px] border border-gray-200">
+          {atendimento[abaAtiva] || 'Não preenchido.'}
+        </div>
 
-              <Tab.Panel>
-                <AgendaPrescritor mostrarAgenda={true} />
-              </Tab.Panel>
-
-              <Tab.Panel>
-                <div>
-                  <h2 className="text-xl font-bold mb-4">Fórmulas sugeridas</h2>
-                  <FormulasSugeridas />
-                  <h2 className="text-xl font-bold mt-8 mb-4">Minhas fórmulas</h2>
-                  <MinhasFormulas usuarioId={user?.id} />
-                </div>
-              </Tab.Panel>
-
-              <Tab.Panel>
-                <div className="flex flex-col justify-center items-center py-16 text-gray-500 italic">
-                  Área de dietas (em breve)
-                </div>
-              </Tab.Panel>
-
-              <Tab.Panel>
-                <div className="flex flex-col justify-center items-center py-16 text-gray-500 italic">
-                  Configurações da conta (em breve)
-                </div>
-              </Tab.Panel>
-            </Tab.Panels>
-          </Tab.Group>
+        <div className="text-right mt-6">
+          <button
+            onClick={onClose}
+            className="bg-nublia-accent hover:brightness-110 text-white text-sm px-6 py-2 rounded-full"
+          >
+            Fechar
+          </button>
         </div>
       </div>
-
-      {mostrarBuscarPacienteModal && (
-        <BuscarPacienteModal
-          onClose={() => setMostrarBuscarPacienteModal(false)}
-          onSelecionarPaciente={() => setMostrarBuscarPacienteModal(false)}
-        />
-      )}
-
-      {mostrarPerfilPacienteModal && pacientePerfil && (
-        <PerfilPacienteModal
-          paciente={pacientePerfil}
-          onClose={() => setMostrarPerfilPacienteModal(false)}
-        />
-      )}
-
-      {mostrarVisualizarAtendimentoModal && atendimentoSelecionado && (
-        <VisualizarAtendimentoModal
-          atendimento={atendimentoSelecionado}
-          onClose={() => setMostrarVisualizarAtendimentoModal(false)}
-        />
-      )}
-    </Layout>
+    </div>
   )
 }
