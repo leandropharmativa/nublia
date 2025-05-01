@@ -40,33 +40,6 @@
   }
 }
 
-/* Estilo geral para todos os toasts */
-.Toastify__toast {
-  border-radius: 12px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #1e293b; /* azul escuro (text-slate-800) */
-  background-color: #f0f9ff; /* azul claro */
-  border: 1px solid #38bdf8; /* azul borda */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-/* Ícone personalizado (como V de sucesso com fundo laranja) */
-.Toastify__toast-icon {
-  background-color: #fb923c; /* laranja do Nublia */
-  border-radius: 50%;
-  padding: 4px;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Botão de fechar (X) */
-.Toastify__close-button {
-  color: #64748b;
-}
-
 @layer utilities {
   @keyframes float {
     0%, 100% { transform: translateY(0); }
