@@ -1,4 +1,4 @@
-/* Cor padrão para dias da semana (segunda a sábado) */
+/* ===== Cabeçalhos dos dias da semana ===== */
 .rbc-header {
   color: #2563eb !important; /* azul padrão Tailwind */
   font-weight: 600;
@@ -6,11 +6,12 @@
   text-align: center;
 }
 
-/* Cor para domingo (1ª coluna) */
- .rbc-header:last-child {
-  color: #dc2626 !important; /* vermelho padrão Tailwind */
+/* Domingo em vermelho */
+.rbc-header:last-child {
+  color: #dc2626 !important;
 }
-/* Remove as bordas externas do calendário */
+
+/* ===== Remoção de bordas externas do calendário ===== */
 .rbc-time-view,
 .rbc-time-content,
 .rbc-timeslot-group,
@@ -21,42 +22,28 @@
   border: none !important;
 }
 
+/* ===== Tamanho mínimo das linhas no modo mês ===== */
 .rbc-month-row {
   min-height: 85px;
 }
+
+/* ===== Estilo geral de eventos ===== */
 .rbc-event {
   padding: 1px 2px !important;
   font-size: 0.5rem !important;
   line-height: 0.3rem;
 }
 
-/* Remove linhas verticais entre os dias 
-.rbc-day-bg {
-  border-right: none !important;
-} */
+/* ===== Estilo dos eventos no modo mês para ícones ===== */
+.rbc-month-view .rbc-row-segment {
+  display: inline-flex !important;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
 
-/* Remove a borda da agenda semanal/dia 
-.rbc-agenda-view table {
-  border: none !important;
-} */
-/* Corrige layout para múltiplos ícones em grade flexível */
+/* Ícones como bolinhas inline (sem barras visuais) */
 .rbc-month-view .rbc-event {
   display: inline-flex !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* Permite que o container do dia se comporte como uma mini-grade */
-.rbc-month-row .rbc-row-content {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 4px;
-  padding: 2px;
-}
-
+  white-space:
