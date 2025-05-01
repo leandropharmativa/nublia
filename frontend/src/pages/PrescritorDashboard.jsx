@@ -110,7 +110,7 @@ export default function PrescritorDashboard() {
           <div className="p-4">
             <button
               onClick={() => setMostrarBuscarPacienteModal(true)}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               Iniciar Atendimento
             </button>
@@ -158,7 +158,7 @@ export default function PrescritorDashboard() {
           return a.data?.startsWith(hoje)
         })
         .map((a) => (
-          <li key={a.id} className="bg-white border rounded px-4 py-2 shadow-sm">
+          <li key={a.id} className="bg-white border rounded px-4 py-2">
             {a.nomePaciente} – {a.data?.slice(11, 16) || 'horário não definido'}
           </li>
         ))}
