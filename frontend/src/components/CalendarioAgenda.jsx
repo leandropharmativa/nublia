@@ -163,14 +163,19 @@ function EventCompacto({ event }) {
     minute: '2-digit'
   })
 
-  const icone = event.status === 'agendado' ? <User size={12} className="inline-block mr-1" /> :
-                 event.status === 'disponivel' ? <Clock size={12} className="inline-block mr-1" /> :
-                 null
+  const tooltip = event.status === 'agendado'
+    ? `${hora} ${event.title}`
+    : `${hora} Disponível`
+
+  const icone = event.status === 'agendado'
+    ? <User size={14} className="text-red-600" />
+    : event.status === 'disponivel'
+    ? <Clock size={14} className="text-blue-600" />
+    : <CalendarIcon size={14} className="text-gray-400" />
 
   return (
-    <span className="text-xs leading-tight whitespace-nowrap">
+    <span title={tooltip} className="flex items-center justify-center w-full h-full">
       {icone}
-      {hora} {event.title}
     </span>
   )
 }
