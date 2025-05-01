@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Save, CheckCircle, ClipboardX, Eye } from 'lucide-react'
+import { Save, CheckCircle, ClipboardX, Eye, List } from 'lucide-react'
 import axios from 'axios'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
@@ -167,25 +167,26 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
 
 {atendimentosAnteriores.length > 0 && (
   <div className="mt-6">
-    <h3 className="text-sm font-semibold text-nublia-accent mb-2">Atendimentos anteriores</h3>
+    <h3 className="text-sm font-semibold text-nublia-accent mb-2 flex items-center gap-2">
+      <List size={16} /> Atendimentos anteriores
+    </h3>
     <ul className="text-sm text-gray-700 divide-y divide-gray-200">
       {atendimentosAnteriores.map((a) => (
         <li key={a.id} className="flex items-center justify-between py-1">
-          <span className="text-sm">
-            {new Date(a.criado_em).toLocaleDateString('pt-BR')} • {new Date(a.criado_em).toLocaleTimeString('pt-BR')}
-          </span>
           <button
             className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1 text-sm"
             onClick={() => setModalVisualizar(a)}
           >
             <Eye size={14} /> Ver
           </button>
+          <span className="text-xs text-gray-500">
+            {new Date(a.criado_em).toLocaleDateString('pt-BR')} • {new Date(a.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+          </span>
         </li>
       ))}
     </ul>
   </div>
 )}
-
           </>
         ) : (
           <textarea
