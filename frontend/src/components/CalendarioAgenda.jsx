@@ -45,7 +45,7 @@ export default function CalendarioAgenda({
     <div className="h-full p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={[]} // renderização personalizada no modo mês
+        events={[]}
         startAccessor="start"
         endAccessor="end"
         view={view}
@@ -58,8 +58,8 @@ export default function CalendarioAgenda({
         step={15}
         timeslots={1}
         culture="pt-BR"
-        onSelectSlot={({ start }) => {
-          if (view !== 'month') {
+        onSelectSlot={({ start, action }) => {
+          if (action === 'click') {
             aoSelecionarSlot({ start })
           }
         }}
@@ -88,7 +88,7 @@ export default function CalendarioAgenda({
                 onView={setView}
                 onNavigate={setDataAtual}
                 aoSelecionarEvento={aoSelecionarEvento}
-                aoAdicionarHorario={aoSelecionarSlot} // ← importante
+                aoAdicionarHorario={aoSelecionarSlot}
               />
             )
           }
@@ -128,20 +128,8 @@ function HeaderComEventos({
   }
 
   return (
-    <div className="flex flex-col items-start px-1 overflow-visible relative h-full">
-      <div className="w-full flex justify-between items-center text-[10px] text-gray-500">
-        <div className="flex gap-2">
-          {agendados > 0 && (
-            <span className="flex items-center gap-1 text-orange-500">
-              <UserRoundCheck size={10} /> {agendados}
-            </span>
-          )}
-          {disponiveis > 0 && (
-            <span className="flex items-center gap-1 text-blue-500">
-              <Clock size={10} /> {disponiveis}
-            </span>
-          )}
-        </div>
+    <div className="flex flex-col justify-between px-1 overflow-visible relative h-full">
+      <div className="w-full flex justify-between items-center">
         <div className="flex items-center gap-1">
           <span
             onClick={(e) => {
@@ -196,6 +184,20 @@ function HeaderComEventos({
             </span>
           )
         })}
+      </div>
+
+      {/* Contagem no rodapé inferior esquerdo */}
+      <div className="flex gap-2 text-[10px] text-gray-500 mt-1">
+        {agendados > 0 && (
+          <span className="flex items-center gap-1 text-orange-500">
+            <UserRoundCheck size={10} /> {agendados}
+          </span>
+        )}
+        {disponiveis > 0 && (
+          <span className="flex items-center gap-1 text-blue-500">
+            <Clock size={10} /> {disponiveis}
+          </span>
+        )}
       </div>
 
       {tooltip.visible &&
