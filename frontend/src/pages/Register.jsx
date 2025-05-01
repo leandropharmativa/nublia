@@ -94,9 +94,32 @@ export default function Register() {
           {erro && <div className="alert-warning">{erro}</div>}
           {sucesso && <div className="alert-success">Cadastro realizado com sucesso!</div>}
 
-          <CampoTexto name="name" placeholder="Nome completo" value={form.name} onChange={handleChange} required />
-          <CampoTexto type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} required />
-          <CampoTexto type="password" name="password" placeholder="Senha" value={form.password} onChange={handleChange} required />
+          <CampoTexto
+            name="name"
+            placeholder="Nome completo"
+            value={form.name}
+            onChange={handleChange}
+            required
+            className="mb-3"
+          />
+          <CampoTexto
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            className="mb-3"
+          />
+          <CampoTexto
+            type="password"
+            name="password"
+            placeholder="Senha"
+            value={form.password}
+            onChange={handleChange}
+            required
+            className="mb-3"
+          />
 
           <select
             name="role"
@@ -123,7 +146,9 @@ export default function Register() {
             />
           </div>
 
-          <Botao type="submit" className="mb-3">Registrar</Botao>
+          <Botao type="submit" className="mb-3">
+            Registrar
+          </Botao>
         </form>
       </div>
     </div>
