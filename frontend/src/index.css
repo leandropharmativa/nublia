@@ -22,4 +22,15 @@
   .text-subtle {
     @apply text-sm text-gray-500;
   }
+   .alert-success {
+    @apply bg-nublia-success text-blue-800 text-sm px-4 py-2 rounded mb-3 border border-blue-200;
+  }
+
+  .alert-warning {
+    @apply bg-nublia-warning text-yellow-800 text-sm px-4 py-2 rounded mb-3 border border-yellow-300;
+  }
+
+  .alert-error {
+    @apply bg-nublia-danger text-red-800 text-sm px-4 py-2 rounded mb-3 border border-red-300;
+  }
 }
