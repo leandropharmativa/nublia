@@ -86,6 +86,9 @@ export default function Login({ onLogin }) {
           <h1 className="text-5xl font-bold text-left leading-snug">
             Bem vindo(a)<br />à Nublia
           </h1>
+          <h2 className="text-2xl font-semibold text-left leading-snug">
+            Conectando e simplificando.
+          </h2>
         </div>
       </div>
 
