@@ -83,11 +83,11 @@ export default function Login({ onLogin }) {
           Nublia
         </div>
         <div className="absolute top-56 left-20">
-          <h1 className="text-5xl font-bold text-left leading-snug">
+          <h1 className="text-5xl font-bold text-left leading-snug mb-4">
             Bem vindo(a)<br />à Nublia
           </h1>
           <h2 className="text-2xl font-semibold text-left leading-snug">
-            Conectando e simplificando.
+            Conecte e simplifique.
           </h2>
         </div>
       </div>
