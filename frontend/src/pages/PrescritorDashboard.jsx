@@ -27,6 +27,7 @@ import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import ModalNovoHorario from '../components/ModalNovoHorario'
 import FichaAtendimento from '../components/FichaAtendimento'
 import Botao from '../components/Botao'
+import { toastSucesso, toastErro } from '../utils/toastUtils'
 
 export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
@@ -170,8 +171,7 @@ export default function PrescritorDashboard() {
               onVerAtendimento={(atendimento) => {
                 setAtendimentoSelecionado(atendimento)
                 setMostrarVisualizarAtendimentoModal(true)
-            }}
-
+              }}
             />
           </div>
         </div>
@@ -203,7 +203,7 @@ export default function PrescritorDashboard() {
                     onFinalizar={() => {
                       setPacienteSelecionado(null)
                       setTimeout(() => setAbaSelecionada(0), 50)
-                      setAbaSelecionada(0) // volta para "Início"
+                      setAbaSelecionada(0)
                     }}
                     onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
                   />
@@ -211,7 +211,6 @@ export default function PrescritorDashboard() {
               )}
 
               <Tab.Panel>
-                {/* Início */}
                 <div className="flex flex-col items-start py-8 px-4 sm:px-0">
                   <div className="flex items-center gap-2 mb-4 text-nublia-accent">
                     <CalendarClock size={20} />
@@ -222,47 +221,46 @@ export default function PrescritorDashboard() {
                   ) : (
                     <ul className="space-y-[6px] text-sm text-gray-800 w-full max-w-xl">
                       {agendamentosHoje.map((a) => (
-<li key={a.id} className="flex items-center gap-2 border-b border-gray-200 pb-1">
-  <button
-    onClick={() => handleVerPerfil(a.paciente_id)}
-    title="Ver perfil"
-    className="text-nublia-accent hover:text-nublia-orange"
-  >
-    <User size={16} />
-  </button>
-  <span className="font-medium">{a.nome}</span>
-  <span className="text-gray-500 text-sm">{a.hora?.slice(0, 5)}h</span>
-  <button
-    className="text-nublia-accent hover:text-nublia-orange ml-1"
-    title="Editar agendamento"
-onClick={() => {
-  setAgendamentoSelecionado({
-    id: a.id,
-    status: a.status,
-    pacienteId: a.paciente_id,
-    pacienteNome: a.nome,
-    dataHora: new Date(`${a.data}T${a.hora}`)
-  })
-  setMostrarAgendamentoModal(true)
-}}
-  >
-    <Eye size={16} />
-  </button>
-  <button
-    className="text-nublia-accent hover:text-nublia-orange ml-1"
-    title="Iniciar atendimento"
-    onClick={() => {
-      const paciente = pacientes.find(p => p.id === a.paciente_id)
-      if (paciente) {
-        setPacienteSelecionado(paciente)
-        setTimeout(() => setAbaSelecionada(0), 0)
-      }
-    }}
-  >
-    <PlayCircle size={15} />
-  </button>
-</li>
-
+                        <li key={a.id} className="flex items-center gap-2 border-b border-gray-200 pb-1">
+                          <button
+                            onClick={() => handleVerPerfil(a.paciente_id)}
+                            title="Ver perfil"
+                            className="text-nublia-accent hover:text-nublia-orange"
+                          >
+                            <User size={16} />
+                          </button>
+                          <span className="font-medium">{a.nome}</span>
+                          <span className="text-gray-500 text-sm">{a.hora?.slice(0, 5)}h</span>
+                          <button
+                            className="text-nublia-accent hover:text-nublia-orange ml-1"
+                            title="Editar agendamento"
+                            onClick={() => {
+                              setAgendamentoSelecionado({
+                                id: a.id,
+                                status: a.status,
+                                pacienteId: a.paciente_id,
+                                pacienteNome: a.nome,
+                                dataHora: new Date(`${a.data}T${a.hora}`)
+                              })
+                              setMostrarAgendamentoModal(true)
+                            }}
+                          >
+                            <Eye size={16} />
+                          </button>
+                          <button
+                            className="text-nublia-accent hover:text-nublia-orange ml-1"
+                            title="Iniciar atendimento"
+                            onClick={() => {
+                              const paciente = pacientes.find(p => p.id === a.paciente_id)
+                              if (paciente) {
+                                setPacienteSelecionado(paciente)
+                                setTimeout(() => setAbaSelecionada(0), 0)
+                              }
+                            }}
+                          >
+                            <PlayCircle size={15} />
+                          </button>
+                        </li>
                       ))}
                     </ul>
                   )}
@@ -272,30 +270,29 @@ onClick={() => {
                       texto="Incluir agendamento"
                       iconeInicio={<CalendarPlus size={16} />}
                       onClick={async () => {
-  try {
-    const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-    const eventos = await res.json()
-    const disponiveis = eventos.filter(e => e.status === 'disponivel')
+                        try {
+                          const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+                          const eventos = await res.json()
+                          const disponiveis = eventos.filter(e => e.status === 'disponivel')
 
-    if (disponiveis.length === 0) {
-      alert('Nenhum horário disponível no momento.')
-      return
-    }
+                          if (disponiveis.length === 0) {
+                            alert('Nenhum horário disponível no momento.')
+                            return
+                          }
 
-    // Seleciona apenas o primeiro horário, mas envia a lista inteira para o modal
-    setAgendamentoSelecionado({
-      id: null,
-      status: 'novo_agendamento',
-      pacienteId: null,
-      pacienteNome: '',
-      dataHora: null,
-      opcoes: disponiveis
-    })
-    setMostrarAgendamentoModal(true)
-  } catch (err) {
-    console.error('Erro ao buscar horários disponíveis:', err)
-  }
-}}
+                          setAgendamentoSelecionado({
+                            id: null,
+                            status: 'novo_agendamento',
+                            pacienteId: null,
+                            pacienteNome: '',
+                            dataHora: null,
+                            opcoes: disponiveis
+                          })
+                          setMostrarAgendamentoModal(true)
+                        } catch (err) {
+                          console.error('Erro ao buscar horários disponíveis:', err)
+                        }
+                      }}
                       full={false}
                       className="rounded-full"
                     />
@@ -342,78 +339,76 @@ onClick={() => {
         />
       )}
 
-{mostrarNovoHorario && agendamentoSelecionado && (
-  <ModalNovoHorario
-    horario={agendamentoSelecionado}
-    onCancelar={() => {
-      setMostrarNovoHorario(false)
-      setAgendamentoSelecionado(null)
-    }}
-    onConfirmar={() => {
-      setMostrarNovoHorario(false)
-      setAgendamentoSelecionado(null)
-      carregarAgenda(user.id)
-    }}
-  />
-)}
+      {mostrarNovoHorario && agendamentoSelecionado && (
+        <ModalNovoHorario
+          horario={agendamentoSelecionado}
+          onCancelar={() => {
+            setMostrarNovoHorario(false)
+            setAgendamentoSelecionado(null)
+          }}
+          onConfirmar={() => {
+            setMostrarNovoHorario(false)
+            setAgendamentoSelecionado(null)
+            carregarAgenda(user.id)
+          }}
+        />
+      )}
 
-
-{mostrarAgendamentoModal && agendamentoSelecionado && (
-  <ModalAgendarHorario
-    agendamentoId={agendamentoSelecionado.id}
-    statusAtual={agendamentoSelecionado.status}
-    pacienteAtual={agendamentoSelecionado.pacienteNome}
-    pacienteId={agendamentoSelecionado.pacienteId}
-    horarioSelecionado={agendamentoSelecionado.dataHora}
-    onCancelar={() => {
-      setAgendamentoSelecionado(null)
-      setMostrarAgendamentoModal(false)
-    }}
-    onAtualizarAgenda={() => carregarAgenda(user.id)}
-    onRemover={(id) => {
-      fetch(`https://nublia-backend.onrender.com/agenda/${id}`, {
-        method: 'DELETE'
-      }).then(() => {
-        toast.success('Horário removido com sucesso!')
-        setAgendamentoSelecionado(null)
-        setMostrarAgendamentoModal(false)
-        carregarAgenda(user.id)
-      }).catch(() => {
-        toast.error('Erro ao remover horário.')
-      })
-    }}
-    onDesagendar={(id) => {
-      fetch(`https://nublia-backend.onrender.com/agenda/desagendar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      }).then(() => {
-        toast.success('Agendamento cancelado!')
-        setAgendamentoSelecionado(null)
-        setMostrarAgendamentoModal(false)
-        carregarAgenda(user.id)
-      }).catch(() => {
-        toast.error('Erro ao desagendar.')
-      })
-    }}
-    onConfirmar={(horarioId, pacienteId) => {
-    fetch('https://nublia-backend.onrender.com/agenda/agendar', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
-    })
-    .then((res) => {
-      if (!res.ok) throw new Error()
-      toast.success('Paciente agendado com sucesso!')
-      setMostrarAgendamentoModal(false)
-      setAgendamentoSelecionado(null)
-      carregarAgenda(user.id)
-    })
-    .catch(() => toast.error('Erro ao agendar paciente.'))
-    }}
-  />
-)}
-
+      {mostrarAgendamentoModal && agendamentoSelecionado && (
+        <ModalAgendarHorario
+          agendamentoId={agendamentoSelecionado.id}
+          statusAtual={agendamentoSelecionado.status}
+          pacienteAtual={agendamentoSelecionado.pacienteNome}
+          pacienteId={agendamentoSelecionado.pacienteId}
+          horarioSelecionado={agendamentoSelecionado.dataHora}
+          onCancelar={() => {
+            setAgendamentoSelecionado(null)
+            setMostrarAgendamentoModal(false)
+          }}
+          onAtualizarAgenda={() => carregarAgenda(user.id)}
+          onRemover={(id) => {
+            fetch(`https://nublia-backend.onrender.com/agenda/${id}`, {
+              method: 'DELETE'
+            }).then(() => {
+              toastSucesso('Horário removido com sucesso!')
+              setAgendamentoSelecionado(null)
+              setMostrarAgendamentoModal(false)
+              carregarAgenda(user.id)
+            }).catch(() => {
+              toastErro('Erro ao remover horário.')
+            })
+          }}
+          onDesagendar={(id) => {
+            fetch(`https://nublia-backend.onrender.com/agenda/desagendar`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id })
+            }).then(() => {
+              toastSucesso('Agendamento cancelado!')
+              setAgendamentoSelecionado(null)
+              setMostrarAgendamentoModal(false)
+              carregarAgenda(user.id)
+            }).catch(() => {
+              toastErro('Erro ao desagendar.')
+            })
+          }}
+          onConfirmar={(horarioId, pacienteId) => {
+            fetch('https://nublia-backend.onrender.com/agenda/agendar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
+            })
+              .then((res) => {
+                if (!res.ok) throw new Error()
+                toastSucesso('Paciente agendado com sucesso!')
+                setMostrarAgendamentoModal(false)
+                setAgendamentoSelecionado(null)
+                carregarAgenda(user.id)
+              })
+              .catch(() => toastErro('Erro ao agendar paciente.'))
+          }}
+        />
+      )}
     </Layout>
   )
 }
