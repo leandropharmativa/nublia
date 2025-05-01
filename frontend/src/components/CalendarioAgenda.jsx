@@ -94,21 +94,22 @@ function HeaderComEventos({ data, label, eventos }) {
   }
 
   return (
-    <div className="flex flex-col items-start px-1 overflow-visible relative">
-      <div className="flex items-center gap-2 text-[10px] text-gray-500">
-        {agendados > 0 && (
-          <span className="flex items-center gap-1 text-orange-500">
-            <UserRoundCheck size={10} /> {agendados}
-          </span>
-        )}
-        {disponiveis > 0 && (
-          <span className="flex items-center gap-1 text-blue-500">
-            <Clock size={10} /> {disponiveis}
-          </span>
-        )}
+    <div className="flex flex-col items-start px-1 overflow-visible relative h-full">
+      <div className="w-full flex justify-between items-center text-[10px] text-gray-500">
+        <div className="flex gap-2">
+          {agendados > 0 && (
+            <span className="flex items-center gap-1 text-orange-500">
+              <UserRoundCheck size={10} /> {agendados}
+            </span>
+          )}
+          {disponiveis > 0 && (
+            <span className="flex items-center gap-1 text-blue-500">
+              <Clock size={10} /> {disponiveis}
+            </span>
+          )}
+        </div>
+        <span className="text-xs font-medium text-gray-700">{label}</span>
       </div>
-
-      <span className="text-xs font-medium">{label}</span>
 
       <div className="flex flex-wrap gap-[4px] mt-1 overflow-visible">
         {doDia.map(ev => {
