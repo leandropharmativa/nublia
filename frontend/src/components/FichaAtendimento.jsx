@@ -17,6 +17,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
   const [atendimentosAnteriores, setAtendimentosAnteriores] = useState([])
   const [modalVisualizar, setModalVisualizar] = useState(null)
   const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] = useState(false)
+  const [mostrarTodos, setMostrarTodos] = useState(false)
 
   const abas = ['paciente', 'anamnese', 'antropometria', 'dieta', 'receita']
 
@@ -171,7 +172,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
       <List size={16} /> Atendimentos anteriores
     </h3>
     <ul className="text-sm text-gray-700 divide-y divide-gray-200">
-      {atendimentosAnteriores.slice(0, 5).map((a) => (
+      {(mostrarTodos ? atendimentosAnteriores : atendimentosAnteriores.slice(0, 5)).map((a) => (
         <li key={a.id} className="flex items-center justify-between py-1">
           <button
             className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1 text-sm"
@@ -188,10 +189,10 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
 
     {atendimentosAnteriores.length > 5 && (
       <button
-        className="mt-2 text-xs text-blue-600 hover:underline"
-        onClick={() => setModalVisualizar('todos')}
+        onClick={() => setMostrarTodos(!mostrarTodos)}
+        className="mt-3 px-4 py-1 text-xs font-semibold rounded-full border border-nublia-accent text-nublia-accent hover:bg-nublia-accent hover:text-white transform hover:scale-[1.03] transition"
       >
-        Ver todos
+        {mostrarTodos ? 'Mostrar menos' : 'Ver todos'}
       </button>
     )}
   </div>
