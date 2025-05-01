@@ -271,7 +271,31 @@ onClick={() => {
                     <Botao
                       texto="Incluir agendamento"
                       iconeInicio={<CalendarPlus size={16} />}
-                      onClick={() => setMostrarNovoHorario(true)}
+                      onClick={async () => {
+  try {
+    const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+    const eventos = await res.json()
+    const disponiveis = eventos.filter(e => e.status === 'disponivel')
+
+    if (disponiveis.length === 0) {
+      alert('Nenhum horário disponível no momento.')
+      return
+    }
+
+    // Seleciona apenas o primeiro horário, mas envia a lista inteira para o modal
+    setAgendamentoSelecionado({
+      id: null,
+      status: 'novo_agendamento',
+      pacienteId: null,
+      pacienteNome: '',
+      dataHora: null,
+      opcoes: disponiveis
+    })
+    setMostrarAgendamentoModal(true)
+  } catch (err) {
+    console.error('Erro ao buscar horários disponíveis:', err)
+  }
+}}
                       full={false}
                       className="rounded-full"
                     />
