@@ -176,7 +176,7 @@ export default function ModalAgendarHorario({
             <X size={20} />
           </button>
 
-          <h2 className="text-xl font-semibold text-gray-800 pr-6">
+          <h2 className="text-xl font-semibold text-nublia-accent pr-6">
             {statusAtual === 'agendado'
               ? 'Editar agendamento'
               : statusAtual === 'novo_agendamento'
@@ -245,71 +245,35 @@ export default function ModalAgendarHorario({
             </>
           )}
 
-          {statusAtual === 'novo_agendamento' && (
+          {(statusAtual === 'novo_agendamento' || statusAtual === 'disponivel') && (
             <>
-              <div>
-                <label className="text-sm text-gray-600">Escolha um horário disponível:</label>
-                <select
-                  value={novoHorarioId || ''}
-                  onChange={(e) => setNovoHorarioId(Number(e.target.value))}
-                  className="w-full border rounded-full px-4 py-2 mt-1 text-sm"
-                >
-                  <option value="">Selecione</option>
-                  {horariosDisponiveis.map(h => (
-                    <option key={h.id} value={h.id}>
-                      {new Date(`${h.data}T${h.hora}`).toLocaleString('pt-BR', {
-                        weekday: 'short',
-                        day: '2-digit',
-                        month: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {renderBuscaPaciente()}
 
-              <div className="mt-4">
-                {renderBuscaPaciente()}
-
+              {selecionado && (
                 <button
-                  onClick={() => {
-                    if (!novoHorarioId || !selecionado) {
-                      toastErro('Selecione um horário e um paciente.')
-                      return
-                    }
-                    onConfirmar(novoHorarioId, selecionado.id)
-                  }}
-                  className={`mt-4 w-full rounded-full py-2 text-sm text-white flex justify-center items-center gap-2 ${
-                    (!novoHorarioId || !selecionado)
-                      ? 'bg-nublia-accent/60 cursor-not-allowed'
-                      : 'bg-nublia-accent hover:brightness-110'
-                  }`}
-                  disabled={!novoHorarioId || !selecionado}
+                  onClick={() => agendar(selecionado.id)}
+                  className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110"
                 >
                   Confirmar agendamento
                 </button>
-              </div>
-            </>
-          )}
+              )}
 
-          {statusAtual === 'disponivel' && (
-            <>
-              {renderBuscaPaciente()}
-              <div className="flex justify-between pt-4">
-                <button
-                  onClick={() => onRemover(agendamentoId)}
-                  className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm"
-                >
-                  Remover horário
-                </button>
-                <button
-                  onClick={() => setMostrarCadastro(true)}
-                  className="bg-nublia-accent text-white hover:brightness-110 px-4 py-2 rounded-full text-sm"
-                >
-                  Novo paciente
-                </button>
-              </div>
+              {statusAtual === 'disponivel' && (
+                <div className="flex justify-between pt-4">
+                  <button
+                    onClick={() => onRemover(agendamentoId)}
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm"
+                  >
+                    Remover horário
+                  </button>
+                  <button
+                    onClick={() => setMostrarCadastro(true)}
+                    className="bg-nublia-accent text-white hover:brightness-110 px-4 py-2 rounded-full text-sm"
+                  >
+                    Novo paciente
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
