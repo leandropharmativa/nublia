@@ -1,10 +1,17 @@
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
+// 📄 CalendarioAgenda.jsx
+
+import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarioCustom.css'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { FaUser, FaRegCalendarAlt } from 'react-icons/fa'
+
+import {
+  ChevronLeft,
+  ChevronRight,
+  User,
+  Calendar as CalendarIcon,
+} from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
 
@@ -19,7 +26,7 @@ const localizer = dateFnsLocalizer({
 export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
   return (
     <div className="h-full p-6 bg-white rounded shadow overflow-hidden">
-      <Calendar
+      <BigCalendar
         localizer={localizer}
         events={eventos}
         startAccessor="start"
@@ -52,8 +59,8 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
                 <span>{props.label}</span>
                 <ContagemPorDia data={props.date} eventos={eventos} />
               </div>
-            )
-          }
+            ),
+          },
         }}
         eventPropGetter={(event) => {
           const cor = event.status === 'agendado' ? '#dc2626' : '#2563eb'
@@ -170,8 +177,16 @@ function ContagemPorDia({ data, eventos }) {
 
   return (
     <span className="text-[10px] text-gray-400 ml-1 flex items-center gap-1">
-      {agendados > 0 && <span className="flex items-center gap-1"><FaUser size={10} />{agendados}</span>}
-      {disponiveis > 0 && <span className="flex items-center gap-1"><FaRegCalendarAlt size={10} />{disponiveis}</span>}
+      {agendados > 0 && (
+        <span className="flex items-center gap-1">
+          <User size={10} />{agendados}
+        </span>
+      )}
+      {disponiveis > 0 && (
+        <span className="flex items-center gap-1">
+          <CalendarIcon size={10} />{disponiveis}
+        </span>
+      )}
     </span>
   )
 }
