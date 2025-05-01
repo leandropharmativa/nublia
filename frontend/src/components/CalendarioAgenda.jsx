@@ -52,8 +52,8 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
           toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
           day: { header: CustomDayHeader },
           event: EventCompacto,
-          eventWrapper: EventoFlexWrapper,
           month: {
+            eventWrapper: EventWrapperMonth,
             dateHeader: (props) => (
               <div className="flex justify-between items-start px-1">
                 <span>{props.label}</span>
@@ -76,11 +76,11 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
   )
 }
 
-function EventoFlexWrapper({ children }) {
+function EventWrapperMonth({ children }) {
   return (
     <div
-      className="flex flex-wrap gap-[4px] p-1 items-start justify-start"
-      style={{ minHeight: '20px' }}
+      className="flex flex-wrap gap-[4px] px-1 pt-1"
+      style={{ maxHeight: '100%', overflowY: 'auto' }}
     >
       {children}
     </div>
