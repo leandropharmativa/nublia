@@ -54,12 +54,13 @@ export default function CalendarioAgenda({
         onNavigate={setDataAtual}
         defaultView="month"
         views={['month', 'week', 'day', 'agenda']}
-        selectable
+        // 🔒 Bloqueia abertura de modal no modo mês
+        selectable={view !== 'month'}
         step={15}
         timeslots={1}
         culture="pt-BR"
-        onSelectSlot={({ start, action }) => {
-          if (action === 'click') {
+        onSelectSlot={({ start }) => {
+          if (view !== 'month') {
             aoSelecionarSlot({ start })
           }
         }}
@@ -128,8 +129,8 @@ function HeaderComEventos({
   }
 
   return (
-    <div className="flex flex-col justify-between px-1 overflow-visible relative h-full">
-      <div className="w-full flex justify-between items-center">
+    <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
+      <div className="flex justify-between items-center">
         <div className="flex items-center gap-1">
           <span
             onClick={(e) => {
@@ -186,8 +187,8 @@ function HeaderComEventos({
         })}
       </div>
 
-      {/* Contagem no rodapé inferior esquerdo */}
-      <div className="flex gap-2 text-[10px] text-gray-500 mt-1">
+      {/* Contagem de horários no rodapé inferior esquerdo */}
+      <div className="absolute bottom-1 left-1 text-[10px] text-gray-500 flex gap-2">
         {agendados > 0 && (
           <span className="flex items-center gap-1 text-orange-500">
             <UserRoundCheck size={10} /> {agendados}
