@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { Feather } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -54,6 +55,8 @@ export default function Register() {
     }
   }
 
+  const precisaDeCodigo = ["prescritor", "farmacia", "academia", "clinica"].includes(form.role)
+
   return (
     <div className="flex h-screen font-sans text-gray-800">
       {/* Lado esquerdo com degradê */}
@@ -63,14 +66,28 @@ export default function Register() {
           Nublia
         </div>
         <div className="absolute top-36 left-10">
-          <h1 className="text-5xl font-bold text-left leading-snug">
-            Crie sua<br />conta
+          <h1 className="text-5xl font-bold text-left leading-snug mb-4">
+            Bem vindo(a)<br />à Nublia
           </h1>
+          <h2 className="text-3xl font-semibold text-left leading-snug">
+            Crie sua conta
+          </h2>
         </div>
       </div>
 
       {/* Lado direito com formulário */}
       <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
+        {/* topo direito com botão para login */}
+        <div className="absolute top-6 right-6 flex items-center gap-2">
+          <p className="text-subtle">Já tem conta?</p>
+          <button
+            onClick={() => navigate('/')}
+            className="btn-primary rounded-full text-sm px-4 py-1"
+          >
+            Fazer login
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="w-full max-w-sm">
           <h2 className="text-title mb-6">Cadastro</h2>
 
@@ -114,30 +131,31 @@ export default function Register() {
             <option value="clinica">Clínica</option>
           </select>
 
-          {["prescritor", "farmacia", "academia", "clinica"].includes(form.role) && (
-            <input
-              type="text"
-              name="codigoAtivacao"
-              placeholder="Código de ativação"
-              required
-              className="input-base mb-3"
-              onChange={handleChange}
-            />
-          )}
+          <AnimatePresence>
+            {precisaDeCodigo && (
+              <motion.div
+                key="codigoAtivacao"
+                layout
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden mb-3"
+              >
+                <input
+                  type="text"
+                  name="codigoAtivacao"
+                  placeholder="Código de ativação"
+                  className="input-base"
+                  required
+                  onChange={handleChange}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <button type="submit" className="btn-primary w-full flex justify-center">
             Registrar
           </button>
-
-          <div className="text-center mt-4">
-            <button
-              type="button"
-              className="text-blue-600 hover:underline text-sm"
-              onClick={() => navigate('/')}
-            >
-              Já tem conta? Faça login
-            </button>
-          </div>
         </form>
       </div>
     </div>
