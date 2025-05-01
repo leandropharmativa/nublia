@@ -6,7 +6,8 @@ import {
   CalendarDays,
   BookOpenText,
   Leaf,
-  Settings
+  Settings,
+  PlusCircle
 } from 'lucide-react'
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
@@ -110,8 +111,9 @@ export default function PrescritorDashboard() {
           <div className="p-4">
             <button
               onClick={() => setMostrarBuscarPacienteModal(true)}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="w-full flex items-center justify-center gap-2 bg-nublia-accent text-white px-5 py-3 rounded-full text-sm font-semibold hover:brightness-110 transition"
             >
+              <PlusCircle size={18} />
               Iniciar Atendimento
             </button>
           </div>
