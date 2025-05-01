@@ -38,12 +38,7 @@ export default function ModalAgendarHorario({
   }, [statusAtual, trocandoPaciente])
 
   useEffect(() => {
-    if (
-      statusAtual === 'agendado' ||
-      statusAtual === 'novo_agendamento' ||
-      statusAtual === 'disponivel' ||
-      reagendando
-    ) {
+    if (reagendando) {
       axios
         .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
         .then(res => {
@@ -52,7 +47,7 @@ export default function ModalAgendarHorario({
         })
         .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
     }
-  }, [statusAtual, user.id, reagendando])
+  }, [reagendando, user.id])
 
   useEffect(() => {
     if (filtro.length < 2) {
@@ -118,7 +113,7 @@ export default function ModalAgendarHorario({
       setCarregando(false)
     }
   }
-
+  
   const renderBuscaPaciente = () => (
     <>
       <label className="text-sm text-gray-600 mb-1">Paciente:</label>
