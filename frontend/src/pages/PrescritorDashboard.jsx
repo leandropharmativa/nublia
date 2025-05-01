@@ -1,254 +1,134 @@
-// 📄 frontend/src/pages/PrescritorDashboard.jsx
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-
+import Layout from '../components/Layout'
+import { Tab } from '@headlessui/react'
 import {
-  LogOut,
   CalendarDays,
   BookOpenText,
   Leaf,
   Settings,
-  PlusCircle,
-  XCircle
+  UserCircle2,
+  FileText
 } from 'lucide-react'
-
-import BuscarPacienteModal from '../components/BuscarPacienteModal'
-import CadastrarPacienteModal from '../components/CadastrarPacienteModal'
-import FichaAtendimento from '../components/FichaAtendimento'
-import AtendimentosRecentes from '../components/AtendimentosRecentes'
-import PerfilPacienteModal from '../components/PerfilPacienteModal'
-import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
 import MinhasFormulas from '../components/MinhasFormulas'
+import AtendimentosRecentes from '../components/AtendimentosRecentes'
+import BuscarPacienteModal from '../components/BuscarPacienteModal'
 
 export default function PrescritorDashboard() {
-  const navigate = useNavigate()
   const [user, setUser] = useState(null)
-  const [atendimentosRecentes, setAtendimentosRecentes] = useState([])
-  const [pacientes, setPacientes] = useState([])
-  const [pesquisa, setPesquisa] = useState('')
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
-  const [mostrarCadastrarPacienteModal, setMostrarCadastrarPacienteModal] = useState(false)
-  const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
-  const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
-  const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
-  const [pacientePerfil, setPacientePerfil] = useState(null)
-  const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
-  const [mostrarAgenda, setMostrarAgenda] = useState(false)
-  const [mostrarFormulas, setMostrarFormulas] = useState(false)
+  const [atendimentos, setAtendimentos] = useState([])
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
-      setUser(JSON.parse(savedUser))
-    } else {
-      navigate('/')
+      const usuario = JSON.parse(savedUser)
+      setUser(usuario)
+      carregarAtendimentos(usuario.id)
     }
-  }, [navigate])
+  }, [])
 
-  useEffect(() => {
-    if (user?.id) {
-      carregarAtendimentos(user.id)
-      carregarPacientes()
-    }
-  }, [user])
-
-  const carregarAtendimentos = async (prescritorId) => {
+  const carregarAtendimentos = async (id) => {
     try {
-      const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
-      const atendimentos = response.data.filter(a => a.prescritor_id === prescritorId)
-
-      const atendimentosComPacientes = await Promise.all(
-        atendimentos.map(async (atendimento) => {
-          try {
-            const pacienteResponse = await axios.get(`https://nublia-backend.onrender.com/users/${atendimento.paciente_id}`)
-            const paciente = pacienteResponse.data
-
-            if (!paciente || paciente.role !== 'paciente') {
-              throw new Error('Usuário inválido ou não é paciente.')
-            }
-
-            return {
-              ...atendimento,
-              nomePaciente: paciente.name
-            }
-          } catch (error) {
-            console.error(`Erro ao buscar paciente ID ${atendimento.paciente_id}:`, error.message)
-            return {
-              ...atendimento,
-              nomePaciente: 'Paciente não encontrado'
-            }
-          }
-        })
-      )
-
-      setAtendimentosRecentes(atendimentosComPacientes.reverse())
-    } catch (error) {
-      console.error('Erro ao carregar atendimentos:', error)
+      const res = await fetch('https://nublia-backend.onrender.com/atendimentos/')
+      const data = await res.json()
+      const atendimentosFiltrados = data.filter(a => a.prescritor_id === id)
+      setAtendimentos(atendimentosFiltrados.reverse())
+    } catch (err) {
+      console.error('Erro ao carregar atendimentos:', err)
     }
-  }
-
-  const carregarPacientes = async () => {
-    try {
-      const response = await axios.get('https://nublia-backend.onrender.com/users/all')
-      const pacientesFiltrados = response.data.filter(u => u.role === 'paciente')
-      setPacientes(pacientesFiltrados)
-    } catch (error) {
-      console.error('Erro ao carregar pacientes:', error)
-    }
-  }
-
-  const logout = () => {
-    localStorage.clear()
-    navigate("/", { replace: true })
-  }
-
-  const atendimentosFiltrados = atendimentosRecentes.filter((item) =>
-    item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
-  )
-
-  const handleVerPerfil = async (pacienteId) => {
-    try {
-      const response = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-      const paciente = response.data
-
-      if (!paciente || paciente.role !== 'paciente') {
-        throw new Error("Usuário inválido ou não é paciente")
-      }
-
-      setPacientePerfil(paciente)
-      setMostrarPerfilPacienteModal(true)
-    } catch (error) {
-      console.error(`Erro ao carregar perfil do paciente (ID ${pacienteId}):`, error?.response?.data || error.message)
-    }
-  }
-
-  const handleVerAtendimento = (atendimento) => {
-    setAtendimentoSelecionado(atendimento)
-    setMostrarVisualizarAtendimentoModal(true)
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
-      <header className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
-        <div>
-          <div className="text-sm font-semibold">Nublia</div>
-          <h1 className="text-xl font-bold">Painel do Prescritor</h1>
+    <Layout>
+      <div className="flex h-[calc(100vh-160px)]">
+        {/* Lateral com atendimentos recentes */}
+        <aside className="w-72 bg-white rounded shadow p-4 overflow-y-auto">
+          <h3 className="text-md font-semibold mb-3">Atendimentos recentes</h3>
+          <ul className="space-y-3">
+            {atendimentos.map((a, i) => (
+              <li key={i} className="flex items-center justify-between text-sm text-gray-700">
+                <span className="truncate">{a.nomePaciente || 'Paciente'}</span>
+                <div className="flex gap-2">
+                  <button title="Ver perfil"><UserCircle2 size={18} /></button>
+                  <button title="Ver atendimento"><FileText size={18} /></button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </aside>
+
+        {/* Conteúdo principal com tabs */}
+        <div className="flex-1 pl-6">
+          <Tab.Group>
+            <Tab.List className="flex gap-4 border-b pb-2 mb-6">
+              <Tab className={({ selected }) =>
+                `flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
+                  selected ? 'text-blue-600 bg-white shadow' : 'text-gray-500 hover:text-blue-600'
+                }`
+              }>
+                <CalendarDays size={18} /> Agenda
+              </Tab>
+              <Tab className={({ selected }) =>
+                `flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
+                  selected ? 'text-blue-600 bg-white shadow' : 'text-gray-500 hover:text-blue-600'
+                }`
+              }>
+                <BookOpenText size={18} /> Fórmulas
+              </Tab>
+              <Tab className={({ selected }) =>
+                `flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
+                  selected ? 'text-blue-600 bg-white shadow' : 'text-gray-500 hover:text-blue-600'
+                }`
+              }>
+                <Leaf size={18} /> Dietas
+              </Tab>
+              <Tab className={({ selected }) =>
+                `flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
+                  selected ? 'text-blue-600 bg-white shadow' : 'text-gray-500 hover:text-blue-600'
+                }`
+              }>
+                <Settings size={18} /> Configurações
+              </Tab>
+            </Tab.List>
+
+            <Tab.Panels>
+              <Tab.Panel>
+                <div className="h-full flex flex-col items-center justify-center">
+                  <button
+                    onClick={() => setMostrarBuscarPacienteModal(true)}
+                    className="flex items-center gap-2 bg-blue-600 text-white px-6 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
+                  >
+                    Iniciar Atendimento
+                  </button>
+                </div>
+              </Tab.Panel>
+              <Tab.Panel>
+                <div>
+                  <h2 className="text-xl font-bold mb-4">Fórmulas sugeridas</h2>
+                  <FormulasSugeridas />
+                  <h2 className="text-xl font-bold mt-8 mb-4">Minhas fórmulas</h2>
+                  <MinhasFormulas usuarioId={user?.id} />
+                </div>
+              </Tab.Panel>
+              <Tab.Panel>
+                <div className="text-gray-500 italic">Área de dietas (em breve)</div>
+              </Tab.Panel>
+              <Tab.Panel>
+                <div className="text-gray-500 italic">Configurações da conta (em breve)</div>
+              </Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm italic">{user?.name}</span>
-          <button
-            onClick={logout}
-            className="flex items-center gap-1 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm"
-          >
-            <LogOut size={16} /> Sair
-          </button>
-        </div>
-      </header>
-
-      <nav className="bg-white shadow px-6 py-3 flex justify-end gap-8">
-        <button
-          className="flex flex-col items-center text-blue-600 hover:underline"
-          onClick={() => setMostrarAgenda(!mostrarAgenda)}
-        >
-          {mostrarAgenda ? <XCircle size={32} /> : <CalendarDays size={32} />}
-          <span className="text-xs mt-1">Agenda</span>
-        </button>
-        <button
-          className="flex flex-col items-center text-blue-600 hover:underline"
-          onClick={() => setMostrarFormulas(!mostrarFormulas)}
-        >
-          {mostrarFormulas ? <XCircle size={32} /> : <BookOpenText size={32} />}
-          <span className="text-xs mt-1">{mostrarFormulas ? 'Fechar' : 'Fórmulas'}</span>
-        </button>
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <Leaf size={32} />
-          <span className="text-xs mt-1">Dietas</span>
-        </button>
-        <button className="flex flex-col items-center text-blue-600 hover:underline">
-          <Settings size={32} />
-          <span className="text-xs mt-1">Configurações</span>
-        </button>
-      </nav>
-
-      <div className="flex flex-1 overflow-hidden">
-        <AtendimentosRecentes
-          atendimentos={atendimentosFiltrados}
-          pacientes={pacientes}
-          pesquisa={pesquisa}
-          onPesquisar={(texto) => setPesquisa(texto)}
-          onVerPerfil={handleVerPerfil}
-          onVerAtendimento={handleVerAtendimento}
-        />
-
-        <main className="flex-1 flex flex-col items-start p-4 overflow-hidden">
-          {mostrarAgenda ? (
-            <AgendaPrescritor mostrarAgenda={mostrarAgenda} />
-          ) : mostrarFormulas ? (
-            <div className="w-full h-full overflow-auto">
-              <h2 className="text-xl font-bold mb-4">Fórmulas sugeridas</h2>
-              <FormulasSugeridas />
-              <h2 className="text-xl font-bold mt-8 mb-4">Minhas fórmulas</h2>
-              <MinhasFormulas usuarioId={user?.id} />
-            </div>
-          ) : pacienteSelecionado ? (
-            <FichaAtendimento
-              paciente={pacienteSelecionado}
-              onFinalizar={() => setPacienteSelecionado(null)}
-              onAtendimentoSalvo={() => carregarAtendimentos(user?.id)}
-            />
-          ) : (
-            <div className="flex-1 flex items-center justify-center w-full">
-              <button
-                onClick={() => setMostrarBuscarPacienteModal(true)}
-                className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
-              >
-                <PlusCircle size={28} /> Iniciar Atendimento
-              </button>
-            </div>
-          )}
-        </main>
       </div>
 
       {mostrarBuscarPacienteModal && (
         <BuscarPacienteModal
           onClose={() => setMostrarBuscarPacienteModal(false)}
-          onCadastrarNovo={() => {
-            setMostrarBuscarPacienteModal(false)
-            setMostrarCadastrarPacienteModal(true)
-          }}
-          onSelecionarPaciente={(paciente) => {
-            setPacienteSelecionado(paciente)
-            setMostrarBuscarPacienteModal(false)
-          }}
+          onSelecionarPaciente={() => setMostrarBuscarPacienteModal(false)}
         />
       )}
-
-      {mostrarCadastrarPacienteModal && (
-        <CadastrarPacienteModal
-          onClose={() => setMostrarCadastrarPacienteModal(false)}
-          onPacienteCadastrado={(paciente) => {
-            setPacienteSelecionado(paciente)
-            setMostrarCadastrarPacienteModal(false)
-          }}
-        />
-      )}
-
-      {mostrarPerfilPacienteModal && pacientePerfil && (
-        <PerfilPacienteModal
-          paciente={pacientePerfil}
-          onClose={() => setMostrarPerfilPacienteModal(false)}
-        />
-      )}
-
-      {mostrarVisualizarAtendimentoModal && atendimentoSelecionado && (
-        <VisualizarAtendimentoModal
-          atendimento={atendimentoSelecionado}
-          onClose={() => setMostrarVisualizarAtendimentoModal(false)}
-        />
-      )}
-    </div>
+    </Layout>
   )
 }
