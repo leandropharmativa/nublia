@@ -31,14 +31,11 @@ const tabs = [
   { icon: CalendarDays, label: 'Agenda' },
   { icon: BookOpenText, label: 'Fórmulas' },
   { icon: Leaf, label: 'Dietas' },
-  { icon: Settings, label: 'Configurações' },
-  { icon: null, label: 'Ficha' } // Aba invisível
+  { icon: Settings, label: 'Configurações' }
 ]
 
 export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
-  const [abaSelecionada, setAbaSelecionada] = useState(0)
-
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
   const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
@@ -142,13 +139,10 @@ export default function PrescritorDashboard() {
 
   const hojeSlot = new Date()
 
-  const atendimentosFiltrados = atendimentos.filter((item) =>
-    item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
-  )
-
   return (
     <Layout>
       <div className="flex h-[calc(100vh-160px)]">
+        {/* Lateral esquerda */}
         <div className="h-full w-72 flex flex-col">
           <div className="p-4 pb-0">
             <Botao
@@ -161,7 +155,7 @@ export default function PrescritorDashboard() {
           </div>
           <div className="flex-1 overflow-hidden">
             <AtendimentosRecentes
-              atendimentos={atendimentosFiltrados}
+              atendimentos={atendimentos}
               pacientes={pacientes}
               pesquisa={pesquisa}
               onPesquisar={(texto) => setPesquisa(texto)}
@@ -171,10 +165,11 @@ export default function PrescritorDashboard() {
           </div>
         </div>
 
+        {/* Conteúdo principal */}
         <div className="flex-1 flex flex-col items-end pr-6 ml-6 overflow-y-auto bg-white">
-          <Tab.Group selectedIndex={abaSelecionada} onChange={setAbaSelecionada}>
+          <Tab.Group>
             <Tab.List className="relative flex gap-8 mb-6 transition-all duration-300">
-              {tabs.slice(0, -1).map((tab, idx) => (
+              {tabs.map((tab, idx) => (
                 <Tab
                   key={idx}
                   className={({ selected }) =>
@@ -264,28 +259,18 @@ export default function PrescritorDashboard() {
                   Configurações da conta (em breve)
                 </div>
               </Tab.Panel>
-
-              {/* Aba invisível: Ficha de Atendimento */}
-              <Tab.Panel>
-                {pacienteSelecionado ? (
-                  <FichaAtendimento
-                    paciente={pacienteSelecionado}
-                    onFinalizar={() => {
-                      setPacienteSelecionado(null)
-                      setAbaSelecionada(0)
-                    }}
-                    onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
-                  />
-                ) : (
-                  <div className="text-center text-gray-400 py-10 italic">
-                    Nenhum paciente selecionado.
-                  </div>
-                )}
-              </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
         </div>
       </div>
+
+      {pacienteSelecionado && (
+        <FichaAtendimento
+          paciente={pacienteSelecionado}
+          onFinalizar={() => setPacienteSelecionado(null)}
+          onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
+        />
+      )}
 
       {mostrarBuscarPacienteModal && (
         <BuscarPacienteModal
@@ -293,8 +278,6 @@ export default function PrescritorDashboard() {
           onSelecionarPaciente={(paciente) => {
             setPacienteSelecionado(paciente)
             setMostrarBuscarPacienteModal(false)
-            // aguarda um ciclo de render para mudar a aba
-            setTimeout(() => setAbaSelecionada(tabs.length - 1), 0)
           }}
         />
       )}
