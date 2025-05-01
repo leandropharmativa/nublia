@@ -119,10 +119,11 @@ export default function Register() {
               value={form.codigoAtivacao}
               onChange={handleChange}
               required={precisaDeCodigo}
+              className="mb-3"
             />
           </div>
 
-          <Botao type="submit">Registrar</Botao>
+          <Botao type="submit" className="mb-3">Registrar</Botao>
         </form>
       </div>
     </div>
