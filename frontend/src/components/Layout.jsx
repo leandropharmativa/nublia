@@ -15,10 +15,10 @@ export default function Layout({ children }) {
   const role = user?.role || 'admin'
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-gray-50">
-      <header className="bg-nublia-accent text-gray-800 px-6 py-6 flex justify-between items-center shadow-sm">
-        <div className="flex items-center text-nublia-orange text-2xl font-bold">
-          <Feather className="w-7 h-7 mr-2" />
+    <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-white">
+      <header className="bg-nublia-accent text-gray-800 px-6 py-8 flex justify-between items-center">
+        <div className="flex items-center text-nublia-orange text-3xl font-bold">
+          <Feather className="w-9 h-9 mr-2" />
           Nublia
         </div>
 
@@ -27,7 +27,7 @@ export default function Layout({ children }) {
             <div className="text-sm font-medium text-gray-700">{nome}</div>
             <div className="text-xs text-gray-500 capitalize">{role}</div>
           </div>
-          <div className="bg-white p-2 rounded-full shadow">
+          <div className="bg-white p-2 rounded-full">
             <User2 className="w-5 h-5 text-gray-500" />
           </div>
           <button
@@ -40,7 +40,6 @@ export default function Layout({ children }) {
         </div>
       </header>
 
-      {/* Conteúdo sem limite de largura */}
       <main className="flex-1 p-6">
         {children}
       </main>
