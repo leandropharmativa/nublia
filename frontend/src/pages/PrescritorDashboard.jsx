@@ -126,21 +126,21 @@ export default function PrescritorDashboard() {
         {/* Conteúdo principal com tabs alinhadas à direita */}
         <div className="flex-1 flex flex-col items-end pr-6 overflow-y-auto">
           <Tab.Group>
-            <Tab.List className="relative flex gap-8 mb-6 transition-all duration-300"
-              {tabs.map((tab, idx) => (
-                <Tab
-                  key={idx}
-                  className={({ selected }) =>
-                    `flex flex-col items-center px-4 py-2 text-sm transition duration-300 ${
-                      selected ? 'text-white bg-nublia-accent rounded' : 'text-gray-500 hover:text-blue-600'
-                    }`
-                  }
-                >
-                  <tab.icon size={32} />
-                  <span className="text-xs mt-1">{tab.label}</span>
-                </Tab>
-              ))}
-            <div className='absolute bottom-0 right-0 h-[6px] bg-nublia-accent rounded-l-full w-[calc(100%_+_80px)]'></div>
+            <Tab.List className="relative flex gap-8 mb-6 transition-all duration-300">
+  {tabs.map((tab, idx) => (
+    <Tab
+      key={idx}
+      className={({ selected }) =>
+        `flex flex-col items-center px-4 py-2 text-sm transition duration-300 ${
+          selected ? 'text-white bg-nublia-accent rounded' : 'text-gray-500 hover:text-blue-600'
+        }`
+      }
+    >
+      <tab.icon size={32} />
+      <span className="text-xs mt-1">{tab.label}</span>
+    </Tab>
+  ))}
+  <div className='absolute bottom-0 right-0 h-[6px] bg-nublia-accent rounded-l-full w-[calc(100%+80px)]'></div>
 </Tab.List>
 
             <Tab.Panels className="w-full">
