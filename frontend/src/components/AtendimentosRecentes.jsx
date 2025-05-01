@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { User, FileText, Search, CalendarCheck2 } from 'lucide-react'
 
 export default function AtendimentosRecentes({
@@ -8,6 +9,21 @@ export default function AtendimentosRecentes({
   onVerPerfil,
   onVerAtendimento
 }) {
+  const [quantidadeVisivel, setQuantidadeVisivel] = useState(6)
+
+  useEffect(() => {
+    const calcularQuantidade = () => {
+      const alturaDisponivel = window.innerHeight - 300 // 300px estimados para título + margem + busca
+      const alturaItem = 48 // cada item ~48px de altura
+      const maxItens = Math.floor(alturaDisponivel / alturaItem)
+      setQuantidadeVisivel(Math.max(3, maxItens))
+    }
+
+    calcularQuantidade()
+    window.addEventListener('resize', calcularQuantidade)
+    return () => window.removeEventListener('resize', calcularQuantidade)
+  }, [])
+
   const getNomePaciente = (id) => {
     const paciente = pacientes.find((p) => p.id === id)
     return paciente ? paciente.name : 'Paciente...'
@@ -21,10 +37,10 @@ export default function AtendimentosRecentes({
         Atendimentos recentes
       </div>
 
-      {/* Lista de atendimentos */}
-      <div className="px-4 pb-2 border-r border-gray-200 flex-grow">
-        <ul className="divide-y divide-gray-200 max-h-full">
-          {atendimentos.slice(0, 6).map((a) => {
+      {/* Lista visível */}
+      <div className="px-4 border-r border-gray-200">
+        <ul className="divide-y divide-gray-200">
+          {atendimentos.slice(0, quantidadeVisivel).map((a) => {
             const nome = getNomePaciente(a.paciente_id)
             return (
               <li key={a.id} className="flex items-center gap-2 py-2 text-sm text-gray-600">
@@ -48,6 +64,7 @@ export default function AtendimentosRecentes({
               </li>
             )
           })}
+
           {atendimentos.length === 0 && (
             <li className="text-sm italic text-gray-500 py-4">Nenhum atendimento encontrado.</li>
           )}
@@ -55,7 +72,7 @@ export default function AtendimentosRecentes({
       </div>
 
       {/* Barra de busca fixa */}
-      <div className="p-4 bg-white">
+      <div className="p-4 mt-auto">
         <div className="relative">
           <input
             type="text"
