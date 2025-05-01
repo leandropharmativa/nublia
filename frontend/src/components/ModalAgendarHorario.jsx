@@ -237,22 +237,23 @@ export default function ModalAgendarHorario({
                     >
                       <ArrowLeftRight size={18} />
                     </button>
-                    <button
-                      onClick={() => {
-                      setReagendando(true)
-                      axios
-                        .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-                        .then(res => {
-                          const disponiveis = res.data.filter(h => h.status === 'disponivel')
-                          setHorariosDisponiveis(disponiveis)
-                        })
-                        .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
-                    }
-                      className="text-nublia-accent hover:text-nublia-orange"
-                      title="Transferir paciente"
-                    >
-                      <CalendarClock size={18} />
-                    </button>
+<button
+  onClick={() => {
+    setReagendando(true)
+    axios
+      .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+      .then(res => {
+        const disponiveis = res.data.filter(h => h.status === 'disponivel')
+        setHorariosDisponiveis(disponiveis)
+      })
+      .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
+  }}
+  className="text-nublia-accent hover:text-nublia-orange"
+  title="Transferir paciente"
+>
+  <CalendarClock size={18} />
+</button>
+
                     <button
                       onClick={() => onDesagendar(agendamentoId)}
                       className="text-red-500 hover:text-red-600"
