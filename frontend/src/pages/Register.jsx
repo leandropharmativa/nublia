@@ -70,12 +70,12 @@ export default function Register() {
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
-        <div className="absolute top-36 left-10">
+        <div className="absolute top-56 left-20">
           <h1 className="text-5xl font-bold text-left leading-snug mb-4">
             Bem vindo(a)<br />à Nublia
           </h1>
-          <h2 className="text-3xl font-semibold text-left leading-snug">
-            Crie sua conta
+          <h2 className="text-2xl font-semibold text-left leading-snug">
+            Crie sua conta.
           </h2>
         </div>
       </div>
