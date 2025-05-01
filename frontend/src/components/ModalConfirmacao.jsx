@@ -4,39 +4,31 @@ export default function ModalConfirmacao({
   mensagem,
   onConfirmar,
   onCancelar,
-  onSairSemSalvar,
-  textoBotaoConfirmar = 'Confirmar',
-  textoBotaoCancelar = 'Cancelar',
-  textoBotaoExtra = 'Sair sem salvar'
+  textoBotaoConfirmar = 'Sim, descartar',
+  textoBotaoCancelar = 'Voltar para ficha'
 }) {
-  if (!aberto) return null;
+  if (!aberto) return null
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4 text-blue-600">{titulo}</h2>
-        <p className="mb-6">{mensagem}</p>
-        <div className="flex justify-end gap-4 flex-wrap">
+      <div className="bg-white rounded-xl shadow-lg p-5 w-full max-w-sm">
+        <h2 className="text-lg font-semibold text-red-600 mb-2">{titulo}</h2>
+        <p className="text-sm text-gray-700 mb-6">{mensagem}</p>
+        <div className="flex justify-end gap-3 flex-wrap">
           <button
             onClick={onCancelar}
-            className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+            className="px-4 py-2 rounded-full text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
           >
             {textoBotaoCancelar}
           </button>
           <button
-            onClick={onSairSemSalvar}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-          >
-            {textoBotaoExtra}
-          </button>
-          <button
             onClick={onConfirmar}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+            className="px-4 py-2 rounded-full text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition"
           >
             {textoBotaoConfirmar}
           </button>
         </div>
       </div>
     </div>
-  );
+  )
 }
