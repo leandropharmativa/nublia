@@ -1,5 +1,3 @@
-// 📄 src/components/ModalNovoHorario.jsx
-
 import { format, isSameDay } from 'date-fns'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
@@ -48,33 +46,31 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 shadow-lg max-w-md w-full">
-        <h2 className="text-lg font-semibold mb-4">Cadastrar horário disponível</h2>
+      <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Cadastrar horário disponível</h2>
 
-        <p className="mb-3 text-gray-700">
+        <p className="mb-4 text-sm text-gray-600">
           Data selecionada: <strong>{format(horario, 'dd/MM/yyyy')}</strong>
         </p>
 
-        <label className="block text-sm text-gray-600 mb-1">
-          Hora do atendimento:
-        </label>
+        <label className="block text-sm text-gray-700 mb-1">Hora do atendimento:</label>
         <input
           type="time"
-          className="mb-2 block w-full border border-gray-300 rounded px-3 py-2"
+          className="block w-full border border-gray-300 rounded-full px-4 py-2 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
           value={horaDigitada}
           onChange={(e) => setHoraDigitada(e.target.value)}
         />
 
         {horariosExistentes.length > 0 && (
-          <div className="mb-3">
+          <div className="mb-4">
             <p className="text-sm text-gray-700 font-semibold mb-1">
               Horários já cadastrados:
             </p>
-            <ul className="text-sm text-gray-600 flex flex-wrap gap-2">
+            <ul className="flex flex-wrap gap-2 text-sm text-gray-600">
               {horariosExistentes.map((hora, idx) => (
                 <li
                   key={idx}
-                  className="bg-gray-100 px-2 py-1 rounded border border-gray-300"
+                  className="bg-gray-100 px-3 py-1 rounded-full border border-gray-300"
                 >
                   {hora}
                 </li>
@@ -83,16 +79,16 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
           </div>
         )}
 
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-3">
           <button
             onClick={onCancelar}
-            className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded"
+            className="px-4 py-2 rounded-full text-sm bg-gray-200 hover:bg-gray-300 text-gray-700"
           >
             Fechar
           </button>
           <button
             onClick={handleConfirmar}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+            className="px-5 py-2 rounded-full text-sm bg-nublia-accent text-white hover:brightness-110"
             disabled={!horaDigitada}
           >
             Adicionar
