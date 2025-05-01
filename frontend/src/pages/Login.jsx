@@ -108,8 +108,8 @@ export default function Login({ onLogin }) {
         >
           <h2 className="text-title mb-6">Entrar na Nublia</h2>
 
-          {mensagem && <p className="text-green-700 text-sm mb-3">{mensagem}</p>}
-          {erro && <p className="text-red-600 text-sm mb-3">{erro}</p>}
+          {mensagem && <div className="alert-success">{mensagem}</div>}
+          {erro && <div className="alert-warning">{erro}</div>}
 
           <div className="mb-4">
             <input
