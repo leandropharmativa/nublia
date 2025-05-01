@@ -128,7 +128,7 @@ export default function PrescritorDashboard() {
         </div>
 
         {/* Conteúdo principal com tabs alinhadas à direita */}
-        <div className="flex-1 flex flex-col items-end pr-6 overflow-y-auto bg-white">
+        <div className="flex-1 flex flex-col items-end pr-6 ml-6 overflow-y-auto bg-white">
           <Tab.Group>
             <Tab.List className="relative flex gap-8 mb-6 transition-all duration-300">
   {tabs.map((tab, idx) => (
