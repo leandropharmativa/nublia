@@ -22,16 +22,21 @@ export default function Layout({ children }) {
           Nublia
         </div>
 
-        <div className="text-right pl-6 border-l border-gray-300">
-          <div className="text-sm font-bold text-gray-700">{nome}</div>
-          <div className="text-xs text-gray-500 capitalize">{role}</div>
-          <button
-            onClick={sair}
-            className="mt-2 bg-white text-blue-600 px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-gray-100 ml-auto"
-          >
-            <LogOut className="w-4 h-4" />
-            Sair
-          </button>
+        <div className="flex items-center gap-6">
+          <div className="text-right">
+            <div className="text-sm font-bold text-gray-700">{nome}</div>
+            <div className="text-xs text-gray-500 capitalize">{role}</div>
+            <button
+              onClick={sair}
+              className="mt-2 bg-white text-blue-600 px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-gray-100 ml-auto"
+            >
+              <LogOut className="w-4 h-4" />
+              Sair
+            </button>
+          </div>
+
+          {/* Linha vertical azul escuro */}
+          <div className="h-10 border-l-2 border-blue-700" />
         </div>
       </header>
 
