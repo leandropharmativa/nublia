@@ -13,6 +13,7 @@ import {
   Eye,
   CalendarPlus
 } from 'lucide-react'
+
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
 import MinhasFormulas from '../components/MinhasFormulas'
@@ -21,8 +22,9 @@ import BuscarPacienteModal from '../components/BuscarPacienteModal'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
 import ModalAgendarHorario from '../components/ModalAgendarHorario'
-import Botao from '../components/Botao'
 import ModalNovoHorario from '../components/ModalNovoHorario'
+import FichaAtendimento from '../components/FichaAtendimento'
+import Botao from '../components/Botao'
 
 const tabs = [
   { icon: Home, label: 'Início' },
@@ -41,6 +43,7 @@ export default function PrescritorDashboard() {
   const [mostrarAgendamentoModal, setMostrarAgendamentoModal] = useState(false)
 
   const [pacientePerfil, setPacientePerfil] = useState(null)
+  const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null)
   const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
 
@@ -261,13 +264,21 @@ export default function PrescritorDashboard() {
         </div>
       </div>
 
+      {pacienteSelecionado && (
+        <FichaAtendimento
+          paciente={pacienteSelecionado}
+          onFinalizar={() => setPacienteSelecionado(null)}
+          onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
+        />
+      )}
+
       {mostrarBuscarPacienteModal && (
         <BuscarPacienteModal
           onClose={() => setMostrarBuscarPacienteModal(false)}
           onSelecionarPaciente={(paciente) => {
-          setPacienteSelecionado(paciente)
-          setMostrarBuscarPacienteModal(false)
-        }}
+            setPacienteSelecionado(paciente)
+            setMostrarBuscarPacienteModal(false)
+          }}
         />
       )}
 
