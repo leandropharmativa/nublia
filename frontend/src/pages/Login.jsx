@@ -75,28 +75,29 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="flex h-screen font-sans text-gray-800">
-      {/* Lado esquerdo: cor sólida com logo e frase */}
-      <div className="w-1/2 bg-[#BFDBFE] p-10 flex flex-col">
+      {/* Lado esquerdo azul acinzentado */}
+      <div className="w-1/2 bg-[#BFDBFE] p-10 flex flex-col relative">
         <div className="flex items-center text-orange-500 text-3xl font-bold">
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
-        <div className="flex flex-col justify-center flex-grow pl-4">
+        <div className="absolute top-24 left-10">
           <h1 className="text-5xl font-bold text-left leading-snug">
             Bem vindo(a)<br />à Nublia
           </h1>
         </div>
       </div>
 
-      {/* Lado direito: formulário clean no centro */}
+      {/* Lado direito branco com formulário */}
       <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
         {/* topo direito com botão */}
         <div className="absolute top-6 right-6 flex items-center gap-2">
           <p className="text-sm text-gray-600">Novo no Nublia?</p>
           <button
             onClick={() => navigate('/register')}
-            className="bg-[#BFDBFE] text-gray-800 text-sm px-4 py-1 rounded-full hover:bg-blue-300 transition"
+            className="relative overflow-hidden bg-[#E0F2FE] text-gray-800 text-sm px-4 py-1 rounded-full transition hover:bg-blue-200 focus:outline-none"
           >
+            <span className="absolute inset-0 bg-white opacity-0 hover:opacity-10 transition duration-300 rounded-full"></span>
             Criar conta
           </button>
         </div>
@@ -112,14 +113,14 @@ export default function Login({ onLogin }) {
           {erro && <p className="text-red-600 text-sm mb-3">{erro}</p>}
 
           <div className="mb-4">
-            <label className="text-sm block mb-1">Email</label>
             <input
               type="email"
+              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onBlur={checarEmail}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition placeholder:text-gray-400"
             />
           </div>
 
@@ -132,15 +133,13 @@ export default function Login({ onLogin }) {
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-4 overflow-hidden"
               >
-                <label className="text-sm block mb-1">
-                  {temSenha ? "Senha" : "Crie sua senha"}
-                </label>
                 <input
                   type="password"
+                  placeholder={temSenha ? "Senha" : "Crie sua senha"}
                   value={temSenha ? senha : novaSenha}
                   onChange={(e) => temSenha ? setSenha(e.target.value) : setNovaSenha(e.target.value)}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition placeholder:text-gray-400"
                 />
               </motion.div>
             )}
