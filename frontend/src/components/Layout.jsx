@@ -16,7 +16,6 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-gray-50">
-      {/* Topo */}
       <header className="bg-nublia-accent text-gray-800 px-6 py-6 flex justify-between items-center shadow-sm">
         <div className="flex items-center text-nublia-orange text-2xl font-bold">
           <Feather className="w-7 h-7 mr-2" />
@@ -41,10 +40,9 @@ export default function Layout({ children }) {
         </div>
       </header>
 
-      {/* Conteúdo centralizado */}
+      {/* Conteúdo sem limite de largura */}
       <main className="flex-1 p-6">
-          {children}
-        </div>
+        {children}
       </main>
     </div>
   )
