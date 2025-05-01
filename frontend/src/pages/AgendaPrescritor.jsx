@@ -1,5 +1,3 @@
-// 📄 AgendaPrescritor.jsx
-
 import { useState, useEffect, useRef, useCallback } from 'react'
 import axios from 'axios'
 import { addHours } from 'date-fns'
@@ -214,21 +212,24 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
             placeholder="Busca por nome do paciente..."
             value={filtroPaciente}
             onChange={(e) => buscarPorPaciente(e.target.value)}
-            className="pl-10 border border-gray-300 rounded px-3 py-2 text-sm w-full"
+            className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
           />
         </div>
 
         {resultadosBusca.length > 0 && (
           <div
             ref={dropdownRef}
-            className="absolute top-12 left-0 bg-white rounded shadow border border-gray-200 z-50 w-full max-h-64 overflow-y-auto text-sm"
+            className="absolute top-12 left-0 w-full max-h-64 overflow-y-auto z-50 bg-white border border-gray-200 shadow-lg rounded-lg text-sm"
           >
             <ul>
               {resultadosBusca.map(ev => (
-                <li key={ev.id} className="px-4 py-2 hover:bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                <li
+                  key={ev.id}
+                  className="px-4 py-3 border-b border-gray-100 hover:bg-gray-50 flex justify-between items-center"
+                >
                   <div>
-                    <p className="font-semibold">{ev.title}</p>
-                    <p className="text-gray-500">
+                    <p className="font-semibold text-gray-800">{ev.title}</p>
+                    <p className="text-gray-500 text-xs">
                       {ev.start.toLocaleDateString('pt-BR')} às {ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
@@ -237,7 +238,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
                       <button
                         onClick={() => abrirPerfilPaciente(ev.paciente_id)}
                         title="Ver perfil"
-                        className="text-blue-600 hover:text-blue-800"
+                        className="text-nublia-accent hover:text-nublia-orange"
                       >
                         <User size={18} />
                       </button>
@@ -245,7 +246,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
                     <button
                       onClick={() => handleEventoClick(ev)}
                       title="Ver agendamento"
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-nublia-accent hover:text-nublia-orange"
                     >
                       <Eye size={18} />
                     </button>
