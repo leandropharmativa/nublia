@@ -1,4 +1,3 @@
-// Login.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -77,9 +76,10 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="flex h-screen font-sans text-gray-800">
+      {/* Lado esquerdo com degradê e ícone flutuante */}
       <div className="w-1/2 bg-gradient-to-br from-nublia-accent to-nublia-primary p-10 flex flex-col relative">
         <div className="flex items-center text-nublia-orange text-3xl font-bold">
-          <Feather className="w-8 h-8 mr-2" />
+          <Feather className="w-8 h-8 mr-2 animate-float" />
           Nublia
         </div>
         <div className="absolute top-36 left-10">
@@ -89,6 +89,7 @@ export default function Login({ onLogin }) {
         </div>
       </div>
 
+      {/* Lado direito com formulário */}
       <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
         <div className="absolute top-6 right-6 flex items-center gap-2">
           <p className="text-subtle">Novo no Nublia?</p>
@@ -140,13 +141,12 @@ export default function Login({ onLogin }) {
                 fill="none"
                 viewBox="0 0 24 24"
               >
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
-            </svg>
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
+              </svg>
             )}
-      <span>{temSenha === false ? "Criar Senha" : "Entrar"}</span>
-</Botao>
-
+            {temSenha === false ? "Criar Senha" : "Entrar"}
+          </Botao>
         </form>
       </div>
     </div>
