@@ -50,7 +50,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-6 max-h-[80vh] overflow-hidden">
         <h2 className="text-nublia-accent text-2xl font-bold">Buscar Paciente</h2>
 
-        <div className="relative">
+        <div className="relative max-w-lg w-full">
           <Search className="absolute left-3 top-3 text-gray-400" size={20} />
           <input
             ref={inputRef}
@@ -62,7 +62,6 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
           />
         </div>
 
-        {/* Lista com animação */}
         <div className="overflow-y-auto max-h-[320px]">
           <AnimatePresence>
             {termoBusca.trim() && pacientes.length > 0 && (
@@ -85,7 +84,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
                     </div>
                     <button
                       onClick={() => selecionarPaciente(paciente)}
-                      className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+                      className="bg-blue-600 hover:brightness-110 text-white text-sm px-4 py-1 rounded-full flex items-center gap-1"
                     >
                       <User size={18} /> Selecionar
                     </button>
@@ -129,7 +128,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
           </button>
           <button
             onClick={onCadastrarNovo}
-            className="bg-nublia-accent hover:brightness-110 text-white px-5 py-2 rounded-full text-sm shadow"
+            className="bg-blue-600 hover:brightness-110 text-white px-5 py-2 rounded-full text-sm"
           >
             Cadastrar Novo Paciente
           </button>
