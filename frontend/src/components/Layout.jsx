@@ -22,7 +22,7 @@ export default function Layout({ children }) {
           Nublia
         </div>
 
-        <div className="text-right">
+        <div className="text-right pl-6 border-l border-gray-300">
           <div className="text-sm font-bold text-gray-700">{nome}</div>
           <div className="text-xs text-gray-500 capitalize">{role}</div>
           <button
