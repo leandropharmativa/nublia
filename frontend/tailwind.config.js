@@ -11,10 +11,13 @@ export default {
       },
       colors: {
         nublia: {
-          primary: "#E0F2FE",  // azul claro
-          accent: "#BFDBFE",   // azul acinzentado
-          orange: "#fb923c",   // laranja
-          dark: "#1e3a8a",     // azul profundo
+          primary: "#E0F2FE",   // azul claro (botões)
+          accent: "#BFDBFE",    // azul acinzentado (lado esquerdo)
+          orange: "#fb923c",    // laranja (logo)
+          dark: "#1e3a8a",      // opcional
+          success: "#dbeafe",   // azul bem claro (mensagens positivas)
+          warning: "#fde68a",   // amarelo-laranja suave
+          danger: "#fca5a5",    // vermelho claro (erro forte, opcional)
         },
       },
       boxShadow: {
