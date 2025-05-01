@@ -198,4 +198,17 @@ function ContagemPorDia({ data, eventos }) {
   if (agendados === 0 && disponiveis === 0) return null
 
   return (
-    <span className="text-[10px] text-gray-400 ml
+    <span className="text-[10px] text-gray-400 ml-1 flex items-center gap-1">
+      {agendados > 0 && (
+        <span className="flex items-center gap-1 text-red-500">
+          <User size={10} />{agendados}
+        </span>
+      )}
+      {disponiveis > 0 && (
+        <span className="flex items-center gap-1 text-blue-500">
+          <CalendarIcon size={10} />{disponiveis}
+        </span>
+      )}
+    </span>
+  )
+}
