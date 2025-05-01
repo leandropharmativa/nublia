@@ -43,4 +43,18 @@ export default function AtendimentosRecentes({
       </ul>
 
       {/* Campo de busca fixado na base */}
-      <div className="p-4 border-t bg-gray
+      <div className="p-4 border-t bg-gray-100">
+        <div className="relative">
+          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Buscar paciente..."
+            value={pesquisa}
+            onChange={(e) => onPesquisar(e.target.value)}
+            className="w-full pl-10 pr-3 py-2 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+    </aside>
+  )
+}
