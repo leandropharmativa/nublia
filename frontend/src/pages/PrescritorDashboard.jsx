@@ -253,7 +253,7 @@ export default function PrescritorDashboard() {
       }
     }}
   >
-    <PlayCircle size={18} />
+    <PlayCircle size={16} />
   </button>
 </li>
 
