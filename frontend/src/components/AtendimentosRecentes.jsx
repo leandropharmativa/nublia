@@ -20,7 +20,8 @@ export default function AtendimentosRecentes({
         Atendimentos recentes
       </div>
 
-      <ul className="flex-1 overflow-auto divide-y divide-gray-200 px-4 pb-2 border-r border-gray-200">
+      {/* Lista com altura automática, sem rolagem */}
+      <ul className="divide-y divide-gray-200 px-4 pb-2 border-r border-gray-200">
         {atendimentos.map((a) => {
           const nome = getNomePaciente(a.paciente_id)
           return (
@@ -50,7 +51,8 @@ export default function AtendimentosRecentes({
         )}
       </ul>
 
-      <div className="p-4 bg-white">
+      {/* Campo de busca */}
+      <div className="p-4 bg-white mt-auto">
         <div className="relative">
           <input
             type="text"
