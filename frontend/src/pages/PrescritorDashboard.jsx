@@ -17,7 +17,7 @@ import {
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
 import MinhasFormulas from '../components/MinhasFormulas'
-import AtendimentosRecentes from '../components/AtendimentosRecents'
+import AtendimentosRecentes from '../components/AtendimentosRecentes'
 import BuscarPacienteModal from '../components/BuscarPacienteModal'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
