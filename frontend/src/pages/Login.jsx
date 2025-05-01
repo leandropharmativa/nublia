@@ -81,7 +81,7 @@ export default function Login({ onLogin }) {
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
-        <div className="absolute top-36 left-10">
+        <div className="absolute top-56 left-20">
           <h1 className="text-5xl font-bold text-left leading-snug">
             Bem vindo(a)<br />à Nublia
           </h1>
