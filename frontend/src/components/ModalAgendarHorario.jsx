@@ -79,7 +79,7 @@ export default function ModalAgendarHorario({
   }
 
   const reagendar = async () => {
-    if (!agendamentoId || !novoHorarioId) {
+    if (!agendamentoId || !novoHorarioId || !pacienteId) {
       toastErro('Erro: Dados incompletos para reagendamento.')
       return
     }
@@ -94,7 +94,7 @@ export default function ModalAgendarHorario({
     try {
       await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
         de_id: agendamentoId,
-        para_id: novoHorarioId
+        para_id: novoHorarioId,
       })
 
       toastSucesso('Paciente transferido para outro horário!')
@@ -266,6 +266,28 @@ export default function ModalAgendarHorario({
                       Confirmar troca de paciente
                     </button>
                   )}
+                  <div className="mt-4">
+                    <label className="text-sm text-gray-600 mb-1">Transferir paciente para outro horário:</label>
+                    <select
+                      value={novoHorarioId || ''}
+                      onChange={(e) => setNovoHorarioId(parseInt(e.target.value))}
+                      className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
+                    >
+                      <option value="">Selecione um horário...</option>
+                      {horariosDisponiveis.map((h) => (
+                        <option key={h.id} value={h.id}>
+                          {new Date(h.data_hora).toLocaleDateString('pt-BR')} - {new Date(h.data_hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      onClick={reagendar}
+                      disabled={carregando}
+                      className="mt-3 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
+                    >
+                      {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar transferência'}
+                    </button>
+                  </div>
                 </>
               )}
             </>
