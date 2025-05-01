@@ -139,28 +139,14 @@ export default function PrescritorDashboard() {
 
             <Tab.Panels className="w-full">
               <Tab.Panel>
-                <div className="space-y-4">
-                  <div className="flex justify-center">
-                    <Botao
-                      texto="Iniciar atendimento"
-                      iconeInicio={<PlusCircle size={18} />}
-                      onClick={() => setMostrarBuscarPacienteModal(true)}
-                      className="px-6 py-3 rounded-full"
-                    />
-                  </div>
-                  <h2 className="text-xl font-bold">Pacientes marcados para hoje</h2>
-                  <ul className="space-y-2 text-sm text-gray-800">
-                    {atendimentos
-                      .filter((a) => a.data?.startsWith(new Date().toISOString().split('T')[0]))
-                      .map((a) => (
-                        <li key={a.id} className="bg-white border rounded px-4 py-2">
-                          {a.nomePaciente} – {a.data?.slice(11, 16) || 'horário não definido'}
-                        </li>
-                      ))}
-                    {atendimentos.filter(a => a.data?.startsWith(new Date().toISOString().split('T')[0])).length === 0 && (
-                      <li className="italic text-gray-500">Nenhum paciente agendado para hoje.</li>
-                    )}
-                  </ul>
+                <div className="h-full flex justify-center items-center">
+                  <Botao
+                    texto="Iniciar atendimento"
+                    iconeInicio={<PlusCircle size={18} />}
+                    onClick={() => setMostrarBuscarPacienteModal(true)}
+                    full={false}
+                    className="px-6 py-3 rounded-full"
+                  />
                 </div>
               </Tab.Panel>
 
