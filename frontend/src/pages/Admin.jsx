@@ -1,10 +1,12 @@
-import Layout from '../components/Layout'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Layout from '../components/Layout'
 import CampoTexto from '../components/CampoTexto'
 import Botao from '../components/Botao'
-import { LogOut, Feather } from 'lucide-react'
+import { Feather, LogOut } from 'lucide-react'
 
 export default function AdminDashboard() {
+  const navigate = useNavigate()
   const [tipoUsuario, setTipoUsuario] = useState('prescritor')
   const [emailUsuario, setEmailUsuario] = useState('')
   const [codigo, setCodigo] = useState('')
@@ -50,18 +52,21 @@ export default function AdminDashboard() {
     }
   }
 
+  const logout = () => {
+    localStorage.clear()
+    navigate('/', { replace: true })
+  }
+
   return (
     <Layout>
+      {/* Topo com logo e botão de sair */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center text-nublia-orange text-2xl font-bold">
           <Feather className="w-7 h-7 mr-2" />
           Nublia
         </div>
         <button
-          onClick={() => {
-            localStorage.clear()
-            window.location.href = '/'
-          }}
+          onClick={logout}
           className="btn-primary rounded-full flex items-center gap-2 px-4 py-1 text-sm"
         >
           <LogOut className="w-4 h-4" />
@@ -69,7 +74,7 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      {/* Abas futuras para organização */}
+      {/* Mock de abas futuras */}
       <div className="mb-8">
         <ul className="flex gap-4 border-b pb-2">
           <li className="font-medium text-blue-600 border-b-2 border-blue-600">Geração de códigos</li>
@@ -78,7 +83,7 @@ export default function AdminDashboard() {
         </ul>
       </div>
 
-      {/* Seção: Geração de códigos */}
+      {/* Bloco de geração de código */}
       <div className="max-w-md mx-auto bg-white rounded shadow-md p-6 mb-12">
         <h2 className="text-title mb-4">Gerar Código de Acesso</h2>
 
@@ -132,7 +137,7 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* Mockup de futuras funcionalidades */}
+      {/* Mock futuro - cards de resumo */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded shadow-sm">
           <p className="text-sm text-gray-500">Prescritores</p>
@@ -149,13 +154,6 @@ export default function AdminDashboard() {
         <div className="bg-white p-4 rounded shadow-sm">
           <p className="text-sm text-gray-500">Códigos gerados</p>
           <p className="text-2xl font-bold">57</p>
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded shadow-sm">
-        <h3 className="text-lg font-semibold mb-4">Usuários cadastrados (em breve)</h3>
-        <div className="text-sm text-gray-500">
-          A tabela de usuários com filtros e ações será implementada aqui.
         </div>
       </div>
     </Layout>
