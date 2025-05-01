@@ -22,6 +22,7 @@ import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
 import Botao from '../components/Botao'
 import ModalNovoHorario from '../components/ModalNovoHorario'
+import ModalAgendarHorario from '../components/ModalAgendarHorario'
 
 const tabs = [
   { icon: Home, label: 'Início' },
@@ -36,9 +37,11 @@ export default function PrescritorDashboard() {
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
   const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
+  const [mostrarAgendamentoModal, setMostrarAgendamentoModal] = useState(false)
   const [mostrarNovoHorario, setMostrarNovoHorario] = useState(false)
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
+  const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null)
   const [atendimentos, setAtendimentos] = useState([])
   const [pacientes, setPacientes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
@@ -124,11 +127,6 @@ export default function PrescritorDashboard() {
     }
   }
 
-  const handleVerAtendimento = (atendimento) => {
-    setAtendimentoSelecionado(atendimento)
-    setMostrarVisualizarAtendimentoModal(true)
-  }
-
   const hoje = new Date().toISOString().split('T')[0]
   const agendamentosHoje = agendaEventos.filter(
     (e) => e.status === 'agendado' && e.data === hoje
@@ -157,7 +155,7 @@ export default function PrescritorDashboard() {
               pesquisa={pesquisa}
               onPesquisar={(texto) => setPesquisa(texto)}
               onVerPerfil={handleVerPerfil}
-              onVerAtendimento={handleVerAtendimento}
+              onVerAtendimento={() => {}}
             />
           </div>
         </div>
@@ -193,16 +191,19 @@ export default function PrescritorDashboard() {
                   {agendamentosHoje.length === 0 ? (
                     <p className="text-sm text-gray-500 italic">Nenhum paciente agendado para hoje.</p>
                   ) : (
-                    <ul className="space-y-2 text-sm text-gray-800 w-full max-w-xl">
+                    <ul className="space-y-[6px] text-sm text-gray-800 w-full max-w-xl">
                       {agendamentosHoje.map((a) => (
-                        <li key={a.id} className="flex items-center gap-2 border-b pb-2">
+                        <li key={a.id} className="flex items-center gap-2 border-b border-gray-200 pb-1">
                           <User size={16} className="text-nublia-accent" />
                           <span className="font-medium">{a.nome}</span>
                           <span className="text-gray-500 text-sm">{a.hora?.slice(0, 5)}h</span>
                           <button
                             className="text-nublia-accent hover:text-nublia-orange ml-1"
                             title="Ver agendamento"
-                            onClick={() => handleVerAtendimento(a)}
+                            onClick={() => {
+                              setAgendamentoSelecionado(a.id)
+                              setMostrarAgendamentoModal(true)
+                            }}
                           >
                             <Eye size={16} />
                           </button>
@@ -281,6 +282,17 @@ export default function PrescritorDashboard() {
             setMostrarNovoHorario(false)
             carregarAgenda(user.id)
           }}
+        />
+      )}
+
+      {mostrarAgendamentoModal && agendamentoSelecionado && (
+        <ModalAgendarHorario
+          agendamentoId={agendamentoSelecionado}
+          onCancelar={() => {
+            setAgendamentoSelecionado(null)
+            setMostrarAgendamentoModal(false)
+          }}
+          onAtualizarAgenda={() => carregarAgenda(user.id)}
         />
       )}
     </Layout>
