@@ -27,10 +27,6 @@ export default function ModalAgendarHorario({
   const [horariosDisponiveis, setHorariosDisponiveis] = useState([])
   const [novoHorarioId, setNovoHorarioId] = useState(null)
   const [carregando, setCarregando] = useState(false)
-  const [ano, mes, dia] = h.dia.split('-').map(Number)
-  const [hora, minuto] = h.hora.split(':').map(Number)
-  const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
-
 
   const inputRef = useRef(null)
   const user = JSON.parse(localStorage.getItem('user'))
