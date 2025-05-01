@@ -249,7 +249,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         aberto={mostrarConfirmacaoFinalizar}
         titulo="Finalizar atendimento?"
         mensagem="Após finalizar, não será mais possível editar a ficha. Deseja continuar?"
-        textoBotaoConfirmar="Sim, finalizar"
+        textoBotaoConfirmar="Sim, salvar e finalizar"
         textoBotaoExtra="Voltar para edição"
         onConfirmar={() => {
           setMostrarConfirmacaoFinalizar(false)
