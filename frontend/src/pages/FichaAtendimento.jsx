@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Save, CheckCircle, Eye } from 'lucide-react'
+import { Save, CheckCircle, ClipboardX, Eye } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
+import ModalConfirmacao from './ModalConfirmacao'
 
 export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoSalvo }) {
   const [abaAtiva, setAbaAtiva] = useState('paciente')
@@ -16,6 +18,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
   const [atendimentoId, setAtendimentoId] = useState(null)
   const [atendimentosAnteriores, setAtendimentosAnteriores] = useState([])
   const [modalVisualizar, setModalVisualizar] = useState(null)
+  const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] = useState(false)
 
   const abas = ['paciente', 'anamnese', 'antropometria', 'dieta', 'receita']
 
@@ -81,6 +84,16 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
     onFinalizar()
   }
 
+  const houveAlteracao = Object.values(formulario).some(valor => valor.trim() !== '')
+
+  const handleDescartar = () => {
+    if (houveAlteracao && !atendimentoId) {
+      setMostrarConfirmacaoSaida(true)
+    } else {
+      onFinalizar()
+    }
+  }
+
   const calcularIdade = (data) => {
     if (!data) return null
     const hoje = new Date()
@@ -96,8 +109,9 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
       {/* Cabeçalho */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <h2 className="text-2xl font-bold text-nublia-accent">Ficha de Atendimento</h2>
+
             <button
               onClick={handleSalvar}
               className="text-nublia-accent hover:text-nublia-orange transition"
@@ -105,12 +119,21 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
             >
               <Save size={24} />
             </button>
+
             <button
               onClick={handleFinalizar}
               className="text-white bg-nublia-accent hover:bg-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2"
               title="Finalizar atendimento"
             >
               <CheckCircle size={18} /> Finalizar
+            </button>
+
+            <button
+              onClick={handleDescartar}
+              className="text-nublia-accent hover:text-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2 border border-nublia-accent"
+              title="Descartar atendimento"
+            >
+              <ClipboardX size={18} /> Descartar
             </button>
           </div>
           <p className="text-sm text-gray-700 font-semibold mt-1">
@@ -198,6 +221,19 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
           onClose={() => setModalVisualizar(null)}
         />
       )}
+
+      <ModalConfirmacao
+        aberto={mostrarConfirmacaoSaida}
+        titulo="Descartar atendimento?"
+        mensagem="Há informações preenchidas na ficha. Deseja realmente sair e perder os dados?"
+        textoBotaoConfirmar="Sim, descartar"
+        textoBotaoExtra="Continuar preenchendo"
+        onConfirmar={() => {
+          setMostrarConfirmacaoSaida(false)
+          onFinalizar()
+        }}
+        onCancelar={() => setMostrarConfirmacaoSaida(false)}
+      />
     </div>
   )
 }
