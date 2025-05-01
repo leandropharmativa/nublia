@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Save, CheckCircle, ClipboardX, Eye } from 'lucide-react'
 import axios from 'axios'
-import { toastSucesso, toastErro } from '../utils/toast'
+import { toastSucesso, toastErro } from '../utils/toastUtils'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
 
