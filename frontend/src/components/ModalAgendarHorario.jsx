@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
@@ -38,11 +39,7 @@ export default function ModalAgendarHorario({
   }, [statusAtual, trocandoPaciente])
 
   useEffect(() => {
-    if (
-      statusAtual === 'agendado' ||
-      statusAtual === 'novo_agendamento' ||
-      statusAtual === 'disponivel'
-    ) {
+    if (reagendando) {
       axios
         .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
         .then(res => {
@@ -51,7 +48,7 @@ export default function ModalAgendarHorario({
         })
         .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
     }
-  }, [statusAtual, user.id])
+  }, [reagendando, user.id])
 
   useEffect(() => {
     if (filtro.length < 2) {
@@ -78,6 +75,26 @@ export default function ModalAgendarHorario({
     onConfirmar(agendamentoId, pacienteId)
   }
 
+  const confirmarTrocaPaciente = async () => {
+    if (!selecionado?.id) return
+    setCarregando(true)
+
+    try {
+      await axios.post('https://nublia-backend.onrender.com/agenda/trocar-paciente', {
+        id: agendamentoId,
+        novo_paciente_id: selecionado.id,
+      })
+
+      toastSucesso('Paciente trocado com sucesso!')
+      if (onAtualizarAgenda) onAtualizarAgenda()
+      onCancelar()
+    } catch {
+      toastErro('Erro ao trocar paciente.')
+    } finally {
+      setCarregando(false)
+    }
+  }
+
   const confirmarReagendamento = async () => {
     if (!novoHorarioId) return toastErro('Selecione um novo horário.')
     setCarregando(true)
@@ -97,17 +114,75 @@ export default function ModalAgendarHorario({
       setCarregando(false)
     }
   }
+  
+  const renderBuscaPaciente = () => (
+    <>
+      <label className="text-sm text-gray-600 mb-1">Paciente:</label>
+      {selecionado ? (
+        <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
+          <div>
+            <p className="font-medium">{selecionado.name}</p>
+            <p className="text-xs text-gray-500">{selecionado.email || 'Sem e-mail'}</p>
+          </div>
+          <button
+            onClick={() => {
+              setSelecionado(null)
+              setFiltro('')
+              setPacientes([])
+            }}
+            className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+          >
+            <ArrowLeftRight size={16} /> Trocar
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="relative">
+            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Buscar pacientes..."
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+              className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+            />
+          </div>
 
-  const carregarHorarios = () => {
-    setReagendando(true)
-    axios
-      .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-      .then(res => {
-        const disponiveis = res.data.filter(h => h.status === 'disponivel')
-        setHorariosDisponiveis(disponiveis)
-      })
-      .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
-  }
+          <div className="overflow-y-auto max-h-[300px] mt-2">
+            {pacientes.map((paciente) => (
+              <div
+                key={paciente.id}
+                className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
+              >
+                <div>
+                  <p className="font-medium text-gray-800">{paciente.name}</p>
+                  <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelecionado(paciente)
+                    setFiltro('')
+                    setPacientes([])
+                  }}
+                  className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+                >
+                  <User size={18} /> Selecionar
+                </button>
+              </div>
+            ))}
+
+            {filtro.length >= 2 && pacientes.length === 0 && (
+              <p className="text-sm text-gray-500 italic text-center mt-2">
+                Nenhum paciente encontrado.
+              </p>
+            )}
+          </div>
+        </>
+      )}
+    </>
+  )
 
   return (
     <>
@@ -164,7 +239,7 @@ export default function ModalAgendarHorario({
                       <ArrowLeftRight size={18} />
                     </button>
                     <button
-                      onClick={carregarHorarios}
+                      onClick={() => setReagendando(true)}
                       className="text-nublia-accent hover:text-nublia-orange"
                       title="Transferir paciente"
                     >
@@ -181,9 +256,25 @@ export default function ModalAgendarHorario({
                 </div>
               ) : null}
 
+              {trocandoPaciente && (
+                <>
+                  {renderBuscaPaciente()}
+                  {selecionado && (
+                    <button
+                      onClick={confirmarTrocaPaciente}
+                      disabled={carregando}
+                      className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
+                    >
+                      {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar troca de paciente'}
+                    </button>
+                  )}
+                </>
+              )}
+
               {reagendando && (
                 <>
-                  <p className="text-sm text-gray-600 mt-1">Transferir para outro horário:</p>
+                  <p className="text-sm text-gray-600 mt-1">Paciente atual: <strong>{pacienteAtual}</strong></p>
+                  <label className="text-sm text-gray-600 mb-1 mt-2">Transferir para outro horário:</label>
                   <select
                     value={novoHorarioId || ''}
                     onChange={(e) => setNovoHorarioId(parseInt(e.target.value))}
@@ -221,6 +312,36 @@ export default function ModalAgendarHorario({
                     </button>
                   </div>
                 </>
+              )}
+            </>
+          )}
+
+          {(statusAtual === 'novo_agendamento' || statusAtual === 'disponivel') && (
+            <>
+              {renderBuscaPaciente()}
+              {selecionado && (
+                <button
+                  onClick={() => agendar(selecionado.id)}
+                  className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110"
+                >
+                  Confirmar agendamento
+                </button>
+              )}
+              {statusAtual === 'disponivel' && (
+                <div className="flex justify-between pt-4">
+                  <button
+                    onClick={() => onRemover(agendamentoId)}
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm"
+                  >
+                    Remover horário
+                  </button>
+                  <button
+                    onClick={() => setMostrarCadastro(true)}
+                    className="bg-nublia-accent text-white hover:brightness-110 px-4 py-2 rounded-full text-sm"
+                  >
+                    Novo paciente
+                  </button>
+                </div>
               )}
             </>
           )}
