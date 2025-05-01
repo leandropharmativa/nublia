@@ -17,7 +17,8 @@ import {
   ChevronRight,
   User,
   Calendar as CalendarIcon,
-  Clock
+  Clock,
+  UserCheckRound
 } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
@@ -74,9 +75,9 @@ function HeaderComEventos({ data, label, eventos }) {
   const doDia = eventos.filter(ev => isSameCalendarDay(ev.start, data))
 
   return (
-    <div className="flex flex-col items-start px-1">
+    <div className="flex flex-col items-start px-1 overflow-visible">
       <span className="text-xs font-medium">{label}</span>
-      <div className="flex flex-wrap gap-[4px] mt-1">
+      <div className="flex flex-wrap gap-[4px] mt-1 overflow-visible">
         {doDia.map(ev => {
           const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
           const tooltip = ev.status === 'agendado'
@@ -84,7 +85,7 @@ function HeaderComEventos({ data, label, eventos }) {
             : `${hora} Disponível`
 
           const icone = ev.status === 'agendado'
-            ? <User size={14} />
+            ? <UserCheckRound size={14} />
             : <Clock size={14} />
 
           const cor = ev.status === 'agendado'
@@ -92,11 +93,11 @@ function HeaderComEventos({ data, label, eventos }) {
             : 'text-blue-600'
 
           return (
-            <div key={ev.id} className="relative group cursor-pointer">
+            <div key={ev.id} className="relative group cursor-pointer overflow-visible">
               <span className={`inline-flex items-center justify-center ${cor}`}>
                 {icone}
               </span>
-              <div className="absolute z-50 bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 transform scale-95 group-hover:scale-100 bg-white text-gray-700 text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
+              <div className="absolute z-[999] bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 transform scale-95 group-hover:scale-100 bg-white text-gray-700 text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap max-w-[200px] overflow-visible">
                 {tooltip}
               </div>
             </div>
