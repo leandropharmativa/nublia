@@ -1,5 +1,13 @@
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
-import { format, parse, startOfWeek, getDay, isSameWeek, isSameDay } from 'date-fns'
+import {
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  isSameWeek,
+  isSameDay,
+  isSameDay as isSameCalendarDay
+} from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarioCustom.css'
@@ -27,7 +35,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
     <div className="h-full p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={eventos}
+        events={[]} // importante: não usar os eventos normais no modo mês
         startAccessor="start"
         endAccessor="end"
         defaultView="month"
@@ -51,26 +59,47 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         components={{
           toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
           day: { header: CustomDayHeader },
-          event: EventCompacto,
           month: {
             dateHeader: (props) => (
-              <div className="flex justify-between items-start px-1">
-                <span>{props.label}</span>
-                <ContagemPorDia data={props.date} eventos={eventos} />
-              </div>
-            ),
-          },
-        }}
-        eventPropGetter={() => ({
-          style: {
-            backgroundColor: 'transparent',
-            border: 'none',
-            padding: 0,
-            margin: 0,
-            boxShadow: 'none',
+              <HeaderComEventos data={props.date} label={props.label} eventos={eventos} />
+            )
           }
-        })}
+        }}
       />
+    </div>
+  )
+}
+
+function HeaderComEventos({ data, label, eventos }) {
+  const doDia = eventos.filter(ev => isSameCalendarDay(ev.start, data))
+
+  return (
+    <div className="flex flex-col items-start px-1">
+      <span className="text-xs font-medium">{label}</span>
+      <div className="flex flex-wrap gap-[2px] mt-1">
+        {doDia.map(ev => {
+          const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+          const tooltip = ev.status === 'agendado'
+            ? `${hora} ${ev.title}`
+            : `${hora} Disponível`
+          const cor = ev.status === 'agendado'
+            ? 'bg-red-100 text-red-600 hover:bg-red-200'
+            : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+          const icone = ev.status === 'agendado'
+            ? <User size={10} />
+            : <Clock size={10} />
+
+          return (
+            <span
+              key={ev.id}
+              title={tooltip}
+              className={`inline-flex items-center justify-center w-4 h-4 rounded-full ${cor}`}
+            >
+              {icone}
+            </span>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -143,60 +172,5 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         </div>
       </div>
     </div>
-  )
-}
-
-function EventCompacto({ event }) {
-  const hora = event.start.toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-
-  const tooltip = event.status === 'agendado'
-    ? `${hora} ${event.title}`
-    : `${hora} Disponível`
-
-  const icone = event.status === 'agendado'
-    ? <User size={10} />
-    : event.status === 'disponivel'
-    ? <Clock size={10} />
-    : <CalendarIcon size={10} />
-
-  const corBg = event.status === 'agendado'
-    ? 'bg-red-100 text-red-600 hover:bg-red-200'
-    : event.status === 'disponivel'
-    ? 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-    : 'bg-gray-100 text-gray-500'
-
-  return (
-    <span
-      title={tooltip}
-      className={`inline-flex items-center justify-center w-4 h-4 rounded-full ${corBg} transition`}
-    >
-      {icone}
-    </span>
-  )
-}
-
-function ContagemPorDia({ data, eventos }) {
-  const doDia = eventos.filter(ev => ev.start.toDateString() === data.toDateString())
-  const agendados = doDia.filter(ev => ev.status === 'agendado').length
-  const disponiveis = doDia.filter(ev => ev.status === 'disponivel').length
-
-  if (agendados === 0 && disponiveis === 0) return null
-
-  return (
-    <span className="text-[10px] text-gray-400 ml-1 flex items-center gap-1">
-      {agendados > 0 && (
-        <span className="flex items-center gap-1 text-red-500">
-          <User size={10} />{agendados}
-        </span>
-      )}
-      {disponiveis > 0 && (
-        <span className="flex items-center gap-1 text-blue-500">
-          <CalendarIcon size={10} />{disponiveis}
-        </span>
-      )}
-    </span>
   )
 }
