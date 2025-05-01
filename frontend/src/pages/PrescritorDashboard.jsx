@@ -166,7 +166,11 @@ export default function PrescritorDashboard() {
               pesquisa={pesquisa}
               onPesquisar={(texto) => setPesquisa(texto)}
               onVerPerfil={handleVerPerfil}
-              onVerAtendimento={() => {}}
+              onVerAtendimento={(atendimento) => {
+                setAtendimentoSelecionado(atendimento)
+                setMostrarVisualizarAtendimentoModal(true)
+            }}
+
             />
           </div>
         </div>
