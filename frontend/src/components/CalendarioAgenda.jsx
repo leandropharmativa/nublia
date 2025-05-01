@@ -18,7 +18,7 @@ import {
   User,
   Calendar as CalendarIcon,
   Clock,
-  UserCheckRound
+  UserRoundCheck
 } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
