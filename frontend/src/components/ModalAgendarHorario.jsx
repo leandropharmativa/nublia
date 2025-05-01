@@ -277,6 +277,7 @@ export default function ModalAgendarHorario({
 
               {reagendando && (
                 <>
+                  <p className="text-sm text-gray-600 mt-1">Paciente atual: <strong>{pacienteAtual}</strong></p>
                   <label className="text-sm text-gray-600 mb-1 mt-2">Transferir para outro horário:</label>
                   <select
                     value={novoHorarioId || ''}
@@ -284,19 +285,34 @@ export default function ModalAgendarHorario({
                     className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
                   >
                     <option value="">Selecione um novo horário</option>
-                    {horariosDisponiveis.map((h) => (
-                      <option key={h.id} value={h.id}>
-                        {new Date(h.data_hora).toLocaleDateString('pt-BR')} - {new Date(h.data_hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                      </option>
-                    ))}
+                    {horariosDisponiveis.map((h) => {
+                      const dataHora = new Date(h.data_hora)
+                      return (
+                        <option key={h.id} value={h.id}>
+                          {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                        </option>
+                      )
+                    })}
                   </select>
-                  <button
-                    onClick={confirmarReagendamento}
-                    disabled={carregando}
-                    className="mt-3 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
-                  >
-                    {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar novo horário'}
-                  </button>
+
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={() => {
+                        setReagendando(false)
+                        setNovoHorarioId(null)
+                      }}
+                      className="w-1/2 rounded-full py-2 text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={confirmarReagendamento}
+                      disabled={carregando}
+                      className="w-1/2 rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
+                    >
+                      {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar novo horário'}
+                    </button>
+                  </div>
                 </>
               )}
             </>
