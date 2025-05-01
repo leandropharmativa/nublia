@@ -12,7 +12,8 @@ import {
   User,
   Eye,
   CalendarPlus,
-  ScrollText
+  ScrollText,
+  PlayCircle
 } from 'lucide-react'
 
 import AgendaPrescritor from './AgendaPrescritor'
@@ -221,27 +222,41 @@ export default function PrescritorDashboard() {
                   ) : (
                     <ul className="space-y-[6px] text-sm text-gray-800 w-full max-w-xl">
                       {agendamentosHoje.map((a) => (
-                        <li key={a.id} className="flex items-center gap-2 border-b border-gray-200 pb-1">
-                          <button
-                            onClick={() => handleVerPerfil(a.paciente_id)}
-                            title="Ver perfil"
-                            className="text-nublia-accent hover:text-nublia-orange"
-                          >
-                            <User size={16} />
-                          </button>
-                          <span className="font-medium">{a.nome}</span>
-                          <span className="text-gray-500 text-sm">{a.hora?.slice(0, 5)}h</span>
-                          <button
-                            className="text-nublia-accent hover:text-nublia-orange ml-1"
-                            title="Editar agendamento"
-                            onClick={() => {
-                              setAgendamentoSelecionado(a.id)
-                              setMostrarAgendamentoModal(true)
-                            }}
-                          >
-                            <Eye size={16} />
-                          </button>
-                        </li>
+<li key={a.id} className="flex items-center gap-2 border-b border-gray-200 pb-1">
+  <button
+    onClick={() => handleVerPerfil(a.paciente_id)}
+    title="Ver perfil"
+    className="text-nublia-accent hover:text-nublia-orange"
+  >
+    <User size={16} />
+  </button>
+  <span className="font-medium">{a.nome}</span>
+  <span className="text-gray-500 text-sm">{a.hora?.slice(0, 5)}h</span>
+  <button
+    className="text-nublia-accent hover:text-nublia-orange ml-1"
+    title="Editar agendamento"
+    onClick={() => {
+      setAgendamentoSelecionado(a.id)
+      setMostrarAgendamentoModal(true)
+    }}
+  >
+    <Eye size={16} />
+  </button>
+  <button
+    className="text-green-600 hover:text-green-800 ml-1"
+    title="Iniciar atendimento"
+    onClick={() => {
+      const paciente = pacientes.find(p => p.id === a.paciente_id)
+      if (paciente) {
+        setPacienteSelecionado(paciente)
+        setTimeout(() => setAbaSelecionada(0), 0)
+      }
+    }}
+  >
+    <PlayCircle size={18} />
+  </button>
+</li>
+
                       ))}
                     </ul>
                   )}
