@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { Search, User } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSelecionarPaciente }) {
   const [termoBusca, setTermoBusca] = useState('')
@@ -57,37 +58,66 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
             placeholder="Digite o nome do paciente..."
             value={termoBusca}
             onChange={(e) => setTermoBusca(e.target.value)}
-            className="pl-10 border rounded-full w-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-nublia-accent"
+            className="pl-10 border rounded-full w-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent transition-all duration-300 focus:scale-[1.02]"
           />
         </div>
 
-        {/* Lista com rolagem */}
+        {/* Lista com animação */}
         <div className="overflow-y-auto max-h-[320px]">
-          {termoBusca.trim() && pacientes.length > 0 ? (
-            <ul className="space-y-3">
-              {pacientes.map((paciente) => (
-                <li
-                  key={paciente.id}
-                  className="flex justify-between items-center bg-gray-50 border rounded-lg px-4 py-3 hover:shadow-sm transition"
-                >
-                  <div>
-                    <p className="font-medium text-gray-800">{paciente.name}</p>
-                    <p className="text-sm text-gray-500">{paciente.email || 'Sem e-mail'}</p>
-                  </div>
-                  <button
-                    onClick={() => selecionarPaciente(paciente)}
-                    className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+          <AnimatePresence>
+            {termoBusca.trim() && pacientes.length > 0 && (
+              <motion.ul
+                key="lista"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3"
+              >
+                {pacientes.map((paciente) => (
+                  <li
+                    key={paciente.id}
+                    className="flex justify-between items-center bg-gray-50 border rounded-lg px-4 py-3 hover:shadow-sm transition"
                   >
-                    <User size={18} /> Selecionar
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : termoBusca.trim() && pacientes.length === 0 ? (
-            <p className="text-gray-500 text-center italic mt-4">Nenhum paciente encontrado.</p>
-          ) : (
-            <p className="text-gray-400 text-center italic mt-4">Digite para buscar pacientes...</p>
-          )}
+                    <div>
+                      <p className="font-medium text-gray-800">{paciente.name}</p>
+                      <p className="text-sm text-gray-500">{paciente.email || 'Sem e-mail'}</p>
+                    </div>
+                    <button
+                      onClick={() => selecionarPaciente(paciente)}
+                      className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+                    >
+                      <User size={18} /> Selecionar
+                    </button>
+                  </li>
+                ))}
+              </motion.ul>
+            )}
+
+            {termoBusca.trim() && pacientes.length === 0 && (
+              <motion.p
+                key="nenhum"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-gray-500 text-center italic mt-4"
+              >
+                Nenhum paciente encontrado.
+              </motion.p>
+            )}
+
+            {!termoBusca.trim() && (
+              <motion.p
+                key="dica"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-gray-400 text-center italic mt-4"
+              >
+                Digite para buscar pacientes...
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="flex justify-between pt-4">
@@ -99,7 +129,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
           </button>
           <button
             onClick={onCadastrarNovo}
-            className="bg-nublia-accent hover:brightness-110 text-white px-5 py-2 rounded-full text-sm"
+            className="bg-nublia-accent hover:brightness-110 text-white px-5 py-2 rounded-full text-sm shadow"
           >
             Cadastrar Novo Paciente
           </button>
