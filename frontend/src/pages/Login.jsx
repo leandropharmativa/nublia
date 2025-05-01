@@ -79,7 +79,7 @@ export default function Login({ onLogin }) {
       {/* Lado esquerdo com degradê e ícone flutuante */}
       <div className="w-1/2 bg-gradient-to-br from-nublia-accent to-nublia-primary p-10 flex flex-col relative">
         <div className="flex items-center text-nublia-orange text-3xl font-bold">
-          <Feather className="w-8 h-8 mr-2 />
+          <Feather className="w-8 h-8 mr-2 text-nublia-orange" />
           Nublia
         </div>
         <div className="absolute top-56 left-20">
