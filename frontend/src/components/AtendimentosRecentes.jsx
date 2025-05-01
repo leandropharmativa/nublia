@@ -21,30 +21,30 @@ export default function AtendimentosRecentes({
 
       {/* Lista de atendimentos */}
       <ul className="flex-1 overflow-auto divide-y divide-gray-200 px-4 pb-2">
-        {atendimentos.map((a) => (
-          <li
-            key={a.id}
-            className="flex items-center gap-2 py-2 text-sm text-gray-800 hover:text-blue-500 transition-colors"
-          >
-            <span className="truncate flex items-center gap-1">
-              {getNomePaciente(a.paciente_id)}
-              <button
-                onClick={() => onVerPerfil(a.paciente_id)}
-                title="Ver perfil"
-                className="text-nublia-accent hover:text-blue-500"
-              >
-                <User size={16} />
-              </button>
-              <button
-                onClick={() => onVerAtendimento(a)}
-                title="Ver atendimento"
-                className="text-nublia-accent hover:text-blue-500"
-              >
-                <FileText size={16} />
-              </button>
-            </span>
-          </li>
-        ))}
+        {atendimentos.map((a) => {
+          const nome = getNomePaciente(a.paciente_id)
+          return (
+            <li key={a.id} className="flex items-center gap-2 py-2 text-sm text-gray-800">
+              <span className="truncate flex items-center gap-1">
+                {nome}
+                <button
+                  onClick={() => onVerPerfil(a.paciente_id)}
+                  title={`Ver perfil de ${nome}`}
+                  className="text-nublia-accent hover:text-blue-500"
+                >
+                  <User size={16} />
+                </button>
+                <button
+                  onClick={() => onVerAtendimento(a)}
+                  title={`Ver atendimento de ${nome}`}
+                  className="text-nublia-accent hover:text-blue-500"
+                >
+                  <FileText size={16} />
+                </button>
+              </span>
+            </li>
+          )
+        })}
         {atendimentos.length === 0 && (
           <li className="text-sm italic text-gray-500 py-4">Nenhum atendimento encontrado.</li>
         )}
