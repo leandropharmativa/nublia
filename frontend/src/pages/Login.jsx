@@ -120,6 +120,7 @@ export default function Login({ onLogin }) {
             onChange={(e) => setEmail(e.target.value)}
             onBlur={checarEmail}
             required
+            className="mb-3"
           />
 
           <div className={`transition-all duration-300 ${temSenha !== null ? 'opacity-100 max-h-40 mb-3' : 'opacity-0 max-h-0 overflow-hidden'}`}>
@@ -130,6 +131,7 @@ export default function Login({ onLogin }) {
               value={temSenha ? senha : novaSenha}
               onChange={(e) => temSenha ? setSenha(e.target.value) : setNovaSenha(e.target.value)}
               required
+              className="mb-3"
             />
           </div>
 
