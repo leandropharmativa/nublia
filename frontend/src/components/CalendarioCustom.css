@@ -79,5 +79,12 @@
 }
 
 .rbc-month-view .rbc-row.rbc-month-header {
-  min-height: 36px;
+  min-height: 30px;
 }
+.rbc-month-view .rbc-header {
+  display: flex;
+  align-items: center;     /* vertical */
+  justify-content: center; /* horizontal */
+  height: 100%;            /* preencher a altura da linha */
+}
+
