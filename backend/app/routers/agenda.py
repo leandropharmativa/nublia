@@ -25,6 +25,10 @@ class ReagendarRequest(BaseModel):
     de_id: int  # ID do horário atual
     para_id: int  # ID do novo horário (disponível)
 
+class TrocarPacienteRequest(BaseModel):
+    id: int  # ID do agendamento existente
+    novo_paciente_id: int
+
 # ✅ Criar horário disponível
 @router.post("/disponibilizar", response_model=Agendamento)
 def disponibilizar_horario(agendamento: Agendamento, session: Session = Depends(get_session)):
@@ -105,4 +109,19 @@ def reagendar_horario(dados: ReagendarRequest, session: Session = Depends(get_se
     session.refresh(novo_horario)
 
     return novo_horario
+
+@router.post("/trocar-paciente", response_model=Agendamento)
+def trocar_paciente(dados: TrocarPacienteRequest, session: Session = Depends(get_session)):
+    agendamento = session.get(Agendamento, dados.id)
+    if not agendamento:
+        raise HTTPException(status_code=404, detail="Agendamento não encontrado.")
+
+    if agendamento.status != "agendado":
+        raise HTTPException(status_code=400, detail="Esse horário não está agendado.")
+
+    agendamento.paciente_id = dados.novo_paciente_id
+    session.add(agendamento)
+    session.commit()
+    session.refresh(agendamento)
+    return agendamento
 
