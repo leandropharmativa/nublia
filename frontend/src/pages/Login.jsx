@@ -77,12 +77,12 @@ export default function Login({ onLogin }) {
     <div className="flex h-screen font-sans">
       {/* Lado esquerdo azul acinzentado */}
       <div className="w-1/2 bg-[#BFDBFE] text-gray-800 flex flex-col justify-between p-10">
-        <div className="flex items-center text-orange-500 text-3xl">
+        <div className="flex items-center text-orange-500 text-3xl font-bold">
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
-        <div className="flex flex-col justify-center flex-grow pl-4">
-          <h1 className="text-5xl font-bold text-left leading-snug">
+        <div className="flex flex-col justify-center flex-grow pl-6">
+          <h1 className="text-5xl text-left leading-snug">
             Bem vindo(a)<br />à Nublia
           </h1>
         </div>
