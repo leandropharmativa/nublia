@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { Feather } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import CampoTexto from '../components/CampoTexto'
+import Botao from '../components/Botao'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -48,8 +49,7 @@ export default function Register() {
       setSucesso(true)
       setErro('')
       setTimeout(() => navigate('/'), 1500)
-    } catch (error) {
-      console.error(error)
+    } catch {
       setErro("Erro ao registrar. Verifique os dados.")
       setSucesso(false)
     }
@@ -65,7 +65,7 @@ export default function Register() {
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
-        <div className="absolute top-56 left-20">
+        <div className="absolute top-36 left-10">
           <h1 className="text-5xl font-bold text-left leading-snug mb-4">
             Bem vindo(a)<br />à Nublia
           </h1>
@@ -94,33 +94,14 @@ export default function Register() {
           {erro && <div className="alert-warning">{erro}</div>}
           {sucesso && <div className="alert-success">Cadastro realizado com sucesso!</div>}
 
-          <input
-            type="text"
-            name="name"
-            placeholder="Nome completo"
-            required
-            className="input-base mb-3"
-            onChange={handleChange}
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            required
-            className="input-base mb-3"
-            onChange={handleChange}
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Senha"
-            required
-            className="input-base mb-3"
-            onChange={handleChange}
-          />
+          <CampoTexto name="name" placeholder="Nome completo" value={form.name} onChange={handleChange} required />
+          <CampoTexto type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} required />
+          <CampoTexto type="password" name="password" placeholder="Senha" value={form.password} onChange={handleChange} required />
+
           <select
             name="role"
             className="input-base mb-3"
+            value={form.role}
             onChange={handleChange}
             required
           >
@@ -132,20 +113,16 @@ export default function Register() {
           </select>
 
           <div className={`transition-all duration-300 ${precisaDeCodigo ? 'opacity-100 max-h-40 mb-3' : 'opacity-0 max-h-0 overflow-hidden'}`}>
-          <input
-          type="text"
-          name="codigoAtivacao"
-          placeholder="Código de ativação"
-          className="input-base"
-          required={precisaDeCodigo}
-          onChange={handleChange}
-          />
+            <CampoTexto
+              name="codigoAtivacao"
+              placeholder="Código de ativação"
+              value={form.codigoAtivacao}
+              onChange={handleChange}
+              required={precisaDeCodigo}
+            />
           </div>
 
-
-          <button type="submit" className="btn-primary w-full flex justify-center">
-            Registrar
-          </button>
+          <Botao type="submit">Registrar</Botao>
         </form>
       </div>
     </div>
