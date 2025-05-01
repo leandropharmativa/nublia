@@ -82,7 +82,7 @@ export default function Login({ onLogin }) {
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
-        <div className="flex flex-col justify-center flex-grow">
+        <div className="flex flex-col justify-center flex-grow pl-4">
           <h1 className="text-5xl font-bold leading-tight text-left mb-4">
             Bem vindo(a)<br />à Nublia
           </h1>
@@ -90,10 +90,10 @@ export default function Login({ onLogin }) {
         </div>
       </div>
 
-      {/* Direita com formulário de login */}
-      <div className="w-1/2 bg-[#CFFAFE] flex flex-col justify-between p-10">
-        <div className="flex justify-end">
-          <p className="mr-2 text-sm text-gray-700">Novo no Nublia?</p>
+      {/* Direita com fundo turquesa e login centralizado */}
+      <div className="w-1/2 bg-[#CFFAFE] relative flex flex-col justify-center items-center px-10">
+        <div className="absolute top-10 right-10 flex items-center gap-2">
+          <p className="text-sm text-gray-700">Novo no Nublia?</p>
           <button
             onClick={() => navigate('/register')}
             className="bg-cyan-600 text-white text-sm px-4 py-1 rounded hover:bg-cyan-700 transition"
@@ -104,12 +104,12 @@ export default function Login({ onLogin }) {
 
         <form
           onSubmit={temSenha === false ? handleCriarSenha : handleLogin}
-          className="bg-white p-8 rounded-xl shadow-md w-full max-w-md mx-auto"
+          className="w-full max-w-md"
         >
-          <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">Entrar na Nublia</h2>
+          <h2 className="text-3xl font-bold text-blue-800 mb-6 text-left">Entrar na Nublia</h2>
 
-          {mensagem && <p className="text-green-600 text-center text-sm mb-2">{mensagem}</p>}
-          {erro && <p className="text-red-500 text-center text-sm mb-2">{erro}</p>}
+          {mensagem && <p className="text-green-700 text-sm mb-3">{mensagem}</p>}
+          {erro && <p className="text-red-600 text-sm mb-3">{erro}</p>}
 
           <div className="mb-4">
             <label className="text-sm block mb-1">Email</label>
