@@ -9,7 +9,9 @@ import {
   PlusCircle,
   Home,
   CalendarClock,
-  User
+  User,
+  Eye,
+  CalendarPlus
 } from 'lucide-react'
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
@@ -19,6 +21,7 @@ import BuscarPacienteModal from '../components/BuscarPacienteModal'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
 import Botao from '../components/Botao'
+import ModalNovoHorario from '../components/ModalNovoHorario'
 
 const tabs = [
   { icon: Home, label: 'Início' },
@@ -33,6 +36,7 @@ export default function PrescritorDashboard() {
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
   const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
+  const [mostrarNovoHorario, setMostrarNovoHorario] = useState(false)
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
   const [atendimentos, setAtendimentos] = useState([])
@@ -125,14 +129,12 @@ export default function PrescritorDashboard() {
     setMostrarVisualizarAtendimentoModal(true)
   }
 
-  const atendimentosFiltrados = atendimentos.filter((item) =>
-    item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
-  )
-
   const hoje = new Date().toISOString().split('T')[0]
   const agendamentosHoje = agendaEventos.filter(
     (e) => e.status === 'agendado' && e.data === hoje
   )
+
+  const hojeSlot = new Date()
 
   return (
     <Layout>
@@ -150,7 +152,7 @@ export default function PrescritorDashboard() {
           </div>
           <div className="flex-1 overflow-hidden">
             <AtendimentosRecentes
-              atendimentos={atendimentosFiltrados}
+              atendimentos={atendimentos}
               pacientes={pacientes}
               pesquisa={pesquisa}
               onPesquisar={(texto) => setPesquisa(texto)}
@@ -194,19 +196,30 @@ export default function PrescritorDashboard() {
                     <ul className="space-y-2 text-sm text-gray-800 w-full max-w-xl">
                       {agendamentosHoje.map((a) => (
                         <li key={a.id} className="flex items-center gap-2 border-b pb-2">
-                          <button
-                            onClick={() => handleVerPerfil(a.paciente_id)}
-                            className="text-nublia-accent hover:text-nublia-orange"
-                            title="Ver perfil"
-                          >
-                            <User size={16} />
-                          </button>
+                          <User size={16} className="text-nublia-accent" />
                           <span className="font-medium">{a.nome}</span>
-                          <span className="text-gray-500 ml-auto text-sm">{a.hora?.slice(0, 5)}h</span>
+                          <span className="text-gray-500 text-sm">{a.hora?.slice(0, 5)}h</span>
+                          <button
+                            className="text-nublia-accent hover:text-nublia-orange ml-1"
+                            title="Ver agendamento"
+                            onClick={() => handleVerAtendimento(a)}
+                          >
+                            <Eye size={16} />
+                          </button>
                         </li>
                       ))}
                     </ul>
                   )}
+
+                  <div className="mt-6">
+                    <Botao
+                      texto="Incluir agendamento"
+                      iconeInicio={<CalendarPlus size={16} />}
+                      onClick={() => setMostrarNovoHorario(true)}
+                      full={false}
+                      className="rounded-full"
+                    />
+                  </div>
                 </div>
               </Tab.Panel>
 
@@ -257,6 +270,17 @@ export default function PrescritorDashboard() {
         <VisualizarAtendimentoModal
           atendimento={atendimentoSelecionado}
           onClose={() => setMostrarVisualizarAtendimentoModal(false)}
+        />
+      )}
+
+      {mostrarNovoHorario && (
+        <ModalNovoHorario
+          horario={hojeSlot}
+          onCancelar={() => setMostrarNovoHorario(false)}
+          onConfirmar={() => {
+            setMostrarNovoHorario(false)
+            carregarAgenda(user.id)
+          }}
         />
       )}
     </Layout>
