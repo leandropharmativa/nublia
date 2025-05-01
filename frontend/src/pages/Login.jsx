@@ -75,27 +75,26 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="flex h-screen font-sans">
-      {/* Esquerda com azul claro e logo */}
-      <div className="w-1/2 bg-[#E0F2FE] text-gray-800 flex flex-col justify-between p-10">
+      {/* Lado esquerdo azul acinzentado */}
+      <div className="w-1/2 bg-[#BFDBFE] text-gray-800 flex flex-col justify-between p-10">
         <div className="flex items-center text-orange-500 text-3xl font-bold">
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
         <div className="flex flex-col justify-center flex-grow pl-4">
-          <h1 className="text-5xl font-bold leading-tight text-left mb-4">
+          <h1 className="text-5xl font-bold text-left leading-snug">
             Bem vindo(a)<br />à Nublia
           </h1>
-          <p className="text-sm text-left text-gray-600">se conecte com quem se cuida.</p>
         </div>
       </div>
 
-      {/* Direita com fundo branco e login centralizado */}
+      {/* Lado direito branco com formulário */}
       <div className="w-1/2 bg-white relative flex flex-col justify-center items-center px-10">
         <div className="absolute top-10 right-10 flex items-center gap-2">
           <p className="text-sm text-gray-700">Novo no Nublia?</p>
           <button
             onClick={() => navigate('/register')}
-            className="bg-cyan-600 text-white text-sm px-4 py-1 rounded hover:bg-cyan-700 transition"
+            className="bg-[#BFDBFE] text-gray-800 text-sm px-4 py-1 rounded hover:bg-blue-300 transition"
           >
             Criar conta
           </button>
@@ -130,30 +129,3 @@ export default function Login({ onLogin }) {
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-4 overflow-hidden"
-              >
-                <label className="text-sm block mb-1">
-                  {temSenha ? "Senha" : "Crie sua senha"}
-                </label>
-                <input
-                  type="password"
-                  value={temSenha ? senha : novaSenha}
-                  onChange={(e) => temSenha ? setSenha(e.target.value) : setNovaSenha(e.target.value)}
-                  required
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <button
-            type="submit"
-            className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700 transition"
-            disabled={carregando}
-          >
-            {carregando ? "Carregando..." : temSenha === false ? "Criar Senha" : "Entrar"}
-          </button>
-        </form>
-      </div>
-    </div>
-  )
-}
