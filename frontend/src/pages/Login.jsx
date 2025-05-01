@@ -129,3 +129,30 @@ export default function Login({ onLogin }) {
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-4 overflow-hidden"
+              >
+                <label className="text-sm block mb-1">
+                  {temSenha ? "Senha" : "Crie sua senha"}
+                </label>
+                <input
+                  type="password"
+                  value={temSenha ? senha : novaSenha}
+                  onChange={(e) => temSenha ? setSenha(e.target.value) : setNovaSenha(e.target.value)}
+                  required
+                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <button
+            type="submit"
+            className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700 transition"
+            disabled={carregando}
+          >
+            {carregando ? "Carregando..." : temSenha === false ? "Criar Senha" : "Entrar"}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
