@@ -7,9 +7,7 @@ import {
   Leaf,
   Settings,
   PlusCircle,
-  Home,
-  User,
-  FileText
+  Home
 } from 'lucide-react'
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
@@ -104,6 +102,11 @@ export default function PrescritorDashboard() {
     item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
   )
 
+  const agendamentosHoje = atendimentos.filter(a => {
+    const hoje = new Date().toISOString().split('T')[0]
+    return a.data?.startsWith(hoje) && a.status === 'agendado'
+  })
+
   return (
     <Layout>
       <div className="flex h-[calc(100vh-160px)]">
@@ -141,54 +144,27 @@ export default function PrescritorDashboard() {
 
             <Tab.Panels className="w-full">
               <Tab.Panel>
-                <div className="py-10 px-4 space-y-6">
-                  <div className="flex justify-center">
-                    <Botao
-                      texto="Iniciar atendimento"
-                      iconeInicio={<PlusCircle size={18} />}
-                      onClick={() => setMostrarBuscarPacienteModal(true)}
-                      full={false}
-                      className="px-6 py-3 rounded-full"
-                    />
-                  </div>
-
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-700 mb-2">Agendamentos de hoje</h2>
-                    <ul className="space-y-2 text-sm text-gray-700">
-                      {atendimentos.filter(a => a.data?.startsWith(new Date().toISOString().split('T')[0])).length > 0 ? (
-                        atendimentos
-                          .filter((a) => a.data?.startsWith(new Date().toISOString().split('T')[0]))
-                          .map((a) => (
-                            <li
-                              key={a.id}
-                              className="bg-white border rounded px-4 py-2 flex items-center justify-between"
-                            >
-                              <div className="flex flex-col">
-                                <span className="font-medium text-gray-700">{a.nomePaciente}</span>
-                                <span className="text-xs text-gray-500">{a.data?.slice(11, 16) || 'Horário indefinido'}</span>
-                              </div>
-                              <div className="flex gap-3">
-                                <button
-                                  onClick={() => handleVerPerfil(a.paciente_id)}
-                                  title="Ver perfil"
-                                  className="text-nublia-accent hover:text-nublia-orange"
-                                >
-                                  <User size={18} />
-                                </button>
-                                <button
-                                  onClick={() => handleVerAtendimento(a)}
-                                  title="Ver atendimento"
-                                  className="text-nublia-accent hover:text-nublia-orange"
-                                >
-                                  <FileText size={18} />
-                                </button>
-                              </div>
-                            </li>
-                          ))
-                      ) : (
-                        <li className="italic text-gray-400">Nenhum paciente agendado para hoje.</li>
-                      )}
-                    </ul>
+                <div className="flex flex-col justify-center items-center py-10">
+                  <Botao
+                    texto="Iniciar atendimento"
+                    iconeInicio={<PlusCircle size={18} />}
+                    onClick={() => setMostrarBuscarPacienteModal(true)}
+                    full={false}
+                    className="px-6 py-3 rounded-full mb-6"
+                  />
+                  <div className="w-full max-w-xl space-y-4">
+                    <h2 className="text-lg font-semibold text-nublia-accent">Agendamentos para hoje</h2>
+                    {agendamentosHoje.length === 0 ? (
+                      <p className="text-sm text-gray-500 italic">Nenhum paciente agendado para hoje.</p>
+                    ) : (
+                      <ul className="space-y-2 text-sm">
+                        {agendamentosHoje.map((a) => (
+                          <li key={a.id} className="border rounded px-4 py-2 bg-white">
+                            {a.nomePaciente} – {a.data?.slice(11, 16) || 'Horário indefinido'}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
               </Tab.Panel>
