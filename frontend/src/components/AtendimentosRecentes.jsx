@@ -30,7 +30,7 @@ export default function AtendimentosRecentes({
                 <button
                   onClick={() => onVerPerfil(a.paciente_id)}
                   title={`Ver perfil de ${nome}`}
-                  className="text-nublia-accent hover:text-blue-500"
+                  className="text-nublia-accent hover:text-nublia-orange"
                 >
                   <User size={16} />
                 </button>
