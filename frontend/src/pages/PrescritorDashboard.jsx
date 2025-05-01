@@ -396,6 +396,21 @@ onClick={() => {
         toast.error('Erro ao desagendar.')
       })
     }}
+    onConfirmar={(horarioId, pacienteId) => {
+    fetch('https://nublia-backend.onrender.com/agenda/agendar', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
+    })
+    .then((res) => {
+      if (!res.ok) throw new Error()
+      toast.success('Paciente agendado com sucesso!')
+      setMostrarAgendamentoModal(false)
+      setAgendamentoSelecionado(null)
+      carregarAgenda(user.id)
+    })
+    .catch(() => toast.error('Erro ao agendar paciente.'))
+    }}
   />
 )}
 
