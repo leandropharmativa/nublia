@@ -1,6 +1,6 @@
 // 📄 AgendaPrescritor.jsx
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import axios from 'axios'
 import { addHours } from 'date-fns'
 import { toast, ToastContainer } from 'react-toastify'
@@ -29,6 +29,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   const user = JSON.parse(localStorage.getItem('user'))
 
   const dropdownRef = useRef(null)
+  const debounceTimeout = useRef(null)
 
   useEffect(() => {
     if (mostrarAgenda) carregarEventos()
@@ -41,9 +42,17 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         setResultadosBusca([])
       }
     }
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') {
+        setFiltroPaciente('')
+        setResultadosBusca([])
+      }
+    }
     document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEsc)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEsc)
     }
   }, [])
 
@@ -172,19 +181,23 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     }
   }
 
-  const buscarPorPaciente = (texto) => {
+  const buscarPorPaciente = useCallback((texto) => {
     setFiltroPaciente(texto)
-    if (texto.length < 2) {
-      setResultadosBusca([])
-      return
-    }
 
-    const resultados = eventos.filter((ev) =>
-      ev.title.toLowerCase().includes(texto.toLowerCase())
-    )
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current)
 
-    setResultadosBusca(resultados)
-  }
+    debounceTimeout.current = setTimeout(() => {
+      if (texto.length < 2) {
+        setResultadosBusca([])
+        return
+      }
+
+      const resultados = eventos.filter((ev) =>
+        ev.title.toLowerCase().includes(texto.toLowerCase())
+      )
+      setResultadosBusca(resultados)
+    }, 300)
+  }, [eventos])
 
   const abrirPerfilPaciente = (id) => {
     setPacienteId(id)
