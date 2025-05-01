@@ -42,7 +42,7 @@ export default function PrescritorDashboard() {
 
   return (
     <Layout>
-      <div className="flex h-[calc(100vh-160px)]">
+      <div className="flex">
         {/* Lateral com atendimentos recentes */}
         <aside className="w-72 bg-white rounded shadow p-4 overflow-y-auto">
           <h3 className="text-md font-semibold mb-3">Atendimentos recentes</h3>
