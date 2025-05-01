@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Save, CheckCircle, ClipboardX, Eye, List } from 'lucide-react'
+import { Save, CheckCircle, ClipboardX, Eye, List, ListPlus, ListMinus } from 'lucide-react'
 import axios from 'axios'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
@@ -187,14 +187,15 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
       ))}
     </ul>
 
-    {atendimentosAnteriores.length > 5 && (
-      <button
-        onClick={() => setMostrarTodos(!mostrarTodos)}
-        className="mt-3 px-4 py-1 text-xs font-semibold rounded-full border border-nublia-accent text-nublia-accent hover:bg-nublia-accent hover:text-white transform hover:scale-[1.03] transition"
-      >
-        {mostrarTodos ? 'Mostrar menos' : 'Ver todos'}
-      </button>
-    )}
+{atendimentosAnteriores.length > 5 && (
+  <button
+    onClick={() => setMostrarTodos(!mostrarTodos)}
+    className="mt-3 px-4 py-1 text-xs font-semibold rounded-full border border-nublia-accent text-nublia-accent hover:bg-nublia-accent hover:text-white transform hover:scale-[1.03] transition flex items-center gap-2"
+  >
+    {mostrarTodos ? <ListMinus size={14} /> : <ListPlus size={14} />}
+    {mostrarTodos ? 'Mostrar menos' : 'Ver todos'}
+  </button>
+)}
   </div>
 )}
           </>
