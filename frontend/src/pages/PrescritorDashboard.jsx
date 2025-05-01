@@ -265,16 +265,22 @@ export default function PrescritorDashboard() {
               </Tab.Panel>
 
               {pacienteSelecionado && (
-                <Tab.Panel>
-                  <FichaAtendimento
-                    paciente={pacienteSelecionado}
-                    onFinalizar={() => {
-                      setPacienteSelecionado(null)
-                      setAbaSelecionada(0)
-                    }}
-                    onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
-                  />
-                </Tab.Panel>
+               <Tab.Panel>
+  {pacienteSelecionado ? (
+    <FichaAtendimento
+      paciente={pacienteSelecionado}
+      onFinalizar={() => {
+        setPacienteSelecionado(null)
+        setAbaSelecionada(0)
+      }}
+      onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
+    />
+  ) : (
+    <div className="text-center text-gray-400 py-10 italic">
+      Nenhum paciente selecionado.
+    </div>
+  )}
+</Tab.Panel>
               )}
             </Tab.Panels>
           </Tab.Group>
