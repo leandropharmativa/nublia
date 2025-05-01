@@ -37,18 +37,17 @@ export default function ModalAgendarHorario({
     }
   }, [statusAtual, trocandoPaciente])
 
-  useEffect(() => {
-    if (reagendando) {
-      axios
-        .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-        .then(res => {
-          console.log('Horários recebidos:', res.data)
-          const disponiveis = res.data.filter(h => h.status === 'disponivel')
-          setHorariosDisponiveis(disponiveis)
-        })
-        .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
-    }
-  }, [reagendando, user.id])
+useEffect(() => {
+  if (reagendando) {
+    axios
+      .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+      .then(res => {
+        const disponiveis = res.data.filter(h => h.paciente_id === null)
+        setHorariosDisponiveis(disponiveis)
+      })
+      .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
+  }
+}, [reagendando, user.id])
 
   useEffect(() => {
     if (filtro.length < 2) {
