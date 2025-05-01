@@ -198,45 +198,71 @@ export default function ModalAgendarHorario({
               </div>
 
               <div className="mt-4">
-                <label className="text-sm text-gray-600">Buscar paciente:</label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    placeholder="Digite o nome..."
-                    value={filtro}
-                    onChange={(e) => setFiltro(e.target.value)}
-                    className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
-                  />
-                </div>
+                <label className="text-sm text-gray-600 mb-1">Paciente:</label>
 
-                <div className="overflow-y-auto max-h-[300px] mt-2">
-                  {pacientes.map((paciente) => (
-                    <div
-                      key={paciente.id}
-                      className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
-                    >
-                      <div>
-                        <p className="font-medium text-gray-800">{paciente.name}</p>
-                        <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setSelecionado(paciente)}
-                        className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
-                      >
-                        <User size={18} /> Selecionar
-                      </button>
+                {selecionado ? (
+                  <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
+                    <div>
+                      <p className="font-medium">{selecionado.name}</p>
+                      <p className="text-xs text-gray-500">{selecionado.email || 'Sem e-mail'}</p>
                     </div>
-                  ))}
+                    <button
+                      onClick={() => {
+                        setSelecionado(null)
+                        setFiltro('')
+                        setPacientes([])
+                      }}
+                      className="text-nublia-accent hover:text-nublia-orange text-sm"
+                    >
+                      Trocar
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        placeholder="Buscar pacientes..."
+                        value={filtro}
+                        onChange={(e) => setFiltro(e.target.value)}
+                        className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+                      />
+                    </div>
 
-                  {filtro.length >= 2 && pacientes.length === 0 && (
-                    <p className="text-sm text-gray-500 italic text-center mt-2">
-                      Nenhum paciente encontrado.
-                    </p>
-                  )}
-                </div>
+                    <div className="overflow-y-auto max-h-[300px] mt-2">
+                      {pacientes.map((paciente) => (
+                        <div
+                          key={paciente.id}
+                          className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
+                        >
+                          <div>
+                            <p className="font-medium text-gray-800">{paciente.name}</p>
+                            <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelecionado(paciente)
+                              setFiltro('')
+                              setPacientes([])
+                            }}
+                            className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+                          >
+                            <User size={18} /> Selecionar
+                          </button>
+                        </div>
+                      ))}
+
+                      {filtro.length >= 2 && pacientes.length === 0 && (
+                        <p className="text-sm text-gray-500 italic text-center mt-2">
+                          Nenhum paciente encontrado.
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
 
                 <button
                   onClick={() => {
@@ -246,7 +272,12 @@ export default function ModalAgendarHorario({
                     }
                     onConfirmar(novoHorarioId, selecionado.id)
                   }}
-                  className="mt-4 w-full rounded-full bg-nublia-accent hover:brightness-110 text-white py-2 text-sm"
+                  className={`mt-4 w-full rounded-full py-2 text-sm text-white flex justify-center items-center gap-2 ${
+                    (!novoHorarioId || !selecionado)
+                      ? 'bg-nublia-accent/60 cursor-not-allowed'
+                      : 'bg-nublia-accent hover:brightness-110'
+                  }`}
+                  disabled={!novoHorarioId || !selecionado}
                 >
                   Confirmar agendamento
                 </button>
