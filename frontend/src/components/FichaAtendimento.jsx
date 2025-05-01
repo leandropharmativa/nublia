@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Save, CheckCircle, ClipboardX, Eye } from 'lucide-react'
 import axios from 'axios'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { toastSucesso, toastErro } from '../utils/toast'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
 
@@ -65,18 +64,17 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
       }
 
-      toast.success('Atendimento salvo com sucesso!')
-
+      toastSucesso('Atendimento salvo com sucesso!')
       if (onAtendimentoSalvo) onAtendimentoSalvo()
     } catch (error) {
       console.error('Erro ao salvar atendimento:', error.response?.data || error.message)
-      toast.error('Erro ao salvar atendimento. Verifique os dados.')
+      toastErro('Erro ao salvar atendimento. Verifique os dados.')
     }
   }
 
   const handleFinalizar = async () => {
     await handleSalvar()
-    toast.success('Atendimento finalizado!')
+    toastSucesso('Atendimento finalizado!')
     onFinalizar()
   }
 
