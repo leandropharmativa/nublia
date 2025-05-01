@@ -95,61 +95,49 @@ export default function PrescritorDashboard() {
     <Layout>
       <div className="flex h-[calc(100vh-160px)]">
         {/* Lateral grudada na esquerda, altura total da janela */}
-        <div className="h-full">
-          <AtendimentosRecentes
-            atendimentos={atendimentosFiltrados}
-            pacientes={pacientes}
-            pesquisa={pesquisa}
-            onPesquisar={(texto) => setPesquisa(texto)}
-            onVerPerfil={handleVerPerfil}
-            onVerAtendimento={handleVerAtendimento}
-          />
+        <div className="h-full w-72 flex flex-col">
+          <div className="p-4">
+            <button
+              onClick={() => setMostrarBuscarPacienteModal(true)}
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
+            >
+              Iniciar Atendimento
+            </button>
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <AtendimentosRecentes
+              atendimentos={atendimentosFiltrados}
+              pacientes={pacientes}
+              pesquisa={pesquisa}
+              onPesquisar={(texto) => setPesquisa(texto)}
+              onVerPerfil={handleVerPerfil}
+              onVerAtendimento={handleVerAtendimento}
+            />
+          </div>
         </div>
 
-        {/* Conteúdo principal com tabs */}
-        <div className="flex-1 pl-6 overflow-y-auto">
+        {/* Conteúdo principal com tabs alinhadas à direita */}
+        <div className="flex-1 flex flex-col items-end pr-6 overflow-y-auto">
           <Tab.Group>
-            <Tab.List className="flex gap-4 border-b pb-2 mb-6">
-              <Tab className={({ selected }) =>
-                `flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
-                  selected ? 'text-blue-600 bg-white shadow' : 'text-gray-500 hover:text-blue-600'
-                }`
-              }>
-                <CalendarDays size={18} /> Agenda
-              </Tab>
-              <Tab className={({ selected }) =>
-                `flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
-                  selected ? 'text-blue-600 bg-white shadow' : 'text-gray-500 hover:text-blue-600'
-                }`
-              }>
-                <BookOpenText size={18} /> Fórmulas
-              </Tab>
-              <Tab className={({ selected }) =>
-                `flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
-                  selected ? 'text-blue-600 bg-white shadow' : 'text-gray-500 hover:text-blue-600'
-                }`
-              }>
-                <Leaf size={18} /> Dietas
-              </Tab>
-              <Tab className={({ selected }) =>
-                `flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
-                  selected ? 'text-blue-600 bg-white shadow' : 'text-gray-500 hover:text-blue-600'
-                }`
-              }>
-                <Settings size={18} /> Configurações
-              </Tab>
+            <Tab.List className="flex gap-8 mb-6">
+              {[{ icon: CalendarDays, label: 'Agenda' }, { icon: BookOpenText, label: 'Fórmulas' }, { icon: Leaf, label: 'Dietas' }, { icon: Settings, label: 'Configurações' }].map((tab, idx) => (
+                <Tab
+                  key={idx}
+                  className={({ selected }) =>
+                    `flex flex-col items-center px-4 py-2 text-sm transition ${
+                      selected ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'
+                    }`
+                  }
+                >
+                  <tab.icon size={32} />
+                  <span className="text-xs mt-1">{tab.label}</span>
+                </Tab>
+              ))}
             </Tab.List>
 
-            <Tab.Panels>
+            <Tab.Panels className="w-full">
               <Tab.Panel>
-                <div className="h-full flex flex-col items-center justify-center">
-                  <button
-                    onClick={() => setMostrarBuscarPacienteModal(true)}
-                    className="flex items-center gap-2 bg-blue-600 text-white px-6 py-4 rounded-lg shadow hover:bg-blue-700 text-lg"
-                  >
-                    Iniciar Atendimento
-                  </button>
-                </div>
+                <AgendaPrescritor mostrarAgenda={true} />
               </Tab.Panel>
               <Tab.Panel>
                 <div>
