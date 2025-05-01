@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, memo } from 'react'
 import axios from 'axios'
 import { addHours } from 'date-fns'
 import { Search, User, Eye } from 'lucide-react'
-import { mostrarSucesso, mostrarErro } from '../utils/toastUtils'
+import { toastSucesso, toastErro } from '../utils/toastUtils'
 import 'react-toastify/dist/ReactToastify.css'
 
 import CalendarioAgenda from '../components/CalendarioAgenda'
@@ -28,7 +28,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const dropdownRef = useRef(null)
   const debounceTimeout = useRef(null)
 
-  // Carrega eventos
   const carregarEventos = async () => {
     try {
       const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
@@ -104,7 +103,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
         hora,
         status: 'disponivel'
       })
-      mostrarSucesso(`Horário ${hora} cadastrado com sucesso!`)
+      toastSucesso(`Horário ${hora} cadastrado com sucesso!`)
       carregarEventos()
 
       if (!manterAberto) {
@@ -112,7 +111,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
         setSlotSelecionado(null)
       }
     } catch {
-      mostrarErro('Erro ao cadastrar horário.')
+      toastErro('Erro ao cadastrar horário.')
     }
   }
 
@@ -144,36 +143,36 @@ function AgendaPrescritor({ mostrarAgenda }) {
         id: agendamentoId,
         paciente_id: pacienteId
       })
-      mostrarSucesso('Paciente agendado com sucesso!')
+      toastSucesso('Paciente agendado com sucesso!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
       carregarEventos()
     } catch {
-      mostrarErro('Erro ao agendar paciente.')
+      toastErro('Erro ao agendar paciente.')
     }
   }
 
   const desagendarHorario = async (id) => {
     try {
       await axios.post('https://nublia-backend.onrender.com/agenda/desagendar', { id })
-      mostrarSucesso('Paciente removido do horário!')
+      toastSucesso('Paciente removido do horário!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
       carregarEventos()
     } catch {
-      mostrarErro('Erro ao desagendar.')
+      toastErro('Erro ao desagendar.')
     }
   }
 
   const removerHorario = async (id) => {
     try {
       await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
-      mostrarSucesso('Horário removido com sucesso!')
+      toastSucesso('Horário removido com sucesso!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
       carregarEventos()
     } catch {
-      mostrarErro('Erro ao remover horário.')
+      toastErro('Erro ao remover horário.')
     }
   }
 
