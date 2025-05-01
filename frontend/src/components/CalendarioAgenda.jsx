@@ -33,7 +33,11 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
-export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSelecionarEvento }) {
+export default function CalendarioAgenda({
+  eventos = [],
+  aoSelecionarSlot,
+  aoSelecionarEvento
+}) {
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
 
@@ -41,7 +45,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
     <div className="h-full p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={[]} // eventos visuais no modo mês são personalizados
+        events={[]} // usamos renderização personalizada no modo mês
         startAccessor="start"
         endAccessor="end"
         view={view}
@@ -55,8 +59,9 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         timeslots={1}
         culture="pt-BR"
         onSelectSlot={({ start }) => {
-          // Ao clicar em área vazia → abre modal
-          aoSelecionarSlot({ start })
+          if (view !== 'month') {
+            aoSelecionarSlot({ start }) // fora do mês, pode abrir o modal
+          }
         }}
         onSelectEvent={aoSelecionarEvento}
         messages={{
@@ -71,10 +76,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
         }}
         components={{
           toolbar: (props) => (
-            <CustomToolbar
-              {...props}
-              eventos={eventos}
-            />
+            <CustomToolbar {...props} eventos={eventos} />
           ),
           day: { header: CustomDayHeader },
           month: {
@@ -85,6 +87,7 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
                 eventos={eventos}
                 onView={setView}
                 onNavigate={setDataAtual}
+                aoSelecionarEvento={aoSelecionarEvento}
               />
             )
           }
@@ -94,7 +97,14 @@ export default function CalendarioAgenda({ eventos = [], aoSelecionarSlot, aoSel
   )
 }
 
-function HeaderComEventos({ data, label, eventos, onView, onNavigate }) {
+function HeaderComEventos({
+  data,
+  label,
+  eventos,
+  onView,
+  onNavigate,
+  aoSelecionarEvento
+}) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
 
   const doDia = eventos.filter(ev => isSameCalendarDay(ev.start, data))
@@ -161,6 +171,10 @@ function HeaderComEventos({ data, label, eventos, onView, onNavigate }) {
             <span
               key={ev.id}
               className={`inline-flex items-center justify-center ${cor} cursor-pointer`}
+              onClick={(e) => {
+                e.stopPropagation()
+                aoSelecionarEvento(ev)
+              }}
               onMouseEnter={(e) => showTooltip(e, text)}
               onMouseLeave={hideTooltip}
             >
