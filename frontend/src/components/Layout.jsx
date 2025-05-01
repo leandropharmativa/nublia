@@ -43,7 +43,6 @@ export default function Layout({ children }) {
 
       {/* Conteúdo centralizado */}
       <main className="flex-1 p-6">
-        <div className="max-w-screen-xl mx-auto">
           {children}
         </div>
       </main>
