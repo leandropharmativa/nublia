@@ -5,9 +5,7 @@ import {
   CalendarDays,
   BookOpenText,
   Leaf,
-  Settings,
-  UserCircle2,
-  FileText
+  Settings
 } from 'lucide-react'
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
@@ -19,6 +17,8 @@ export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [atendimentos, setAtendimentos] = useState([])
+  const [pacientes, setPacientes] = useState([])
+  const [pesquisa, setPesquisa] = useState('')
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
@@ -26,6 +26,7 @@ export default function PrescritorDashboard() {
       const usuario = JSON.parse(savedUser)
       setUser(usuario)
       carregarAtendimentos(usuario.id)
+      carregarPacientes()
     }
   }, [])
 
@@ -40,24 +41,32 @@ export default function PrescritorDashboard() {
     }
   }
 
+  const carregarPacientes = async () => {
+    try {
+      const res = await fetch('https://nublia-backend.onrender.com/users/all')
+      const data = await res.json()
+      setPacientes(data.filter(u => u.role === 'paciente'))
+    } catch (err) {
+      console.error('Erro ao carregar pacientes:', err)
+    }
+  }
+
+  const atendimentosFiltrados = atendimentos.filter((item) =>
+    item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
+  )
+
   return (
     <Layout>
       <div className="flex">
-        {/* Lateral com atendimentos recentes */}
-        <aside className="w-72 bg-white rounded shadow p-4 overflow-y-auto">
-          <h3 className="text-md font-semibold mb-3">Atendimentos recentes</h3>
-          <ul className="space-y-3">
-            {atendimentos.map((a, i) => (
-              <li key={i} className="flex items-center justify-between text-sm text-gray-700">
-                <span className="truncate">{a.nomePaciente || 'Paciente'}</span>
-                <div className="flex gap-2">
-                  <button title="Ver perfil"><UserCircle2 size={18} /></button>
-                  <button title="Ver atendimento"><FileText size={18} /></button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </aside>
+        {/* Lateral com componente real */}
+        <AtendimentosRecentes
+          atendimentos={atendimentosFiltrados}
+          pacientes={pacientes}
+          pesquisa={pesquisa}
+          onPesquisar={(texto) => setPesquisa(texto)}
+          onVerPerfil={(pacienteId) => console.log('Ver perfil', pacienteId)}
+          onVerAtendimento={(atendimento) => console.log('Ver atendimento', atendimento)}
+        />
 
         {/* Conteúdo principal com tabs */}
         <div className="flex-1 pl-6">
