@@ -274,23 +274,21 @@ useEffect(() => {
                 <>
                   <p className="text-sm text-gray-600 mt-1">Paciente atual: <strong>{pacienteAtual}</strong></p>
                   <label className="text-sm text-gray-600 mb-1 mt-2">Transferir para outro horário:</label>
-                  <select
-                    value={novoHorarioId || ''}
-                    onChange={(e) => setNovoHorarioId(parseInt(e.target.value))}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
-                  >
-                    <option value="">Selecione um novo horário</option>
-                    {horariosDisponiveis
-                      .filter(h => typeof h.data_hora === 'string')
-                      .map((h) => {
-                        const dataHora = new Date(h.data_hora.replace(' ', 'T'))
-                        return (
-                          <option key={h.id} value={h.id}>
-                            {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                          </option>
-                        )
-                      })}
-                  </select>
+<select
+  value={novoHorarioId || ''}
+  onChange={(e) => setNovoHorarioId(parseInt(e.target.value))}
+  className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
+>
+  <option value="">Selecione um novo horário</option>
+  {horariosDisponiveis.map((h) => {
+    const dataHora = new Date(`${h.dia}T${h.hora}`)
+    return (
+      <option key={h.id} value={h.id}>
+        {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+      </option>
+    )
+  })}
+</select>
 
                   <div className="flex gap-2 mt-3">
                     <button
