@@ -286,7 +286,7 @@ export default function ModalAgendarHorario({
                   >
                     <option value="">Selecione um novo horário</option>
                     {horariosDisponiveis.map((h) => {
-                      const dataHora = new Date(h.data_hora)
+                      const dataHora = new Date(h.data_hora.replace(' ', 'T'))
                       return (
                         <option key={h.id} value={h.id}>
                           {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
