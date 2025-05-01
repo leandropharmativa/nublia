@@ -39,3 +39,24 @@
 .rbc-agenda-view table {
   border: none !important;
 } */
+/* Corrige layout para múltiplos ícones em grade flexível */
+.rbc-month-view .rbc-event {
+  display: inline-flex !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Permite que o container do dia se comporte como uma mini-grade */
+.rbc-month-row .rbc-row-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 2px;
+}
+
