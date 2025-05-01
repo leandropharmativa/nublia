@@ -14,7 +14,6 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
   })
   const [mensagem, setMensagem] = useState(null)
   const [atendimentoId, setAtendimentoId] = useState(null)
-
   const [atendimentosAnteriores, setAtendimentosAnteriores] = useState([])
   const [modalVisualizar, setModalVisualizar] = useState(null)
   const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] = useState(false)
@@ -68,9 +67,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
 
       setMensagem({ tipo: 'sucesso', texto: 'Atendimento salvo com sucesso!' })
 
-      if (onAtendimentoSalvo) {
-        onAtendimentoSalvo()
-      }
+      if (onAtendimentoSalvo) onAtendimentoSalvo()
     } catch (error) {
       console.error('Erro ao salvar atendimento:', error.response?.data || error.message)
       setMensagem({ tipo: 'erro', texto: 'Erro ao salvar atendimento. Verifique os dados.' })
@@ -83,9 +80,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
     const nascimento = new Date(data)
     let idade = hoje.getFullYear() - nascimento.getFullYear()
     const m = hoje.getMonth() - nascimento.getMonth()
-    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
-      idade--
-    }
+    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) idade--
     return idade
   }
 
@@ -100,20 +95,27 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md w-full">
+    <div className="bg-white p-6 rounded-2xl w-full">
       {/* Cabeçalho */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-blue-600">Ficha de Atendimento</h2>
-            <button onClick={handleSalvar} className="text-blue-600 hover:text-blue-800" title="Salvar">
+            <h2 className="text-2xl font-bold text-nublia-accent">Ficha de Atendimento</h2>
+            <button
+              onClick={handleSalvar}
+              className="text-nublia-accent hover:text-nublia-orange transition"
+              title="Salvar"
+            >
               <Save size={24} />
             </button>
-            <button onClick={tentarSair} className="text-gray-600 hover:text-gray-800" title="Voltar">
+            <button
+              onClick={tentarSair}
+              className="text-gray-600 hover:text-gray-800 transition"
+              title="Voltar"
+            >
               <ArrowLeft size={24} />
             </button>
           </div>
-          {/* Nome + idade */}
           <p className="text-sm text-gray-700 font-semibold mt-1">
             {paciente.name} {calcularIdade(paciente.data_nascimento) ? `• ${calcularIdade(paciente.data_nascimento)} anos` : ''}
           </p>
@@ -121,7 +123,11 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
       </div>
 
       {mensagem && (
-        <div className={`mb-4 p-3 rounded text-center ${mensagem.tipo === 'sucesso' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+        <div className={`mb-4 text-sm text-center rounded-full px-4 py-2 font-medium ${
+          mensagem.tipo === 'sucesso'
+            ? 'text-blue-600 bg-blue-50'
+            : 'text-orange-600 bg-orange-50'
+        }`}>
           {mensagem.texto}
         </div>
       )}
@@ -132,7 +138,11 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
           <button
             key={aba}
             onClick={() => setAbaAtiva(aba)}
-            className={`px-4 py-2 capitalize ${abaAtiva === aba ? 'border-b-2 border-blue-600 font-bold text-blue-600' : 'text-gray-600'}`}
+            className={`px-4 py-2 capitalize transition ${
+              abaAtiva === aba
+                ? 'border-b-2 border-nublia-accent font-semibold text-nublia-accent'
+                : 'text-gray-600 hover:text-nublia-accent'
+            }`}
           >
             {aba}
           </button>
@@ -153,15 +163,18 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
 
             {atendimentosAnteriores.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-md font-semibold text-blue-600 mb-2">Atendimentos anteriores</h3>
+                <h3 className="text-md font-semibold text-nublia-accent mb-2">Atendimentos anteriores</h3>
                 <ul className="space-y-2">
                   {atendimentosAnteriores.map((a) => (
-                    <li key={a.id} className="flex items-center justify-between bg-gray-100 rounded px-4 py-2 text-sm">
+                    <li
+                      key={a.id}
+                      className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm"
+                    >
                       <span>
                         {new Date(a.criado_em).toLocaleDateString('pt-BR')} às {new Date(a.criado_em).toLocaleTimeString('pt-BR')}
                       </span>
                       <button
-                        className="text-blue-600 hover:underline flex items-center gap-1"
+                        className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1"
                         onClick={() => setModalVisualizar(a)}
                       >
                         <Eye size={16} /> Ver
@@ -177,7 +190,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
             placeholder={`Escreva as informações de ${abaAtiva}...`}
             value={formulario[abaAtiva]}
             onChange={handleChange}
-            className="w-full h-80 p-4 border rounded resize-none"
+            className="w-full h-80 p-4 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
           />
         )}
       </div>
@@ -189,25 +202,24 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         />
       )}
 
-  <ModalConfirmacao
-  aberto={mostrarConfirmacaoSaida}
-  titulo="Deseja salvar o atendimento?"
-  mensagem="Se você sair agora, o atendimento não poderá mais ser editado. Deseja salvar antes de sair?"
-  textoBotaoConfirmar="Salvar e sair"
-  textoBotaoCancelar="Cancelar"
-  textoBotaoExtra="Sair sem salvar"
-  onConfirmar={async () => {
-    await handleSalvar()
-    setMostrarConfirmacaoSaida(false)
-    onFinalizar()
-  }}
-  onSairSemSalvar={() => {
-    setMostrarConfirmacaoSaida(false)
-    onFinalizar()
-  }}
-  onCancelar={() => setMostrarConfirmacaoSaida(false)}
-/>
-
+      <ModalConfirmacao
+        aberto={mostrarConfirmacaoSaida}
+        titulo="Deseja salvar o atendimento?"
+        mensagem="Se você sair agora, o atendimento não poderá mais ser editado. Deseja salvar antes de sair?"
+        textoBotaoConfirmar="Salvar e sair"
+        textoBotaoCancelar="Cancelar"
+        textoBotaoExtra="Sair sem salvar"
+        onConfirmar={async () => {
+          await handleSalvar()
+          setMostrarConfirmacaoSaida(false)
+          onFinalizar()
+        }}
+        onSairSemSalvar={() => {
+          setMostrarConfirmacaoSaida(false)
+          onFinalizar()
+        }}
+        onCancelar={() => setMostrarConfirmacaoSaida(false)}
+      />
     </div>
   )
 }
