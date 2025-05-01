@@ -78,25 +78,38 @@ export default function ModalAgendarHorario({
     onConfirmar(agendamentoId, pacienteId)
   }
 
-  const reagendar = async () => {
-    if (!novoHorarioId) return
-    setCarregando(true)
-
-    try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
-        de_id: agendamentoId,
-        para_id: novoHorarioId
-      })
-
-      toastSucesso('Paciente transferido para outro horário!')
-      if (onAtualizarAgenda) onAtualizarAgenda()
-      setCarregando(false)
-      onCancelar()
-    } catch (error) {
-      toastErro(error?.response?.status === 400 ? 'Este horário já está ocupado.' : 'Erro ao reagendar.')
-      setCarregando(false)
-    }
+const reagendar = async () => {
+  if (!agendamentoId || !novoHorarioId) {
+    toastErro('Erro: Dados incompletos para reagendamento.')
+    return
   }
+
+  if (agendamentoId === novoHorarioId) {
+    toastErro('Selecione um horário diferente do atual.')
+    return
+  }
+
+  setCarregando(true)
+
+  try {
+    await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
+      de_id: agendamentoId,
+      para_id: novoHorarioId
+    })
+
+    toastSucesso('Paciente transferido para outro horário!')
+    if (onAtualizarAgenda) onAtualizarAgenda()
+    setCarregando(false)
+    onCancelar()
+  } catch (error) {
+    toastErro(
+      error?.response?.status === 400
+        ? 'Este horário já está ocupado ou inválido.'
+        : 'Erro ao reagendar.'
+    )
+    setCarregando(false)
+  }
+}
 
   const renderBuscaPaciente = () => (
     <>
