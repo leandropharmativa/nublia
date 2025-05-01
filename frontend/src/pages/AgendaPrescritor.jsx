@@ -1,9 +1,8 @@
-// agenda prescritor funcionando antes do redesign
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, memo } from 'react'
 import axios from 'axios'
 import { addHours } from 'date-fns'
-import { toast, ToastContainer } from 'react-toastify'
 import { Search, User, Eye } from 'lucide-react'
+import { mostrarSucesso, mostrarErro } from '../utils/toastUtils'
 import 'react-toastify/dist/ReactToastify.css'
 
 import CalendarioAgenda from '../components/CalendarioAgenda'
@@ -11,7 +10,7 @@ import ModalNovoHorario from '../components/ModalNovoHorario'
 import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 
-export default function AgendaPrescritor({ mostrarAgenda }) {
+function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
   const [modalAberto, setModalAberto] = useState(false)
   const [modalAgendar, setModalAgendar] = useState(false)
@@ -26,40 +25,15 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
 
   const user = JSON.parse(localStorage.getItem('user'))
-
   const dropdownRef = useRef(null)
   const debounceTimeout = useRef(null)
 
-  useEffect(() => {
-    if (mostrarAgenda) carregarEventos()
-  }, [mostrarAgenda])
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setFiltroPaciente('')
-        setResultadosBusca([])
-      }
-    }
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') {
-        setFiltroPaciente('')
-        setResultadosBusca([])
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('keydown', handleEsc)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('keydown', handleEsc)
-    }
-  }, [])
-
+  // Carrega eventos
   const carregarEventos = async () => {
     try {
-      const response = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+      const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
       const eventosFormatados = await Promise.all(
-        response.data.map(async (ev) => {
+        data.map(async (ev) => {
           const start = new Date(`${ev.data}T${ev.hora}`)
           const end = addHours(start, 1)
           let title = 'Disponível'
@@ -89,6 +63,31 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     }
   }
 
+  useEffect(() => {
+    if (mostrarAgenda) carregarEventos()
+  }, [mostrarAgenda])
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setFiltroPaciente('')
+        setResultadosBusca([])
+      }
+    }
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') {
+        setFiltroPaciente('')
+        setResultadosBusca([])
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEsc)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEsc)
+    }
+  }, [])
+
   const handleNovoSlot = (slotInfo) => {
     setSlotSelecionado(slotInfo.start)
     setModalAberto(true)
@@ -105,8 +104,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         hora,
         status: 'disponivel'
       })
-
-      toast.success(`Horário ${hora} cadastrado com sucesso!`)
+      mostrarSucesso(`Horário ${hora} cadastrado com sucesso!`)
       carregarEventos()
 
       if (!manterAberto) {
@@ -114,7 +112,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         setSlotSelecionado(null)
       }
     } catch {
-      toast.error('Erro ao cadastrar horário.')
+      mostrarErro('Erro ao cadastrar horário.')
     }
   }
 
@@ -146,37 +144,36 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         id: agendamentoId,
         paciente_id: pacienteId
       })
-
-      toast.success('Paciente agendado com sucesso!')
+      mostrarSucesso('Paciente agendado com sucesso!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
       carregarEventos()
     } catch {
-      toast.error('Erro ao agendar paciente.')
+      mostrarErro('Erro ao agendar paciente.')
     }
   }
 
   const desagendarHorario = async (id) => {
     try {
       await axios.post('https://nublia-backend.onrender.com/agenda/desagendar', { id })
-      toast.success('Paciente removido do horário!')
+      mostrarSucesso('Paciente removido do horário!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
       carregarEventos()
     } catch {
-      toast.error('Erro ao desagendar.')
+      mostrarErro('Erro ao desagendar.')
     }
   }
 
   const removerHorario = async (id) => {
     try {
       await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
-      toast.success('Horário removido com sucesso!')
+      mostrarSucesso('Horário removido com sucesso!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
       carregarEventos()
     } catch {
-      toast.error('Erro ao remover horário.')
+      mostrarErro('Erro ao remover horário.')
     }
   }
 
@@ -192,7 +189,8 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
       }
 
       const resultados = eventos.filter((ev) =>
-        ev.title.toLowerCase().includes(texto.toLowerCase())
+        ev.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, '')
+          .includes(texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ''))
       )
       setResultadosBusca(resultados)
     }, 300)
@@ -207,26 +205,26 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
     <div className="w-full h-[72vh] flex flex-col gap-2 relative">
       <div className="pt-2 w-72 relative">
         <div className="relative">
-          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
           <input
             type="text"
-            placeholder="Busca por nome do paciente..."
+            placeholder="Buscar paciente..."
             value={filtroPaciente}
             onChange={(e) => buscarPorPaciente(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+            className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent shadow-sm"
           />
+          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
         </div>
 
         {resultadosBusca.length > 0 && (
           <div
             ref={dropdownRef}
-            className="absolute top-12 left-0 w-full max-h-64 overflow-y-auto z-50 bg-white border border-gray-200 shadow-lg rounded-lg text-sm"
+            className="absolute top-12 left-0 w-full max-h-64 overflow-y-auto z-50 bg-white border border-gray-200 shadow-xl rounded-lg text-sm"
           >
             <ul>
               {resultadosBusca.map(ev => (
                 <li
                   key={ev.id}
-                  className="px-4 py-3 border-b border-gray-100 hover:bg-gray-50 flex justify-between items-center"
+                  className="px-4 py-3 border-b border-gray-100 hover:bg-yellow-50 transition-all flex justify-between items-center"
                 >
                   <div>
                     <p className="font-semibold text-gray-800">{ev.title}</p>
@@ -300,8 +298,8 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
           onClose={() => setMostrarPerfil(false)}
         />
       )}
-
-      <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar />
     </div>
   )
 }
+
+export default memo(AgendaPrescritor)
