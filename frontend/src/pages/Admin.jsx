@@ -2,7 +2,6 @@ import { useState } from 'react'
 import Layout from '../components/Layout'
 import CampoTexto from '../components/CampoTexto'
 import Botao from '../components/Botao'
-import { Feather, LogOut } from 'lucide-react'
 
 export default function AdminDashboard() {
   const [abaAtiva, setAbaAtiva] = useState('dashboard')
@@ -52,28 +51,8 @@ export default function AdminDashboard() {
     }
   }
 
-  const logout = () => {
-    localStorage.clear()
-    window.location.href = '/'
-  }
-
   return (
     <Layout>
-      {/* Barra superior com logo e botão de sair */}
-      <div className="flex items-center justify-between bg-nublia-accent rounded-lg px-6 py-3 mb-6">
-        <div className="flex items-center text-nublia-orange text-xl font-bold">
-          <Feather className="w-6 h-6 mr-2" />
-          Nublia
-        </div>
-        <button
-          onClick={logout}
-          className="btn-primary rounded-full flex items-center gap-2 px-4 py-1 text-sm"
-        >
-          <LogOut className="w-4 h-4" />
-          Sair
-        </button>
-      </div>
-
       {/* Tabs de navegação visual */}
       <div className="mb-6 border-b pb-2">
         <ul className="flex gap-6">
