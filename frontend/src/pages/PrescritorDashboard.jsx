@@ -7,7 +7,9 @@ import {
   Leaf,
   Settings,
   PlusCircle,
-  Home
+  Home,
+  CalendarClock,
+  User
 } from 'lucide-react'
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
@@ -135,7 +137,17 @@ export default function PrescritorDashboard() {
   return (
     <Layout>
       <div className="flex h-[calc(100vh-160px)]">
+        {/* Lateral esquerda */}
         <div className="h-full w-72 flex flex-col">
+          <div className="p-4 pb-0">
+            <Botao
+              texto="Iniciar atendimento"
+              iconeInicio={<PlusCircle size={18} />}
+              onClick={() => setMostrarBuscarPacienteModal(true)}
+              full={true}
+              className="rounded-full"
+            />
+          </div>
           <div className="flex-1 overflow-hidden">
             <AtendimentosRecentes
               atendimentos={atendimentosFiltrados}
@@ -148,6 +160,7 @@ export default function PrescritorDashboard() {
           </div>
         </div>
 
+        {/* Conteúdo à direita */}
         <div className="flex-1 flex flex-col items-end pr-6 ml-6 overflow-y-auto bg-white">
           <Tab.Group>
             <Tab.List className="relative flex gap-8 mb-6 transition-all duration-300">
@@ -169,28 +182,31 @@ export default function PrescritorDashboard() {
 
             <Tab.Panels className="w-full">
               <Tab.Panel>
-                <div className="flex flex-col justify-center items-center py-10">
-                  <Botao
-                    texto="Iniciar atendimento"
-                    iconeInicio={<PlusCircle size={18} />}
-                    onClick={() => setMostrarBuscarPacienteModal(true)}
-                    full={false}
-                    className="px-6 py-3 rounded-full mb-6"
-                  />
-                  <div className="w-full max-w-xl space-y-4">
-                    <h2 className="text-lg font-semibold text-nublia-accent">Agendamentos para hoje</h2>
-                    {agendamentosHoje.length === 0 ? (
-                      <p className="text-sm text-gray-500 italic">Nenhum paciente agendado para hoje.</p>
-                    ) : (
-                      <ul className="space-y-2 text-sm">
-                        {agendamentosHoje.map((a) => (
-                          <li key={a.id} className="border rounded px-4 py-2 bg-white">
-                            {a.nome} – {a.hora?.slice(0, 5)}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                <div className="flex flex-col items-start py-8 px-4 sm:px-0">
+                  <div className="flex items-center gap-2 mb-4 text-nublia-accent">
+                    <CalendarClock size={20} />
+                    <h2 className="text-lg font-semibold">Agendamentos para hoje</h2>
                   </div>
+
+                  {agendamentosHoje.length === 0 ? (
+                    <p className="text-sm text-gray-500 italic">Nenhum paciente agendado para hoje.</p>
+                  ) : (
+                    <ul className="space-y-2 text-sm text-gray-800 w-full max-w-xl">
+                      {agendamentosHoje.map((a) => (
+                        <li key={a.id} className="flex items-center gap-2 border-b pb-2">
+                          <button
+                            onClick={() => handleVerPerfil(a.paciente_id)}
+                            className="text-nublia-accent hover:text-nublia-orange"
+                            title="Ver perfil"
+                          >
+                            <User size={16} />
+                          </button>
+                          <span className="font-medium">{a.nome}</span>
+                          <span className="text-gray-500 ml-auto text-sm">{a.hora?.slice(0, 5)}h</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </Tab.Panel>
 
