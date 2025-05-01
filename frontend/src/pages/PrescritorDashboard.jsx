@@ -31,7 +31,8 @@ const tabs = [
   { icon: CalendarDays, label: 'Agenda' },
   { icon: BookOpenText, label: 'Fórmulas' },
   { icon: Leaf, label: 'Dietas' },
-  { icon: Settings, label: 'Configurações' }
+  { icon: Settings, label: 'Configurações' },
+  { icon: null, label: 'Ficha' } // aba invisível para ficha
 ]
 
 export default function PrescritorDashboard() {
@@ -259,6 +260,22 @@ export default function PrescritorDashboard() {
                   Configurações da conta (em breve)
                 </div>
               </Tab.Panel>
+              <Tab.Panel>
+                {pacienteSelecionado ? (
+                  <FichaAtendimento
+                    paciente={pacienteSelecionado}
+                    onFinalizar={() => {
+                    setPacienteSelecionado(null)
+                    setAbaSelecionada(0)
+                  }}
+                    onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
+                  />
+                  ) : (
+                <div className="text-center text-gray-400 py-10 italic">
+                    Nenhum paciente selecionado.
+                </div>
+                )}
+              </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
         </div>
@@ -278,6 +295,7 @@ export default function PrescritorDashboard() {
           onSelecionarPaciente={(paciente) => {
             setPacienteSelecionado(paciente)
             setMostrarBuscarPacienteModal(false)
+            setTimeout(() => setAbaSelecionada(tabs.length - 1), 0)
           }}
         />
       )}
