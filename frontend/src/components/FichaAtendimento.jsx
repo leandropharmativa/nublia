@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Save, CheckCircle, ClipboardX, Eye, List, ListPlus, ListMinus } from 'lucide-react'
+import {
+  Save,
+  CheckCircle,
+  ClipboardX,
+  Eye,
+  List,
+  ListPlus,
+  ListMinus,
+} from 'lucide-react'
 import axios from 'axios'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
@@ -17,6 +25,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
   const [atendimentosAnteriores, setAtendimentosAnteriores] = useState([])
   const [modalVisualizar, setModalVisualizar] = useState(null)
   const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] = useState(false)
+  const [mostrarConfirmacaoFinalizar, setMostrarConfirmacaoFinalizar] = useState(false)
   const [mostrarTodos, setMostrarTodos] = useState(false)
   const [salvoUltimaVersao, setSalvoUltimaVersao] = useState(true)
 
@@ -30,7 +39,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
       try {
         const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
         const anteriores = response.data
-          .filter((a) => a.paciente_id === paciente.id && a.prescritor_id === user.id)
+          .filter(a => a.paciente_id === paciente.id && a.prescritor_id === user.id)
           .sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em))
 
         setAtendimentosAnteriores(anteriores)
@@ -50,13 +59,14 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
   const handleSalvar = async () => {
     try {
       const user = JSON.parse(localStorage.getItem('user'))
+
       const dadosAtendimento = {
         paciente_id: paciente.id,
         prescritor_id: user?.id,
         anamnese: formulario.anamnese,
         antropometria: formulario.antropometria,
         dieta: formulario.dieta,
-        receita: formulario.receita
+        receita: formulario.receita,
       }
 
       if (!atendimentoId) {
@@ -118,20 +128,22 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
             </button>
 
             <button
-              onClick={handleFinalizar}
+              onClick={() => setMostrarConfirmacaoFinalizar(true)}
               className="text-white bg-nublia-accent hover:bg-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2"
               title="Finalizar atendimento"
             >
               <CheckCircle size={18} /> Finalizar
             </button>
 
-            <button
-              onClick={handleDescartar}
-              className="text-nublia-accent hover:text-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2 border border-nublia-accent"
-              title="Descartar atendimento"
-            >
-              <ClipboardX size={18} /> Descartar
-            </button>
+            {!atendimentoId && (
+              <button
+                onClick={handleDescartar}
+                className="text-nublia-accent hover:text-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2 border border-nublia-accent"
+                title="Descartar atendimento"
+              >
+                <ClipboardX size={18} /> Descartar
+              </button>
+            )}
           </div>
           <p className="text-sm text-gray-700 font-semibold mt-1">
             {paciente.name} {calcularIdade(paciente.data_nascimento) ? `• ${calcularIdade(paciente.data_nascimento)} anos` : ''}
@@ -218,6 +230,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
         />
       )}
 
+      {/* Modal de confirmação para DESCARTAR */}
       <ModalConfirmacao
         aberto={mostrarConfirmacaoSaida}
         titulo="Descartar atendimento?"
@@ -229,6 +242,20 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
           onFinalizar()
         }}
         onCancelar={() => setMostrarConfirmacaoSaida(false)}
+      />
+
+      {/* Modal de confirmação para FINALIZAR */}
+      <ModalConfirmacao
+        aberto={mostrarConfirmacaoFinalizar}
+        titulo="Finalizar atendimento?"
+        mensagem="Após finalizar, não será mais possível editar a ficha. Deseja continuar?"
+        textoBotaoConfirmar="Sim, finalizar"
+        textoBotaoExtra="Voltar para edição"
+        onConfirmar={() => {
+          setMostrarConfirmacaoFinalizar(false)
+          handleFinalizar()
+        }}
+        onCancelar={() => setMostrarConfirmacaoFinalizar(false)}
       />
     </div>
   )
