@@ -119,15 +119,14 @@ export default function PrescritorDashboard() {
         {/* Conteúdo principal com tabs alinhadas à direita */}
         <div className="flex-1 flex flex-col items-end pr-6 overflow-y-auto">
           <Tab.Group>
-            <Tab.List className="flex gap-8 mb-6">
+            <Tab.List className="flex gap-8 mb-6 transition-all duration-300"
               {[{ icon: CalendarDays, label: 'Agenda' }, { icon: BookOpenText, label: 'Fórmulas' }, { icon: Leaf, label: 'Dietas' }, { icon: Settings, label: 'Configurações' }].map((tab, idx) => (
                 <Tab
                   key={idx}
                   className={({ selected }) =>
-                    `flex flex-col items-center px-4 py-2 text-sm transition ${
-                      selected ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'
-                    }`
-                  }
+                  `flex flex-col items-center px-4 py-2 text-sm transition duration-300 ${
+                    selected ? 'text-blue-600 scale-105 bg-white rounded shadow' : 'text-gray-500 hover:text-blue-600'
+                  }`                  }
                 >
                   <tab.icon size={32} />
                   <span className="text-xs mt-1">{tab.label}</span>
