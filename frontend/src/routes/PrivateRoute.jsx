@@ -6,7 +6,7 @@ export default function PrivateRoute({ children, allowedRoles }) {
 
   try {
     user = JSON.parse(localStorage.getItem('user'))
-  } catch (err) {
+  } catch {
     localStorage.removeItem('user')
   }
 
