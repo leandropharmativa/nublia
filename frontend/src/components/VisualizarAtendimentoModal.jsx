@@ -6,7 +6,6 @@ export default function VisualizarAtendimentoModal({ atendimento, onClose }) {
   const [erro, setErro] = useState('')
   const [abaAtiva, setAbaAtiva] = useState('anamnese')
 
-  // 🔄 Buscar dados do paciente ao abrir o modal
   useEffect(() => {
     const buscarPaciente = async () => {
       try {
@@ -27,50 +26,48 @@ export default function VisualizarAtendimentoModal({ atendimento, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl mx-4 overflow-y-auto max-h-[90vh]">
-        <h2 className="text-2xl font-bold text-blue-600 mb-4">Visualizar Atendimento</h2>
+      <div className="bg-white p-6 rounded-2xl w-full max-w-3xl mx-4 overflow-y-auto max-h-[90vh]">
+        <h2 className="text-xl font-bold text-nublia-accent mb-4">Visualizar Atendimento</h2>
 
-        {/* ❌ Mensagem de erro */}
-        {erro && <p className="text-red-600 mb-4">{erro}</p>}
+        {erro && <p className="text-orange-600 text-sm mb-4 text-center">{erro}</p>}
 
-        {/* ✅ Dados do paciente */}
         {paciente && (
           <div className="mb-6 border-b pb-4">
-            <p className="text-lg font-semibold">{paciente.name}</p>
-            <p className="text-sm text-gray-600">
+            <p className="text-base font-semibold text-gray-800">{paciente.name}</p>
+            <p className="text-sm text-gray-600 mt-1">
               {paciente.email || 'Sem email'} • {paciente.telefone || 'Sem telefone'} • {paciente.sexo || 'Sem sexo'} • {paciente.data_nascimento || 'Sem data de nascimento'}
             </p>
           </div>
         )}
 
-        {/* 📅 Data do atendimento */}
-        <div className="mb-6 text-sm text-gray-500 italic">
+        <div className="mb-4 text-sm text-gray-500 italic">
           Data do atendimento: {new Date(atendimento.criado_em).toLocaleString('pt-BR')}
         </div>
 
-        {/* 🔘 Abas de navegação */}
         <div className="flex border-b mb-4">
           {abas.map((aba) => (
             <button
               key={aba}
               onClick={() => setAbaAtiva(aba)}
-              className={`px-4 py-2 capitalize ${abaAtiva === aba ? 'border-b-2 border-blue-600 font-bold text-blue-600' : 'text-gray-600'}`}
+              className={`px-4 py-2 capitalize text-sm transition ${
+                abaAtiva === aba
+                  ? 'border-b-2 border-nublia-accent font-semibold text-nublia-accent'
+                  : 'text-gray-600 hover:text-nublia-accent'
+              }`}
             >
               {aba}
             </button>
           ))}
         </div>
 
-        {/* 📝 Conteúdo da aba selecionada */}
-        <div className="bg-gray-100 p-4 rounded text-sm text-gray-800 whitespace-pre-wrap min-h-[150px]">
+        <div className="bg-gray-50 p-4 rounded-xl text-sm text-gray-800 whitespace-pre-wrap min-h-[150px] border border-gray-200">
           {atendimento[abaAtiva] || 'Não preenchido.'}
         </div>
 
-        {/* 🔘 Botão fechar */}
-        <div className="text-right mt-8">
+        <div className="text-right mt-6">
           <button
             onClick={onClose}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded"
+            className="bg-nublia-accent hover:brightness-110 text-white text-sm px-6 py-2 rounded-full"
           >
             Fechar
           </button>
