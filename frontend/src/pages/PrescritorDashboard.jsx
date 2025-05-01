@@ -197,7 +197,8 @@ export default function PrescritorDashboard() {
                     paciente={pacienteSelecionado}
                     onFinalizar={() => {
                       setPacienteSelecionado(null)
-                      setAbaSelecionada(1) // volta para "Início"
+                      setTimeout(() => setAbaSelecionada(0), 50)
+                      setAbaSelecionada(0) // volta para "Início"
                     }}
                     onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
                   />
