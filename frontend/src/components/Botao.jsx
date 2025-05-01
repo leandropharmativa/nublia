@@ -13,7 +13,7 @@ export default function Botao({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`btn-primary ${full ? "w-full" : ""} ${className}`}
+      className={`btn-primary flex items-center justify-center gap-2 ${full ? "w-full" : ""} ${className}`}
       {...props}
     >
       {children}
