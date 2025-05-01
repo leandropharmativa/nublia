@@ -7,7 +7,7 @@ import { toastSucesso, toastErro } from '../utils/toastUtils'
 
 export default function ModalAgendarHorario({
   agendamentoId,
-  statusAtual: statusInicial,
+  statusAtual,
   pacienteAtual,
   pacienteId,
   horarioSelecionado,
@@ -22,27 +22,24 @@ export default function ModalAgendarHorario({
   const [mostrarCadastro, setMostrarCadastro] = useState(false)
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
   const [selecionado, setSelecionado] = useState(null)
-  const [trocandoPaciente, setTrocandoPaciente] = useState(false)
   const [horariosDisponiveis, setHorariosDisponiveis] = useState([])
   const [novoHorarioId, setNovoHorarioId] = useState(null)
   const [carregando, setCarregando] = useState(false)
-  const [statusAtual, setStatusAtual] = useState(statusInicial)
 
   const inputRef = useRef(null)
   const user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
-    if ((statusAtual === 'disponivel' || trocandoPaciente) && inputRef.current) {
+    if (statusAtual !== 'agendado' && inputRef.current) {
       inputRef.current.focus()
     }
-  }, [statusAtual, trocandoPaciente])
+  }, [statusAtual])
 
   useEffect(() => {
     if (
       statusAtual === 'agendado' ||
       statusAtual === 'novo_agendamento' ||
-      statusAtual === 'disponivel' ||
-      trocandoPaciente
+      statusAtual === 'disponivel'
     ) {
       axios
         .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
@@ -52,7 +49,7 @@ export default function ModalAgendarHorario({
         })
         .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
     }
-  }, [statusAtual, user.id, trocandoPaciente])
+  }, [statusAtual, user.id])
 
   useEffect(() => {
     if (filtro.length < 2) {
@@ -75,47 +72,28 @@ export default function ModalAgendarHorario({
     buscarPacientes()
   }, [filtro])
 
-  const reagendarOuTrocar = async () => {
-    if (!selecionado?.id) return toastErro('Selecione um paciente')
+  const agendar = (pacienteId) => {
+    onConfirmar(agendamentoId, pacienteId)
+  }
+
+  const reagendar = async () => {
+    if (!novoHorarioId) return
     setCarregando(true)
 
     try {
-      if (novoHorarioId) {
-        await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
-          de_id: agendamentoId,
-          para_id: novoHorarioId,
-        })
-        toastSucesso('Paciente transferido para outro horário!')
-      } else {
-        await axios.post('https://nublia-backend.onrender.com/agenda/trocar-paciente', {
-          id: agendamentoId,
-          novo_paciente_id: selecionado.id,
-        })
-        toastSucesso('Paciente trocado com sucesso!')
-      }
+      await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
+        de_id: agendamentoId,
+        para_id: novoHorarioId
+      })
 
+      toastSucesso('Paciente transferido para outro horário!')
       if (onAtualizarAgenda) onAtualizarAgenda()
       setCarregando(false)
       onCancelar()
     } catch (error) {
-      toastErro(
-        error?.response?.status === 400
-          ? 'Horário ocupado ou operação inválida.'
-          : 'Erro ao atualizar agendamento.'
-      )
+      toastErro(error?.response?.status === 400 ? 'Este horário já está ocupado.' : 'Erro ao reagendar.')
       setCarregando(false)
     }
-  }
-
-  const trocarPaciente = () => {
-    setTrocandoPaciente(true)
-    setSelecionado(null)
-    setFiltro('')
-    setPacientes([])
-  }
-
-  const agendar = (pacienteId) => {
-    onConfirmar(agendamentoId, pacienteId)
   }
 
   const renderBuscaPaciente = () => (
@@ -214,16 +192,13 @@ export default function ModalAgendarHorario({
                 month: '2-digit',
                 year: 'numeric',
               })}{' '}
-              às {horarioSelecionado.toLocaleTimeString('pt-BR', {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
+              às {horarioSelecionado.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </p>
           )}
 
           {statusAtual === 'agendado' && pacienteAtual && (
             <>
-              {!trocandoPaciente && !selecionado ? (
+              {!selecionado ? (
                 <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
                   <div>
                     <p className="font-medium">{pacienteAtual}</p>
@@ -238,7 +213,11 @@ export default function ModalAgendarHorario({
                       <User size={18} />
                     </button>
                     <button
-                      onClick={trocarPaciente}
+                      onClick={() => {
+                        setSelecionado(null)
+                        setFiltro('')
+                        setPacientes([])
+                      }}
                       className="text-nublia-accent hover:text-nublia-orange"
                       title="Trocar paciente"
                     >
@@ -254,50 +233,48 @@ export default function ModalAgendarHorario({
                   </div>
                 </div>
               ) : (
-                <>
-                  {renderBuscaPaciente()}
-                  {selecionado && (
-                    <>
-                      <button
-                        onClick={reagendarOuTrocar}
-                        disabled={carregando}
-                        className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
-                      >
-                        {carregando
-                          ? <Loader2 className="animate-spin mx-auto" />
-                          : novoHorarioId
-                          ? 'Transferir para outro horário'
-                          : 'Trocar paciente'}
-                      </button>
-                      <div className="mt-4">
-                        <label className="text-sm text-gray-600 mb-1">Transferir para outro horário:</label>
-                        <select
-                          value={novoHorarioId || ''}
-                          onChange={(e) => setNovoHorarioId(parseInt(e.target.value))}
-                          className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
-                        >
-                          <option value="">Manter horário atual</option>
-                          {horariosDisponiveis.map((h) => (
-                            <option key={h.id} value={h.id}>
-                              {new Date(h.data_hora).toLocaleDateString('pt-BR')} -{' '}
-                              {new Date(h.data_hora).toLocaleTimeString('pt-BR', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </>
-                  )}
-                </>
+                renderBuscaPaciente()
               )}
+
+              <div>
+                <label className="text-sm text-gray-600 mt-3 block">Alterar para outro horário:</label>
+                <select
+                  value={novoHorarioId || ''}
+                  onChange={(e) => setNovoHorarioId(Number(e.target.value))}
+                  className="w-full border rounded-full px-4 py-2 mt-1 text-sm"
+                >
+                  <option value="">Selecione um horário disponível</option>
+                  {horariosDisponiveis.map(h => (
+                    <option key={h.id} value={h.id}>
+                      {new Date(`${h.data}T${h.hora}`).toLocaleString('pt-BR', {
+                        weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                      })}
+                    </option>
+                  ))}
+                </select>
+
+                {novoHorarioId && (
+                  <button
+                    onClick={reagendar}
+                    disabled={carregando}
+                    className={`mt-3 w-full rounded-full py-2 text-sm text-white flex justify-center items-center gap-2 ${
+                      carregando
+                        ? 'bg-nublia-accent/60 cursor-not-allowed'
+                        : 'bg-nublia-accent hover:brightness-110'
+                    }`}
+                  >
+                    {carregando && <Loader2 className="animate-spin" size={16} />}
+                    Confirmar novo horário
+                  </button>
+                )}
+              </div>
             </>
           )}
 
           {(statusAtual === 'novo_agendamento' || statusAtual === 'disponivel') && (
             <>
               {renderBuscaPaciente()}
+
               {selecionado && (
                 <button
                   onClick={() => agendar(selecionado.id)}
@@ -306,6 +283,7 @@ export default function ModalAgendarHorario({
                   Confirmar agendamento
                 </button>
               )}
+
               {statusAtual === 'disponivel' && (
                 <div className="flex justify-between pt-4">
                   <button
