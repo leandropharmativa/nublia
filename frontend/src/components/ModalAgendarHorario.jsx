@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
 import PerfilPacienteModal from './PerfilPacienteModal'
-import { Search, User, X, Loader2 } from 'lucide-react'
+import { Search, User, X, Loader2, ArrowLeftRight } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 
 export default function ModalAgendarHorario({
@@ -111,9 +111,9 @@ export default function ModalAgendarHorario({
               setFiltro('')
               setPacientes([])
             }}
-            className="text-nublia-accent hover:text-nublia-orange text-sm"
+            className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
           >
-            Trocar
+            <ArrowLeftRight size={16} /> Trocar
           </button>
         </div>
       ) : (
@@ -198,20 +198,30 @@ export default function ModalAgendarHorario({
 
           {statusAtual === 'agendado' && pacienteAtual && (
             <>
-              <div className="text-sm text-gray-700 flex items-center justify-between border rounded-xl px-3 py-2 bg-gray-50">
-                <span><strong>Paciente atual:</strong> {pacienteAtual}</span>
+              <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
+                <div>
+                  <p className="font-medium">{pacienteAtual}</p>
+                  <p className="text-xs text-gray-500">Paciente atual</p>
+                </div>
                 <div className="flex gap-2">
-                  <button onClick={() => setMostrarPerfil(true)} className="text-nublia-accent hover:text-nublia-orange">
+                  <button
+                    onClick={() => setMostrarPerfil(true)}
+                    className="text-nublia-accent hover:text-nublia-orange"
+                  >
                     <User size={18} />
                   </button>
-                  <button onClick={() => onDesagendar(agendamentoId)} className="text-red-500 hover:text-red-600">
-                    <X size={16} />
+                  <button
+                    onClick={() => onDesagendar(agendamentoId)}
+                    className="text-red-500 hover:text-red-600"
+                    title="Remover paciente"
+                  >
+                    <X size={18} />
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="text-sm text-gray-600">Alterar para outro horário:</label>
+                <label className="text-sm text-gray-600 mt-3 block">Alterar para outro horário:</label>
                 <select
                   value={novoHorarioId || ''}
                   onChange={(e) => setNovoHorarioId(Number(e.target.value))}
