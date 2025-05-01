@@ -1,6 +1,6 @@
 // 📄 AgendaPrescritor.jsx
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { addHours } from 'date-fns'
 import { toast, ToastContainer } from 'react-toastify'
@@ -28,9 +28,24 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
 
   const user = JSON.parse(localStorage.getItem('user'))
 
+  const dropdownRef = useRef(null)
+
   useEffect(() => {
     if (mostrarAgenda) carregarEventos()
   }, [mostrarAgenda])
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setFiltroPaciente('')
+        setResultadosBusca([])
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const carregarEventos = async () => {
     try {
@@ -90,7 +105,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         setModalAberto(false)
         setSlotSelecionado(null)
       }
-    } catch (error) {
+    } catch {
       toast.error('Erro ao cadastrar horário.')
     }
   }
@@ -191,7 +206,10 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
         </div>
 
         {resultadosBusca.length > 0 && (
-          <div className="absolute top-12 left-0 bg-white rounded shadow border border-gray-200 z-50 w-full max-h-64 overflow-y-auto text-sm">
+          <div
+            ref={dropdownRef}
+            className="absolute top-12 left-0 bg-white rounded shadow border border-gray-200 z-50 w-full max-h-64 overflow-y-auto text-sm"
+          >
             <ul>
               {resultadosBusca.map(ev => (
                 <li key={ev.id} className="px-4 py-2 hover:bg-gray-50 border-b border-gray-100 flex justify-between items-center">
