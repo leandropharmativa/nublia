@@ -1,37 +1,37 @@
 import { toast } from 'react-toastify'
-import { Check, AlertCircle, Info, AlertTriangle } from 'lucide-react'
+import { BadgeCheck, XCircle, Info, AlertTriangle } from 'lucide-react'
 
-export function toastSucesso(mensagem = 'Operação realizada com sucesso!') {
+export function toastSucesso(mensagem = 'Salvo com sucesso') {
   toast.success(mensagem, {
-    icon: <Check size={18} className="text-white" />,
-    className: 'bg-blue-50 border border-blue-300 text-slate-800 rounded-xl',
+    icon: <BadgeCheck size={18} className="text-nublia-orange" />,
+    className: 'bg-white border border-gray-200 text-gray-700 rounded-xl',
     progressClassName: 'bg-nublia-accent',
     bodyClassName: 'text-sm font-medium',
   })
 }
 
-export function toastErro(mensagem = 'Algo deu errado.') {
+export function toastErro(mensagem = 'Erro ao salvar') {
   toast.error(mensagem, {
-    icon: <AlertCircle size={18} className="text-white" />,
-    className: 'bg-orange-50 border border-orange-300 text-slate-800 rounded-xl',
+    icon: <XCircle size={18} className="text-nublia-orange" />,
+    className: 'bg-white border border-gray-200 text-gray-700 rounded-xl',
     progressClassName: 'bg-nublia-orange',
     bodyClassName: 'text-sm font-medium',
   })
 }
 
-export function toastInfo(mensagem = 'Informação geral.') {
+export function toastInfo(mensagem = 'Informação') {
   toast.info(mensagem, {
-    icon: <Info size={18} className="text-white" />,
-    className: 'bg-sky-50 border border-sky-300 text-slate-800 rounded-xl',
+    icon: <Info size={18} className="text-nublia-orange" />,
+    className: 'bg-white border border-gray-200 text-gray-700 rounded-xl',
     progressClassName: 'bg-sky-500',
     bodyClassName: 'text-sm font-medium',
   })
 }
 
-export function toastAviso(mensagem = 'Atenção! Verifique os dados.') {
+export function toastAviso(mensagem = 'Verifique os dados') {
   toast.warning(mensagem, {
-    icon: <AlertTriangle size={18} className="text-white" />,
-    className: 'bg-yellow-50 border border-yellow-300 text-slate-800 rounded-xl',
+    icon: <AlertTriangle size={18} className="text-nublia-orange" />,
+    className: 'bg-white border border-gray-200 text-gray-700 rounded-xl',
     progressClassName: 'bg-yellow-400',
     bodyClassName: 'text-sm font-medium',
   })
