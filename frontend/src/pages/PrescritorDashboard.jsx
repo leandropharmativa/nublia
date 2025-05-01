@@ -140,13 +140,14 @@ export default function PrescritorDashboard() {
             <Tab.Panels className="w-full">
               <Tab.Panel>
                 <div className="space-y-4">
-                  <Botao
-                    texto="Iniciar Atendimento"
-                    iconeInicio={<PlusCircle size={18} />}
-                    onClick={() => setMostrarBuscarPacienteModal(true)}
-                    className="px-6 py-3 rounded-full"
-                  />
-
+                  <div className="flex justify-center">
+                    <Botao
+                      texto="Iniciar atendimento"
+                      iconeInicio={<PlusCircle size={18} />}
+                      onClick={() => setMostrarBuscarPacienteModal(true)}
+                      className="px-6 py-3 rounded-full"
+                    />
+                  </div>
                   <h2 className="text-xl font-bold">Pacientes marcados para hoje</h2>
                   <ul className="space-y-2 text-sm text-gray-800">
                     {atendimentos
