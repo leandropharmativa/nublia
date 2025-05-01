@@ -212,7 +212,7 @@ export default function AgendaPrescritor({ mostrarAgenda }) {
             placeholder="Busca por nome do paciente..."
             value={filtroPaciente}
             onChange={(e) => buscarPorPaciente(e.target.value)}
-            className="pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+            className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
           />
         </div>
 
