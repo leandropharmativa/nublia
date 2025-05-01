@@ -37,7 +37,7 @@ export default function AtendimentosRecentes({
                 <button
                   onClick={() => onVerAtendimento(a)}
                   title={`Ver atendimento de ${nome}`}
-                  className="text-nublia-accent hover:text-blue-500"
+                  className="text-nublia-accent hover:text-nublia-orange"
                 >
                   <FileText size={16} />
                 </button>
