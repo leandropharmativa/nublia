@@ -85,7 +85,7 @@ function HeaderComEventos({ data, label, eventos }) {
             : `${hora} Disponível`
 
           const icone = ev.status === 'agendado'
-            ? <UserCheckRound size={14} />
+            ? <UserRoundCheck size={14} />
             : <Clock size={14} />
 
           const cor = ev.status === 'agendado'
