@@ -1,3 +1,4 @@
+// (as importações são as mesmas)
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
@@ -22,6 +23,7 @@ export default function ModalAgendarHorario({
   const [mostrarCadastro, setMostrarCadastro] = useState(false)
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
   const [selecionado, setSelecionado] = useState(null)
+  const [trocandoPaciente, setTrocandoPaciente] = useState(false)
   const [horariosDisponiveis, setHorariosDisponiveis] = useState([])
   const [novoHorarioId, setNovoHorarioId] = useState(null)
   const [carregando, setCarregando] = useState(false)
@@ -30,16 +32,17 @@ export default function ModalAgendarHorario({
   const user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
-    if (statusAtual !== 'agendado' && inputRef.current) {
+    if ((statusAtual !== 'agendado' || trocandoPaciente) && inputRef.current) {
       inputRef.current.focus()
     }
-  }, [statusAtual])
+  }, [statusAtual, trocandoPaciente])
 
   useEffect(() => {
     if (
       statusAtual === 'agendado' ||
       statusAtual === 'novo_agendamento' ||
-      statusAtual === 'disponivel'
+      statusAtual === 'disponivel' ||
+      trocandoPaciente
     ) {
       axios
         .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
@@ -49,7 +52,7 @@ export default function ModalAgendarHorario({
         })
         .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
     }
-  }, [statusAtual, user.id])
+  }, [statusAtual, user.id, trocandoPaciente])
 
   useEffect(() => {
     if (filtro.length < 2) {
@@ -88,10 +91,37 @@ export default function ModalAgendarHorario({
 
       toastSucesso('Paciente transferido para outro horário!')
       if (onAtualizarAgenda) onAtualizarAgenda()
-      setCarregando(false)
       onCancelar()
     } catch (error) {
       toastErro(error?.response?.status === 400 ? 'Este horário já está ocupado.' : 'Erro ao reagendar.')
+    } finally {
+      setCarregando(false)
+    }
+  }
+
+  const trocarPaciente = () => {
+    setTrocandoPaciente(true)
+    setSelecionado(null)
+    setFiltro('')
+    setPacientes([])
+  }
+
+  const confirmarTrocaPaciente = async () => {
+    if (!selecionado?.id) return
+    setCarregando(true)
+
+    try {
+      await axios.post('https://nublia-backend.onrender.com/agenda/trocar-paciente', {
+        id: agendamentoId,
+        novo_paciente_id: selecionado.id,
+      })
+
+      toastSucesso('Paciente trocado com sucesso!')
+      if (onAtualizarAgenda) onAtualizarAgenda()
+      onCancelar()
+    } catch {
+      toastErro('Erro ao trocar paciente.')
+    } finally {
       setCarregando(false)
     }
   }
@@ -198,7 +228,7 @@ export default function ModalAgendarHorario({
 
           {statusAtual === 'agendado' && pacienteAtual && (
             <>
-              {!selecionado ? (
+              {!trocandoPaciente && !selecionado ? (
                 <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
                   <div>
                     <p className="font-medium">{pacienteAtual}</p>
@@ -213,11 +243,7 @@ export default function ModalAgendarHorario({
                       <User size={18} />
                     </button>
                     <button
-                      onClick={() => {
-                        setSelecionado(null)
-                        setFiltro('')
-                        setPacientes([])
-                      }}
+                      onClick={trocarPaciente}
                       className="text-nublia-accent hover:text-nublia-orange"
                       title="Trocar paciente"
                     >
@@ -233,41 +259,20 @@ export default function ModalAgendarHorario({
                   </div>
                 </div>
               ) : (
-                renderBuscaPaciente()
+                <>
+                  {renderBuscaPaciente()}
+
+                  {selecionado && (
+                    <button
+                      onClick={confirmarTrocaPaciente}
+                      disabled={carregando}
+                      className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
+                    >
+                      {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar troca de paciente'}
+                    </button>
+                  )}
+                </>
               )}
-
-              <div>
-                <label className="text-sm text-gray-600 mt-3 block">Alterar para outro horário:</label>
-                <select
-                  value={novoHorarioId || ''}
-                  onChange={(e) => setNovoHorarioId(Number(e.target.value))}
-                  className="w-full border rounded-full px-4 py-2 mt-1 text-sm"
-                >
-                  <option value="">Selecione um horário disponível</option>
-                  {horariosDisponiveis.map(h => (
-                    <option key={h.id} value={h.id}>
-                      {new Date(`${h.data}T${h.hora}`).toLocaleString('pt-BR', {
-                        weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
-                      })}
-                    </option>
-                  ))}
-                </select>
-
-                {novoHorarioId && (
-                  <button
-                    onClick={reagendar}
-                    disabled={carregando}
-                    className={`mt-3 w-full rounded-full py-2 text-sm text-white flex justify-center items-center gap-2 ${
-                      carregando
-                        ? 'bg-nublia-accent/60 cursor-not-allowed'
-                        : 'bg-nublia-accent hover:brightness-110'
-                    }`}
-                  >
-                    {carregando && <Loader2 className="animate-spin" size={16} />}
-                    Confirmar novo horário
-                  </button>
-                )}
-              </div>
             </>
           )}
 
