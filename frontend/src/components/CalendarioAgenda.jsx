@@ -76,24 +76,26 @@ function HeaderComEventos({ data, label, eventos }) {
   return (
     <div className="flex flex-col items-start px-1">
       <span className="text-xs font-medium">{label}</span>
-      <div className="flex flex-wrap gap-[2px] mt-1">
+      <div className="flex flex-wrap gap-[4px] mt-1">
         {doDia.map(ev => {
           const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
           const tooltip = ev.status === 'agendado'
             ? `${hora} ${ev.title}`
             : `${hora} Disponível`
+
           const cor = ev.status === 'agendado'
-            ? 'bg-red-100 text-red-600 hover:bg-red-200'
+            ? 'bg-orange-100 text-orange-600 hover:bg-orange-200'
             : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+
           const icone = ev.status === 'agendado'
-            ? <User size={10} />
-            : <Clock size={10} />
+            ? <User size={12} />
+            : <Clock size={12} />
 
           return (
             <span
               key={ev.id}
               title={tooltip}
-              className={`inline-flex items-center justify-center w-4 h-4 rounded-full ${cor}`}
+              className={`inline-flex items-center justify-center w-5 h-5 rounded-full ${cor} cursor-pointer transition`}
             >
               {icone}
             </span>
@@ -103,6 +105,7 @@ function HeaderComEventos({ data, label, eventos }) {
     </div>
   )
 }
+
 
 function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
