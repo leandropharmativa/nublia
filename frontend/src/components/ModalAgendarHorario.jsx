@@ -88,11 +88,7 @@ export default function ModalAgendarHorario({
       onCancelar()
     } catch (error) {
       console.error('Erro ao reagendar:', error)
-      if (error?.response?.status === 400) {
-        toast.error('Este horário já está ocupado.')
-      } else {
-        toast.error('Erro ao reagendar.')
-      }
+      toast.error(error?.response?.status === 400 ? 'Este horário já está ocupado.' : 'Erro ao reagendar.')
       setCarregando(false)
     }
   }
@@ -100,7 +96,7 @@ export default function ModalAgendarHorario({
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-lg mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative">
+        <div className="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative">
 
           <button
             onClick={onCancelar}
@@ -109,12 +105,12 @@ export default function ModalAgendarHorario({
             <X size={20} />
           </button>
 
-          <h2 className="text-lg font-semibold text-blue-600 pr-6">
+          <h2 className="text-xl font-semibold text-gray-800 pr-6">
             {statusAtual === 'agendado' ? 'Editar agendamento' : 'Agendar horário'}
           </h2>
 
           {horarioSelecionado && (
-            <p className="text-sm text-gray-500 -mt-2 pr-6">
+            <p className="text-sm text-gray-600 -mt-2 pr-6">
               {horarioSelecionado.toLocaleDateString('pt-BR', {
                 weekday: 'long',
                 day: '2-digit',
@@ -127,19 +123,13 @@ export default function ModalAgendarHorario({
 
           {statusAtual === 'agendado' && pacienteAtual && (
             <>
-              <div className="text-sm text-gray-700 flex items-center justify-between border rounded px-3 py-2 bg-gray-50">
+              <div className="text-sm text-gray-700 flex items-center justify-between border rounded-xl px-3 py-2 bg-gray-50">
                 <span><strong>Paciente atual:</strong> {pacienteAtual}</span>
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => setMostrarPerfil(true)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
+                  <button onClick={() => setMostrarPerfil(true)} className="text-nublia-accent hover:text-nublia-orange">
                     <User size={18} />
                   </button>
-                  <button
-                    onClick={() => onDesagendar(agendamentoId)}
-                    className="text-red-500 hover:text-red-600"
-                  >
+                  <button onClick={() => onDesagendar(agendamentoId)} className="text-red-500 hover:text-red-600">
                     <X size={16} />
                   </button>
                 </div>
@@ -150,7 +140,7 @@ export default function ModalAgendarHorario({
                 <select
                   value={novoHorarioId || ''}
                   onChange={(e) => setNovoHorarioId(Number(e.target.value))}
-                  className="w-full border rounded px-3 py-2 mt-1"
+                  className="w-full border rounded-full px-4 py-2 mt-1 text-sm"
                 >
                   <option value="">Selecione um horário disponível</option>
                   {horariosDisponiveis.map(h => (
@@ -166,9 +156,11 @@ export default function ModalAgendarHorario({
                   <button
                     onClick={reagendar}
                     disabled={carregando}
-                    className={`mt-3 px-4 py-2 rounded flex items-center justify-center gap-2 ${
-                      carregando ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                    } text-white`}
+                    className={`mt-3 w-full rounded-full py-2 text-sm text-white flex justify-center items-center gap-2 ${
+                      carregando
+                        ? 'bg-nublia-accent/60 cursor-not-allowed'
+                        : 'bg-nublia-accent hover:brightness-110'
+                    }`}
                   >
                     {carregando && <Loader2 className="animate-spin" size={16} />}
                     Confirmar novo horário
@@ -185,10 +177,10 @@ export default function ModalAgendarHorario({
                 <input
                   ref={inputRef}
                   type="text"
-                  placeholder="Digite para buscar pacientes..."
+                  placeholder="Buscar pacientes..."
                   value={filtro}
                   onChange={(e) => setFiltro(e.target.value)}
-                  className="pl-10 border rounded w-full px-3 py-2"
+                  className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
                 />
               </div>
 
@@ -196,11 +188,11 @@ export default function ModalAgendarHorario({
                 {pacientes.map((paciente) => (
                   <div
                     key={paciente.id}
-                    className="flex justify-between items-center bg-gray-100 p-3 rounded mb-2"
+                    className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
                   >
                     <div>
-                      <p className="font-semibold">{paciente.name}</p>
-                      <p className="text-sm text-gray-500">{paciente.email || 'Sem e-mail'}</p>
+                      <p className="font-medium text-gray-800">{paciente.name}</p>
+                      <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
                     </div>
                     <button
                       type="button"
@@ -208,7 +200,7 @@ export default function ModalAgendarHorario({
                         setSelecionado(paciente)
                         agendar(paciente.id)
                       }}
-                      className="text-blue-600 hover:underline flex items-center gap-1 text-sm"
+                      className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
                     >
                       <User size={18} /> Selecionar
                     </button>
@@ -228,7 +220,7 @@ export default function ModalAgendarHorario({
             {statusAtual === 'disponivel' && (
               <button
                 onClick={() => onRemover(agendamentoId)}
-                className="bg-blue-100 text-blue-800 hover:bg-blue-200 py-2 px-4 rounded"
+                className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm"
               >
                 Remover horário
               </button>
@@ -236,7 +228,7 @@ export default function ModalAgendarHorario({
             {statusAtual !== 'agendado' && (
               <button
                 onClick={() => setMostrarCadastro(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                className="bg-nublia-accent text-white hover:brightness-110 px-4 py-2 rounded-full text-sm"
               >
                 Novo paciente
               </button>
