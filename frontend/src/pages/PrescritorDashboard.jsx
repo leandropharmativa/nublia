@@ -12,10 +12,16 @@ import FormulasSugeridas from '../components/FormulasSugeridas'
 import MinhasFormulas from '../components/MinhasFormulas'
 import AtendimentosRecentes from '../components/AtendimentosRecentes'
 import BuscarPacienteModal from '../components/BuscarPacienteModal'
+import PerfilPacienteModal from '../components/PerfilPacienteModal'
+import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
 
 export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
   const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
+  const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
+  const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
+  const [pacientePerfil, setPacientePerfil] = useState(null)
+  const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
   const [atendimentos, setAtendimentos] = useState([])
   const [pacientes, setPacientes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
@@ -51,6 +57,23 @@ export default function PrescritorDashboard() {
     }
   }
 
+  const handleVerPerfil = async (pacienteId) => {
+    try {
+      const response = await fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+      const paciente = await response.json()
+      if (!paciente || paciente.role !== 'paciente') throw new Error('Usuário inválido')
+      setPacientePerfil(paciente)
+      setMostrarPerfilPacienteModal(true)
+    } catch (err) {
+      console.error('Erro ao carregar perfil do paciente:', err)
+    }
+  }
+
+  const handleVerAtendimento = (atendimento) => {
+    setAtendimentoSelecionado(atendimento)
+    setMostrarVisualizarAtendimentoModal(true)
+  }
+
   const atendimentosFiltrados = atendimentos.filter((item) =>
     item.nomePaciente?.toLowerCase().includes(pesquisa.toLowerCase())
   )
@@ -64,8 +87,8 @@ export default function PrescritorDashboard() {
           pacientes={pacientes}
           pesquisa={pesquisa}
           onPesquisar={(texto) => setPesquisa(texto)}
-          onVerPerfil={(pacienteId) => console.log('Ver perfil', pacienteId)}
-          onVerAtendimento={(atendimento) => console.log('Ver atendimento', atendimento)}
+          onVerPerfil={handleVerPerfil}
+          onVerAtendimento={handleVerAtendimento}
         />
 
         {/* Conteúdo principal com tabs */}
@@ -136,6 +159,20 @@ export default function PrescritorDashboard() {
         <BuscarPacienteModal
           onClose={() => setMostrarBuscarPacienteModal(false)}
           onSelecionarPaciente={() => setMostrarBuscarPacienteModal(false)}
+        />
+      )}
+
+      {mostrarPerfilPacienteModal && pacientePerfil && (
+        <PerfilPacienteModal
+          paciente={pacientePerfil}
+          onClose={() => setMostrarPerfilPacienteModal(false)}
+        />
+      )}
+
+      {mostrarVisualizarAtendimentoModal && atendimentoSelecionado && (
+        <VisualizarAtendimentoModal
+          atendimento={atendimentoSelecionado}
+          onClose={() => setMostrarVisualizarAtendimentoModal(false)}
         />
       )}
     </Layout>
