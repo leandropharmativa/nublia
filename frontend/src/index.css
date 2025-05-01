@@ -39,3 +39,15 @@
     @apply bg-nublia-danger text-red-800 text-sm px-4 py-2 rounded mb-3 border border-red-300;
   }
 }
+
+@layer utilities {
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .animate-float {
+    animation: float 2.5s ease-in-out infinite;
+  }
+}
+
