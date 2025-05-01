@@ -74,37 +74,39 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className="flex h-screen font-sans">
-      {/* Lado esquerdo azul acinzentado */}
-      <div className="w-1/2 bg-[#BFDBFE] text-gray-800 flex flex-col justify-between p-10">
+    <div className="flex h-screen font-sans text-gray-800">
+      {/* Lado esquerdo: cor sólida com logo e frase */}
+      <div className="w-1/2 bg-[#BFDBFE] p-10 flex flex-col">
         <div className="flex items-center text-orange-500 text-3xl font-bold">
           <Feather className="w-8 h-8 mr-2" />
           Nublia
         </div>
-        <div className="flex flex-col justify-center flex-grow pl-6">
-          <h1 className="text-5xl text-left leading-snug">
+        <div className="flex flex-col justify-center flex-grow pl-4">
+          <h1 className="text-5xl font-bold text-left leading-snug">
             Bem vindo(a)<br />à Nublia
           </h1>
         </div>
       </div>
 
-      {/* Lado direito branco com formulário */}
-      <div className="w-1/2 bg-white relative flex flex-col justify-center items-center px-10">
-        <div className="absolute top-10 right-10 flex items-center gap-2">
-          <p className="text-sm text-gray-700">Novo no Nublia?</p>
+      {/* Lado direito: formulário clean no centro */}
+      <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
+        {/* topo direito com botão */}
+        <div className="absolute top-6 right-6 flex items-center gap-2">
+          <p className="text-sm text-gray-600">Novo no Nublia?</p>
           <button
             onClick={() => navigate('/register')}
-            className="bg-[#BFDBFE] text-gray-800 text-sm px-4 py-1 rounded hover:bg-blue-300 transition"
+            className="bg-[#BFDBFE] text-gray-800 text-sm px-4 py-1 rounded-full hover:bg-blue-300 transition"
           >
             Criar conta
           </button>
         </div>
 
+        {/* formulário centralizado */}
         <form
           onSubmit={temSenha === false ? handleCriarSenha : handleLogin}
-          className="w-full max-w-md"
+          className="w-full max-w-sm"
         >
-          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-left">Entrar na Nublia</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-left">Entrar na Nublia</h2>
 
           {mensagem && <p className="text-green-700 text-sm mb-3">{mensagem}</p>}
           {erro && <p className="text-red-600 text-sm mb-3">{erro}</p>}
@@ -117,7 +119,7 @@ export default function Login({ onLogin }) {
               onChange={(e) => setEmail(e.target.value)}
               onBlur={checarEmail}
               required
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             />
           </div>
 
@@ -138,7 +140,7 @@ export default function Login({ onLogin }) {
                   value={temSenha ? senha : novaSenha}
                   onChange={(e) => temSenha ? setSenha(e.target.value) : setNovaSenha(e.target.value)}
                   required
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                 />
               </motion.div>
             )}
@@ -146,7 +148,7 @@ export default function Login({ onLogin }) {
 
           <button
             type="submit"
-            className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white w-full py-2 rounded-lg hover:bg-blue-700 transition"
             disabled={carregando}
           >
             {carregando ? "Carregando..." : temSenha === false ? "Criar Senha" : "Entrar"}
