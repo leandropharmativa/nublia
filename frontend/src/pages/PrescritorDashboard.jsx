@@ -111,7 +111,7 @@ export default function PrescritorDashboard() {
           <div className="p-4">
             <button
               onClick={() => setMostrarBuscarPacienteModal(true)}
-              className="w-full flex items-center justify-center gap-2 bg-nublia-accent text-white px-5 py-3 rounded-full text-sm font-semibold hover:brightness-110 transition"
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-full text-sm font-semibold hover:bg-blue-700 transition"
             >
               <PlusCircle size={18} />
               Iniciar Atendimento
