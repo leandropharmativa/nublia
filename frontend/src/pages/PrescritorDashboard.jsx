@@ -11,7 +11,8 @@ import {
   CalendarClock,
   User,
   Eye,
-  CalendarPlus
+  CalendarPlus,
+  ScrollText
 } from 'lucide-react'
 
 import AgendaPrescritor from './AgendaPrescritor'
@@ -137,12 +138,12 @@ export default function PrescritorDashboard() {
   )
 
   const abas = [
+    ...(pacienteSelecionado ? [{ icon: ScrollText, label: 'Ficha' }] : []),
     { icon: Home, label: 'Início' },
     { icon: CalendarDays, label: 'Agenda' },
     { icon: BookOpenText, label: 'Fórmulas' },
     { icon: Leaf, label: 'Dietas' },
-    { icon: Settings, label: 'Configurações' },
-    ...(pacienteSelecionado ? [{ icon: PlusCircle, label: 'Ficha' }] : [])
+    { icon: Settings, label: 'Configurações' }
   ]
 
   return (
@@ -190,13 +191,26 @@ export default function PrescritorDashboard() {
             </Tab.List>
 
             <Tab.Panels className="w-full">
+              {pacienteSelecionado && (
+                <Tab.Panel>
+                  <FichaAtendimento
+                    paciente={pacienteSelecionado}
+                    onFinalizar={() => {
+                      setPacienteSelecionado(null)
+                      setAbaSelecionada(1) // volta para "Início"
+                    }}
+                    onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
+                  />
+                </Tab.Panel>
+              )}
+
               <Tab.Panel>
+                {/* Início */}
                 <div className="flex flex-col items-start py-8 px-4 sm:px-0">
                   <div className="flex items-center gap-2 mb-4 text-nublia-accent">
                     <CalendarClock size={20} />
                     <h2 className="text-lg font-semibold">Agendamentos para hoje</h2>
                   </div>
-
                   {agendamentosHoje.length === 0 ? (
                     <p className="text-sm text-gray-500 italic">Nenhum paciente agendado para hoje.</p>
                   ) : (
@@ -239,43 +253,15 @@ export default function PrescritorDashboard() {
                 </div>
               </Tab.Panel>
 
+              <Tab.Panel><AgendaPrescritor mostrarAgenda={true} /></Tab.Panel>
               <Tab.Panel>
-                <AgendaPrescritor mostrarAgenda={true} />
+                <h2 className="text-xl font-bold mb-4">Fórmulas sugeridas</h2>
+                <FormulasSugeridas />
+                <h2 className="text-xl font-bold mt-8 mb-4">Minhas fórmulas</h2>
+                <MinhasFormulas usuarioId={user?.id} />
               </Tab.Panel>
-
-              <Tab.Panel>
-                <div>
-                  <h2 className="text-xl font-bold mb-4">Fórmulas sugeridas</h2>
-                  <FormulasSugeridas />
-                  <h2 className="text-xl font-bold mt-8 mb-4">Minhas fórmulas</h2>
-                  <MinhasFormulas usuarioId={user?.id} />
-                </div>
-              </Tab.Panel>
-
-              <Tab.Panel>
-                <div className="flex flex-col justify-center items-center py-16 text-gray-500 italic">
-                  Área de dietas (em breve)
-                </div>
-              </Tab.Panel>
-
-              <Tab.Panel>
-                <div className="flex flex-col justify-center items-center py-16 text-gray-500 italic">
-                  Configurações da conta (em breve)
-                </div>
-              </Tab.Panel>
-
-              {pacienteSelecionado && (
-                <Tab.Panel>
-                  <FichaAtendimento
-                    paciente={pacienteSelecionado}
-                    onFinalizar={() => {
-                      setPacienteSelecionado(null)
-                      setAbaSelecionada(0)
-                    }}
-                    onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
-                  />
-                </Tab.Panel>
-              )}
+              <Tab.Panel><div className="flex flex-col justify-center items-center py-16 text-gray-500 italic">Área de dietas (em breve)</div></Tab.Panel>
+              <Tab.Panel><div className="flex flex-col justify-center items-center py-16 text-gray-500 italic">Configurações da conta (em breve)</div></Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
         </div>
@@ -287,7 +273,7 @@ export default function PrescritorDashboard() {
           onSelecionarPaciente={(paciente) => {
             setPacienteSelecionado(paciente)
             setMostrarBuscarPacienteModal(false)
-            setTimeout(() => setAbaSelecionada(tabs.length), 0)
+            setTimeout(() => setAbaSelecionada(0), 0)
           }}
         />
       )}
