@@ -15,7 +15,7 @@ export default function ModalAgendarHorario({
   onCancelar,
   onRemover,
   onDesagendar,
-  onAtualizarAgenda
+  onAtualizarAgenda,
 }) {
   const [pacientes, setPacientes] = useState([])
   const [filtro, setFiltro] = useState('')
@@ -36,7 +36,7 @@ export default function ModalAgendarHorario({
   }, [statusAtual])
 
   useEffect(() => {
-    if (statusAtual === 'agendado') {
+    if (statusAtual === 'agendado' || statusAtual === 'novo_agendamento') {
       axios
         .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
         .then(res => {
@@ -105,7 +105,11 @@ export default function ModalAgendarHorario({
           </button>
 
           <h2 className="text-xl font-semibold text-gray-800 pr-6">
-            {statusAtual === 'agendado' ? 'Editar agendamento' : 'Agendar horário'}
+            {statusAtual === 'agendado'
+              ? 'Editar agendamento'
+              : statusAtual === 'novo_agendamento'
+              ? 'Novo agendamento'
+              : 'Agendar horário'}
           </h2>
 
           {horarioSelecionado && (
@@ -169,70 +173,103 @@ export default function ModalAgendarHorario({
             </>
           )}
 
-          {statusAtual !== 'agendado' && (
+          {statusAtual === 'novo_agendamento' && (
             <>
-              <div className="relative">
-                <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-                <input
-                  ref={inputRef}
-                  type="text"
-                  placeholder="Buscar pacientes..."
-                  value={filtro}
-                  onChange={(e) => setFiltro(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
-                />
+              <div>
+                <label className="text-sm text-gray-600">Escolha um horário disponível:</label>
+                <select
+                  value={novoHorarioId || ''}
+                  onChange={(e) => setNovoHorarioId(Number(e.target.value))}
+                  className="w-full border rounded-full px-4 py-2 mt-1 text-sm"
+                >
+                  <option value="">Selecione</option>
+                  {horariosDisponiveis.map(h => (
+                    <option key={h.id} value={h.id}>
+                      {new Date(`${h.data}T${h.hora}`).toLocaleString('pt-BR', {
+                        weekday: 'short',
+                        day: '2-digit',
+                        month: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="overflow-y-auto max-h-[300px]">
-                {pacientes.map((paciente) => (
-                  <div
-                    key={paciente.id}
-                    className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-800">{paciente.name}</p>
-                      <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelecionado(paciente)
-                        agendar(paciente.id)
-                      }}
-                      className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
-                    >
-                      <User size={18} /> Selecionar
-                    </button>
-                  </div>
-                ))}
+              <div className="mt-4">
+                <label className="text-sm text-gray-600">Buscar paciente:</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    placeholder="Digite o nome..."
+                    value={filtro}
+                    onChange={(e) => setFiltro(e.target.value)}
+                    className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+                  />
+                </div>
 
-                {filtro.length >= 2 && pacientes.length === 0 && (
-                  <p className="text-sm text-gray-500 italic text-center mt-2">
-                    Nenhum paciente encontrado.
-                  </p>
-                )}
+                <div className="overflow-y-auto max-h-[300px] mt-2">
+                  {pacientes.map((paciente) => (
+                    <div
+                      key={paciente.id}
+                      className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
+                    >
+                      <div>
+                        <p className="font-medium text-gray-800">{paciente.name}</p>
+                        <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelecionado(paciente)}
+                        className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+                      >
+                        <User size={18} /> Selecionar
+                      </button>
+                    </div>
+                  ))}
+
+                  {filtro.length >= 2 && pacientes.length === 0 && (
+                    <p className="text-sm text-gray-500 italic text-center mt-2">
+                      Nenhum paciente encontrado.
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => {
+                    if (!novoHorarioId || !selecionado) {
+                      toast.error('Selecione um horário e um paciente.')
+                      return
+                    }
+                    onConfirmar(novoHorarioId, selecionado.id)
+                  }}
+                  className="mt-4 w-full rounded-full bg-nublia-accent hover:brightness-110 text-white py-2 text-sm"
+                >
+                  Confirmar agendamento
+                </button>
               </div>
             </>
           )}
 
-          <div className="flex justify-between pt-4">
-            {statusAtual === 'disponivel' && (
+          {statusAtual === 'disponivel' && (
+            <div className="flex justify-between pt-4">
               <button
                 onClick={() => onRemover(agendamentoId)}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm"
               >
                 Remover horário
               </button>
-            )}
-            {statusAtual !== 'agendado' && (
               <button
                 onClick={() => setMostrarCadastro(true)}
                 className="bg-nublia-accent text-white hover:brightness-110 px-4 py-2 rounded-full text-sm"
               >
                 Novo paciente
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
