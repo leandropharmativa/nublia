@@ -46,4 +46,22 @@
 /* Ícones como bolinhas inline (sem barras visuais) */
 .rbc-month-view .rbc-event {
   display: inline-flex !important;
-  white-space:
+  white-space: normal !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  margin: 2px !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* ===== Outros ajustes opcionais (comentados) ===== */
+/* 
+.rbc-day-bg {
+  border-right: none !important;
+}
+
+.rbc-agenda-view table {
+  border: none !important;
+}
+*/
