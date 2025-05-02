@@ -118,7 +118,7 @@ useEffect(() => {
     <>
       <label className="text-sm text-gray-600 mb-1">Paciente:</label>
       {selecionado ? (
-        <div className="bg-nublia-textcont border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
+        <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
           <div>
             <p className="font-medium">{selecionado.name}</p>
             <p className="text-xs text-gray-500">{selecionado.email || 'Sem e-mail'}</p>
@@ -217,7 +217,7 @@ useEffect(() => {
           {statusAtual === 'agendado' && pacienteAtual && (
             <>
               {!trocandoPaciente && !reagendando ? (
-                <div className="bg-nublia-textcont border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
+                <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
                   <div>
                     <p className="font-medium">{pacienteAtual}</p>
                     <p className="text-xs text-gray-500">Paciente atual</p>
@@ -262,7 +262,7 @@ useEffect(() => {
     <div className="flex gap-2 mt-3">
       <button
         onClick={() => setTrocandoPaciente(false)}
-        className="w-1/2 rounded-full py-2 text-sm border border-gray-300 text-gray-700 hover:bg-nublia-textcont"
+        className="w-1/2 rounded-full py-2 text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
       >
         Cancelar
       </button>
@@ -311,7 +311,7 @@ useEffect(() => {
                         setReagendando(false)
                         setNovoHorarioId(null)
                       }}
-                      className="w-1/2 rounded-full py-2 text-sm border border-gray-300 text-gray-700 hover:bg-nublia-textcont"
+                      className="w-1/2 rounded-full py-2 text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
                     >
                       Cancelar
                     </button>
@@ -343,7 +343,7 @@ useEffect(() => {
                 <div className="flex justify-between pt-4">
                   <button
                     onClick={() => onRemover(agendamentoId)}
-                    className="bg-nublia-textcont hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm"
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm"
                   >
                     Remover horário
                   </button>
