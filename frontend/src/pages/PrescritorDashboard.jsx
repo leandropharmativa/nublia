@@ -224,7 +224,7 @@ useEffect(() => {
                   key={idx}
                   className={({ selected }) =>
                     `flex flex-col items-center px-4 py-2 text-sm transition duration-300 ${
-                      selected ? 'text-orange bg-white rounded' : 'text-nublia-accent hover:text-nublia-orange'
+                      selected ? 'text-nublia-orange bg-white rounded' : 'text-nublia-accent hover:text-nublia-orange'
                     }`
                   }
                 >
