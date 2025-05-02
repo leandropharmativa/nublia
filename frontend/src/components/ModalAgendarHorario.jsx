@@ -282,8 +282,7 @@ useEffect(() => {
 >
   <option value="">Selecione um novo horário</option>
   {horariosDisponiveis.map((h) => {
-    console.log('Horário com possível problema:', h)
-    if (!h.dia || !h.hora) return null
+    if (!h.data || !h.hora) return null
 
     const [ano, mes, dia] = h.data.split('-').map(Number)
     const [hora, minuto] = h.hora.split(':').map(Number)
@@ -296,7 +295,6 @@ useEffect(() => {
     )
   })}
 </select>
-
 
                   <div className="flex gap-2 mt-3">
                     <button
