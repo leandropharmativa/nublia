@@ -269,7 +269,7 @@ useEffect(() => {
                             <User size={16} />
                           </button>
                           <span className="font-medium">{a.nome}</span>
-                          <span className="text-gray-500 text-sm">{a.hora?.slice(0, 5)}h</span>
+                          <span className="text-gray-400 text-sm">{a.hora?.slice(0, 5)}h</span>
                           <button
                             className="text-nublia-accent hover:text-nublia-orange ml-1"
                             title="Editar agendamento"
