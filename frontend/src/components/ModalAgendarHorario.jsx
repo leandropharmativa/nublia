@@ -257,27 +257,23 @@ useEffect(() => {
 
 {trocandoPaciente && (
   <>
-    <div className="flex justify-between items-center">
-      <label className="text-sm text-gray-600 mb-1">Buscar novo paciente:</label>
+    {renderBuscaPaciente()}
+
+    <div className="flex gap-2 mt-3">
       <button
         onClick={() => setTrocandoPaciente(false)}
-        className="text-sm text-gray-500 hover:text-gray-700"
+        className="w-1/2 rounded-full py-2 text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
       >
         Cancelar
       </button>
-    </div>
-
-    {renderBuscaPaciente()}
-
-    {selecionado && (
       <button
         onClick={confirmarTrocaPaciente}
-        disabled={carregando}
-        className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
+        disabled={carregando || !selecionado}
+        className="w-1/2 rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
       >
-        {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar troca de paciente'}
+        {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar troca'}
       </button>
-    )}
+    </div>
   </>
 )}
 
