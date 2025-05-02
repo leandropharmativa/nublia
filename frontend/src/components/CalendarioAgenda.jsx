@@ -45,7 +45,7 @@ export default function CalendarioAgenda({
     <div className="h-full p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={[]}
+        events={eventos}
         startAccessor="start"
         endAccessor="end"
         view={view}
