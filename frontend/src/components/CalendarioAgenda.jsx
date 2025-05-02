@@ -20,7 +20,10 @@ import {
   UserRoundCheck,
   CalendarDays,
   CalendarClock,
-  Clock
+  Clock,
+  User,
+  Eye,
+  PlayCircle
 } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
@@ -43,57 +46,61 @@ export default function CalendarioAgenda({
 
   return (
     <div className="h-full p-4 bg-white rounded overflow-hidden">
-      <BigCalendar
-        localizer={localizer}
-        events={eventos}
-        startAccessor="start"
-        endAccessor="end"
-        view={view}
-        date={dataAtual}
-        onView={setView}
-        onNavigate={setDataAtual}
-        defaultView="month"
-        views={['month', 'agenda']}
-        selectable={view !== 'month'}
-        step={15}
-        timeslots={1}
-        culture="pt-BR"
-        onSelectSlot={({ start }) => {
-          if (view !== 'month') {
-            aoSelecionarSlot({ start })
-          }
-        }}
-        onSelectEvent={aoSelecionarEvento}
-        messages={{
-          next: <ChevronRight size={20} />,
-          previous: <ChevronLeft size={20} />,
-          today: 'Hoje',
-          month: 'Mês',
-          week: 'Semana',
-          day: 'Dia',
-          agenda: 'Agenda',
-          noEventsInRange: 'Sem eventos neste período.',
-        }}
-        components={{
-          toolbar: (props) => (
-            <CustomToolbar {...props} eventos={eventos} />
-          ),
-          day: { header: CustomDayHeader },
-          month: {
-            dateHeader: (props) => (
-              <HeaderComEventos
-                data={props.date}
-                label={props.label}
-                eventos={eventos}
-                onView={setView}
-                onNavigate={setDataAtual}
-                aoSelecionarEvento={aoSelecionarEvento}
-                aoAdicionarHorario={aoSelecionarSlot}
-              />
-            )
-          }
-        }}
-      />
+<BigCalendar
+  localizer={localizer}
+  events={eventos}
+  startAccessor="start"
+  endAccessor="end"
+  view={view}
+  date={dataAtual}
+  onView={setView}
+  onNavigate={setDataAtual}
+  defaultView="month"
+  views={['month', 'agenda']}
+  selectable={view !== 'month'}
+  step={15}
+  timeslots={1}
+  culture="pt-BR"
+  onSelectSlot={({ start }) => {
+    if (view !== 'month') {
+      aoSelecionarSlot({ start })
+    }
+  }}
+  onSelectEvent={aoSelecionarEvento}
+  messages={{
+    next: <ChevronRight size={20} />,
+    previous: <ChevronLeft size={20} />,
+    today: 'Hoje',
+    month: 'Mês',
+    week: 'Semana',
+    day: 'Dia',
+    agenda: 'Agenda',
+    noEventsInRange: 'Sem eventos neste período.',
+  }}
+  components={{
+    toolbar: (props) => (
+      <CustomToolbar {...props} eventos={eventos} />
+    ),
+    day: { header: CustomDayHeader },
+    month: {
+      dateHeader: (props) => (
+        <HeaderComEventos
+          data={props.date}
+          label={props.label}
+          eventos={eventos}
+          onView={setView}
+          onNavigate={setDataAtual}
+          aoSelecionarEvento={aoSelecionarEvento}
+          aoAdicionarHorario={aoSelecionarSlot}
+        />
+      )
+    },
+    agenda: {
+      event: EventoAgendaCustomizado
+    }
+  }}
+/>
+
     </div>
   )
 }
@@ -214,6 +221,34 @@ function HeaderComEventos({
           </div>,
           document.body
         )}
+    </div>
+  )
+}
+
+function EventoAgendaCustomizado({ event }) {
+  const hora = event.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+
+  return (
+    <div className="flex items-center gap-2 py-1 px-2 rounded hover:bg-gray-50 transition">
+      <User size={16} className="text-nublia-accent" />
+      <span className="font-medium text-sm text-gray-700">{event.nome}</span>
+      <span className="text-sm text-gray-500">{hora}h</span>
+
+      <button
+        className="ml-1 text-nublia-accent hover:text-nublia-orange"
+        title="Ver perfil"
+        onClick={() => event.onVerPerfil?.(event.paciente_id)}
+      >
+        <Eye size={16} />
+      </button>
+
+      <button
+        className="ml-1 text-nublia-accent hover:text-nublia-orange"
+        title="Iniciar atendimento"
+        onClick={() => event.onIniciarAtendimento?.(event.paciente_id)}
+      >
+        <PlayCircle size={15} />
+      </button>
     </div>
   )
 }
