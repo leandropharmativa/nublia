@@ -34,7 +34,7 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-white">
-      <header className="bg-nublia-accent text-gray-800 px-6 py-4 flex justify-between items-center">
+      <header className="bg-gradient-to-br from-nublia-accent to-nublia-primary px-6 py-4 flex justify-between items-center">
         <div className="flex items-center text-nublia-orange text-3xl font-bold">
           <Feather className="w-9 h-9 mr-2" />
           Nublia
