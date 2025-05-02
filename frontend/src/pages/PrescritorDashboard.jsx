@@ -77,6 +77,7 @@ export default function PrescritorDashboard() {
         await carregarAtendimentos(user.id)
       } else if (abaSelecionada === 1) {
         await carregarAgenda(user.id)
+        await new Promise(resolve => setTimeout(resolve, 100)) // dá tempo da renderização reagir
       }
     } finally {
       NProgress.done()
@@ -138,6 +139,7 @@ export default function PrescritorDashboard() {
         })
       )
       setAgendaEventos(eventos)
+      return eventos
     } catch (err) {
       console.error('Erro ao carregar agenda:', err)
     }
