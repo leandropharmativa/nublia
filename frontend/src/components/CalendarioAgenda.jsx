@@ -275,7 +275,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
           <ChevronRight size={20} />
         </button>
-        <span className="flex items-center gap-2 text-sm font-medium text-nublia-accent">
+        <span className="flex items-center gap-2 text-sm font-bold text-nublia-accent">
           <CalendarDays size={16} />
           {renderLabel()}
         </span>
