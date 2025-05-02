@@ -311,7 +311,7 @@ useEffect(() => {
                       iconeInicio={<CalendarPlus size={16} />}
                       onClick={() => setMostrarModalNovoAgendamento(true)}
                       full={false}
-                      className="rounded-full text-white bg-nublia-accent hover:bg-blue-200"
+                      className="rounded-full text-white bg-nublia-accent hover:bg-blue-100"
                     />
                   </div>
                 </div>
