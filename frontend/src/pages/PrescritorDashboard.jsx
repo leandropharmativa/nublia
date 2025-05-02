@@ -63,6 +63,11 @@ const agendamentosHoje = useMemo(() => {
     const dataEvento = parseISO(`${e.data}T${e.hora || '00:00'}`)
     return isSameDay(dataEvento, new Date())
   })
+    .sort((a, b) => {
+    const horaA = a.hora || '00:00'
+    const horaB = b.hora || '00:00'
+    return horaA.localeCompare(horaB)
+    })
 }, [agendaEventos])
 
   useEffect(() => {
