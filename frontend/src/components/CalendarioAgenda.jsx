@@ -181,7 +181,7 @@ function HeaderComEventos({
 
           const cor = ev.status === 'agendado'
             ? 'text-orange-600'
-            : 'text-blue-600'
+            : 'text-nublia-accent'
 
           return (
             <span
@@ -220,7 +220,7 @@ function HeaderComEventos({
 
 function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
-  const colorClass = isSunday ? 'text-red-600' : 'text-blue-600'
+  const colorClass = isSunday ? 'text-red-600' : 'text-nublia-accent'
   return (
     <div className={`text-sm font-semibold text-center uppercase ${colorClass}`}>
       {label}
