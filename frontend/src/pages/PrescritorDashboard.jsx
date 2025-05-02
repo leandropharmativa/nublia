@@ -198,7 +198,7 @@ useEffect(() => {
               iconeInicio={<PlusCircle size={18} />}
               onClick={() => setMostrarBuscarPacienteModal(true)}
               full={true}
-              className="rounded-full"
+              className="rounded-full text-white"
             />
           </div>
           <div className="flex-1 overflow-hidden">
@@ -311,7 +311,7 @@ useEffect(() => {
                       iconeInicio={<CalendarPlus size={16} />}
                       onClick={() => setMostrarModalNovoAgendamento(true)}
                       full={false}
-                      className="rounded-full"
+                      className="rounded-full text-white"
                     />
                   </div>
                 </div>
