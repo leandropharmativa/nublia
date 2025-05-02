@@ -285,7 +285,7 @@ useEffect(() => {
     console.log('Horário com possível problema:', h)
     if (!h.dia || !h.hora) return null
 
-    const [ano, mes, dia] = h.dia.split('-').map(Number)
+    const [ano, mes, dia] = h.data.split('-').map(Number)
     const [hora, minuto] = h.hora.split(':').map(Number)
     const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
 
