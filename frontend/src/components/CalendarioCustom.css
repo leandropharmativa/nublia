@@ -65,4 +65,15 @@
 }
 
 /* Força layout flexível por célula de dia no modo mês */
-.rbc-month
+.rbc-month-row .rbc-row-segment {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+  gap: 4px;
+  padding: 2px;
+}
+
+/* Altura mínima do cabeçalho dos dias */
+.rbc-month-view .rbc-row.rbc-month-header {
+  min-height: 30px;
+}
