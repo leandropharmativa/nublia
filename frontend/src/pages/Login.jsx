@@ -86,7 +86,7 @@ export default function Login({ onLogin }) {
           <h1 className="text-5xl font-bold text-left leading-snug mb-4 nublia-texthead">
             Bem vindo(a)<br />à Nublia
           </h1>
-          <h2 className="text-2xl font-semibold text-left leading-snug nublia-texthead">
+          <h2 className="text-2xl font-semibold text-left leading-snug nublia-textcont">
             Conecte e simplifique.
           </h2>
         </div>
@@ -95,7 +95,7 @@ export default function Login({ onLogin }) {
       {/* Lado direito com formulário */}
       <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
         <div className="absolute top-6 right-6 flex items-center gap-2">
-          <p className="text-subtle">Novo no Nublia?</p>
+          <p className="text-subtle text-nublia-texthead">Novo no Nublia?</p>
           <button
             onClick={() => navigate('/register')}
             className="btn-primary rounded-full text-sm px-4 py-1"
