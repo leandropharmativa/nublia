@@ -43,7 +43,7 @@ export default function AtendimentosRecentes({
           {atendimentos.slice(0, quantidadeVisivel).map((a) => {
             const nome = getNomePaciente(a.paciente_id)
             return (
-              <li key={a.id} className="flex items-center gap-2 py-2 text-sm text-gray-600">
+              <li key={a.id} className="flex items-center gap-2 py-2 text-sm text-gray-400">
                 <span className="truncate flex items-center gap-1">
                   {nome}
                   <button
