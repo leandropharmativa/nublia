@@ -51,7 +51,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
         <h2 className="text-nublia-accent text-2xl font-bold">Buscar Paciente</h2>
 
         <div className="relative max-w-lg w-full">
-          <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+          <Search className="absolute left-3 top-3 text-gray-400" size={30} />
           <input
             ref={inputRef}
             type="text"
@@ -111,9 +111,9 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-gray-400 text-center italic mt-4"
+                className="text-gray-400 text-center mt-4"
               >
-                Digite para buscar pacientes...
+               
               </motion.p>
             )}
           </AnimatePresence>
