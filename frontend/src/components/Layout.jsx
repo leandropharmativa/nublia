@@ -4,7 +4,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
 import { useNavigate } from 'react-router-dom'
-import { Feather, LogOut } from 'lucide-react'
+import { Feather, LogOut, DoorOpen } from 'lucide-react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -48,7 +48,7 @@ export default function Layout({ children }) {
               onClick={sair}
               className="mt-2 bg-nublia-orange text-nublia-accent px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-nublia-orangepink ml-auto">
               Sair
-              <LogOut className="w-4 h-4" />
+              <DoorOpen className="w-4 h-4" />
             </button>
           </div>
           <div className="h-10 border-l-2 border-nublia-accent" />
