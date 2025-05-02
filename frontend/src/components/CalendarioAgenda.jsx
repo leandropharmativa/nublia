@@ -138,7 +138,7 @@ function HeaderComEventos({
             </span>
           )}
           {disponiveis > 0 && (
-            <span className="flex items-center gap-1 text-blue-500">
+            <span className="flex items-center gap-1 text-nublia-accent">
               <Clock size={10} /> {disponiveis}
             </span>
           )}
@@ -278,7 +278,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
             <UserRoundCheck size={12} className="text-orange-500" /> {agendados}
           </span>
           <span className="flex items-center gap-1">
-            <Clock size={12} className="text-blue-500" /> {disponiveis} horários disponíveis
+            <Clock size={12} className="text-nublia-accent" /> {disponiveis} horários disponíveis
           </span>
         </div>
         <div className="flex gap-1">
