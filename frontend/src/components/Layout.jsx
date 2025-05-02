@@ -1,3 +1,8 @@
+import { useEffect } from 'react'
+import { useLocation, useNavigationType } from 'react-router-dom'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
 import { useNavigate } from 'react-router-dom'
 import { Feather, LogOut } from 'lucide-react'
 import { ToastContainer } from 'react-toastify'
@@ -5,6 +10,17 @@ import 'react-toastify/dist/ReactToastify.css'
 
 export default function Layout({ children }) {
   const navigate = useNavigate()
+  const location = useLocation()
+  const navigationType = useNavigationType()
+
+  // Start/stop nprogress on route change
+  useEffect(() => {
+    NProgress.start()
+    const timeout = setTimeout(() => {
+      NProgress.done()
+    }, 300) // ajustável conforme preferir
+    return () => clearTimeout(timeout)
+  }, [location.pathname, navigationType])
 
   const sair = () => {
     localStorage.removeItem('token')
