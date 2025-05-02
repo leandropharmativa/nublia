@@ -198,7 +198,7 @@ useEffect(() => {
               iconeInicio={<PlusCircle size={18} />}
               onClick={() => setMostrarBuscarPacienteModal(true)}
               full={true}
-              className="rounded-full text-white bg-nublia-accent hover:nublia-primaryfocus"
+              className="rounded-full text-white bg-nublia-accent hover:nublia-orange"
             />
           </div>
           <div className="flex-1 overflow-hidden">
@@ -311,7 +311,7 @@ useEffect(() => {
                       iconeInicio={<CalendarPlus size={16} />}
                       onClick={() => setMostrarModalNovoAgendamento(true)}
                       full={false}
-                      className="rounded-full text-white bg-nublia-accent hover:bg-nublia-primaryfocus"
+                      className="rounded-full text-white bg-nublia-accent hover:bg-nublia-orange"
                     />
                   </div>
                 </div>
