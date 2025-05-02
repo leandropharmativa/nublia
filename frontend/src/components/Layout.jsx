@@ -46,7 +46,7 @@ export default function Layout({ children }) {
             <div className="text-xs text-white capitalize">{role}</div>
             <button
               onClick={sair}
-              className="mt-2 bg-nublia-orange text-nublia-accent px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-nublia-orangepink ml-auto">
+              className="mt-2 bg-nublia-orange text-white px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-nublia-orangepink ml-auto">
               Sair
               <DoorOpen className="w-4 h-4" />
             </button>
