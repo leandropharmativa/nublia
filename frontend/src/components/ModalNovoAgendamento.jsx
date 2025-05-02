@@ -91,24 +91,27 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
           />
         </div>
 
-        {pacientes.length > 0 && (
-          <div className="overflow-y-auto max-h-[200px] border rounded-xl">
-            {pacientes.map(p => (
-              <div
-                key={p.id}
-                className="px-4 py-2 border-b hover:bg-yellow-50 cursor-pointer text-sm flex justify-between items-center"
-                onClick={() => {
-                  setSelecionado(p)
-                  setFiltro('')
-                  setPacientes([])
-                }}
-              >
-                <span>{p.name}</span>
-                <User size={16} className="text-nublia-accent" />
-              </div>
-            ))}
-          </div>
-        )}
+{pacientes.length > 0 && (
+  <div className="overflow-y-auto max-h-[300px] mt-2">
+    {pacientes.map((paciente) => (
+      <div
+        key={paciente.id}
+        className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2 cursor-pointer hover:bg-yellow-50 transition"
+        onClick={() => {
+          setSelecionado(paciente)
+          setFiltro('')
+          setPacientes([])
+        }}
+      >
+        <div>
+          <p className="font-medium text-gray-800">{paciente.name}</p>
+          <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
+        </div>
+        <User size={18} className="text-nublia-accent" />
+      </div>
+    ))}
+  </div>
+)}
 
         {selecionado && (
           <>
