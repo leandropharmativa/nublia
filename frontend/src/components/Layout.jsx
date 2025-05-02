@@ -51,8 +51,6 @@ export default function Layout({ children }) {
               <DoorOpen className="w-4 h-4" />
             </button>
           </div>
-          <div className="h-10 border-l-2 border-nublia-orange" />
-        </div>
       </header>
 
       <main className="flex-1 p-6">
