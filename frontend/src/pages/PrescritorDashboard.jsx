@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import NProgress from 'nprogress'
 import Layout from '../components/Layout'
 import { Tab } from '@headlessui/react'
 import {
@@ -65,6 +66,25 @@ export default function PrescritorDashboard() {
       carregarAgenda(usuario.id)
     }
   }, [])
+
+  useEffect(() => {
+  const carregarConteudoPorAba = async () => {
+    if (!user) return
+
+    NProgress.start()
+    try {
+      if (abaSelecionada === 0) {
+        await carregarAtendimentos(user.id)
+      } else if (abaSelecionada === 1) {
+        await carregarAgenda(user.id)
+      }
+    } finally {
+      NProgress.done()
+    }
+  }
+
+  carregarConteudoPorAba()
+}, [abaSelecionada, user])
 
   const carregarAtendimentos = async (id) => {
     try {
