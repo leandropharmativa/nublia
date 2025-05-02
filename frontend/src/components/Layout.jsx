@@ -48,8 +48,8 @@ export default function Layout({ children }) {
               onClick={sair}
               className="mt-2 bg-nublia-orange text-nublia-accent px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-nublia-orangepink ml-auto"
             >
-              <LogOut className="w-4 h-4" />
               Sair
+              <LogOut className="w-4 h-4" />
             </button>
           </div>
           <div className="h-10 border-l-2 border-nublia-accent" />
