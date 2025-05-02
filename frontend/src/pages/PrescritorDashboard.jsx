@@ -232,7 +232,7 @@ useEffect(() => {
                   <span className="text-xs mt-1">{tab.label}</span>
                 </Tab>
               ))}
-              <div className='absolute bottom-0 right-0 h-[6px] bg-nublia-accent rounded-l-full w-[calc(100%+80px)]'></div>
+              {/*<div className='absolute bottom-0 right-0 h-[6px] bg-nublia-accent rounded-l-full w-[calc(100%+80px)]'></div>*/}
             </Tab.List>
 
             <Tab.Panels className="w-full">
