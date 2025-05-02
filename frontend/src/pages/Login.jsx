@@ -75,7 +75,7 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className="flex h-screen font-sans text-gray-800">
+    <div className="flex h-screen font-sans text-white">
       {/* Lado esquerdo com degradê e ícone flutuante */}
       <div className="w-1/2 bg-gradient-to-br from-nublia-accent to-nublia-primary p-10 flex flex-col relative">
         <div className="flex items-center text-nublia-orange text-3xl font-bold">
