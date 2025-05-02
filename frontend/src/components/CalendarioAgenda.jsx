@@ -154,11 +154,10 @@ function HeaderComEventos({
           )}
         </div>
         <div className="flex items-center gap-1">
-        <span className="text-xs font-medium text-gray-700">
-          {label}
-        </span>
-            {label}
-          </span>
+<span className="text-xs font-medium text-gray-700">
+  {label}
+</span>
+
           <button
             onClick={(e) => {
               e.stopPropagation()
@@ -353,4 +352,3 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
     </div>
   )
 }
-
