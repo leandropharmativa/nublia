@@ -31,31 +31,33 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const carregarEventos = async () => {
     try {
       const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-      const eventosFormatados = await Promise.all(
-        data.map(async (ev) => {
-          const start = new Date(`${ev.data}T${ev.hora}`)
-          const end = addHours(start, 1)
-          let title = 'Disponível'
+const eventosFormatados = await Promise.all(
+  data.map(async (ev) => {
+    const start = new Date(`${ev.data}T${ev.hora}`)
+    const end = addHours(start, 1)
+    let title = 'Disponível'
 
-          if (ev.status === 'agendado' && ev.paciente_id) {
-            try {
-              const paciente = await axios.get(`https://nublia-backend.onrender.com/users/${ev.paciente_id}`)
-              title = paciente.data.name
-            } catch {
-              title = 'Agendado'
-            }
-          }
+    if (ev.status === 'agendado' && ev.paciente_id) {
+      try {
+        const paciente = await axios.get(`https://nublia-backend.onrender.com/users/${ev.paciente_id}`)
+        title = paciente.data.name
+      } catch {
+        title = 'Agendado'
+      }
+    }
 
-          return {
-            id: ev.id,
-            title,
-            start,
-            end,
-            status: ev.status,
-            paciente_id: ev.paciente_id
-          }
+        return {
+          id: ev.id,
+          title,
+          start,
+          end,
+          status: ev.status,
+          paciente_id: ev.paciente_id
+           }
         })
       )
+
+      const ordenados = eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start))
       setEventos(eventosFormatados)
     } catch (error) {
       console.error('Erro ao carregar eventos:', error)
