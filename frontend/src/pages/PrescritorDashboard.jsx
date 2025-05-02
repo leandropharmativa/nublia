@@ -198,7 +198,7 @@ useEffect(() => {
               iconeInicio={<PlusCircle size={18} />}
               onClick={() => setMostrarBuscarPacienteModal(true)}
               full={true}
-              className="rounded-full text-white bg-nublia-accent hover:bg-blue-200"
+              className="rounded-full text-white bg-nublia-accent hover:bg-blue-100"
             />
           </div>
           <div className="flex-1 overflow-hidden">
