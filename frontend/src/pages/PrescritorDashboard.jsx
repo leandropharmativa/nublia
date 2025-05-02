@@ -27,6 +27,7 @@ import BuscarPacienteModal from '../components/BuscarPacienteModal'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
 import ModalAgendarHorario from '../components/ModalAgendarHorario'
+import ModalNovoAgendamento from '../components/ModalNovoAgendamento'
 import ModalNovoHorario from '../components/ModalNovoHorario'
 import FichaAtendimento from '../components/FichaAtendimento'
 import Botao from '../components/Botao'
@@ -41,6 +42,8 @@ export default function PrescritorDashboard() {
   const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
   const [mostrarNovoHorario, setMostrarNovoHorario] = useState(false)
   const [mostrarAgendamentoModal, setMostrarAgendamentoModal] = useState(false)
+  const [mostrarModalNovoAgendamento, setMostrarModalNovoAgendamento] = useState(false)
+
 
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
@@ -297,23 +300,13 @@ useEffect(() => {
                   )}
 
                   <div className="mt-6">
-                   <Botao
-  texto="Incluir agendamento"
-  iconeInicio={<CalendarPlus size={16} />}
-  onClick={() => {
-    setAgendamentoSelecionado({
-      id: null,
-      status: 'novo_agendamento',
-      pacienteId: null,
-      pacienteNome: '',
-      dataHora: null
-    })
-    setMostrarAgendamentoModal(true)
-  }}
-  full={false}
-  className="rounded-full"
-/>
-
+                    <Botao
+                      texto="Incluir agendamento"
+                      iconeInicio={<CalendarPlus size={16} />}
+                      onClick={() => setMostrarModalNovoAgendamento(true)}
+                      full={false}
+                      className="rounded-full"
+                    />
                   </div>
                 </div>
               </Tab.Panel>
