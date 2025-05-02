@@ -58,7 +58,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
     placeholder="Digite o nome do paciente..."
     value={termoBusca}
     onChange={(e) => setTermoBusca(e.target.value)}
-    className="w-full pl-12 pr-4 py-2 rounded-full border border-gray-300 shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent transition-all duration-200 placeholder-gray-400"
+    className="w-full pl-12 pr-4 py-2 rounded-full border border-gray-300 shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary transition-all duration-200 placeholder-gray-400"
   />
 </div>
 
