@@ -66,7 +66,7 @@ export default function AtendimentosRecentes({
           })}
 
           {atendimentos.length === 0 && (
-            <li className="text-sm italic text-gray-500 py-4">Nenhum atendimento encontrado.</li>
+            <li className="text-sm text-gray-400 py-4">Nenhum atendimento encontrado.</li>
           )}
         </ul>
       </div>
