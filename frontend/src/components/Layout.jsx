@@ -46,7 +46,7 @@ export default function Layout({ children }) {
             <div className="text-xs text-gray-500 capitalize">{role}</div>
             <button
               onClick={sair}
-              className="mt-2 bg-white text-blue-600 px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-gray-100 ml-auto"
+              className="mt-2 bg-nublia-accent text-nublia-orange px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-blue-100 ml-auto"
             >
               <LogOut className="w-4 h-4" />
               Sair
