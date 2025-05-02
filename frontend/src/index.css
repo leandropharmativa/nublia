@@ -8,7 +8,7 @@
   }
 
   .btn-accent {
-    @apply bg-nublia-accent text-white px-4 py-2 rounded-lg hover:bg-blue-300 transition;
+    @apply bg-nublia-accent text-white px-4 py-2 rounded-lg hover:bg-nublia-primaryfocus transition;
   }
 
   .input-base {
