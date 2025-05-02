@@ -42,11 +42,11 @@ export default function Layout({ children }) {
 
         <div className="flex items-center gap-6">
           <div className="text-right">
-            <div className="text-sm font-bold text-gray-700">{nome}</div>
-            <div className="text-xs text-gray-500 capitalize">{role}</div>
+            <div className="text-sm font-bold text-white">{nome}</div>
+            <div className="text-xs text-white capitalize">{role}</div>
             <button
               onClick={sair}
-              className="mt-2 bg-white text-nublia-orange px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-nublia-primary ml-auto"
+              className="mt-2 bg-nublia-primary text-nublia-orange px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-nublia-primary ml-auto"
             >
               <LogOut className="w-4 h-4" />
               Sair
