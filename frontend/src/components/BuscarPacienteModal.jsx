@@ -50,17 +50,17 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-6 max-h-[80vh] overflow-hidden">
         <h2 className="text-nublia-accent text-2xl font-bold">Buscar Paciente</h2>
 
-        <div className="relative max-w-lg w-full">
-          <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Digite o nome do paciente..."
-            value={termoBusca}
-            onChange={(e) => setTermoBusca(e.target.value)}
-            className="pl-10 border rounded-full w-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent transition-all duration-300 focus:scale-[1.02]"
-          />
-        </div>
+<div className="relative w-full">
+  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+  <input
+    ref={inputRef}
+    type="text"
+    placeholder="Digite o nome do paciente..."
+    value={termoBusca}
+    onChange={(e) => setTermoBusca(e.target.value)}
+    className="w-full pl-12 pr-4 py-2 rounded-full border border-gray-300 shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent transition-all duration-200 placeholder-gray-400"
+  />
+</div>
 
         <div className="overflow-y-auto max-h-[320px]">
           <AnimatePresence>
