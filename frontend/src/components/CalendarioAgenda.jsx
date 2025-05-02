@@ -53,7 +53,6 @@ export default function CalendarioAgenda({
         onView={setView}
         onNavigate={setDataAtual}
         defaultView="month"
-        views={['month', 'week', 'day', 'agenda']}
         selectable={view !== 'month'}
         step={15}
         timeslots={1}
