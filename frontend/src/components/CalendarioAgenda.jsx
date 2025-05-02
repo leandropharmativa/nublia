@@ -154,14 +154,9 @@ function HeaderComEventos({
           )}
         </div>
         <div className="flex items-center gap-1">
-          <span
-            onClick={(e) => {
-              e.stopPropagation()
-              onView('day')
-              onNavigate(data)
-            }}
-            className="text-xs font-medium text-gray-700 hover:underline cursor-pointer"
-          >
+        <span className="text-xs font-medium text-gray-700">
+          {label}
+        </span>
             {label}
           </span>
           <button
