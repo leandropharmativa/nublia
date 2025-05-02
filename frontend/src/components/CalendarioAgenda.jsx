@@ -220,7 +220,7 @@ function HeaderComEventos({
 
 function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
-  const colorClass = isSunday ? 'text-red-600' : 'text-nublia-accent'
+  const colorClass = isSunday ? 'text-orange-500' : 'text-nublia-accent'
   return (
     <div className={`text-sm font-semibold text-center uppercase ${colorClass}`}>
       {label}
