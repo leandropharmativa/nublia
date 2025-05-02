@@ -73,17 +73,20 @@ const agendamentosHoje = useMemo(() => {
     }
   }, [])
 
-  useEffect(() => {
+useEffect(() => {
   const carregarConteudoPorAba = async () => {
     if (!user) return
 
     NProgress.start()
     try {
       if (abaSelecionada === 0) {
-        await carregarAtendimentos(user.id)
+        await Promise.all([
+          carregarAtendimentos(user.id),
+          carregarAgenda(user.id) // 🔄 força atualização da agenda também
+        ])
       } else if (abaSelecionada === 1) {
         await carregarAgenda(user.id)
-        await new Promise(resolve => setTimeout(resolve, 100)) // dá tempo da renderização reagir
+        await new Promise(resolve => setTimeout(resolve, 200))
       }
     } finally {
       NProgress.done()
