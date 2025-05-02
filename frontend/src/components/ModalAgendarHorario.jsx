@@ -116,7 +116,9 @@ useEffect(() => {
   
   const renderBuscaPaciente = () => (
     <>
-      <label className="text-sm text-gray-600 mb-1">Paciente:</label>
+      <p className="text-sm text-gray-600 mb-1">
+        Paciente atual: <strong>{pacienteAtual}</strong>
+      </p>
       {selecionado ? (
         <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
           <div>
