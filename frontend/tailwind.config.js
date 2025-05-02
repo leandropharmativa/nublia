@@ -11,15 +11,17 @@ export default {
       },
       colors: {
         nublia: {
-          primary: "#ADD2FF",   // azul claro (botões)
-          accent: "#88C7FE",    // azul acinzentado (lado esquerdo)
-          orange: "#FB6356",    // laranja (logo)
+          primary: "#BBD3F2",   // azul claro (botões)
+          accent: "#353A8C",    // azul escuro acinzentado (lado esquerdo)
+          orange: "#F27141",    // laranja (logo)
           dark: "##3C238E",      // opcional
           success: "#CDDBF9",   // azul bem claro (mensagens positivas)
           warning: "#FFC6B4",   // amarelo-laranja suave
           danger: "#fca5a5",    // vermelho claro (erro forte, opcional)
           texthead: "#2C2E43",  // azul escuro, quase preto
-          textcont: "#999999"   // cinza 60% - gray-400  
+          textcont: "#999999",   // cinza 60% - gray-400  
+          pink: "#DB88F2", //rosa claro
+          orangepink: "#F27777" //rosa alaranjado
         },
       },
       boxShadow: {
