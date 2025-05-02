@@ -257,6 +257,13 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
 
   const { agendados, disponiveis } = contar()
 
+  const labels = {
+    month: 'Mês',
+    agenda: 'Agenda',
+    week: 'Semana',
+    day: 'Dia'
+  }
+
   return (
     <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
       <div className="flex items-center gap-2">
@@ -292,7 +299,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              {v.charAt(0).toUpperCase() + v.slice(1)}
+              {labels[v] || v}
             </button>
           ))}
         </div>
@@ -300,3 +307,4 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
     </div>
   )
 }
+
