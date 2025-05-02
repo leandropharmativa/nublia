@@ -50,7 +50,7 @@
 
 /* Ícones como bolinhas inline (sem barras visuais) */
 .rbc-month-view .rbc-event {
-  display: inline-flex !important;
+  display: none !important;
   justify-content: center;
   align-items: center;
   width: 1rem;
@@ -77,3 +77,7 @@
 .rbc-month-view .rbc-row.rbc-month-header {
   min-height: 30px;
 }
+/* Esconde o texto "+x more" */
+.rbc-show-more {
+  display: none !important;
+
