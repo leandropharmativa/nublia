@@ -1,14 +1,19 @@
 /* ===== Cabeçalhos dos dias da semana ===== */
-.rbc-header {
-  color: #2563eb !important; /* azul padrão Tailwind */
+.rbc-month-view .rbc-header {
+  color: #2563eb; /* azul nublia (equivalente a tailwind blue-600) */
   font-weight: 600;
+  text-transform: uppercase;
   font-size: 0.875rem;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
-/* Domingo em vermelho */
-.rbc-header:last-child {
-  color: #dc2626 !important;
+/* Domingo: primeiro da semana */
+.rbc-month-view .rbc-header:first-child {
+  color: #f97316 !important; /* laranja (tailwind orange-500) */
 }
 
 /* ===== Remoção de bordas externas do calendário ===== */
@@ -59,46 +64,5 @@
   white-space: normal !important;
 }
 
-/* ===== Outros ajustes opcionais (comentados) ===== */
-/* 
-.rbc-day-bg {
-  border-right: none !important;
-}
-
-.rbc-agenda-view table {
-  border: none !important;
-}
-*/
 /* Força layout flexível por célula de dia no modo mês */
-.rbc-month-row .rbc-row-segment {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  align-items: flex-start !important;
-  gap: 4px;
-  padding: 2px;
-}
-
-.rbc-month-view .rbc-row.rbc-month-header {
-  min-height: 30px;
-}
-.rbc-month-view .rbc-header {
-  display: flex;
-  align-items: center;     /* vertical */
-  justify-content: center; /* horizontal */
-  height: 100%;            /* preencher a altura da linha */
-}
-.rbc-month-view .rbc-days-header .rbc-header {
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.875rem; /* equivale a text-sm do Tailwind */
-  text-align: center;
-}
-
-.rbc-month-view .rbc-days-header .rbc-header:nth-child(1) {
-  color: #f97316; /* laranja para domingo (tailwind orange-500) */
-}
-
-.rbc-month-view .rbc-days-header .rbc-header:not(:nth-child(1)) {
-  color: #2563eb; /* azul nublia padrão (tailwind blue-600 ou sua var nublia-accent) */
-}
-
+.rbc-month
