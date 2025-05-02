@@ -231,8 +231,10 @@ function CustomDayHeader({ label, date }) {
 function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
 
+  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
+
   const renderLabel = () => {
-    if (view === 'month') return f(date, 'MMMM yyyy')
+    if (view === 'month') return capitalize(f(date, 'MMMM yyyy'))
     if (view === 'day') return f(date, "dd 'de' MMMM yyyy")
     if (view === 'week') {
       const start = startOfWeek(date, { weekStartsOn: 1 })
@@ -273,8 +275,8 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
           <ChevronRight size={20} />
         </button>
-        <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
-          <CalendarDays size={16} className="text-nublia-accent" />
+        <span className="flex items-center gap-2 text-sm font-medium text-nublia-accent">
+          <CalendarDays size={16} />
           {renderLabel()}
         </span>
       </div>
