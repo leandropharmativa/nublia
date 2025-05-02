@@ -258,7 +258,7 @@ useEffect(() => {
                   {agendamentosHoje.length === 0 ? (
                     <p className="text-sm text-gray-400">Nenhum paciente agendado para hoje.</p>
                   ) : (
-                    <ul className="space-y-[6px] text-sm text-gray-800 w-full max-w-xl">
+                    <ul className="space-y-[6px] text-sm text-gray-400 w-full max-w-xl">
                       {agendamentosHoje.map((a) => (
                         <li key={a.id} className="flex items-center gap-2 border-b border-gray-200 pb-1">
                           <button
