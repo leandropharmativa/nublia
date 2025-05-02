@@ -266,6 +266,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
         <ModalNovoHorario
           horario={slotSelecionado}
           onConfirmar={confirmarHorario}
+          onAtualizar={carregarEventos}
           onCancelar={() => {
             setModalAberto(false)
             setSlotSelecionado(null)
