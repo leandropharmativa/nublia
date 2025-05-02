@@ -81,3 +81,19 @@
 .rbc-show-more {
   display: none !important;
 }
+/* Estiliza o cabeçalho da tabela de agenda */
+.rbc-agenda-view th {
+  text-align: left;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  color: #6b7280; /* gray-500 */
+  text-transform: uppercase;
+}
+
+/* Estiliza a célula de data/hora */
+.rbc-agenda-date-cell,
+.rbc-agenda-time-cell {
+  font-size: 0.875rem;
+  color: #374151; /* gray-700 */
+  white-space: nowrap;
+}
