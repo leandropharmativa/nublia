@@ -43,7 +43,7 @@ export default function PrescritorDashboard() {
   const [mostrarNovoHorario, setMostrarNovoHorario] = useState(false)
   const [mostrarAgendamentoModal, setMostrarAgendamentoModal] = useState(false)
   const [mostrarModalNovoAgendamento, setMostrarModalNovoAgendamento] = useState(false)
-
+  const [mostrarCadastrarPaciente, setMostrarCadastrarPaciente] = useState(false)
 
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
@@ -334,11 +334,16 @@ useEffect(() => {
         <BuscarPacienteModal
           onClose={() => setMostrarBuscarPacienteModal(false)}
           onSelecionarPaciente={(paciente) => {
-            setPacienteSelecionado(paciente)
-            setMostrarBuscarPacienteModal(false)
-            setTimeout(() => setAbaSelecionada(0), 0)
+          setPacienteSelecionado(paciente)
+          setMostrarBuscarPacienteModal(false)
+          setTimeout(() => setAbaSelecionada(0), 0)
           }}
-        />
+          onCadastrarNovo={() => {
+          setMostrarBuscarPacienteModal(false)
+          setMostrarCadastrarPaciente(true)
+        }}
+      />
+
       )}
 
       {mostrarPerfilPacienteModal && pacientePerfil && (
@@ -425,6 +430,18 @@ useEffect(() => {
           }}
         />
       )}
+
+      {mostrarCadastrarPaciente && (
+  <CadastrarPacienteModal
+    onClose={() => setMostrarCadastrarPaciente(false)}
+    onPacienteCadastrado={(paciente) => {
+      setPacienteSelecionado(paciente)
+      setMostrarCadastrarPaciente(false)
+      setTimeout(() => setAbaSelecionada(0), 0)
+    }}
+  />
+    )}
+
       {mostrarModalNovoAgendamento && (
       <ModalNovoAgendamento
     onCancelar={() => setMostrarModalNovoAgendamento(false)}
