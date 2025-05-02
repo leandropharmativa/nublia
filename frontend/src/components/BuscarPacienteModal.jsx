@@ -122,7 +122,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
         <div className="flex justify-between pt-4">
           <button
             onClick={onClose}
-            className="text-nublia-accent hover:text-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2 border border-nublia-accent"
+            className="px-4 py-2 rounded-full text-sm font-medium border border-nublia-accent text-nublia-accent hover:bg-blue-50 transition"
           >
             Cancelar
           </button>
