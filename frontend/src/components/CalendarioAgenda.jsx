@@ -57,7 +57,7 @@ export default function CalendarioAgenda({
   onNavigate={setDataAtual}
   defaultView="month"
   views={['month', 'agenda']}
-  selectable={view !== 'month'}
+  selectable={view !== 'month' && view !== 'agenda'}
   step={15}
   timeslots={1}
   culture="pt-BR"
@@ -66,7 +66,11 @@ export default function CalendarioAgenda({
       aoSelecionarSlot({ start })
     }
   }}
-  onSelectEvent={aoSelecionarEvento}
+  onSelectEvent={(event) => {
+    if (view !== 'agenda') {
+      aoSelecionarEvento(event)
+    }
+  }}
   messages={{
     next: <ChevronRight size={20} />,
     previous: <ChevronLeft size={20} />,
@@ -103,8 +107,7 @@ export default function CalendarioAgenda({
     }
   }}
 />
-
-    </div>
+</div>
   )
 }
 
