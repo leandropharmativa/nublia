@@ -281,20 +281,22 @@ useEffect(() => {
   className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
 >
   <option value="">Selecione um novo horário</option>
-  {horariosDisponiveis.map((h) => {
-    if (!h.data || !h.hora) return null
+  {[...horariosDisponiveis]
+    .filter(h => h.data && h.hora)
+    .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
+    .map((h) => {
+      const [ano, mes, dia] = h.data.split('-').map(Number)
+      const [hora, minuto] = h.hora.split(':').map(Number)
+      const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
 
-    const [ano, mes, dia] = h.data.split('-').map(Number)
-    const [hora, minuto] = h.hora.split(':').map(Number)
-    const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
-
-    return (
-      <option key={h.id} value={h.id}>
-        {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-      </option>
-    )
-  })}
+      return (
+        <option key={h.id} value={h.id}>
+          {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+        </option>
+      )
+    })}
 </select>
+
 
                   <div className="flex gap-2 mt-3">
                     <button
