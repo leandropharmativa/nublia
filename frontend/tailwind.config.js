@@ -12,6 +12,7 @@ export default {
       colors: {
         nublia: {
           primary: "#BBD3F2",   // azul claro (botões)
+          primaryfocus: "#A3B9F5",   // azul claro (botões) hover
           accent: "#353A8C",    // azul escuro acinzentado (lado esquerdo)
           orange: "#F27141",    // laranja (logo)
           dark: "##3C238E",      // opcional
