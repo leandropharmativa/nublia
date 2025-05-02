@@ -83,10 +83,10 @@ export default function Login({ onLogin }) {
           Nublia
         </div>
         <div className="absolute top-56 left-20">
-          <h1 className="text-5xl font-bold text-left leading-snug mb-4 nublia-texthead">
+          <h1 className="text-5xl font-bold text-left leading-snug mb-4 text-nublia-texthead">
             Bem vindo(a)<br />à Nublia
           </h1>
-          <h2 className="text-2xl font-semibold text-left leading-snug nublia-textcont">
+          <h2 className="text-2xl font-semibold text-left leading-snug text-nublia-textcont">
             Conecte e simplifique.
           </h2>
         </div>
@@ -108,7 +108,7 @@ export default function Login({ onLogin }) {
           onSubmit={temSenha === false ? handleCriarSenha : handleLogin}
           className="w-full max-w-sm"
         >
-          <h2 className="text-title mb-6">Entrar na Nublia</h2>
+          <h2 className="text-title mb-6" text-nublia-texthead>Entrar na Nublia</h2>
 
           {mensagem && <div className="alert-success">{mensagem}</div>}
           {erro && <div className="alert-warning">{erro}</div>}
