@@ -12,7 +12,7 @@
 }
 
 /* Domingo: primeiro da semana */
-.rbc-month-view .rbc-header:first-child {
+.rbc-month-view .rbc-header:last-child {
   color: #f97316 !important; /* laranja (tailwind orange-500) */
 }
 
