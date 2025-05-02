@@ -51,13 +51,14 @@ export default function PrescritorDashboard() {
   const [pacientes, setPacientes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
 
-  const hoje = new Date().toISOString().split('T')[0]
   const hojeSlot = new Date()
   const agendamentosHoje = useMemo(() => {
+  const hojeData = new Date().toISOString().split('T')[0]
   return agendaEventos.filter(
-    (e) => e.status === 'agendado' && e.data === hoje
+    (e) => e.status === 'agendado' && e.data === hojeData
   )
-}, [agendaEventos, hoje])
+  }, [agendaEventos])
+
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
