@@ -51,7 +51,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
         <h2 className="text-nublia-accent text-2xl font-bold">Buscar Paciente</h2>
 
         <div className="relative max-w-lg w-full">
-          <Search className="absolute left-3 top-3 text-gray-400" size={30} />
+          <Search className="absolute left-3 top-3 text-gray-400" size={20} />
           <input
             ref={inputRef}
             type="text"
