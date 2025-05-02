@@ -86,16 +86,22 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
                   key={item.id}
                   className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full border border-gray-300"
                 >
-                  <span className="text-gray-800">{item.hora}h</span>
-                  {item.status === 'disponivel' && (
-                    <button
-                      onClick={() => removerHorario(item.id)}
-                      title="Remover horário"
-                      className="text-gray-400 hover:text-red-500"
-                    >
-                      <Trash size={14} />
-                    </button>
+                <span className="text-gray-800 flex items-center gap-1">
+                  {item.hora}h
+                  {item.status === 'agendado' && (
+                    <UserRoundCheck size={14} className="text-orange-500" title="Horário agendado" />
                   )}
+                </span>
+                  {item.status === 'disponivel' && (
+                <button
+                  onClick={() => removerHorario(item.id)}
+                  title="Remover horário"
+                  className="text-gray-400 hover:text-red-500"
+                >
+                <Trash size={14} />
+              </button>
+              )}
+
                 </li>
               ))}
             </ul>
