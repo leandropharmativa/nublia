@@ -296,193 +296,87 @@ useEffect(() => {
       const [hora, minuto] = h.hora.split(':').map(Number)
       const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
 
-return (
-  <>
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative">
-        <button
-          onClick={onCancelar}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-        >
-          <X size={20} />
-        </button>
+      return (
+        <option key={h.id} value={h.id}>
+          {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+        </option>
+      )
+    })}
+</select>
 
-        <h2 className="text-xl font-semibold text-nublia-accent pr-6">
-          {statusAtual === 'agendado'
-            ? 'Editar agendamento'
-            : statusAtual === 'novo_agendamento'
-            ? 'Novo agendamento'
-            : 'Agendar horário'}
-        </h2>
 
-        {horarioSelecionado && (
-          <p className="text-sm text-gray-600 -mt-2 pr-6">
-            {horarioSelecionado.toLocaleDateString('pt-BR', {
-              weekday: 'long',
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-            })}{' '}
-            às {horarioSelecionado.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-          </p>
-        )}
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={() => {
+                        setReagendando(false)
+                        setNovoHorarioId(null)
+                      }}
+                      className="w-1/2 rounded-full py-2 text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={confirmarReagendamento}
+                      disabled={carregando}
+                      className="w-1/2 rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
+                    >
+                      {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar novo horário'}
+                    </button>
+                  </div>
+                </>
+              )}
+            </>
+          )}
 
-        {statusAtual === 'agendado' && pacienteAtual && (
-          <>
-            {!trocandoPaciente && !reagendando ? (
-              <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
-                <div>
-                  <p className="font-medium">{pacienteAtual}</p>
-                  <p className="text-xs text-gray-500">Paciente atual</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setMostrarPerfil(true)}
-                    className="text-nublia-accent hover:text-nublia-orange"
-                    title="Ver perfil"
-                  >
-                    <User size={18} />
-                  </button>
-                  <button
-                    onClick={() => setTrocandoPaciente(true)}
-                    className="text-nublia-accent hover:text-nublia-orange"
-                    title="Trocar paciente"
-                  >
-                    <ArrowLeftRight size={18} />
-                  </button>
-                  <button
-                    onClick={carregarHorarios}
-                    className="text-nublia-accent hover:text-nublia-orange"
-                    title="Transferir paciente"
-                  >
-                    <CalendarClock size={18} />
-                  </button>
-                  <button
-                    onClick={() => onDesagendar(agendamentoId)}
-                    className="text-red-500 hover:text-red-600"
-                    title="Remover paciente"
-                  >
-                    <Trash size={18} />
-                  </button>
-                </div>
-              </div>
-            ) : null}
-
-            {trocandoPaciente && (
-              <>
-                {renderBuscaPaciente()}
-
-                <div className="flex gap-2 mt-3">
-                  <button
-                    onClick={() => setTrocandoPaciente(false)}
-                    className="w-1/2 rounded-full py-2 text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={confirmarTrocaPaciente}
-                    disabled={carregando || !selecionado}
-                    className="w-1/2 rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
-                  >
-                    {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar troca'}
-                  </button>
-                </div>
-              </>
-            )}
-
-            {reagendando && (
-              <>
-                <p className="text-sm text-gray-600 mt-1">Transferir para outro horário:</p>
-                <select
-                  value={novoHorarioId || ''}
-                  onChange={(e) => setNovoHorarioId(parseInt(e.target.value))}
-                  className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
-                >
-                  <option value="">Selecione um novo horário</option>
-                  {horariosDisponiveis
-                    .filter(h => typeof h.data_hora === 'string')
-                    .map((h) => {
-                      const dataHora = new Date(h.data_hora.replace(' ', 'T'))
-                      return (
-                        <option key={h.id} value={h.id}>
-                          {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                        </option>
-                      )
-                    })}
-                </select>
-
-                <div className="flex gap-2 mt-3">
-                  <button
-                    onClick={() => {
-                      setReagendando(false)
-                      setNovoHorarioId(null)
-                    }}
-                    className="w-1/2 rounded-full py-2 text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={confirmarReagendamento}
-                    disabled={carregando}
-                    className="w-1/2 rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
-                  >
-                    {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar novo horário'}
-                  </button>
-                </div>
-              </>
-            )}
-          </>
-        )}
-
-        {(statusAtual === 'novo_agendamento' || statusAtual === 'disponivel') && (
-          <>
-            {renderBuscaPaciente()}
-            {selecionado && (
-              <button
-                onClick={() => agendar(selecionado.id)}
-                className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110"
-              >
-                Confirmar agendamento
-              </button>
-            )}
-
-            {statusAtual === 'disponivel' && (
-              <div className="flex justify-between pt-4">
+          {(statusAtual === 'novo_agendamento' || statusAtual === 'disponivel') && (
+            <>
+              {renderBuscaPaciente()}
+              {selecionado && (
                 <button
-                  onClick={() => onRemover(agendamentoId)}
-                  className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm"
+                  onClick={() => agendar(selecionado.id)}
+                  className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110"
                 >
-                  Remover horário
+                  Confirmar agendamento
                 </button>
-                <button
-                  onClick={() => setMostrarCadastro(true)}
-                  className="bg-nublia-accent text-white hover:brightness-110 px-4 py-2 rounded-full text-sm"
-                >
-                  Novo paciente
-                </button>
-              </div>
-            )}
-          </>
-        )}
+              )}
+              {statusAtual === 'disponivel' && (
+                <div className="flex justify-between pt-4">
+                  <button
+                    onClick={() => onRemover(agendamentoId)}
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm"
+                  >
+                    Remover horário
+                  </button>
+                  <button
+                    onClick={() => setMostrarCadastro(true)}
+                    className="bg-nublia-accent text-white hover:brightness-110 px-4 py-2 rounded-full text-sm"
+                  >
+                    Novo paciente
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
 
-    {mostrarCadastro && (
-      <CadastrarPacienteModal
-        onClose={() => setMostrarCadastro(false)}
-        onPacienteCadastrado={(paciente) => {
-          setSelecionado(paciente)
-          agendar(paciente.id)
-          setMostrarCadastro(false)
-        }}
-      />
-    )}
+      {mostrarCadastro && (
+        <CadastrarPacienteModal
+          onClose={() => setMostrarCadastro(false)}
+          onPacienteCadastrado={(paciente) => {
+            setSelecionado(paciente)
+            agendar(paciente.id)
+            setMostrarCadastro(false)
+          }}
+        />
+      )}
 
-    {mostrarPerfil && pacienteId && (
-      <PerfilPacienteModal
-        pacienteId={pacienteId}
-        onClose={() => setMostrarPerfil(false)}
-      />
-    )}
-  </>
-)
+      {mostrarPerfil && pacienteId && (
+        <PerfilPacienteModal
+          pacienteId={pacienteId}
+          onClose={() => setMostrarPerfil(false)}
+        />
+      )}
+    </>
+  )
+}
