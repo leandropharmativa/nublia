@@ -76,6 +76,9 @@ export default function CalendarioAgenda({
     day: 'Dia',
     agenda: 'Agenda',
     noEventsInRange: 'Sem eventos neste período.',
+    date: 'Data',
+    time: 'Horário',
+    event: 'Agendamento'
   }}
   components={{
     toolbar: (props) => (
@@ -227,28 +230,42 @@ function HeaderComEventos({
 
 function EventoAgendaCustomizado({ event }) {
   const hora = event.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+  const data = event.start.toLocaleDateString('pt-BR', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+  })
+
+  const isAgendado = event.status === 'agendado'
 
   return (
-    <div className="flex items-center gap-2 py-1 px-2 rounded hover:bg-gray-50 transition">
-      <User size={16} className="text-nublia-accent" />
-      <span className="font-medium text-sm text-gray-700">{event.nome}</span>
-      <span className="text-sm text-gray-500">{hora}h</span>
+    <div className="flex flex-col px-2 py-[6px] rounded hover:bg-gray-50 transition">
+      <div className="text-[13px] text-gray-500">{`${data}, ${hora}h`}</div>
+      <div className="flex items-center gap-2 text-sm text-gray-700 mt-1">
+        <span className={isAgendado ? 'font-medium text-gray-800' : 'text-gray-400'}>
+          {isAgendado ? event.nome : 'Disponível'}
+        </span>
 
-      <button
-        className="ml-1 text-nublia-accent hover:text-nublia-orange"
-        title="Ver perfil"
-        onClick={() => event.onVerPerfil?.(event.paciente_id)}
-      >
-        <Eye size={16} />
-      </button>
-
-      <button
-        className="ml-1 text-nublia-accent hover:text-nublia-orange"
-        title="Iniciar atendimento"
-        onClick={() => event.onIniciarAtendimento?.(event.paciente_id)}
-      >
-        <PlayCircle size={15} />
-      </button>
+        {isAgendado && (
+          <>
+            <User size={16} className="text-nublia-accent" />
+            <button
+              title="Ver perfil"
+              className="text-nublia-accent hover:text-nublia-orange"
+              onClick={() => event.onVerPerfil?.(event.paciente_id)}
+            >
+              <Eye size={16} />
+            </button>
+            <button
+              title="Iniciar atendimento"
+              className="text-nublia-accent hover:text-nublia-orange"
+              onClick={() => event.onIniciarAtendimento?.(event.paciente_id)}
+            >
+              <PlayCircle size={15} />
+            </button>
+          </>
+        )}
+      </div>
     </div>
   )
 }
