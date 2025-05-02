@@ -297,36 +297,23 @@ useEffect(() => {
                   )}
 
                   <div className="mt-6">
-                    <Botao
-                      texto="Incluir agendamento"
-                      iconeInicio={<CalendarPlus size={16} />}
-                      onClick={async () => {
-                        try {
-                          const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-                          const eventos = await res.json()
-                          const disponiveis = eventos.filter(e => e.status === 'disponivel')
+                   <Botao
+  texto="Incluir agendamento"
+  iconeInicio={<CalendarPlus size={16} />}
+  onClick={() => {
+    setAgendamentoSelecionado({
+      id: null,
+      status: 'novo_agendamento',
+      pacienteId: null,
+      pacienteNome: '',
+      dataHora: null
+    })
+    setMostrarAgendamentoModal(true)
+  }}
+  full={false}
+  className="rounded-full"
+/>
 
-                          if (disponiveis.length === 0) {
-                            alert('Nenhum horário disponível no momento.')
-                            return
-                          }
-
-                          setAgendamentoSelecionado({
-                            id: null,
-                            status: 'novo_agendamento',
-                            pacienteId: null,
-                            pacienteNome: '',
-                            dataHora: null,
-                            opcoes: disponiveis
-                          })
-                          setMostrarAgendamentoModal(true)
-                        } catch (err) {
-                          console.error('Erro ao buscar horários disponíveis:', err)
-                        }
-                      }}
-                      full={false}
-                      className="rounded-full"
-                    />
                   </div>
                 </div>
               </Tab.Panel>
