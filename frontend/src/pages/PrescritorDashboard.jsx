@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import NProgress from 'nprogress'
 import Layout from '../components/Layout'
 import { Tab } from '@headlessui/react'
@@ -55,6 +56,12 @@ export default function PrescritorDashboard() {
   const agendamentosHoje = agendaEventos.filter(
     (e) => e.status === 'agendado' && e.data === hoje
   )
+
+  const agendamentosHoje = useMemo(() => {
+  return agendaEventos.filter(
+    (e) => e.status === 'agendado' && e.data === hoje
+  )
+}, [agendaEventos, hoje])
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
