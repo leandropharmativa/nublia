@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { isSameDay, parseISO } from 'date-fns'
 import { useMemo } from 'react'
 import NProgress from 'nprogress'
 import Layout from '../components/Layout'
@@ -50,15 +51,16 @@ export default function PrescritorDashboard() {
   const [agendaEventos, setAgendaEventos] = useState([])
   const [pacientes, setPacientes] = useState([])
   const [pesquisa, setPesquisa] = useState('')
-
-  const hojeSlot = new Date()
-  const agendamentosHoje = useMemo(() => {
   const hojeData = new Date().toISOString().split('T')[0]
-  return agendaEventos.filter(
-    (e) => e.status === 'agendado' && e.data === hojeData
-  )
-  }, [agendaEventos])
-
+  const hojeSlot = new Date()
+  
+const agendamentosHoje = useMemo(() => {
+  return agendaEventos.filter((e) => {
+    if (e.status !== 'agendado') return false
+    const dataEvento = parseISO(`${e.data}T${e.hora || '00:00'}`)
+    return isSameDay(dataEvento, new Date())
+  })
+}, [agendaEventos])
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
