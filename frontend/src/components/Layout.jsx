@@ -46,13 +46,13 @@ export default function Layout({ children }) {
             <div className="text-xs text-gray-500 capitalize">{role}</div>
             <button
               onClick={sair}
-              className="mt-2 bg-white text-nublia-orange px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-blue-100 ml-auto"
+              className="mt-2 bg-white text-nublia-orange px-4 py-1 text-sm rounded-full flex items-center gap-2 hover:bg-nublia-primary ml-auto"
             >
               <LogOut className="w-4 h-4" />
               Sair
             </button>
           </div>
-          <div className="h-10 border-l-2 border-blue-700" />
+          <div className="h-10 border-l-2 border-nublia-accent" />
         </div>
       </header>
 
