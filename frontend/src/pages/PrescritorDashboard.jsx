@@ -53,10 +53,6 @@ export default function PrescritorDashboard() {
 
   const hoje = new Date().toISOString().split('T')[0]
   const hojeSlot = new Date()
-  const agendamentosHoje = agendaEventos.filter(
-    (e) => e.status === 'agendado' && e.data === hoje
-  )
-
   const agendamentosHoje = useMemo(() => {
   return agendaEventos.filter(
     (e) => e.status === 'agendado' && e.data === hoje
