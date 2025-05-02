@@ -1,138 +1,159 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import { Search, User } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { Search, User, X, Loader2 } from 'lucide-react'
+import { toastSucesso, toastErro } from '../utils/toastUtils'
 
-export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSelecionarPaciente }) {
-  const [termoBusca, setTermoBusca] = useState('')
+export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
   const [pacientes, setPacientes] = useState([])
+  const [filtro, setFiltro] = useState('')
+  const [selecionado, setSelecionado] = useState(null)
+  const [horarios, setHorarios] = useState([])
+  const [horarioId, setHorarioId] = useState(null)
+  const [carregando, setCarregando] = useState(false)
 
   const inputRef = useRef(null)
+  const user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus()
-    }
+    if (inputRef.current) inputRef.current.focus()
   }, [])
 
   useEffect(() => {
-    const buscar = async () => {
-      if (termoBusca.trim() === '') {
-        setPacientes([])
-        return
-      }
+    if (filtro.length < 2) {
+      setPacientes([])
+      return
+    }
 
+    const buscarPacientes = async () => {
       try {
-        const response = await axios.get('https://nublia-backend.onrender.com/users/all')
-
-        const pacientesFiltrados = response.data
-          .filter(u => u.role === 'paciente')
-          .filter(p =>
-            p.name?.toLowerCase().includes(termoBusca.toLowerCase())
-          )
-
-        setPacientes(pacientesFiltrados)
-      } catch (error) {
-        console.error('Erro ao buscar pacientes:', error)
-        setPacientes([])
+        const res = await axios.get('https://nublia-backend.onrender.com/users/all')
+        const encontrados = res.data.filter(
+          p => p.role === 'paciente' && p.name.toLowerCase().includes(filtro.toLowerCase())
+        )
+        setPacientes(encontrados)
+      } catch {
+        toastErro('Erro ao buscar pacientes.')
       }
     }
 
-    buscar()
-  }, [termoBusca])
+    buscarPacientes()
+  }, [filtro])
 
-  const selecionarPaciente = (paciente) => {
-    onSelecionarPaciente(paciente) // 🔧 essa função deve abrir a FichaAtendimento no dashboard
+  useEffect(() => {
+    if (selecionado) {
+      axios
+        .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+        .then(res => {
+          const disponiveis = res.data.filter(h => h.paciente_id === null)
+          setHorarios(disponiveis)
+        })
+        .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
+    }
+  }, [selecionado, user.id])
+
+  const confirmar = async () => {
+    if (!selecionado?.id || !horarioId) {
+      toastErro('Selecione um paciente e um horário.')
+      return
+    }
+    setCarregando(true)
+    try {
+      await onConfirmar(horarioId, selecionado.id)
+    } catch {
+      toastErro('Erro ao confirmar agendamento.')
+    } finally {
+      setCarregando(false)
+    }
   }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-6 max-h-[80vh] overflow-hidden">
-        <h2 className="text-nublia-accent text-2xl font-bold">Buscar Paciente</h2>
+      <div className="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative">
+        <button
+          onClick={onCancelar}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+        >
+          <X size={20} />
+        </button>
 
-        <div className="relative max-w-lg w-full">
+        <h2 className="text-xl font-semibold text-nublia-accent pr-6">Novo agendamento</h2>
+
+        <label className="text-sm text-gray-600">Buscar paciente:</label>
+        <div className="relative w-full">
           <Search className="absolute left-3 top-3 text-gray-400" size={20} />
           <input
             ref={inputRef}
             type="text"
-            placeholder="Digite o nome do paciente..."
-            value={termoBusca}
-            onChange={(e) => setTermoBusca(e.target.value)}
-            className="pl-10 border rounded-full w-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent transition-all duration-300 focus:scale-[1.02]"
+            placeholder="Digite o nome..."
+            value={filtro}
+            onChange={e => setFiltro(e.target.value)}
+            className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
           />
         </div>
 
-        <div className="overflow-y-auto max-h-[320px]">
-          <AnimatePresence>
-            {termoBusca.trim() && pacientes.length > 0 && (
-              <motion.ul
-                key="lista"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.2 }}
-                className="space-y-3"
+        {pacientes.length > 0 && (
+          <div className="overflow-y-auto max-h-[300px] mt-2">
+            {pacientes.map((paciente) => (
+              <div
+                key={paciente.id}
+                className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
               >
-                {pacientes.map((paciente) => (
-                  <li
-                    key={paciente.id}
-                    className="flex justify-between items-center bg-gray-50 border rounded-lg px-4 py-3 hover:shadow-sm transition"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-800">{paciente.name}</p>
-                      <p className="text-sm text-gray-500">{paciente.email || 'Sem e-mail'}</p>
-                    </div>
-                    <button
-                      onClick={() => selecionarPaciente(paciente)}
-                      className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
-                    >
-                      <User size={18} /> Selecionar
-                    </button>
-                  </li>
-                ))}
-              </motion.ul>
-            )}
+                <div>
+                  <p className="font-medium text-gray-800">{paciente.name}</p>
+                  <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelecionado(paciente)
+                    setFiltro('')
+                    setPacientes([])
+                  }}
+                  className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+                >
+                  <User size={18} className="hover:text-nublia-orange" /> Selecionar
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
-            {termoBusca.trim() && pacientes.length === 0 && (
-              <motion.p
-                key="nenhum"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-gray-500 text-center italic mt-4"
-              >
-                Nenhum paciente encontrado.
-              </motion.p>
-            )}
+        {selecionado && (
+          <>
+            <p className="text-sm text-gray-700 mt-2">Paciente selecionado: <strong>{selecionado.name}</strong></p>
 
-            {!termoBusca.trim() && (
-              <motion.p
-                key="dica"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-gray-400 text-center mt-4"
-              >
-               
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </div>
+            <label className="text-sm text-gray-600 mt-4">Selecionar horário:</label>
+            <select
+              value={horarioId || ''}
+              onChange={(e) => setHorarioId(parseInt(e.target.value))}
+              className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
+            >
+              <option value="">Selecione um horário disponível</option>
+              {horarios
+                .filter(h => h.data && h.hora)
+                .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
+                .map((h) => {
+                  const [ano, mes, dia] = h.data.split('-').map(Number)
+                  const [hora, minuto] = h.hora.split(':').map(Number)
+                  const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
 
-        <div className="flex justify-between pt-4">
-          <button
-            onClick={onClose}
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-5 py-2 rounded-full text-sm"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={onCadastrarNovo}
-            className="bg-nublia-accent hover:brightness-110 text-gray-800 px-5 py-2 rounded-full text-sm"
-          >
-            Cadastrar Novo Paciente
-          </button>
-        </div>
+                  return (
+                    <option key={h.id} value={h.id}>
+                      {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+                    </option>
+                  )
+                })}
+            </select>
+
+            <button
+              onClick={confirmar}
+              disabled={!horarioId || carregando}
+              className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
+            >
+              {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar agendamento'}
+            </button>
+          </>
+        )}
       </div>
     </div>
   )
