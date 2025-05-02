@@ -1,7 +1,7 @@
 import { format, isSameDay } from 'date-fns'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Trash } from 'lucide-react'
+import { Trash, UserRoundCheck } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 
 export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onAtualizar }) {
