@@ -438,6 +438,7 @@ useEffect(() => {
     onPacienteCadastrado={(paciente) => {
       setPacienteSelecionado(paciente)
       setMostrarCadastrarPaciente(false)
+      toastSucesso('Paciente cadastrado com sucesso!')
       setTimeout(() => setAbaSelecionada(0), 0)
     }}
   />
