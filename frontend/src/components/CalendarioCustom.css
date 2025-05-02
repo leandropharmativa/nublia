@@ -87,4 +87,18 @@
   justify-content: center; /* horizontal */
   height: 100%;            /* preencher a altura da linha */
 }
+.rbc-month-view .rbc-days-header .rbc-header {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.875rem; /* equivale a text-sm do Tailwind */
+  text-align: center;
+}
+
+.rbc-month-view .rbc-days-header .rbc-header:nth-child(1) {
+  color: #f97316; /* laranja para domingo (tailwind orange-500) */
+}
+
+.rbc-month-view .rbc-days-header .rbc-header:not(:nth-child(1)) {
+  color: #2563eb; /* azul nublia padrão (tailwind blue-600 ou sua var nublia-accent) */
+}
 
