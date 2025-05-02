@@ -256,7 +256,7 @@ useEffect(() => {
                     <h2 className="text-lg font-semibold">Agendamentos para hoje</h2>
                   </div>
                   {agendamentosHoje.length === 0 ? (
-                    <p className="text-sm text-gray-500 italic">Nenhum paciente agendado para hoje.</p>
+                    <p className="text-sm text-gray-400">Nenhum paciente agendado para hoje.</p>
                   ) : (
                     <ul className="space-y-[6px] text-sm text-gray-800 w-full max-w-xl">
                       {agendamentosHoje.map((a) => (
