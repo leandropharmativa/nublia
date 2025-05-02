@@ -4,7 +4,7 @@ import axios from 'axios'
 import { Trash } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 
-export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
+export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onAtualizar }) {
   const [horaDigitada, setHoraDigitada] = useState('00:00')
   const [horariosExistentes, setHorariosExistentes] = useState([])
   const user = JSON.parse(localStorage.getItem('user'))
@@ -42,6 +42,7 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
       await onConfirmar(horaDigitada, true)
       setHoraDigitada('00:00')
       carregarHorariosDoDia()
+      onAtualizar?.()
     } catch (error) {
       toastErro('Erro ao cadastrar horário.')
     }
@@ -52,6 +53,7 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar }) {
       await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
       toastSucesso('Horário removido com sucesso!')
       carregarHorariosDoDia()
+      onAtualizar?.()
     } catch (error) {
       toastErro('Erro ao remover horário.')
     }
