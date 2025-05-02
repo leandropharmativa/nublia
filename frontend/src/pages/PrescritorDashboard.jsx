@@ -198,7 +198,7 @@ useEffect(() => {
               iconeInicio={<PlusCircle size={18} />}
               onClick={() => setMostrarBuscarPacienteModal(true)}
               full={true}
-              className="rounded-full text-white bg-nublia-accent hover:bg-blue-100"
+              className="rounded-full text-white bg-nublia-accent hover:nublia-primaryfocus"
             />
           </div>
           <div className="flex-1 overflow-hidden">
@@ -257,11 +257,11 @@ useEffect(() => {
                     <h2 className="text-lg font-semibold">Agendamentos para hoje</h2>
                   </div>
                   {agendamentosHoje.length === 0 ? (
-                    <p className="text-sm text-gray-400">Nenhum paciente agendado para hoje.</p>
+                    <p className="text-sm text-nublia-textcont">Nenhum paciente agendado para hoje.</p>
                   ) : (
-                    <ul className="space-y-[6px] text-sm text-gray-400 w-full max-w-xl">
+                    <ul className="space-y-[6px] text-sm text-nublia-textcont w-full max-w-xl">
                       {agendamentosHoje.map((a) => (
-                        <li key={a.id} className="flex items-center gap-2 border-b border-gray-200 pb-1">
+                        <li key={a.id} className="flex items-center gap-2 border-b border-nublia-textcont pb-1">
                           <button
                             onClick={() => handleVerPerfil(a.paciente_id)}
                             title="Ver perfil"
@@ -270,7 +270,7 @@ useEffect(() => {
                             <User size={16} />
                           </button>
                           <span className="font-medium">{a.nome}</span>
-                          <span className="text-gray-400 text-sm">{a.hora?.slice(0, 5)}h</span>
+                          <span className="text-nublia-textcont text-sm">{a.hora?.slice(0, 5)}h</span>
                           <button
                             className="text-nublia-accent hover:text-nublia-orange ml-1"
                             title="Editar agendamento"
@@ -311,7 +311,7 @@ useEffect(() => {
                       iconeInicio={<CalendarPlus size={16} />}
                       onClick={() => setMostrarModalNovoAgendamento(true)}
                       full={false}
-                      className="rounded-full text-white bg-nublia-accent hover:bg-blue-100"
+                      className="rounded-full text-white bg-nublia-accent hover:bg-nublia-primaryfocus"
                     />
                   </div>
                 </div>
@@ -324,8 +324,8 @@ useEffect(() => {
                 <h2 className="text-xl font-bold mt-8 mb-4">Minhas fórmulas</h2>
                 <MinhasFormulas usuarioId={user?.id} />
               </Tab.Panel>
-              <Tab.Panel><div className="flex flex-col justify-center items-center py-16 text-gray-500 italic">Área de dietas (em breve)</div></Tab.Panel>
-              <Tab.Panel><div className="flex flex-col justify-center items-center py-16 text-gray-500 italic">Configurações da conta (em breve)</div></Tab.Panel>
+              <Tab.Panel><div className="flex flex-col justify-center items-center py-16 text-nublia-textcont italic">Área de dietas (em breve)</div></Tab.Panel>
+              <Tab.Panel><div className="flex flex-col justify-center items-center py-16 text-nublia-textcont italic">Configurações da conta (em breve)</div></Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
         </div>
