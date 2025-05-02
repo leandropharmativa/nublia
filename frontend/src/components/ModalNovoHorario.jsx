@@ -18,7 +18,8 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
         )
         .map((item) => ({
           id: item.id,
-          hora: item.hora.slice(0, 5)
+          hora: item.hora.slice(0, 5),
+          status: item.status
         }))
         .sort((a, b) => a.hora.localeCompare(b.hora))
 
@@ -76,24 +77,27 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
           onChange={(e) => setHoraDigitada(e.target.value)}
         />
 
-{horariosExistentes.map((item) => (
-  <li
-    key={item.id}
-    className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full border border-gray-300"
-  >
-    <span className="text-gray-800">{item.hora}h</span>
-    {item.status === 'disponivel' && (
-      <button
-        onClick={() => removerHorario(item.id)}
-        title="Remover horário"
-        className="text-gray-400 hover:text-red-500"
-      >
-        <Trash size={14} />
-      </button>
-    )}
-  </li>
-))}
-
+        {horariosExistentes.length > 0 && (
+          <div className="mb-4">
+            <p className="text-sm text-gray-700 font-semibold mb-1">Horários já cadastrados:</p>
+            <ul className="flex flex-wrap gap-2 text-sm text-gray-600">
+              {horariosExistentes.map((item) => (
+                <li
+                  key={item.id}
+                  className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full border border-gray-300"
+                >
+                  <span className="text-gray-800">{item.hora}h</span>
+                  {item.status === 'disponivel' && (
+                    <button
+                      onClick={() => removerHorario(item.id)}
+                      title="Remover horário"
+                      className="text-gray-400 hover:text-red-500"
+                    >
+                      <Trash size={14} />
+                    </button>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
         )}
