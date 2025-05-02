@@ -18,6 +18,8 @@ export default {
           success: "#CDDBF9",   // azul bem claro (mensagens positivas)
           warning: "#FFC6B4",   // amarelo-laranja suave
           danger: "#fca5a5",    // vermelho claro (erro forte, opcional)
+          texthead: "#2C2E43",  // azul escuro, quase preto
+          textcont: "#999999"   // cinza 60% - gray-400  
         },
       },
       boxShadow: {
