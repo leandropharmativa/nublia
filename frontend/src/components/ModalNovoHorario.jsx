@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Trash, UserRoundCheck } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
+import Botao from './Botao'
 
 export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onAtualizar }) {
   const [horaDigitada, setHoraDigitada] = useState('00:00')
@@ -63,7 +64,7 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-        <h2 className="text-xl font-semibold text-nublia-accent mb-4">Cadastrar horário disponível</h2>
+        <h2 className="text-xl font-semibold text-nublia-primary mb-4">Cadastrar horário disponível</h2>
 
         <p className="mb-4 text-sm text-gray-600">
           Data selecionada: <strong>{format(horario, 'dd/MM/yyyy')}</strong>
@@ -72,7 +73,7 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
         <label className="block text-sm text-gray-700 mb-1">Hora do atendimento:</label>
         <input
           type="time"
-          className="block w-full border border-gray-300 rounded-full px-4 py-2 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+          className="block w-full border border-gray-300 rounded-full px-4 py-2 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
           value={horaDigitada}
           onChange={(e) => setHoraDigitada(e.target.value)}
         />
@@ -86,42 +87,34 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
                   key={item.id}
                   className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full border border-gray-300"
                 >
-                <span className="text-gray-800 flex items-center gap-1">
-                  {item.hora}h
-                  {item.status === 'agendado' && (
-                    <UserRoundCheck size={14} className="text-orange-500" title="Horário agendado" />
-                  )}
-                </span>
+                  <span className="text-gray-800 flex items-center gap-1">
+                    {item.hora}h
+                    {item.status === 'agendado' && (
+                      <UserRoundCheck size={14} className="text-orange-500" title="Horário agendado" />
+                    )}
+                  </span>
                   {item.status === 'disponivel' && (
-                <button
-                  onClick={() => removerHorario(item.id)}
-                  title="Remover horário"
-                  className="text-gray-400 hover:text-red-500"
-                >
-                <Trash size={14} />
-              </button>
-              )}
-
+                    <button
+                      onClick={() => removerHorario(item.id)}
+                      title="Remover horário"
+                      className="text-gray-400 hover:text-red-500"
+                    >
+                      <Trash size={14} />
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
         )}
 
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={onCancelar}
-            className="px-4 py-2 rounded-full text-sm bg-gray-200 hover:bg-gray-300 text-gray-700"
-          >
+        <div className="flex justify-end gap-3 mt-6">
+          <Botao variante="claro" onClick={onCancelar}>
             Fechar
-          </button>
-          <button
-            onClick={handleConfirmar}
-            className="px-5 py-2 rounded-full text-sm bg-nublia-accent text-white hover:brightness-110"
-            disabled={!horaDigitada}
-          >
+          </Botao>
+          <Botao onClick={handleConfirmar} disabled={!horaDigitada}>
             Adicionar
-          </button>
+          </Botao>
         </div>
       </div>
     </div>
