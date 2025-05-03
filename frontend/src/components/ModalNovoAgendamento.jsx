@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { Search, User, X, Loader2 } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
+import Botao from './Botao'
 
 export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
   const [pacientes, setPacientes] = useState([])
@@ -87,7 +88,7 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
             placeholder="Digite o nome..."
             value={filtro}
             onChange={e => setFiltro(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+            className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
           />
         </div>
 
@@ -120,13 +121,15 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
 
         {selecionado && (
           <>
-            <p className="text-sm text-gray-700 mt-2">Paciente selecionado: <strong>{selecionado.name}</strong></p>
+            <p className="text-sm text-gray-700 mt-2">
+              Paciente selecionado: <strong>{selecionado.name}</strong>
+            </p>
 
             <label className="text-sm text-gray-600 mt-4">Selecionar horário:</label>
             <select
               value={horarioId || ''}
               onChange={(e) => setHorarioId(parseInt(e.target.value))}
-              className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
+              className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
             >
               <option value="">Selecione um horário disponível</option>
               {horarios
@@ -145,13 +148,19 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
                 })}
             </select>
 
-            <button
-              onClick={confirmar}
-              disabled={!horarioId || carregando}
-              className="mt-4 w-full rounded-full py-2 text-sm text-white bg-nublia-accent hover:brightness-110 disabled:opacity-60"
-            >
-              {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar agendamento'}
-            </button>
+            <div className="flex justify-end gap-3 mt-6">
+              <Botao variante="claro" onClick={onCancelar}>
+                Cancelar
+              </Botao>
+              <Botao
+                onClick={confirmar}
+                disabled={!horarioId || carregando}
+                variante="primario"
+                className="w-full h-11 rounded-full"
+              >
+                {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar agendamento'}
+              </Botao>
+            </div>
           </>
         )}
       </div>
