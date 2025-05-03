@@ -349,16 +349,14 @@ useEffect(() => {
           setTimeout(() => setAbaSelecionada(0), 0)
           }}
 onCadastrarNovo={() => {
-  setMostrarModalNovoAgendamento(false)
+  setMostrarBuscarPacienteModal(false)
   setCallbackAoCadastrarPaciente((paciente) => {
-    setMostrarModalNovoAgendamento(true)
-    setTimeout(() => {
-      const evt = new CustomEvent('PacienteCadastrado', { detail: paciente })
-      window.dispatchEvent(evt)
-    }, 0)
+    setPacienteSelecionado(paciente)
+    setTimeout(() => setAbaSelecionada(0), 0)
   })
   setMostrarCadastrarPaciente(true)
 }}
+
 
       {mostrarPerfilPacienteModal && pacientePerfil && (
         <PerfilPacienteModal
