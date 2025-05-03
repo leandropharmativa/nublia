@@ -198,7 +198,7 @@ useEffect(() => {
         <div className="h-full w-72 flex flex-col">
           <div className="p-4 pb-0">
 <Botao
-  onClick={() => setBuscarpacienteModal(true)}
+  onClick={() => setMostrarBuscarPacienteModal(true)}
   variante="primario"
   full
   className="rounded-full h-11"
