@@ -127,20 +127,26 @@ export default function Register() {
             />
           </div>
 
-          <Botao type="submit" className="mb-3" disabled={carregando}>
-            {carregando && (
-              <svg
-                className="animate-spin h-5 w-5 text-blue-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
-              </svg>
-            )}
-            <span>Registrar</span>
-          </Botao>
+<Botao
+  type="submit"
+  disabled={carregando}
+  className="mb-3 w-full h-11 rounded-md"
+  variante="login"
+>
+  {carregando && (
+    <svg
+      className="animate-spin h-5 w-5 text-blue-600"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
+    </svg>
+  )}
+  <span>Registrar</span>
+</Botao>
+
         </form>
       </div>
     </div>
