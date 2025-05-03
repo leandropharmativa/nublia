@@ -43,7 +43,7 @@ export default function PrescritorDashboard() {
   const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
   const [mostrarNovoHorario, setMostrarNovoHorario] = useState(false)
   const [mostrarAgendamentoModal, setMostrarAgendamentoModal] = useState(false)
-  const [mostrarModalNovoAgendamento, setMostrarModalNovoAgendamento] = useState(false)
+  const [Agendamento, setAgendamento] = useState(false)
   const [mostrarCadastrarPaciente, setMostrarCadastrarPaciente] = useState(false)
   const [origemNovoAgendamento, setOrigemNovoAgendamento] = useState(false)
   const [callbackAoCadastrarPaciente, setCallbackAoCadastrarPaciente] = useState(null)
@@ -313,7 +313,7 @@ useEffect(() => {
 
                   <div className="mt-6">
 <Botao
-  onClick={() => setMostrarModalNovoAgendamento(true)}
+  onClick={() => setAgendamento(true)}
   variante="primario"
   full={false}
   className="rounded-full h-11 px-5"
@@ -452,7 +452,7 @@ useEffect(() => {
     onPacienteCadastrado={(paciente) => {
       if (origemNovoAgendamento) {
         setMostrarCadastrarPaciente(false)
-        setMostrarModalNovoAgendamento(true)
+        setAgendamento(true)
         setTimeout(() => {
           const evt = new CustomEvent('PacienteCadastrado', { detail: paciente })
           window.dispatchEvent(evt)
@@ -468,8 +468,8 @@ useEffect(() => {
   />
 )}
 
-      {mostrarModalNovoAgendamento && (
-      <ModalNovoAgendamento
+{mostrarModalNovoAgendamento && (
+  <ModalNovoAgendamento
     onCancelar={() => setMostrarModalNovoAgendamento(false)}
     onConfirmar={async (horarioId, pacienteId) => {
       try {
@@ -487,8 +487,14 @@ useEffect(() => {
         toastErro('Erro ao agendar paciente.')
       }
     }}
+    onCadastrarNovo={() => {
+      setMostrarModalNovoAgendamento(false)
+      setOrigemNovoAgendamento(true)
+      setMostrarCadastrarPaciente(true)
+    }}
   />
 )}
+
 
     </Layout>
   )
