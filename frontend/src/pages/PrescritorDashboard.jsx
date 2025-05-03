@@ -400,20 +400,6 @@ useEffect(() => {
         />
       )}
 
-      <BuscarPacienteModal
-  onClose={() => setMostrarBuscarPacienteModal(false)}
-  onSelecionarPaciente={(paciente) => {
-    setPacienteSelecionado(paciente)
-    setMostrarBuscarPacienteModal(false)
-    setTimeout(() => setAbaSelecionada(0), 0)
-  }}
-  onCadastrarNovo={() => {
-    setOrigemCadastro('buscar')
-    setMostrarBuscarPacienteModal(false)
-    setMostrarCadastrarPaciente(true)
-  }}
-/>
-
 
       {mostrarAgendamentoModal && agendamentoSelecionado && (
         <ModalAgendarHorario
