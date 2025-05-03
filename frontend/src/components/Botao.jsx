@@ -20,7 +20,7 @@ export default function Botao({
     danger: 'bg-red-500 text-white hover:bg-red-600',
     texto: 'text-nublia-accent hover:text-nublia-orange',
     login: 'bg-nublia-primary text-white hover:bg-nublia-primaryfocus',
-    loginAlt: 'bg-white text-nublia-texthead border border-nublia-primary hover:bg-nublia-primaryfocus'
+    loginAlt: 'btn-primary rounded-full text-sm px-4 py-1'
   }
 
   const largura = full ? 'w-full' : ''
