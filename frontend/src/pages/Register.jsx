@@ -74,7 +74,7 @@ export default function Register() {
           <h1 className="text-5xl font-bold text-left leading-snug mb-4">
             Bem vindo(a)<br />à Nublia
           </h1>
-          <h2 className="text-2xl font-semibold text-left leading-snug">
+          <h2 className="text-2xl font-semibold text-white text-left leading-snug">
             Crie sua conta.
           </h2>
         </div>
