@@ -141,7 +141,7 @@ export default function Login({ onLogin }) {
 <Botao
   type="submit"
   disabled={carregando}
-  className="mb-3 w-full h-11 rounded-sm"
+  className="mb-3 w-full h-11 rounded-md"
   variante="login"
 >
   {carregando && (
