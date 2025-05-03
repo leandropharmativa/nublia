@@ -18,7 +18,8 @@ export default function Botao({
     secundario: 'border border-nublia-accent text-nublia-accent hover:bg-blue-50',
     claro: 'bg-gray-100 text-gray-800 hover:bg-gray-200',
     danger: 'bg-red-500 text-white hover:bg-red-600',
-    texto: 'text-nublia-accent hover:text-nublia-orange'
+    texto: 'text-nublia-accent hover:text-nublia-orange',
+    login: 'bg-nublia-primary text-white hover:bg-nublia-primaryfocus'
   }
 
   const largura = full ? 'w-full' : ''
