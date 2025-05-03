@@ -45,6 +45,7 @@ export default function PrescritorDashboard() {
   const [mostrarAgendamentoModal, setMostrarAgendamentoModal] = useState(false)
   const [mostrarModalNovoAgendamento, setMostrarModalNovoAgendamento] = useState(false)
   const [mostrarCadastrarPaciente, setMostrarCadastrarPaciente] = useState(false)
+  const [origemCadastro, setOrigemCadastro] = useState(null)
 
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
@@ -310,14 +311,19 @@ useEffect(() => {
 
                   <div className="mt-6">
 <Botao
-  onClick={() => setMostrarModalNovoAgendamento(true)}
+  onClick={() => {
+    setOrigemCadastro('agendar')
+    setMostrarModalNovoAgendamento(false) // Garante que abre limpo
+    setMostrarCadastrarPaciente(true)
+  }}
   variante="primario"
   full={false}
-  className="rounded-full h-11 px-5"
+  className="rounded-full h-11"
 >
   Incluir agendamento
   <CalendarPlus size={16} />
 </Botao>
+
 
                   </div>
                 </div>
