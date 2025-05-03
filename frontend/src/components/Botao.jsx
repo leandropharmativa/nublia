@@ -15,17 +15,17 @@ export default function Botao({
 
 const estilosPorVariante = {
   // Botões principais do sistema
-  primario: 'bg-nublia-accent text-white hover:bg-nublia-orange',
-  secundario: 'border border-nublia-accent text-nublia-accent hover:bg-blue-50',
+  primario: 'px-4 py-2 bg-nublia-accent text-white hover:bg-nublia-orange',
+  secundario: 'px-4 py-2 border border-nublia-accent text-nublia-accent hover:bg-blue-50',
 
   // Botões utilitários
-  claro: 'bg-gray-100 text-gray-800 hover:bg-gray-200',
-  danger: 'bg-red-500 text-white hover:bg-red-600',
-  texto: 'text-nublia-accent hover:text-nublia-orange',
+  claro: 'px-4 py-2 bg-gray-100 text-gray-800 hover:bg-gray-200',
+  danger: 'px-4 py-2 bg-red-500 text-white hover:bg-red-600',
+  texto: 'px-4 py-2 text-nublia-accent hover:text-nublia-orange',
 
   // Login/Register
-  login: 'bg-nublia-primary text-nublia-texthead hover:bg-nublia-primaryfocus',
-  loginAlt: 'bg-white text-nublia-texthead border border-nublia-primary hover:bg-nublia-primaryfocus'
+  login: 'px-4 py-2 bg-nublia-primary text-nublia-texthead hover:bg-nublia-primaryfocus',
+  loginAlt: 'px-4 py-2 bg-white text-nublia-texthead border border-nublia-primary hover:bg-nublia-primaryfocus'
 }
 
 
