@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { isSameDay, parseISO } from 'date-fns'
 import { useMemo } from 'react'
@@ -38,7 +39,7 @@ export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
   const [abaSelecionada, setAbaSelecionada] = useState(0)
 
-  const [mostrar, setMostrar] = useState(false)
+  const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
   const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
   const [mostrarNovoHorario, setMostrarNovoHorario] = useState(false)
@@ -195,7 +196,7 @@ useEffect(() => {
         <div className="h-full w-72 flex flex-col">
           <div className="p-4 pb-0">
 <Botao
-  onClick={() => setMostrar(true)}
+  onClick={() => setMostrarBuscarPacienteModal(true)}
   variante="primario"
   full
   className="rounded-full h-11"
@@ -343,21 +344,19 @@ useEffect(() => {
         </div>
       </div>
 
-      {mostrar && (
-<BuscarPacienteModal
-  onClose={() => setMostrarBuscarPacienteModal(false)}
-  onSelecionarPaciente={(paciente) => {
-    setPacienteSelecionado(paciente)
-    setMostrarBuscarPacienteModal(false)
-    setTimeout(() => setAbaSelecionada(0), 0)
-  }}
-  onCadastrarNovo={() => {
-    setOrigemCadastro('buscar')
-    setMostrarBuscarPacienteModal(false)
-    setMostrarCadastrarPaciente(true)
-  }}
-/>
-
+      {mostrarBuscarPacienteModal && (
+        <BuscarPacienteModal
+          onClose={() => setMostrarBuscarPacienteModal(false)}
+          onSelecionarPaciente={(paciente) => {
+          setPacienteSelecionado(paciente)
+          setMostrarBuscarPacienteModal(false)
+          setTimeout(() => setAbaSelecionada(0), 0)
+          }}
+          onCadastrarNovo={() => {
+          setMostrarBuscarPacienteModal(false)
+          setMostrarCadastrarPaciente(true)
+        }}
+      />
 
       )}
 
@@ -446,25 +445,17 @@ useEffect(() => {
         />
       )}
 
-{mostrarCadastrarPaciente && (
+      {mostrarCadastrarPaciente && (
   <CadastrarPacienteModal
-    origem={origemCadastro}
     onClose={() => setMostrarCadastrarPaciente(false)}
     onPacienteCadastrado={(paciente) => {
-      if (origemCadastro === 'buscar') {
-        setPacienteSelecionado(paciente)
-        setMostrarCadastrarPaciente(false)
-        toastSucesso('Paciente cadastrado com sucesso!')
-        setTimeout(() => setAbaSelecionada(0), 0)
-      } else if (origemCadastro === 'agendar') {
-        setPacienteSelecionado(paciente)
-        setMostrarCadastrarPaciente(false)
-        setMostrarModalNovoAgendamento(true)
-        toastSucesso('Paciente cadastrado com sucesso!')
-      }
+      setPacienteSelecionado(paciente)
+      setMostrarCadastrarPaciente(false)
+      toastSucesso('Paciente cadastrado com sucesso!')
+      setTimeout(() => setAbaSelecionada(0), 0)
     }}
   />
-)}
+    )}
 
       {mostrarModalNovoAgendamento && (
 <ModalNovoAgendamento
