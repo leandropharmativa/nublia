@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import { Search, User, X, Loader2 } from 'lucide-react'
+import { Search, User, X, Loader2, CalendarPlus } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
 
@@ -163,6 +163,7 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
         className="rounded-full w-full py-2 text-sm"
       >
         {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar agendamento'}
+        <CalendarPlus size={16} />
       </Botao>
     </div>
   </>
