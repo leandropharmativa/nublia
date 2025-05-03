@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
-import { Search, User } from 'lucide-react'
+import { Search, User, UserRoundPlus } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Botao from './Botao'
 
@@ -124,6 +124,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
             className="rounded-full text-sm px-4 py-2"
           >
             Cadastrar Novo Paciente
+            <UserRoundPlus size={16} />
           </Botao>
         </div>
       </div>
