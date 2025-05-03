@@ -451,25 +451,29 @@ useEffect(() => {
     )}
 
       {mostrarModalNovoAgendamento && (
-      <ModalNovoAgendamento
-    onCancelar={() => setMostrarModalNovoAgendamento(false)}
-    onConfirmar={async (horarioId, pacienteId) => {
-      try {
-        const res = await fetch('https://nublia-backend.onrender.com/agenda/agendar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
-        })
+<ModalNovoAgendamento
+  onCancelar={() => setMostrarModalNovoAgendamento(false)}
+  onConfirmar={async (horarioId, pacienteId) => {
+    try {
+      const res = await fetch('https://nublia-backend.onrender.com/agenda/agendar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
+      })
 
-        if (!res.ok) throw new Error()
-        toastSucesso('Paciente agendado com sucesso!')
-        setMostrarModalNovoAgendamento(false)
-        carregarAgenda(user.id)
-      } catch {
-        toastErro('Erro ao agendar paciente.')
-      }
-    }}
-  />
+      if (!res.ok) throw new Error()
+      toastSucesso('Paciente agendado com sucesso!')
+      setMostrarModalNovoAgendamento(false)
+      carregarAgenda(user.id)
+    } catch {
+      toastErro('Erro ao agendar paciente.')
+    }
+  }}
+  onCadastrarNovo={() => {
+    setMostrarModalNovoAgendamento(false)
+    setMostrarCadastrarPaciente(true)
+  }}
+/>
 )}
 
     </Layout>
