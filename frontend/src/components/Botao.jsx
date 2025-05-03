@@ -11,7 +11,7 @@ export default function Botao({
   iconeFim = null,
   full = false
 }) {
-  const estilosBase = 'text-sm font-semibold transition flex items-center justify-center gap-2'
+  const estilosBase = 'transition flex items-center justify-center gap-2'
 
 const estilosPorVariante = {
   // Botões principais do sistema
