@@ -314,8 +314,7 @@ useEffect(() => {
 <Botao
   onClick={() => {
     setOrigemCadastro('agendar')
-    setMostrarModalNovoAgendamento(false) // Garante que abre limpo
-    setMostrarCadastrarPaciente(true)
+    setMostrarModalNovoAgendamento(true)
   }}
   variante="primario"
   full={false}
@@ -446,41 +445,35 @@ useEffect(() => {
       )}
 
       {mostrarCadastrarPaciente && (
-  <CadastrarPacienteModal
-    onClose={() => setMostrarCadastrarPaciente(false)}
-    onPacienteCadastrado={(paciente) => {
+<CadastrarPacienteModal
+  onClose={() => setMostrarCadastrarPaciente(false)}
+  onPacienteCadastrado={(paciente) => {
+    setMostrarCadastrarPaciente(false)
+    toastSucesso('Paciente cadastrado com sucesso!')
+
+    if (origemCadastro === 'agendar') {
+      setMostrarModalNovoAgendamento(true)
+      setTimeout(() => setPacienteSelecionado(paciente), 0)
+    } else {
       setPacienteSelecionado(paciente)
-      setMostrarCadastrarPaciente(false)
-      toastSucesso('Paciente cadastrado com sucesso!')
       setTimeout(() => setAbaSelecionada(0), 0)
-    }}
-  />
+    }
+  }}
+/>
+
     )}
 
       {mostrarModalNovoAgendamento && (
 <ModalNovoAgendamento
   onCancelar={() => setMostrarModalNovoAgendamento(false)}
-  onConfirmar={async (horarioId, pacienteId) => {
-    try {
-      const res = await fetch('https://nublia-backend.onrender.com/agenda/agendar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
-      })
-
-      if (!res.ok) throw new Error()
-      toastSucesso('Paciente agendado com sucesso!')
-      setMostrarModalNovoAgendamento(false)
-      carregarAgenda(user.id)
-    } catch {
-      toastErro('Erro ao agendar paciente.')
-    }
-  }}
+  onConfirmar={...}
   onCadastrarNovo={() => {
+    setOrigemCadastro('agendar')
     setMostrarModalNovoAgendamento(false)
     setMostrarCadastrarPaciente(true)
   }}
 />
+
 )}
 
     </Layout>
