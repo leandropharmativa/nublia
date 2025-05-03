@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
+import Botao from './Botao'
 
 export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }) {
   const [form, setForm] = useState({
@@ -108,24 +109,23 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
           />
 
           <div className="flex justify-between pt-6">
-            <button
+            <Botao
               type="button"
               onClick={onClose}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm px-5 py-2 rounded-full"
+              variante="claro"
+              className="px-5 py-2 rounded-full text-sm"
             >
               Cancelar
-            </button>
-            <button
+            </Botao>
+
+            <Botao
               type="submit"
               disabled={carregando}
-              className={`text-sm px-6 py-2 rounded-full text-white ${
-                carregando
-                  ? 'bg-nublia-accent/60 cursor-not-allowed'
-                  : 'bg-nublia-accent hover:brightness-110'
-              }`}
+              variante="primario"
+              className="px-6 py-2 rounded-full text-sm"
             >
               {carregando ? 'Cadastrando...' : 'Cadastrar'}
-            </button>
+            </Botao>
           </div>
         </form>
       </div>
