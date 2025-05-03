@@ -114,14 +114,14 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
           <Botao
             onClick={onClose}
             variante="secundario"
-            className="rounded-full text-sm px-5"
+            className="rounded-full text-sm px-4 py-2"
           >
             Cancelar
           </Botao>
           <Botao
             onClick={onCadastrarNovo}
             variante="primario"
-            className="rounded-full text-sm px-5"
+            className="rounded-full text-sm px-4 py-2"
           >
             Cadastrar Novo Paciente
           </Botao>
