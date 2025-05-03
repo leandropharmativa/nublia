@@ -199,8 +199,8 @@ useEffect(() => {
   full
   className="rounded-full h-11"
 >
-  <PlusCircle size={18} />
   Iniciar atendimento
+  <PlayCircle size={18} />
 </Botao>
 
           </div>
@@ -309,13 +309,16 @@ useEffect(() => {
                   )}
 
                   <div className="mt-6">
-                    <Botao
-                      texto="Incluir agendamento"
-                      iconeInicio={<CalendarPlus size={16} />}
-                      onClick={() => setMostrarModalNovoAgendamento(true)}
-                      full={false}
-                      className="rounded-full text-white bg-nublia-accent hover:bg-nublia-orange"
-                    />
+<Botao
+  onClick={() => setMostrarModalNovoAgendamento(true)}
+  variante="primario"
+  full={false}
+  className="rounded-full h-11"
+>
+  Incluir agendamento
+  iconeInicio={<CalendarPlus size={16} />}
+</Botao>
+
                   </div>
                 </div>
               </Tab.Panel>
