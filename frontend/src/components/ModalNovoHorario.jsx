@@ -64,7 +64,11 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-        <h2 className="text-xl font-semibold text-nublia-primary mb-4">Cadastrar horário disponível</h2>
+        <h2 className="text-xl font-semibold text-nublia-primary mb-4 flex items-center gap-2">
+          <CalendarPlus2 className="w-5 h-5" />
+          Cadastrar horário disponível
+          </h2>
+
 
         <p className="mb-4 text-sm text-gray-600">
           Data selecionada: <strong>{format(horario, 'dd/MM/yyyy')}</strong>
