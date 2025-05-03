@@ -98,8 +98,8 @@ export default function Login({ onLogin }) {
           <p className="text-subtle text-nublia-texthead">Novo no Nublia?</p>
 <Botao
   onClick={() => navigate('/register')}
-  variante="loginAlt"
-  className="text-sm px-4 py-1"
+  variante="login"
+  className="text-sm px-4 py-1 rounded-full"
 >
   Criar conta
 </Botao>
