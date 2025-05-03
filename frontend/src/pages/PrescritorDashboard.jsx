@@ -312,11 +312,11 @@ useEffect(() => {
 <Botao
   onClick={() => setMostrarModalNovoAgendamento(true)}
   variante="primario"
-  full
-  className="rounded-full h-11"
+  full={false}
+  className="rounded-full h-11 px-5"
 >
   Incluir agendamento
-  {<CalendarPlus size={16} />}
+  <CalendarPlus size={16} />
 </Botao>
 
                   </div>
