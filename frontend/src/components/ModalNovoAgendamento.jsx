@@ -83,22 +83,51 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
           <h2 className="text-xl font-semibold pr-6">Novo agendamento</h2>
         </div>
 
-        {mostrarBusca && (
-          <>
-            <label className="text-sm text-gray-600">Buscar paciente:</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Digite o nome..."
-                value={filtro}
-                onChange={e => setFiltro(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-              />
+{mostrarBusca && (
+  <>
+    {pacientes.length > 0 ? (
+      <div className="overflow-y-auto max-h-[300px] mt-2">
+        {pacientes.map((paciente) => (
+          <div
+            key={paciente.id}
+            className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
+          >
+            <div>
+              <p className="font-medium text-gray-800">{paciente.name}</p>
+              <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
             </div>
-          </>
-        )}
+            <button
+              type="button"
+              onClick={() => {
+                setSelecionado(paciente)
+                setMostrarBusca(false)
+                setFiltro('')
+                setPacientes([])
+              }}
+              className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+            >
+              <User size={18} /> Selecionar
+            </button>
+          </div>
+        ))}
+      </div>
+    ) : filtro.length >= 2 && (
+      <div className="mt-4 text-center text-sm text-gray-500 italic">
+        Nenhum paciente encontrado.
+        <div className="mt-4 flex justify-center">
+          <Botao
+            onClick={onCadastrarNovo}
+            variante="primario"
+            className="rounded-full px-6 py-2 text-sm"
+          >
+            Cadastrar novo paciente
+          </Botao>
+        </div>
+      </div>
+    )}
+  </>
+)}
+
 
         {mostrarBusca && pacientes.length > 0 && (
           <div className="overflow-y-auto max-h-[300px] mt-2">
