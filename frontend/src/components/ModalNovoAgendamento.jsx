@@ -55,6 +55,16 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadast
     }
   }, [selecionado, user.id])
 
+  useEffect(() => {
+  const listener = (e) => {
+    setSelecionado(e.detail)
+    setMostrarBusca(false)
+  }
+  window.addEventListener('PacienteCadastrado', listener)
+  return () => window.removeEventListener('PacienteCadastrado', listener)
+}, [])
+
+
   const confirmar = async () => {
     if (!selecionado?.id || !horarioId) {
       toastErro('Selecione um paciente e um horário.')
