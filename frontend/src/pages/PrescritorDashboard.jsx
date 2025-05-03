@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { isSameDay, parseISO } from 'date-fns'
 import { useMemo } from 'react'
@@ -44,7 +43,7 @@ export default function PrescritorDashboard() {
   const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
   const [mostrarNovoHorario, setMostrarNovoHorario] = useState(false)
   const [mostrarAgendamentoModal, setMostrarAgendamentoModal] = useState(false)
-  const [mostrarModalNovoAgendamento, setMostrarModalNovoAgendamento] = useState(false)
+  const [Agendamento, setAgendamento] = useState(false)
   const [mostrarCadastrarPaciente, setMostrarCadastrarPaciente] = useState(false)
   const [origemNovoAgendamento, setOrigemNovoAgendamento] = useState(false)
   const [callbackAoCadastrarPaciente, setCallbackAoCadastrarPaciente] = useState(null)
@@ -469,9 +468,14 @@ useEffect(() => {
   />
 )}
 
-      {mostrarModalNovoAgendamento && (
-      <ModalNovoAgendamento
+{mostrarModalNovoAgendamento && (
+  <ModalNovoAgendamento
     onCancelar={() => setMostrarModalNovoAgendamento(false)}
+    onCadastrarNovo={() => {
+      setMostrarModalNovoAgendamento(false)
+      setOrigemNovoAgendamento(true)
+      setMostrarCadastrarPaciente(true)
+    }}
     onConfirmar={async (horarioId, pacienteId) => {
       try {
         const res = await fetch('https://nublia-backend.onrender.com/agenda/agendar', {
