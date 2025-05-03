@@ -11,14 +11,14 @@
     @apply bg-nublia-accent text-white px-4 py-2 rounded-lg hover:bg-nublia-primary transition;
   }
 
-  .input-base {
-    @apply w-full border border-gray-300 rounded-lg px-3 py-2 
-           placeholder:text-gray-400 text-gray-800
-           transition-all duration-200
-           shadow-sm
-           focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary 
-           focus:outline-none;
-  }
+.input-base {
+  @apply h-11 w-full border border-gray-300 rounded-lg px-3
+         placeholder:text-gray-400 text-gray-800
+         transition-all duration-200
+         shadow-sm
+         focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary 
+         focus:outline-none;
+}
 
   .text-title {
     @apply text-2xl font-semibold text-gray-800;
