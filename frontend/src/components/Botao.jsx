@@ -25,7 +25,10 @@ const estilosPorVariante = {
 
   // Login/Register
   login: 'px-4 py-2 bg-nublia-primary text-nublia-texthead hover:bg-nublia-primaryfocus',
-  loginAlt: 'px-4 py-2 bg-white text-nublia-texthead border border-nublia-primary hover:bg-nublia-primaryfocus'
+  loginAlt: 'px-4 py-2 bg-white text-nublia-texthead border border-nublia-primary hover:bg-nublia-primaryfocus',
+
+  // Inativo
+  inativo: 'bg-gray-200 text-gray-500 cursor-not-allowed'
 }
 
 
