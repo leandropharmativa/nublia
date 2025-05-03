@@ -24,7 +24,7 @@ const estilosPorVariante = {
   texto: 'text-nublia-accent hover:text-nublia-orange',
 
   // Login/Register
-  login: 'bg-nublia-primary text-white hover:bg-nublia-primaryfocus',
+  login: 'bg-nublia-primary text-nublia-texthead hover:bg-nublia-primaryfocus',
   loginAlt: 'bg-white text-nublia-texthead border border-nublia-primary hover:bg-nublia-primaryfocus'
 }
 
