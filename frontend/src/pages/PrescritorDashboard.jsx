@@ -45,6 +45,7 @@ export default function PrescritorDashboard() {
   const [mostrarAgendamentoModal, setMostrarAgendamentoModal] = useState(false)
   const [mostrarModalNovoAgendamento, setMostrarModalNovoAgendamento] = useState(false)
   const [mostrarCadastrarPaciente, setMostrarCadastrarPaciente] = useState(false)
+  const [origemNovoAgendamento, setOrigemNovoAgendamento] = useState(false)
 
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
@@ -346,8 +347,9 @@ useEffect(() => {
           setTimeout(() => setAbaSelecionada(0), 0)
           }}
           onCadastrarNovo={() => {
-          setMostrarBuscarPacienteModal(false)
-          setMostrarCadastrarPaciente(true)
+  setMostrarModalNovoAgendamento(false)
+  setOrigemNovoAgendamento(true)
+  setMostrarCadastrarPaciente(true)
         }}
       />
 
@@ -438,17 +440,27 @@ useEffect(() => {
         />
       )}
 
-      {mostrarCadastrarPaciente && (
+{mostrarCadastrarPaciente && (
   <CadastrarPacienteModal
     onClose={() => setMostrarCadastrarPaciente(false)}
     onPacienteCadastrado={(paciente) => {
-      setPacienteSelecionado(paciente)
-      setMostrarCadastrarPaciente(false)
-      toastSucesso('Paciente cadastrado com sucesso!')
-      setTimeout(() => setAbaSelecionada(0), 0)
+      if (origemNovoAgendamento) {
+        setMostrarCadastrarPaciente(false)
+        setMostrarModalNovoAgendamento(true)
+        setTimeout(() => {
+          const evt = new CustomEvent('PacienteCadastrado', { detail: paciente })
+          window.dispatchEvent(evt)
+        }, 0)
+        setOrigemNovoAgendamento(false)
+      } else {
+        setPacienteSelecionado(paciente)
+        setMostrarCadastrarPaciente(false)
+        toastSucesso('Paciente cadastrado com sucesso!')
+        setTimeout(() => setAbaSelecionada(0), 0)
+      }
     }}
   />
-    )}
+)}
 
       {mostrarModalNovoAgendamento && (
       <ModalNovoAgendamento
