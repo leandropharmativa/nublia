@@ -129,11 +129,11 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
     </p>
 
     <label className="text-sm text-gray-600 mt-4">Selecionar horário:</label>
-    <select
-      value={horarioId || ''}
-      onChange={(e) => setHorarioId(parseInt(e.target.value))}
-      className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
-    >
+<select
+  value={horarioId || ''}
+  onChange={(e) => setHorarioId(parseInt(e.target.value))}
+  className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+>
       <option value="">Selecione um horário disponível</option>
       {horarios
         .filter(h => h.data && h.hora)
