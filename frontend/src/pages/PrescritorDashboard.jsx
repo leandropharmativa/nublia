@@ -316,7 +316,7 @@ useEffect(() => {
   className="rounded-full h-11"
 >
   Incluir agendamento
-  iconeInicio={<CalendarPlus size={16} />}
+  {<CalendarPlus size={16} />}
 </Botao>
 
                   </div>
