@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import { Search, User, X, Loader2, CalendarPlus } from 'lucide-react'
+import { Search, User, X, Loader2, CalendarPlus, ArrowLeftRight } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
 
@@ -11,13 +11,14 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
   const [horarios, setHorarios] = useState([])
   const [horarioId, setHorarioId] = useState(null)
   const [carregando, setCarregando] = useState(false)
+  const [mostrarBusca, setMostrarBusca] = useState(true)
 
   const inputRef = useRef(null)
   const user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus()
-  }, [])
+  }, [mostrarBusca])
 
   useEffect(() => {
     if (filtro.length < 2) {
@@ -82,20 +83,24 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
           <h2 className="text-xl font-semibold pr-6">Novo agendamento</h2>
         </div>
 
-        <label className="text-sm text-gray-600">Buscar paciente:</label>
-        <div className="relative">
-          <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Digite o nome..."
-            value={filtro}
-            onChange={e => setFiltro(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-          />
-        </div>
+        {mostrarBusca && (
+          <>
+            <label className="text-sm text-gray-600">Buscar paciente:</label>
+            <div className="relative">
+              <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Digite o nome..."
+                value={filtro}
+                onChange={e => setFiltro(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+              />
+            </div>
+          </>
+        )}
 
-        {pacientes.length > 0 && (
+        {mostrarBusca && pacientes.length > 0 && (
           <div className="overflow-y-auto max-h-[300px] mt-2">
             {pacientes.map((paciente) => (
               <div
@@ -110,6 +115,7 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
                   type="button"
                   onClick={() => {
                     setSelecionado(paciente)
+                    setMostrarBusca(false)
                     setFiltro('')
                     setPacientes([])
                   }}
@@ -122,55 +128,69 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
           </div>
         )}
 
-{selecionado && (
-  <>
-    <p className="text-sm text-gray-700 mt-2">
-      Paciente selecionado: <strong>{selecionado.name}</strong>
-    </p>
+        {!mostrarBusca && selecionado && (
+          <div className="flex justify-between items-center bg-gray-100 px-4 py-3 rounded-xl border border-gray-300 mt-2">
+            <div>
+              <p className="font-medium text-gray-800">{selecionado.name}</p>
+              <p className="text-xs text-gray-500">{selecionado.email || 'Sem e-mail'}</p>
+            </div>
+            <button
+              onClick={() => {
+                setSelecionado(null)
+                setMostrarBusca(true)
+              }}
+              className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+            >
+              <ArrowLeftRight size={16} /> Trocar paciente
+            </button>
+          </div>
+        )}
 
-    <label className="text-sm text-gray-600 mt-4">Selecionar horário:</label>
-<select
-  value={horarioId || ''}
-  onChange={(e) => setHorarioId(parseInt(e.target.value))}
-  className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
->
-      <option value="">Selecione um horário disponível</option>
-      {horarios
-        .filter(h => h.data && h.hora)
-        .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
-        .map((h) => {
-          const [ano, mes, dia] = h.data.split('-').map(Number)
-          const [hora, minuto] = h.hora.split(':').map(Number)
-          const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
-          return (
-            <option key={h.id} value={h.id}>
-              {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
-            </option>
-          )
-        })}
-    </select>
+        {selecionado && (
+          <>
+            <label className="text-sm text-gray-600 mt-4">Selecionar horário:</label>
+            <select
+              value={horarioId || ''}
+              onChange={(e) => setHorarioId(parseInt(e.target.value))}
+              className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+            >
+              <option value="">Selecione um horário disponível</option>
+              {horarios
+                .filter(h => h.data && h.hora)
+                .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
+                .map((h) => {
+                  const [ano, mes, dia] = h.data.split('-').map(Number)
+                  const [hora, minuto] = h.hora.split(':').map(Number)
+                  const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
+                  return (
+                    <option key={h.id} value={h.id}>
+                      {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+                    </option>
+                  )
+                })}
+            </select>
 
-    <div className="flex justify-between gap-4 pt-6">
-      <Botao
-        onClick={onCancelar}
-        variante="claro"
-        className="rounded-full px-6 py-2 text-sm"
-      >
-        Cancelar
-      </Botao>
+            <div className="flex justify-between gap-4 pt-6">
+              <Botao
+                onClick={onCancelar}
+                variante="claro"
+                className="rounded-full px-6 py-2 text-sm"
+              >
+                Cancelar
+              </Botao>
 
-      <Botao
-        onClick={confirmar}
-        disabled={!selecionado?.id || !horarioId || carregando}
-        variante={!selecionado?.id || !horarioId ? 'inativo' : 'primario'}
-        className="rounded-full w-full py-2 text-sm"
-      >
-        {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar agendamento'}
-        <CalendarPlus size={16} />
-      </Botao>
-    </div>
-  </>
-)}
+              <Botao
+                onClick={confirmar}
+                disabled={!selecionado?.id || !horarioId || carregando}
+                variante={!selecionado?.id || !horarioId ? 'inativo' : 'primario'}
+                className="rounded-full w-full py-2 text-sm"
+              >
+                {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar agendamento'}
+                <CalendarPlus size={16} />
+              </Botao>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
