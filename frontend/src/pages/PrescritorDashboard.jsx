@@ -46,6 +46,8 @@ export default function PrescritorDashboard() {
   const [mostrarModalNovoAgendamento, setMostrarModalNovoAgendamento] = useState(false)
   const [mostrarCadastrarPaciente, setMostrarCadastrarPaciente] = useState(false)
   const [origemNovoAgendamento, setOrigemNovoAgendamento] = useState(false)
+  const [callbackAoCadastrarPaciente, setCallbackAoCadastrarPaciente] = useState(null)
+
 
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
@@ -346,14 +348,17 @@ useEffect(() => {
           setMostrarBuscarPacienteModal(false)
           setTimeout(() => setAbaSelecionada(0), 0)
           }}
-          onCadastrarNovo={() => {
+onCadastrarNovo={() => {
   setMostrarModalNovoAgendamento(false)
-  setOrigemNovoAgendamento(true)
+  setCallbackAoCadastrarPaciente((paciente) => {
+    setMostrarModalNovoAgendamento(true)
+    setTimeout(() => {
+      const evt = new CustomEvent('PacienteCadastrado', { detail: paciente })
+      window.dispatchEvent(evt)
+    }, 0)
+  })
   setMostrarCadastrarPaciente(true)
-        }}
-      />
-
-      )}
+}}
 
       {mostrarPerfilPacienteModal && pacientePerfil && (
         <PerfilPacienteModal
