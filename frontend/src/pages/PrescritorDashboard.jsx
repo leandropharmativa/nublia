@@ -38,14 +38,13 @@ export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
   const [abaSelecionada, setAbaSelecionada] = useState(0)
 
-  const [mostrar, setMostrar] = useState(false)
+  const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
   const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
   const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
   const [mostrarNovoHorario, setMostrarNovoHorario] = useState(false)
   const [mostrarAgendamentoModal, setMostrarAgendamentoModal] = useState(false)
   const [mostrarModalNovoAgendamento, setMostrarModalNovoAgendamento] = useState(false)
   const [mostrarCadastrarPaciente, setMostrarCadastrarPaciente] = useState(false)
-  const [origemCadastro, setOrigemCadastro] = useState(null)
 
   const [pacientePerfil, setPacientePerfil] = useState(null)
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
@@ -195,7 +194,7 @@ useEffect(() => {
         <div className="h-full w-72 flex flex-col">
           <div className="p-4 pb-0">
 <Botao
-  onClick={() => setMostrar(true)}
+  onClick={() => setMostrarBuscarPacienteModal(true)}
   variante="primario"
   full
   className="rounded-full h-11"
@@ -311,19 +310,14 @@ useEffect(() => {
 
                   <div className="mt-6">
 <Botao
-  onClick={() => {
-    setOrigemCadastro('agendar')
-    setMostrarModalNovoAgendamento(false) // Garante que abre limpo
-    setMostrarCadastrarPaciente(true)
-  }}
+  onClick={() => setMostrarModalNovoAgendamento(true)}
   variante="primario"
   full={false}
-  className="rounded-full h-11"
+  className="rounded-full h-11 px-5"
 >
   Incluir agendamento
   <CalendarPlus size={16} />
 </Botao>
-
 
                   </div>
                 </div>
@@ -343,21 +337,19 @@ useEffect(() => {
         </div>
       </div>
 
-      {mostrar && (
-<BuscarPacienteModal
-  onClose={() => setMostrarBuscarPacienteModal(false)}
-  onSelecionarPaciente={(paciente) => {
-    setPacienteSelecionado(paciente)
-    setMostrarBuscarPacienteModal(false)
-    setTimeout(() => setAbaSelecionada(0), 0)
-  }}
-  onCadastrarNovo={() => {
-    setOrigemCadastro('buscar')
-    setMostrarBuscarPacienteModal(false)
-    setMostrarCadastrarPaciente(true)
-  }}
-/>
-
+      {mostrarBuscarPacienteModal && (
+        <BuscarPacienteModal
+          onClose={() => setMostrarBuscarPacienteModal(false)}
+          onSelecionarPaciente={(paciente) => {
+          setPacienteSelecionado(paciente)
+          setMostrarBuscarPacienteModal(false)
+          setTimeout(() => setAbaSelecionada(0), 0)
+          }}
+          onCadastrarNovo={() => {
+          setMostrarBuscarPacienteModal(false)
+          setMostrarCadastrarPaciente(true)
+        }}
+      />
 
       )}
 
@@ -446,50 +438,38 @@ useEffect(() => {
         />
       )}
 
-{mostrarCadastrarPaciente && (
+      {mostrarCadastrarPaciente && (
   <CadastrarPacienteModal
-    origem={origemCadastro}
     onClose={() => setMostrarCadastrarPaciente(false)}
     onPacienteCadastrado={(paciente) => {
-      if (origemCadastro === 'buscar') {
-        setPacienteSelecionado(paciente)
-        setMostrarCadastrarPaciente(false)
-        toastSucesso('Paciente cadastrado com sucesso!')
-        setTimeout(() => setAbaSelecionada(0), 0)
-      } else if (origemCadastro === 'agendar') {
-        setPacienteSelecionado(paciente)
-        setMostrarCadastrarPaciente(false)
-        setMostrarModalNovoAgendamento(true)
-        toastSucesso('Paciente cadastrado com sucesso!')
+      setPacienteSelecionado(paciente)
+      setMostrarCadastrarPaciente(false)
+      toastSucesso('Paciente cadastrado com sucesso!')
+      setTimeout(() => setAbaSelecionada(0), 0)
+    }}
+  />
+    )}
+
+      {mostrarModalNovoAgendamento && (
+      <ModalNovoAgendamento
+    onCancelar={() => setMostrarModalNovoAgendamento(false)}
+    onConfirmar={async (horarioId, pacienteId) => {
+      try {
+        const res = await fetch('https://nublia-backend.onrender.com/agenda/agendar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
+        })
+
+        if (!res.ok) throw new Error()
+        toastSucesso('Paciente agendado com sucesso!')
+        setMostrarModalNovoAgendamento(false)
+        carregarAgenda(user.id)
+      } catch {
+        toastErro('Erro ao agendar paciente.')
       }
     }}
   />
-)}
-
-      {mostrarModalNovoAgendamento && (
-<ModalNovoAgendamento
-  onCancelar={() => setMostrarModalNovoAgendamento(false)}
-  onConfirmar={async (horarioId, pacienteId) => {
-    try {
-      const res = await fetch('https://nublia-backend.onrender.com/agenda/agendar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
-      })
-
-      if (!res.ok) throw new Error()
-      toastSucesso('Paciente agendado com sucesso!')
-      setMostrarModalNovoAgendamento(false)
-      carregarAgenda(user.id)
-    } catch {
-      toastErro('Erro ao agendar paciente.')
-    }
-  }}
-  onCadastrarNovo={() => {
-    setMostrarModalNovoAgendamento(false)
-    setMostrarCadastrarPaciente(true)
-  }}
-/>
 )}
 
     </Layout>
