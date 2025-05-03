@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { Search, User } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Botao from './Botao'
 
 export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSelecionarPaciente }) {
   const [termoBusca, setTermoBusca] = useState('')
@@ -42,7 +43,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
   }, [termoBusca])
 
   const selecionarPaciente = (paciente) => {
-    onSelecionarPaciente(paciente) // 🔧 essa função deve abrir a FichaAtendimento no dashboard
+    onSelecionarPaciente(paciente)
   }
 
   return (
@@ -50,17 +51,17 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl mx-4 flex flex-col gap-6 max-h-[80vh] overflow-hidden">
         <h2 className="text-nublia-accent text-2xl font-bold">Buscar Paciente</h2>
 
-<div className="relative w-full">
-  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-  <input
-    ref={inputRef}
-    type="text"
-    placeholder="Digite o nome do paciente..."
-    value={termoBusca}
-    onChange={(e) => setTermoBusca(e.target.value)}
-    className="w-full pl-12 pr-4 py-2 rounded-full border border-gray-300 shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary transition-all duration-200 placeholder-gray-400"
-  />
-</div>
+        <div className="relative w-full">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Digite o nome do paciente..."
+            value={termoBusca}
+            onChange={(e) => setTermoBusca(e.target.value)}
+            className="w-full pl-12 pr-4 py-2 rounded-full border border-gray-300 shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary transition-all duration-200 placeholder-gray-400"
+          />
+        </div>
 
         <div className="overflow-y-auto max-h-[320px]">
           <AnimatePresence>
@@ -82,12 +83,14 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
                       <p className="font-medium text-gray-800">{paciente.name}</p>
                       <p className="text-sm text-gray-500">{paciente.email || 'Sem e-mail'}</p>
                     </div>
-                    <button
+                    <Botao
                       onClick={() => selecionarPaciente(paciente)}
-                      className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+                      variante="texto"
+                      className="text-sm px-2"
+                      iconeInicio={<User size={18} />}
                     >
-                      <User size={18} /> Selecionar
-                    </button>
+                      Selecionar
+                    </Botao>
                   </li>
                 ))}
               </motion.ul>
@@ -104,34 +107,24 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
                 Nenhum paciente encontrado.
               </motion.p>
             )}
-
-            {!termoBusca.trim() && (
-              <motion.p
-                key="dica"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-gray-400 text-center mt-4"
-              >
-               
-              </motion.p>
-            )}
           </AnimatePresence>
         </div>
 
         <div className="flex justify-between pt-4">
-          <button
+          <Botao
             onClick={onClose}
-            className="px-4 py-2 rounded-full text-sm font-medium border border-nublia-accent text-nublia-accent hover:bg-blue-50 transition"
+            variante="secundario"
+            className="rounded-full text-sm"
           >
             Cancelar
-          </button>
-          <button
+          </Botao>
+          <Botao
             onClick={onCadastrarNovo}
-            className="text-white bg-nublia-accent hover:bg-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2"
+            variante="primario"
+            className="rounded-full text-sm"
           >
             Cadastrar Novo Paciente
-          </button>
+          </Botao>
         </div>
       </div>
     </div>
