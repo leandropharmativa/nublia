@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import {
-  Search, User, X, Loader2, CalendarPlus, ArrowLeftRight
+  Search, User, X, Loader2, CalendarPlus, ArrowLeftRight, UserRoundPlus
 } from 'lucide-react'
 import { toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
@@ -129,17 +129,29 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadast
             )}
 
             {filtro.length >= 2 && pacientes.length === 0 && (
-              <div className="text-center mt-4">
-                <p className="text-sm text-gray-500">Nenhum paciente encontrado.</p>
+              <p className="text-sm text-gray-500 text-center mt-2">Nenhum paciente encontrado.</p>
+            )}
+
+            <div className="flex justify-between pt-4">
+              <Botao
+                onClick={onCancelar}
+                variante="claro"
+                className="rounded-full px-6 py-2 text-sm"
+              >
+                Cancelar
+              </Botao>
+
+              {!selecionado && (
                 <Botao
                   onClick={onCadastrarNovo}
                   variante="primario"
-                  className="mt-2 rounded-full px-6 py-2 text-sm"
+                  className="rounded-full px-6 py-2 text-sm"
                 >
+                  <UserRoundPlus size={16} />
                   Cadastrar novo paciente
                 </Botao>
-              </div>
-            )}
+              )}
+            </div>
           </>
         )}
 
@@ -154,6 +166,7 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadast
                 onClick={() => {
                   setSelecionado(null)
                   setMostrarBusca(true)
+                  setHorarioId(null)
                 }}
                 className="text-sm text-nublia-accent hover:text-nublia-orange flex items-center gap-1"
               >
