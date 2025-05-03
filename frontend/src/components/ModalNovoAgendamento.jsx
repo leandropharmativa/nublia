@@ -119,50 +119,54 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
           </div>
         )}
 
-        {selecionado && (
-          <>
-            <p className="text-sm text-gray-700 mt-2">
-              Paciente selecionado: <strong>{selecionado.name}</strong>
-            </p>
+{selecionado && (
+  <>
+    <p className="text-sm text-gray-700 mt-2">
+      Paciente selecionado: <strong>{selecionado.name}</strong>
+    </p>
 
-            <label className="text-sm text-gray-600 mt-4">Selecionar horário:</label>
-            <select
-              value={horarioId || ''}
-              onChange={(e) => setHorarioId(parseInt(e.target.value))}
-              className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-            >
-              <option value="">Selecione um horário disponível</option>
-              {horarios
-                .filter(h => h.data && h.hora)
-                .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
-                .map((h) => {
-                  const [ano, mes, dia] = h.data.split('-').map(Number)
-                  const [hora, minuto] = h.hora.split(':').map(Number)
-                  const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
+    <label className="text-sm text-gray-600 mt-4">Selecionar horário:</label>
+    <select
+      value={horarioId || ''}
+      onChange={(e) => setHorarioId(parseInt(e.target.value))}
+      className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
+    >
+      <option value="">Selecione um horário disponível</option>
+      {horarios
+        .filter(h => h.data && h.hora)
+        .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
+        .map((h) => {
+          const [ano, mes, dia] = h.data.split('-').map(Number)
+          const [hora, minuto] = h.hora.split(':').map(Number)
+          const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
+          return (
+            <option key={h.id} value={h.id}>
+              {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+            </option>
+          )
+        })}
+    </select>
 
-                  return (
-                    <option key={h.id} value={h.id}>
-                      {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
-                    </option>
-                  )
-                })}
-            </select>
+    <div className="flex justify-between gap-4 pt-6">
+      <Botao
+        onClick={onCancelar}
+        variante="claro"
+        className="rounded-full px-6 py-2 text-sm"
+      >
+        Cancelar
+      </Botao>
 
-            <div className="flex justify-end gap-3 mt-6">
-              <Botao variante="claro" onClick={onCancelar}>
-                Cancelar
-              </Botao>
-              <Botao
-                onClick={confirmar}
-                disabled={!horarioId || carregando}
-                variante="primario"
-                className="w-full h-11 rounded-full"
-              >
-                {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar agendamento'}
-              </Botao>
-            </div>
-          </>
-        )}
+      <Botao
+        onClick={confirmar}
+        disabled={!selecionado?.id || !horarioId || carregando}
+        variante={!selecionado?.id || !horarioId ? 'inativo' : 'primario'}
+        className="rounded-full w-full py-2 text-sm"
+      >
+        {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar agendamento'}
+      </Botao>
+    </div>
+  </>
+)}
       </div>
     </div>
   )
