@@ -194,13 +194,15 @@ useEffect(() => {
         <div className="h-full w-72 flex flex-col">
           <div className="p-4 pb-0">
 <Botao
-  texto="Iniciar atendimento"
-  iconeInicio={<PlayCircle size={18} />}
   onClick={() => setMostrarBuscarPacienteModal(true)}
-  full={true}
   variante="primario"
-  className="rounded-full"
-/>
+  full
+  className="rounded-full h-11"
+>
+  <PlusCircle size={18} />
+  Iniciar atendimento
+</Botao>
+
           </div>
           <div className="flex-1 overflow-hidden">
             <AtendimentosRecentes
