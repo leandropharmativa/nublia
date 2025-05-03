@@ -340,22 +340,25 @@ useEffect(() => {
         </div>
       </div>
 
-      {mostrarBuscarPacienteModal && (
-        <BuscarPacienteModal
-          onClose={() => setMostrarBuscarPacienteModal(false)}
-          onSelecionarPaciente={(paciente) => {
-          setPacienteSelecionado(paciente)
-          setMostrarBuscarPacienteModal(false)
-          setTimeout(() => setAbaSelecionada(0), 0)
-          }}
-onCadastrarNovo={() => {
-  setMostrarBuscarPacienteModal(false)
-  setCallbackAoCadastrarPaciente((paciente) => {
-    setPacienteSelecionado(paciente)
-    setTimeout(() => setAbaSelecionada(0), 0)
-  })
-  setMostrarCadastrarPaciente(true)
-}}
+{mostrarBuscarPacienteModal && (
+  <BuscarPacienteModal
+    onClose={() => setMostrarBuscarPacienteModal(false)}
+    onSelecionarPaciente={(paciente) => {
+      setPacienteSelecionado(paciente)
+      setMostrarBuscarPacienteModal(false)
+      setTimeout(() => setAbaSelecionada(0), 0)
+    }}
+    onCadastrarNovo={() => {
+      setMostrarBuscarPacienteModal(false)
+      setCallbackAoCadastrarPaciente((paciente) => {
+        setPacienteSelecionado(paciente)
+        setTimeout(() => setAbaSelecionada(0), 0)
+      })
+      setMostrarCadastrarPaciente(true)
+    }}
+  />
+)}
+
 
 
       {mostrarPerfilPacienteModal && pacientePerfil && (
