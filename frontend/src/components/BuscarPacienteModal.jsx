@@ -113,7 +113,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
         <div className="flex justify-between pt-4">
           <Botao
             onClick={onClose}
-            variante="secundario"
+            variante="claro"
             className="rounded-full text-sm px-4 py-2"
           >
             Cancelar
