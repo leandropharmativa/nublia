@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import { Search, User, X, Loader2, CalendarPlus, ArrowLeftRight } from 'lucide-react'
-import { toastSucesso, toastErro } from '../utils/toastUtils'
+import {
+  Search, User, X, Loader2, CalendarPlus, ArrowLeftRight
+} from 'lucide-react'
+import { toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
 
-export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
+export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadastrarNovo }) {
   const [pacientes, setPacientes] = useState([])
   const [filtro, setFiltro] = useState('')
   const [selecionado, setSelecionado] = useState(null)
+  const [mostrarBusca, setMostrarBusca] = useState(true)
   const [horarios, setHorarios] = useState([])
   const [horarioId, setHorarioId] = useState(null)
   const [carregando, setCarregando] = useState(false)
-  const [mostrarBusca, setMostrarBusca] = useState(true)
 
   const inputRef = useRef(null)
   const user = JSON.parse(localStorage.getItem('user'))
@@ -83,105 +85,87 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
           <h2 className="text-xl font-semibold pr-6">Novo agendamento</h2>
         </div>
 
-{mostrarBusca && (
-  <>
-    {pacientes.length > 0 ? (
-      <div className="overflow-y-auto max-h-[300px] mt-2">
-        {pacientes.map((paciente) => (
-          <div
-            key={paciente.id}
-            className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
-          >
-            <div>
-              <p className="font-medium text-gray-800">{paciente.name}</p>
-              <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setSelecionado(paciente)
-                setMostrarBusca(false)
-                setFiltro('')
-                setPacientes([])
-              }}
-              className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
-            >
-              <User size={18} /> Selecionar
-            </button>
-          </div>
-        ))}
-      </div>
-    ) : filtro.length >= 2 && (
-      <div className="mt-4 text-center text-sm text-gray-500 italic">
-        Nenhum paciente encontrado.
-        <div className="mt-4 flex justify-center">
-          <Botao
-            onClick={onCadastrarNovo}
-            variante="primario"
-            className="rounded-full px-6 py-2 text-sm"
-          >
-            Cadastrar novo paciente
-          </Botao>
-        </div>
-      </div>
-    )}
-  </>
-)}
-
-
-        {mostrarBusca && pacientes.length > 0 && (
-          <div className="overflow-y-auto max-h-[300px] mt-2">
-            {pacientes.map((paciente) => (
-              <div
-                key={paciente.id}
-                className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
-              >
-                <div>
-                  <p className="font-medium text-gray-800">{paciente.name}</p>
-                  <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelecionado(paciente)
-                    setMostrarBusca(false)
-                    setFiltro('')
-                    setPacientes([])
-                  }}
-                  className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
-                >
-                  <User size={18} /> Selecionar
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {!mostrarBusca && selecionado && (
-          <div className="flex justify-between items-center bg-gray-100 px-4 py-3 rounded-xl border border-gray-300 mt-2">
-            <div>
-              <p className="font-medium text-gray-800">{selecionado.name}</p>
-              <p className="text-xs text-gray-500">{selecionado.email || 'Sem e-mail'}</p>
-            </div>
-            <button
-              onClick={() => {
-                setSelecionado(null)
-                setMostrarBusca(true)
-              }}
-              className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
-            >
-              <ArrowLeftRight size={16} /> Trocar paciente
-            </button>
-          </div>
-        )}
-
-        {selecionado && (
+        {mostrarBusca && (
           <>
+            <label className="text-sm text-gray-600">Buscar paciente:</label>
+            <div className="relative">
+              <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Digite o nome..."
+                value={filtro}
+                onChange={e => setFiltro(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+              />
+            </div>
+
+            {pacientes.length > 0 && (
+              <div className="overflow-y-auto max-h-[300px] mt-2">
+                {pacientes.map((paciente) => (
+                  <div
+                    key={paciente.id}
+                    className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 mb-2"
+                  >
+                    <div>
+                      <p className="font-medium text-gray-800">{paciente.name}</p>
+                      <p className="text-xs text-gray-500">{paciente.email || 'Sem e-mail'}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelecionado(paciente)
+                        setFiltro('')
+                        setPacientes([])
+                        setMostrarBusca(false)
+                      }}
+                      className="text-nublia-accent hover:text-nublia-orange text-sm flex items-center gap-1"
+                    >
+                      <User size={18} /> Selecionar
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {filtro.length >= 2 && pacientes.length === 0 && (
+              <div className="text-center mt-4">
+                <p className="text-sm text-gray-500">Nenhum paciente encontrado.</p>
+                <Botao
+                  onClick={onCadastrarNovo}
+                  variante="primario"
+                  className="mt-2 rounded-full px-6 py-2 text-sm"
+                >
+                  Cadastrar novo paciente
+                </Botao>
+              </div>
+            )}
+          </>
+        )}
+
+        {selecionado && !mostrarBusca && (
+          <>
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex justify-between items-center">
+              <div>
+                <p className="font-medium text-gray-800">{selecionado.name}</p>
+                <p className="text-xs text-gray-500">{selecionado.email || 'Sem e-mail'}</p>
+              </div>
+              <button
+                onClick={() => {
+                  setSelecionado(null)
+                  setMostrarBusca(true)
+                }}
+                className="text-sm text-nublia-accent hover:text-nublia-orange flex items-center gap-1"
+              >
+                <ArrowLeftRight size={16} /> Trocar paciente
+              </button>
+            </div>
+
             <label className="text-sm text-gray-600 mt-4">Selecionar horário:</label>
             <select
               value={horarioId || ''}
               onChange={(e) => setHorarioId(parseInt(e.target.value))}
-              className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+              className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
             >
               <option value="">Selecione um horário disponível</option>
               {horarios
