@@ -77,7 +77,10 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar }) {
           <X size={20} />
         </button>
 
-        <h2 className="text-xl font-semibold text-nublia-accent pr-6">Novo agendamento</h2>
+        <div className="flex items-center gap-2 text-nublia-accent">
+          <CalendarPlus size={20} />
+          <h2 className="text-xl font-semibold pr-6">Novo agendamento</h2>
+        </div>
 
         <label className="text-sm text-gray-600">Buscar paciente:</label>
         <div className="relative">
