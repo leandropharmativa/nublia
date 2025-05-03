@@ -38,7 +38,7 @@ export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
   const [abaSelecionada, setAbaSelecionada] = useState(0)
 
-  const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
+  const [cienteModal, setcienteModal] = useState(false)
   const [mostrarPerfilPacienteModal, setMostrarPerfilPacienteModal] = useState(false)
   const [mostrarVisualizarAtendimentoModal, setMostrarVisualizarAtendimentoModal] = useState(false)
   const [mostrarNovoHorario, setMostrarNovoHorario] = useState(false)
@@ -197,7 +197,7 @@ useEffect(() => {
         <div className="h-full w-72 flex flex-col">
           <div className="p-4 pb-0">
 <Botao
-  onClick={() => setMostrarBuscarPacienteModal(true)}
+  onClick={() => setcienteModal(true)}
   variante="primario"
   full
   className="rounded-full h-11"
@@ -340,26 +340,35 @@ useEffect(() => {
         </div>
       </div>
 
-{mostrarBuscarPacienteModal && (
-  <BuscarPacienteModal
-    onClose={() => setMostrarBuscarPacienteModal(false)}
-    onSelecionarPaciente={(paciente) => {
-      setPacienteSelecionado(paciente)
-      setMostrarBuscarPacienteModal(false)
-      setTimeout(() => setAbaSelecionada(0), 0)
-    }}
-    onCadastrarNovo={() => {
-      setMostrarBuscarPacienteModal(false)
-      setCallbackAoCadastrarPaciente((paciente) => {
+<>
+  {mostrarBuscarPacienteModal && (
+    <BuscarPacienteModal
+      onClose={() => setMostrarBuscarPacienteModal(false)}
+      onSelecionarPaciente={(paciente) => {
         setPacienteSelecionado(paciente)
+        setMostrarBuscarPacienteModal(false)
         setTimeout(() => setAbaSelecionada(0), 0)
-      })
-      setMostrarCadastrarPaciente(true)
-    }}
-  />
-)}
+      }}
+      onCadastrarNovo={() => {
+        setMostrarBuscarPacienteModal(false)
+        setCallbackAoCadastrarPaciente((paciente) => {
+          setPacienteSelecionado(paciente)
+          setTimeout(() => setAbaSelecionada(0), 0)
+        })
+        setMostrarCadastrarPaciente(true)
+      }}
+    />
+  )}
 
+  {mostrarPerfilPacienteModal && pacientePerfil && (
+    <PerfilPacienteModal
+      paciente={pacientePerfil}
+      onClose={() => setMostrarPerfilPacienteModal(false)}
+    />
+  )}
 
+  {/* e continue normalmente os demais modais abaixo */}
+</>
 
       {mostrarPerfilPacienteModal && pacientePerfil && (
         <PerfilPacienteModal
