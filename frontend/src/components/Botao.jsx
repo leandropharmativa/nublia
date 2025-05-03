@@ -1,25 +1,38 @@
-// src/components/Botao.jsx
+import { cn } from '../utils/cn'
+
 export default function Botao({
-  texto,
-  iconeInicio,
   children,
-  type = "button",
   onClick,
-  full = true,
-  className = "",
+  type = 'button',
   disabled = false,
-  ...props
+  className = '',
+  variante = 'primario',
+  iconeInicio = null,
+  iconeFim = null,
+  full = false
 }) {
+  const estilosBase = 'rounded-full text-sm font-semibold px-4 py-2 transition flex items-center justify-center gap-2'
+
+  const estilosPorVariante = {
+    primario: 'bg-nublia-accent text-white hover:bg-nublia-orange',
+    secundario: 'border border-nublia-accent text-nublia-accent hover:bg-blue-50',
+    claro: 'bg-gray-100 text-gray-800 hover:bg-gray-200',
+    danger: 'bg-red-500 text-white hover:bg-red-600',
+    texto: 'text-nublia-accent hover:text-nublia-orange'
+  }
+
+  const largura = full ? 'w-full' : ''
+
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`btn-primary flex items-center justify-center gap-2 ${full ? "w-full" : ""} ${className}`}
-      {...props}
+      className={cn(estilosBase, estilosPorVariante[variante], largura, className)}
     >
-      {iconeInicio}
-      {texto || children}
+      {iconeInicio && <span>{iconeInicio}</span>}
+      {children}
+      {iconeFim && <span>{iconeFim}</span>}
     </button>
   )
 }
