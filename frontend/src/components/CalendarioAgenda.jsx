@@ -69,6 +69,26 @@ export default function CalendarioAgenda({
     }
   }, [view, eventos])
 
+  useEffect(() => {
+  if (view === 'agenda') {
+    const agendaElement = document.querySelector('.rbc-agenda-view .rbc-agenda-table')
+    if (agendaElement) {
+      const rows = agendaElement.querySelectorAll('tbody > tr')
+      const datas = Array.from(rows).map(row => {
+        const cellText = row.querySelector('td')?.innerText
+        return cellText ? new Date(cellText) : null
+      }).filter(Boolean)
+
+      if (datas.length > 0) {
+        const start = datas[0]
+        const end = datas[datas.length - 1]
+        end.setHours(23, 59, 59, 999)
+        setRangeAtual({ start, end })
+      }
+    }
+  }
+}, [view])
+
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
