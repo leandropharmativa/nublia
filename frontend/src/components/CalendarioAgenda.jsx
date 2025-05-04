@@ -70,9 +70,6 @@ useEffect(() => {
   }
 }, [view, eventos, rangeVisivel])
 
-}, [view, eventos])
-
-
 return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
