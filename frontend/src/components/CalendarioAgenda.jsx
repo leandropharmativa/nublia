@@ -46,11 +46,20 @@ export default function CalendarioAgenda({
 }) {
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
+  const [rangeAtual, setRangeAtual] = useState({ start: null, end: null })
 
   const handleNavigate = (novaData) => {
     setDataAtual(novaData)
     onDataChange?.(novaData)
   }
+
+  const eventosVisiveis =
+    view === 'agenda' && rangeAtual.start && rangeAtual.end
+      ? eventos.filter(ev => {
+          const data = new Date(ev.start)
+          return data >= rangeAtual.start && data <= rangeAtual.end
+        })
+      : eventos
 
   useEffect(() => {
     if (view === 'agenda' && eventos.length > 0) {
@@ -59,15 +68,6 @@ export default function CalendarioAgenda({
       setDataAtual(menorData)
     }
   }, [view, eventos])
-
-  const [rangeAtual, setRangeAtual] = useState({ start: null, end: null })
-
-const eventosVisiveis = view === 'agenda' && rangeAtual.start && rangeAtual.end
-  ? eventos.filter(ev =>
-      new Date(ev.start) >= rangeAtual.start &&
-      new Date(ev.start) <= rangeAtual.end
-    )
-  : eventos
 
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
@@ -102,18 +102,20 @@ const eventosVisiveis = view === 'agenda' && rangeAtual.start && rangeAtual.end
           }
         }}
         onRangeChange={(range) => {
-  if (view === 'agenda') {
-    // range pode ser um array (para agenda), ou objeto { start, end } para mês/semana
-    if (Array.isArray(range)) {
-      const start = range[0]
-      const end = range[range.length - 1]
-      setRangeAtual({ start, end })
-    } else {
-      setRangeAtual(range)
-    }
-  }
-}}
-
+          if (view === 'agenda') {
+            if (Array.isArray(range)) {
+              const start = new Date(range[0])
+              const end = new Date(range[range.length - 1])
+              end.setHours(23, 59, 59, 999)
+              setRangeAtual({ start, end })
+            } else if (range?.start && range?.end) {
+              const start = new Date(range.start)
+              const end = new Date(range.end)
+              end.setHours(23, 59, 59, 999)
+              setRangeAtual({ start, end })
+            }
+          }
+        }}
         messages={{
           next: <ChevronRight size={20} />,
           previous: <ChevronLeft size={20} />,
@@ -399,7 +401,6 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
   return (
     <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
       <div className="flex items-center gap-2">
-        {/* Botões de navegação restaurados */}
         <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
           <ChevronLeft size={20} />
         </button>
