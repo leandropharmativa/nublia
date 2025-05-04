@@ -87,6 +87,16 @@ const agendamentosHoje = useMemo(() => {
   }, [])
 
   useEffect(() => {
+  const handleAbrirFicha = (e) => {
+    setPacienteSelecionado(e.detail)
+    setTimeout(() => setAbaSelecionada(0), 0)
+  }
+
+  window.addEventListener('AbrirFichaPaciente', handleAbrirFicha)
+  return () => window.removeEventListener('AbrirFichaPaciente', handleAbrirFicha)
+}, [])
+
+  useEffect(() => {
   const listener = (e) => {
     setPacienteSelecionado(e.detail)
     setTimeout(() => setAbaSelecionada(0), 0)
