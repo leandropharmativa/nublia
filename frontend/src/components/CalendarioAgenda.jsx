@@ -213,41 +213,41 @@ function HeaderComEventos({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
-        {doDia.map(ev => {
-          const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-          const text = ev.status === 'agendado'
-            ? `${hora} ${ev.title}`
-            : `${hora} Disponível`
-
-let icone = <Clock size={14} />
-if (ev.status === 'agendado') {
-  icone = <UserCog size={14} />
-} else if (ev.status === 'finalizado') {
-  icone = <UserRoundCheck size={14} />
-}
+<div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
+  {doDia.map(ev => {
+    const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    const nome = ev.nome ?? ev.title
+const texto = ev.status === 'agendado'
+  ? `${hora} ${nome}`
+  : ev.status === 'finalizado'
+    ? `Finalizado`
+    : `${hora} Disponível`
 
 
-          const cor = ev.status === 'agendado'
-            ? 'text-orange-600'
-            : 'text-nublia-accent'
+    let icone = <Clock size={14} className="text-gray-400" />
+    if (ev.status === 'agendado') {
+      icone = <UserCog size={14} className="text-orange-600" />
+    } else if (ev.status === 'finalizado') {
+      icone = <UserRoundCheck size={14} className="text-nublia-primary" />
+    }
 
-          return (
-            <span
-              key={ev.id}
-              className={`inline-flex items-center justify-center ${cor} cursor-pointer`}
-              onClick={(e) => {
-                e.stopPropagation()
-                aoSelecionarEvento(ev)
-              }}
-              onMouseEnter={(e) => showTooltip(e, text)}
-              onMouseLeave={hideTooltip}
-            >
-              {icone}
-            </span>
-          )
-        })}
-      </div>
+    return (
+      <span
+        key={ev.id}
+        className="inline-flex items-center justify-center cursor-pointer"
+        onClick={(e) => {
+          e.stopPropagation()
+          aoSelecionarEvento(ev)
+        }}
+        onMouseEnter={(e) => showTooltip(e, texto)}
+        onMouseLeave={hideTooltip}
+      >
+        {icone}
+      </span>
+    )
+  })}
+</div>
+
 
       {tooltip.visible &&
         createPortal(
@@ -426,4 +426,4 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
     </div>
   )
 }
-// ... restante do arquivo permanece o mesmo (HeaderComEventos, EventoAgendaCustomizado, etc.)
+
