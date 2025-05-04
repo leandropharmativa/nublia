@@ -55,9 +55,9 @@ export default function CalendarioAgenda({
   const limite = new Date(dataAtual)
   limite.setDate(limite.getDate() + 30)
 
-  const eventosVisiveis = view === 'agenda'
-    ? eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
-    : eventos
+const eventosVisiveis = view === 'agenda'
+  ? eventos
+  : eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
 
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
@@ -323,18 +323,18 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
 
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
-const renderLabel = () => {
-  if (view === 'agenda') return 'Todos agendamentos'
-  if (view === 'month') return capitalize(f(date, 'MMMM yyyy'))
-  if (view === 'day') return f(date, "dd 'de' MMMM yyyy")
-  if (view === 'week') {
-    const start = startOfWeek(date, { weekStartsOn: 1 })
-    const end = new Date(start)
-    end.setDate(end.getDate() + 6)
-    return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
+  const renderLabel = () => {
+    if (view === 'agenda') return 'Todos agendamentos'
+    if (view === 'month') return capitalize(f(date, 'MMMM yyyy'))
+    if (view === 'day') return f(date, "dd 'de' MMMM yyyy")
+    if (view === 'week') {
+      const start = startOfWeek(date, { weekStartsOn: 1 })
+      const end = new Date(start)
+      end.setDate(end.getDate() + 6)
+      return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
+    }
+    return label
   }
-  return label
-}
 
   const contar = () => {
     let eventosFiltrados = eventos
@@ -360,12 +360,18 @@ const renderLabel = () => {
   return (
     <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
       <div className="flex items-center gap-2">
-        <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
-          <ChevronLeft size={20} />
-        </button>
-        <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
-          <ChevronRight size={20} />
-        </button>
+        {view !== 'agenda' ? (
+          <>
+            <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
+              <ChevronLeft size={20} />
+            </button>
+            <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
+              <ChevronRight size={20} />
+            </button>
+          </>
+        ) : (
+          <div className="w-[44px]" /> // espaço p/ alinhamento
+        )}
         <span className="flex items-center gap-2 text-sm font-bold text-nublia-accent">
           <CalendarDays size={16} />
           {renderLabel()}
