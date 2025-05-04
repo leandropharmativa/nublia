@@ -10,13 +10,10 @@ export default function ListaAgendamentosAgenda({
 
   return (
     <div className="mt-4">
-      <h2 className="text-lg font-semibold mb-2 text-gray-700">
-        Agendamentos visíveis
-      </h2>
       {eventosOrdenados.length === 0 ? (
         <p className="text-sm text-gray-500">Nenhum agendamento encontrado.</p>
       ) : (
-        <ul className="border rounded-md overflow-hidden">
+        <ul className="rounded-md overflow-hidden">
           {eventosOrdenados.map(ev => {
             const hora = ev.start.toLocaleTimeString('pt-BR', {
               hour: '2-digit',
