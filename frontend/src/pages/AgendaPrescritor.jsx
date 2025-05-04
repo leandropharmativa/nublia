@@ -161,17 +161,22 @@ function AgendaPrescritor({ mostrarAgenda }) {
     setMostrarPerfil(true)
   }
 
+  const limite = new Date(dataAtual)
+  limite.setDate(limite.getDate() + 30)
+
+  const eventosVisiveis = eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
+
   const eventosFiltrados = filtroTexto.length > 1
-    ? eventos.filter(ev => ev.title.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(
+    ? eventosVisiveis.filter(ev => ev.title.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(
         filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
       ))
-    : eventos
+    : eventosVisiveis
 
   return (
     <div className="w-full flex flex-col gap-4 relative">
       <div className="w-full">
         <CalendarioAgenda
-          eventos={eventosFiltrados}
+          eventos={eventos}
           aoSelecionarSlot={handleNovoSlot}
           aoSelecionarEvento={handleEventoClick}
           onDataChange={setDataAtual}
@@ -180,7 +185,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
       </div>
 
       {viewAtual === 'agenda' && (
-        <div className="mt-2 bg-white border border-gray-200 rounded p-4">
+        <div className="mt-2 bg-white rounded p-4">
           <h2 className="text-lg font-semibold text-gray-800 mb-3">Agendamentos no período</h2>
           <div className="mb-3 w-full max-w-sm">
             <div className="relative">
@@ -246,3 +251,4 @@ function AgendaPrescritor({ mostrarAgenda }) {
 }
 
 export default memo(AgendaPrescritor)
+
