@@ -74,6 +74,15 @@ onSelectEvent={(event, e) => {
   }
 }}
 
+    range={(view === 'agenda') 
+    ? () => {
+        const start = new Date(dataAtual)
+        const end = new Date(start)
+        end.setDate(end.getDate() + 30)
+        return [start, end]
+      }
+    : undefined}
+
   messages={{
     next: <ChevronRight size={20} />,
     previous: <ChevronLeft size={20} />,
