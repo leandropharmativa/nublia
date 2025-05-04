@@ -20,17 +20,30 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [modalAgendar, setModalAgendar] = useState(false)
   const [slotSelecionado, setSlotSelecionado] = useState(null)
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null)
+  const [agendamentoSelecionadoId, setAgendamentoSelecionadoId] = useState(null)
   const [agendamentoStatus, setAgendamentoStatus] = useState(null)
   const [pacienteAtual, setPacienteAtual] = useState(null)
   const [pacienteId, setPacienteId] = useState(null)
   const [horarioSelecionado, setHorarioSelecionado] = useState(null)
   const [filtroTexto, setFiltroTexto] = useState('')
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
+  const [mostrarFicha, setMostrarFicha] = useState(false)
   const [dataAtual, setDataAtual] = useState(new Date())
   const [viewAtual, setViewAtual] = useState('month')
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
 
   const user = JSON.parse(localStorage.getItem('user'))
+
+  const handleAbrirPerfil = (pacienteId) => {
+  setPacienteSelecionadoId(pacienteId)
+  setMostrarPerfil(true)
+  }
+
+  const handleVerAtendimento = (agendamentoId) => {
+  setAgendamentoSelecionadoId(agendamentoId)
+  setMostrarFicha(true)
+  }
+
 
 const carregarEventos = async () => {
   try {
@@ -197,6 +210,8 @@ const eventosFormatados = data.map(ev => {
         onDataChange={setDataAtual}
         onViewChange={setViewAtual}
         onRangeChange={setRangeVisivel}
+        onAbrirPerfil={handleAbrirPerfil}
+        onVerAtendimento={handleVerAtendimento}
       />
 
       {viewAtual === 'agenda' && (
@@ -272,6 +287,12 @@ const eventosFormatados = data.map(ev => {
           onClose={() => setMostrarPerfil(false)}
         />
       )}
+    {mostrarFicha && (
+      <VisualizarAtendimentoModal
+    agendamentoId={agendamentoSelecionadoId}
+    onClose={() => setMostrarFicha(false)}
+  />
+)}
     </div>
   )
 }
