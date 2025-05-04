@@ -220,7 +220,18 @@ const eventosParaCalendario = viewAtual === 'agenda'
   intervaloVisivel={rangeVisivel}
   aoVerPerfil={abrirPerfilPaciente}
   aoVerAgendamento={handleEventoClick}
-  aoIniciarAtendimento={(id) => console.log("Iniciar atendimento:", id)}
+  aoIniciarAtendimento={(id) => {
+  axios.get(`https://nublia-backend.onrender.com/users/${id}`)
+    .then(res => {
+      const paciente = res.data
+      if (paciente?.id) {
+        // Exemplo de chamada se tiver função setPacienteSelecionado
+        setPacienteSelecionado(paciente)
+        // se quiser mudar de aba automaticamente:
+        setTimeout(() => setAbaSelecionada(0), 0)
+      }
+    })
+}}
 />
 
         </div>
