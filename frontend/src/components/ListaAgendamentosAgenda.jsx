@@ -1,21 +1,31 @@
 import { UserRound, CalendarDays, PlayCircle } from 'lucide-react'
+import { isWithinInterval } from 'date-fns'
 
 export default function ListaAgendamentosAgenda({
   eventos = [],
+  intervaloVisivel = null, // { start, end }
   aoVerPerfil,
   aoVerAgendamento,
   aoIniciarAtendimento
 }) {
-  const eventosOrdenados = eventos
-    .sort((a, b) => new Date(a.start) - new Date(b.start))
+  const eventosFiltrados = intervaloVisivel
+    ? eventos.filter(ev =>
+        isWithinInterval(new Date(ev.start), {
+          start: intervaloVisivel.start,
+          end: intervaloVisivel.end
+        })
+      )
+    : eventos
+
+  const eventosOrdenados = eventosFiltrados.sort((a, b) => new Date(a.start) - new Date(b.start))
 
   return (
     <div className="mt-4">
       <h2 className="text-lg font-semibold mb-2 text-gray-700">
-        Todos os agendamentos
+        Agendamentos visíveis
       </h2>
       {eventosOrdenados.length === 0 ? (
-        <p className="text-sm text-gray-500">Nenhum agendamento encontrado.</p>
+        <p className="text-sm text-gray-500">Nenhum agendamento encontrado neste período.</p>
       ) : (
         <ul className="divide-y border rounded-md overflow-hidden">
           {eventosOrdenados.map(ev => {
