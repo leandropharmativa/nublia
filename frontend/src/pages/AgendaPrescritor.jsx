@@ -38,14 +38,20 @@ function AgendaPrescritor({ mostrarAgenda }) {
       const eventosFormatados = data.map(ev => {
         const start = new Date(`${ev.data}T${ev.hora}`)
         const end = addHours(start, 1)
-        const title = ev.status === 'agendado' ? ev.paciente_nome || 'Agendado' : 'Disponível'
-        return {
-          id: ev.id,
-          title,
-          start,
-          end,
-          status: ev.status,
-          paciente_id: ev.paciente_id
+const title =
+  ev.status === 'agendado' || ev.status === 'finalizado'
+    ? ev.paciente_nome || 'Paciente'
+    : 'Disponível'
+
+return {
+  id: ev.id,
+  title,
+  nome: ev.paciente_nome, // importante!
+  start,
+  end,
+  status: ev.status,
+  paciente_id: ev.paciente_id
+}ente_id: ev.paciente_id
         }
       })
 
