@@ -1,3 +1,4 @@
+# backend/app/routers/agenda.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from typing import List
@@ -61,6 +62,9 @@ def listar_agenda_prescritor(prescritor_id: int, session: Session = Depends(get_
         agendamento_dict["paciente_nome"] = paciente_nome
         agendamento_dict["hora_atendimento"] = hora_atendimento  # <-- aqui!
         agendamentos_com_nome.append(agendamento_dict)
+
+        if atendimento:
+        agendamento_dict["criado_em"] = atendimento.criado_em
 
     return agendamentos_com_nome
 
