@@ -53,13 +53,7 @@ export default function CalendarioAgenda({
     onDataChange?.(novaData)
   }
 
-  const eventosVisiveis =
-    view === 'agenda' && rangeAtual.start && rangeAtual.end
-      ? eventos.filter(ev => {
-          const data = new Date(ev.start)
-          return data >= rangeAtual.start && data <= rangeAtual.end
-        })
-      : eventos
+const eventosVisiveis = Array.isArray(eventos) ? eventos : []
 
 useEffect(() => {
   if (view === 'agenda' && eventos.length > 0) {
