@@ -62,6 +62,7 @@ class Atendimento(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     paciente_id: int
     prescritor_id: int
+    agendamento_id: Optional[int] = Field(default=None, foreign_key="agendamento.id")
     anamnese: Optional[str] = None
     antropometria: Optional[str] = None
     dieta: Optional[str] = None
