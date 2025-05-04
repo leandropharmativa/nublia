@@ -1,7 +1,7 @@
 import { format, isSameDay } from 'date-fns'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Trash, UserRoundCheck, CalendarPlus2 } from 'lucide-react'
+import { Trash, UserRoundCheck, CalendarPlus2, ClockPlus } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
 
@@ -116,8 +116,9 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
           <Botao variante="claro" onClick={onCancelar} className="rounded-full">
             Fechar
           </Botao>
-          <Botao className="rounded-full" onClick={handleConfirmar} disabled={!horaDigitada}>
-            Adicionar
+          <Botao className="rounded-full flex items-center gap-2" onClick={handleConfirmar} disabled={!horaDigitada}>
+            Cadastrar Horário
+            <ClockPlus className="w-4 h-4" />
           </Botao>
         </div>
       </div>
