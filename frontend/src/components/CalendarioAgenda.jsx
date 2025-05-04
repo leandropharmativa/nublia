@@ -197,9 +197,7 @@ function HeaderComEventos({
           )}
         </div>
         <div className="flex items-center gap-1">
-          <span className="text-xs font-medium text-gray-700">
-            {label}
-          </span>
+          <span className="text-xs font-medium text-gray-700">{label}</span>
           <button
             onClick={(e) => {
               e.stopPropagation()
@@ -213,124 +211,53 @@ function HeaderComEventos({
         </div>
       </div>
 
-<div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
-  {doDia.map(ev => {
-    const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-    const nome = ev.nome ?? ev.title
-const texto = ev.status === 'agendado'
-  ? `${hora} ${nome}`
-  : ev.status === 'finalizado'
-    ? `Finalizado`
-    : `${hora} Disponível`
+      <div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
+        {doDia.map(ev => {
+          const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+          const nome = ev.nome ?? ev.title
+          const texto = ev.status === 'agendado'
+            ? `${hora} ${nome}`
+            : ev.status === 'finalizado'
+              ? `Finalizado`
+              : `${hora} Disponível`
 
+          let icone = <Clock size={14} className="text-gray-400" />
+          if (ev.status === 'agendado') {
+            icone = <UserCog size={14} className="text-orange-600" />
+          } else if (ev.status === 'finalizado') {
+            icone = <UserRoundCheck size={14} className="text-nublia-primary" />
+          }
 
-    let icone = <Clock size={14} className="text-gray-400" />
-    if (ev.status === 'agendado') {
-      icone = <UserCog size={14} className="text-orange-600" />
-    } else if (ev.status === 'finalizado') {
-      icone = <UserRoundCheck size={14} className="text-nublia-primary" />
-    }
-
-    return (
-      <span
-        key={ev.id}
-        className="inline-flex items-center justify-center cursor-pointer"
-        onClick={(e) => {
-          e.stopPropagation()
-          aoSelecionarEvento(ev)
-        }}
-        onMouseEnter={(e) => showTooltip(e, texto)}
-        onMouseLeave={hideTooltip}
-      >
-        {icone}
-      </span>
-    )
-  })}
-</div>
-
-
-      {tooltip.visible &&
-        createPortal(
-          <div
-            className="fixed z-[9999] bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
-            style={{
-              top: tooltip.y - 30,
-              left: tooltip.x,
-              transform: 'translateX(-50%)',
-            }}
-          >
-            {tooltip.text}
-          </div>,
-          document.body
-        )}
-    </div>
-  )
-}
-
-function EventoAgendaCustomizado({ event }) {
-let nome = 'Disponível'
-if (event.status === 'agendado') nome = event.nome ?? event.title
-else if (event.status === 'finalizado') nome = `Finalizado: ${event.nome ?? event.title}`
-
-  const hora = event.start.toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-  const dia = event.start.toLocaleDateString('pt-BR', {
-    weekday: 'short',
-    day: '2-digit',
-    month: '2-digit'
-  })
-
-  return (
-    <div className="flex items-center justify-between px-3 py-2 border-b text-sm text-gray-700">
-      <div className="flex items-center gap-3">
-        <span className={isAgendado ? 'font-medium text-gray-800' : 'text-gray-400'}>
-          {nome}
-        </span>
-
-        {isAgendado && (
-          <div className="flex items-center gap-2 text-nublia-accent">
-            <button
-              title="Ver perfil"
+          return (
+            <span
+              key={ev.id}
+              className="inline-flex items-center justify-center cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation()
-                event.onVerPerfil?.(event.paciente_id)
+                if (ev.status === 'finalizado') {
+                  ev.onVisualizarFinalizado?.(ev)
+                } else {
+                  aoSelecionarEvento(ev)
+                }
               }}
-              className="hover:text-nublia-orange"
+              onMouseEnter={(e) => showTooltip(e, texto)}
+              onMouseLeave={hideTooltip}
             >
-              <UserRound size={16} />
-            </button>
-
-            <button
-              title="Ver agendamento"
-              onClick={(e) => {
-                e.stopPropagation()
-                event.onVerAgendamento?.(event.id)
-              }}
-              className="hover:text-nublia-orange"
-            >
-              <CalendarDays size={16} />
-            </button>
-
-            <button
-              title="Iniciar atendimento"
-              onClick={(e) => {
-                e.stopPropagation()
-                event.onIniciarAtendimento?.(event.paciente_id)
-              }}
-              className="hover:text-nublia-orange"
-            >
-              <PlayCircle size={16} />
-            </button>
-          </div>
-        )}
+              {icone}
+            </span>
+          )
+        })}
       </div>
 
-      <div className="text-right text-gray-500 text-xs whitespace-nowrap">
-        <div>{dia}</div>
-        <div>{hora}</div>
-      </div>
+      {tooltip.visible && createPortal(
+        <div
+          className="fixed z-[9999] bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
+          style={{ top: tooltip.y - 30, left: tooltip.x, transform: 'translateX(-50%)' }}
+        >
+          {tooltip.text}
+        </div>,
+        document.body
+      )}
     </div>
   )
 }
@@ -339,15 +266,12 @@ function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
   const colorClass = isSunday ? 'text-orange-500' : 'text-nublia-accent'
   return (
-    <div className={`text-sm font-semibold text-center uppercase ${colorClass}`}>
-      {label}
-    </div>
+    <div className={`text-sm font-semibold text-center uppercase ${colorClass}`}>{label}</div>
   )
 }
 
 function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
-
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
   const renderLabel = () => {
@@ -364,11 +288,9 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
 
   const contar = () => {
     let eventosFiltrados = eventos
-    if (view === 'week') {
-      eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
-    } else if (view === 'day') {
-      eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
-    }
+    if (view === 'week') eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
+    else if (view === 'day') eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
+
     const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
     const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
     return { agendados, disponiveis }
@@ -426,4 +348,3 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
     </div>
   )
 }
-
