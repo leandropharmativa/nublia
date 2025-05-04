@@ -56,7 +56,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
     setSalvoUltimaVersao(false)
   }
 
-  const handleSalvar = async () => {
+  const handleSalvar = async (mostrarToast = true) => {
     try {
       const user = JSON.parse(localStorage.getItem('user'))
 
@@ -77,7 +77,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
       }
 
       setSalvoUltimaVersao(true)
-      toastSucesso('Atendimento salvo com sucesso!')
+      if (mostrarToast) toastSucesso('Atendimento salvo com sucesso!')
       if (onAtendimentoSalvo) onAtendimentoSalvo()
     } catch (error) {
       console.error('Erro ao salvar atendimento:', error.response?.data || error.message)
@@ -86,21 +86,20 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   }
 
   const handleFinalizar = async () => {
-    await handleSalvar()
+    await handleSalvar(false)
 
     if (agendamentoId) {
       try {
         await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
           id: agendamentoId,
         })
-        toastSucesso('Agendamento finalizado com sucesso!')
       } catch (err) {
         console.error('Erro ao finalizar agendamento:', err)
         toastErro('Erro ao atualizar agendamento.')
       }
     }
 
-    toastSucesso('Atendimento finalizado!')
+    toastSucesso('Atendimento salvo e finalizado!')
     onFinalizar()
   }
 
@@ -126,14 +125,13 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
 
   return (
     <div className="bg-white p-6 rounded-2xl w-full">
-      {/* Cabeçalho */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3 flex-wrap">
             <h2 className="text-2xl font-bold text-nublia-accent">Ficha de Atendimento</h2>
 
             <button
-              onClick={handleSalvar}
+              onClick={() => handleSalvar()}
               className="text-nublia-accent hover:text-nublia-orange transition"
               title="Salvar atendimento"
             >
@@ -164,7 +162,6 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         </div>
       </div>
 
-      {/* Abas */}
       <div className="flex border-b mb-6">
         {abas.map((aba) => (
           <button
@@ -181,7 +178,6 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         ))}
       </div>
 
-      {/* Conteúdo da aba */}
       <div className="space-y-4">
         {abaAtiva === 'paciente' ? (
           <>
@@ -243,7 +239,6 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         />
       )}
 
-      {/* Modal de confirmação para DESCARTAR */}
       <ModalConfirmacao
         aberto={mostrarConfirmacaoSaida}
         titulo="Descartar atendimento?"
@@ -257,7 +252,6 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         onCancelar={() => setMostrarConfirmacaoSaida(false)}
       />
 
-      {/* Modal de confirmação para FINALIZAR */}
       <ModalConfirmacao
         aberto={mostrarConfirmacaoFinalizar}
         titulo="Finalizar atendimento?"
