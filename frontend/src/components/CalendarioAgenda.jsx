@@ -152,26 +152,12 @@ useEffect(() => {
               />
             )
           },
-          agenda: {
-            event: EventoAgendaCustomizado,
-            date: () => null,
-            time: () => null,
-            range: () => {
-              if (eventos.length === 0) return []
-              const datas = eventos.map(ev => new Date(ev.start))
-              const min = new Date(Math.min(...datas))
-              const max = new Date(Math.max(...datas))
-              const dias = []
-              let cursor = new Date(min)
-              cursor.setHours(0, 0, 0, 0)
-              max.setHours(0, 0, 0, 0)
-              while (cursor <= max) {
-                dias.push(new Date(cursor))
-                cursor.setDate(cursor.getDate() + 1)
-              }
-              return dias
-            }
-          }
+agenda: {
+  event: EventoAgendaCustomizado,
+  date: () => null,
+  time: () => null
+}
+
         }}
       />
     </div>
