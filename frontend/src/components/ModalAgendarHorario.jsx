@@ -352,7 +352,7 @@ export default function ModalAgendarHorario({
                 <div className="flex justify-between pt-4">
                   <Botao
                     variante="claro"
-                    className="rounded-full p-2"
+                    className="rounded-full p-2 text-nublia-orange"
                     onClick={() => onRemover(agendamentoId)}
                     title="Remover horário"
                   >
