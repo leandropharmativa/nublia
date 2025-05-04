@@ -205,15 +205,6 @@ export default function ModalAgendarHorario({
   </p>
 )}
 
-{trocandoPaciente && (
-  <div className="flex justify-end mt-3">
-    <Botao className="rounded-full flex items-center justify-center gap-2" onClick={() => setMostrarCadastro(true)}>
-    Cadastrar Novo paciente
-    <UserRoundPlus className="w-4 h-4" />
-    </Botao>
-  </div>
-)}
-
           </div>
         </>
       )}
