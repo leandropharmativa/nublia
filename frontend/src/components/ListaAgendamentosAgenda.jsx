@@ -1,30 +1,24 @@
 import { UserRound, CalendarDays, PlayCircle } from 'lucide-react'
-import { startOfMonth, endOfMonth, isWithinInterval } from 'date-fns'
 
 export default function ListaAgendamentosAgenda({
   eventos = [],
-  dataAtual = new Date(),
   aoVerPerfil,
   aoVerAgendamento,
   aoIniciarAtendimento
 }) {
-  const eventosFiltrados = eventos
-    .filter(ev => isWithinInterval(ev.start, {
-      start: startOfMonth(dataAtual),
-      end: endOfMonth(dataAtual),
-    }))
+  const eventosOrdenados = eventos
     .sort((a, b) => new Date(a.start) - new Date(b.start))
 
   return (
     <div className="mt-4">
       <h2 className="text-lg font-semibold mb-2 text-gray-700">
-        Agendamentos do mês
+        Todos os agendamentos
       </h2>
-      {eventosFiltrados.length === 0 ? (
-        <p className="text-sm text-gray-500">Nenhum agendamento encontrado para este mês.</p>
+      {eventosOrdenados.length === 0 ? (
+        <p className="text-sm text-gray-500">Nenhum agendamento encontrado.</p>
       ) : (
         <ul className="divide-y border rounded-md overflow-hidden">
-          {eventosFiltrados.map(ev => {
+          {eventosOrdenados.map(ev => {
             const hora = ev.start.toLocaleTimeString('pt-BR', {
               hour: '2-digit',
               minute: '2-digit'
