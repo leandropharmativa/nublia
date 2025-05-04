@@ -280,9 +280,22 @@ export default function ModalAgendarHorario({
                     <Botao variante="claro" className="w-1/2 rounded-full" onClick={() => setTrocandoPaciente(false)}>
                       Cancelar
                     </Botao>
-                    <Botao className="w-1/2 rounded-full" onClick={confirmarTrocaPaciente} disabled={carregando || !selecionado}>
-                      {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar troca'}
-                    </Botao>
+<Botao
+  className="w-1/2 rounded-full flex items-center justify-center gap-2"
+  onClick={confirmarTrocaPaciente}
+  disabled={carregando || !selecionado}
+>
+  {carregando ? (
+    <Loader2 className="animate-spin mx-auto" />
+  ) : (
+    <>
+      <ArrowLeftRight className="w-4 h-4" />
+      Confirmar troca
+      <ArrowLeftRight className="w-4 h-4" />
+    </>
+  )}
+</Botao>
+
                   </div>
                 </>
               )}
@@ -320,16 +333,21 @@ export default function ModalAgendarHorario({
                     }}>
                       Cancelar
                     </Botao>
-                    <Botao className="w-1/2 rounded-full flex items-center justify-center gap-2" onClick={confirmarReagendamento} disabled={carregando}>
-                      {carregando ? (
-                        <Loader2 className="animate-spin" />
-                      ) : (
-                        <>
-                          Confirmar novo horário
-                          <CalendarCheck className="w-4 h-4" />
-                        </>
-                      )}
-                    </Botao>
+<Botao
+  className="w-1/2 rounded-full flex items-center justify-center gap-2"
+  onClick={confirmarReagendamento}
+  disabled={carregando || !novoHorarioId}
+>
+  {carregando ? (
+    <Loader2 className="animate-spin" />
+  ) : (
+    <>
+      Confirmar novo horário
+      <CalendarCheck className="w-4 h-4" />
+    </>
+  )}
+</Botao>
+
                   </div>
                 </>
               )}
