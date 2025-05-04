@@ -47,7 +47,7 @@ export default function CalendarioAgenda({
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
 
-    const handleNavigate = (novaData) => {
+  const handleNavigate = (novaData) => {
     setDataAtual(novaData)
     onDataChange?.(novaData)
   }
@@ -55,13 +55,10 @@ export default function CalendarioAgenda({
   const limite = new Date(dataAtual)
   limite.setDate(limite.getDate() + 30)
 
-const eventosVisiveis = view === 'agenda'
-  ? eventos
-  : (() => {
-      const limite = new Date(dataAtual)
-      limite.setDate(limite.getDate() + 30)
-      return eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
-    })()
+  // Para a view "agenda", mostra todos os eventos; para as demais, filtra por data
+  const eventosVisiveis = view === 'agenda'
+    ? eventos
+    : eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
 
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
@@ -73,7 +70,7 @@ const eventosVisiveis = view === 'agenda'
         view={view}
         date={dataAtual}
         onView={(novaView) => {
-         setView(novaView)
+          setView(novaView)
           onViewChange?.(novaView) // avisa o componente pai
         }}
         onNavigate={handleNavigate}
@@ -328,7 +325,6 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
   const renderLabel = () => {
-    if (view === 'agenda') return 'Todos agendamentos'
     if (view === 'month') return capitalize(f(date, 'MMMM yyyy'))
     if (view === 'day') return f(date, "dd 'de' MMMM yyyy")
     if (view === 'week') {
@@ -364,18 +360,13 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
   return (
     <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
       <div className="flex items-center gap-2">
-        {view !== 'agenda' ? (
-          <>
-            <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
-              <ChevronLeft size={20} />
-            </button>
-            <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
-              <ChevronRight size={20} />
-            </button>
-          </>
-        ) : (
-          <div className="w-[44px]" /> // espaço p/ alinhamento
-        )}
+        {/* Botões de navegação restaurados */}
+        <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
+          <ChevronLeft size={20} />
+        </button>
+        <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
+          <ChevronRight size={20} />
+        </button>
         <span className="flex items-center gap-2 text-sm font-bold text-nublia-accent">
           <CalendarDays size={16} />
           {renderLabel()}
