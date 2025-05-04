@@ -229,42 +229,72 @@ function HeaderComEventos({
 
 function EventoAgendaCustomizado({ event }) {
   const isAgendado = event.status === 'agendado'
+  const nome = isAgendado ? event.nome ?? event.title : 'Disponível'
+  const hora = event.start.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+  const dia = event.start.toLocaleDateString('pt-BR', {
+    weekday: 'short',
+    day: '2-digit',
+    month: '2-digit'
+  })
 
   return (
-    <div className="flex items-center gap-2 px-2 py-1 text-sm text-gray-700">
-      <span className={isAgendado ? 'font-medium text-gray-800' : 'text-gray-400'}>
-        {isAgendado ? event.nome ?? event.title : 'Disponível'}
-      </span>
+    <div className="flex items-center justify-between px-3 py-2 border-b text-sm">
+      {/* Nome e ações */}
+      <div className="flex items-center gap-3">
+        <span className={isAgendado ? 'font-medium text-gray-800' : 'text-gray-400'}>
+          {nome}
+        </span>
 
-      {isAgendado && (
-        <>
-          <User size={16} className="text-nublia-accent" />
-          <button
-            title="Ver perfil"
-            className="text-nublia-accent hover:text-nublia-orange"
-            onClick={(e) => {
-              e.stopPropagation()
-              event.onVerPerfil?.(event.paciente_id)
-            }}
-          >
-            <Eye size={16} />
-          </button>
+        {isAgendado && (
+          <div className="flex items-center gap-2 text-nublia-accent">
+            <button
+              title="Ver perfil"
+              onClick={(e) => {
+                e.stopPropagation()
+                event.onVerPerfil?.(event.paciente_id)
+              }}
+              className="hover:text-nublia-orange"
+            >
+              <Eye size={16} />
+            </button>
 
-          <button
-            title="Iniciar atendimento"
-            className="text-nublia-accent hover:text-nublia-orange"
-            onClick={(e) => {
-              e.stopPropagation()
-              event.onIniciarAtendimento?.(event.paciente_id)
-            }}
-          >
-            <PlayCircle size={15} />
-          </button>
-        </>
-      )}
+            <button
+              title="Ver agendamento"
+              onClick={(e) => {
+                e.stopPropagation()
+                event.onVerAgendamento?.(event.id)
+              }}
+              className="hover:text-nublia-orange"
+            >
+              <CalendarDays size={16} />
+            </button>
+
+            <button
+              title="Iniciar atendimento"
+              onClick={(e) => {
+                e.stopPropagation()
+                event.onIniciarAtendimento?.(event.paciente_id)
+              }}
+              className="hover:text-nublia-orange"
+            >
+              <PlayCircle size={16} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Data e hora */}
+      <div className="text-right text-gray-500 text-xs whitespace-nowrap">
+        <div>{dia}</div>
+        <div>{hora}</div>
+      </div>
     </div>
   )
 }
+
 
 function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
