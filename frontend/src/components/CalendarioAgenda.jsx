@@ -40,10 +40,16 @@ const localizer = dateFnsLocalizer({
 export default function CalendarioAgenda({
   eventos = [],
   aoSelecionarSlot,
-  aoSelecionarEvento
+  aoSelecionarEvento,
+  onDataChange
 }) {
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
+
+    const handleNavigate = (novaData) => {
+    setDataAtual(novaData)
+    onDataChange?.(novaData)
+  }
 
   const limite = new Date(dataAtual)
   limite.setDate(limite.getDate() + 30)
