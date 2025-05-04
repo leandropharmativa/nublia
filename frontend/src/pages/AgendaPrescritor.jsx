@@ -167,11 +167,18 @@ function AgendaPrescritor({ mostrarAgenda }) {
 
 // 🔍 Filtro aplicado apenas se tiver texto
 const eventosParaAgenda = eventos
-  .filter(ev =>
-    filtroTexto.length <= 1 ||
-    ev.title.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-      .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
-  )
+  .filter(ev => {
+    const passaTexto =
+      filtroTexto.length <= 1 ||
+      ev.title.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+        .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
+
+    const passaIntervalo = !rangeVisivel.start || !rangeVisivel.end
+      ? true
+      : new Date(ev.start) >= rangeVisivel.start && new Date(ev.start) <= rangeVisivel.end
+
+    return passaTexto && passaIntervalo
+  })
   .sort((a, b) => new Date(a.start) - new Date(b.start))
 
 const eventosParaCalendario = viewAtual === 'agenda'
