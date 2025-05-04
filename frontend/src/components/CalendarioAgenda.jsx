@@ -14,6 +14,7 @@ import {
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarioCustom.css'
+import ModalFinalizado from './ModalFinalizado'
 
 import {
   ChevronLeft,
@@ -254,7 +255,13 @@ export default function CalendarioAgenda({
         }}
       />
 
-      <ModalFinalizado evento={modalFinalizado} onClose={() => setModalFinalizado(null)} />
+      <ModalFinalizado
+      evento={modalFinalizado}
+      onClose={() => setModalFinalizado(null)}
+      onAbrirPerfil={() => console.log('Abrir perfil do paciente', modalFinalizado?.paciente_id)}
+      onVerAtendimento={() => console.log('Ver ficha do atendimento', modalFinalizado?.id)}
+      />
+
     </div>
   )
 }
