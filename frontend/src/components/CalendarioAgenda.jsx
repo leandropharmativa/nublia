@@ -54,11 +54,32 @@ export default function CalendarioAgenda({
 
 const eventosVisiveis = Array.isArray(eventos) ? eventos : []
 
+  const [eventosFiltrados, setEventosFiltrados] = useState([])
+
+useEffect(() => {
+  if (view === 'agenda' && eventos.length > 0) {
+    const datas = eventos.map(ev => new Date(ev.start))
+    const min = new Date(Math.min(...datas))
+    const max = new Date(Math.max(...datas))
+    max.setHours(23, 59, 59, 999)
+
+    const filtrados = eventos.filter(ev => {
+      const data = new Date(ev.start)
+      return data >= min && data <= max
+    })
+
+    setEventosFiltrados(filtrados)
+  } else {
+    setEventosFiltrados(eventos)
+  }
+}, [view, eventos])
+
+
 return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={eventosVisiveis}
+        events={eventosFiltrados}
         startAccessor="start"
         endAccessor="end"
         view={view}
