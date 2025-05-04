@@ -120,11 +120,27 @@ const eventosVisiveis = eventos
               />
             )
           },
-          agenda: {
-            event: EventoAgendaCustomizado,
-            date: () => null,
-            time: () => null,
-            range: rangeAllDates
+         agenda: {
+  event: EventoAgendaCustomizado,
+  date: () => null,
+  time: () => null,
+  range: () => {
+    if (eventos.length === 0) return []
+
+    const datas = eventos.map(ev => ev.start)
+    const min = new Date(Math.min(...datas))
+    const max = new Date(Math.max(...datas))
+    const range = []
+
+    for (let d = new Date(min); d <= max; d.setDate(d.getDate() + 1)) {
+      range.push(new Date(d))
+    }
+
+    return range
+  }
+}
+
+
           }
         }}
       />
