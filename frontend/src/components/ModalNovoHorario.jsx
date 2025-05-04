@@ -1,7 +1,7 @@
 import { format, isSameDay } from 'date-fns'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Trash, UserRoundCheck, CalendarPlus } from 'lucide-react'
+import { Trash, UserRoundCheck, CalendarPlus2 } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
 
