@@ -283,13 +283,13 @@ export default function ModalAgendarHorario({
 <Botao
   className="w-1/2 rounded-full flex items-center justify-center gap-2"
   onClick={confirmarTrocaPaciente}
-  disabled={carregando || !selecionado}
+  variante={!selecionado ? 'inativo' : undefined}
+  disabled={!selecionado}
 >
   {carregando ? (
     <Loader2 className="animate-spin mx-auto" />
   ) : (
     <>
-      <ArrowLeftRight className="w-4 h-4" />
       Confirmar troca
       <ArrowLeftRight className="w-4 h-4" />
     </>
@@ -336,7 +336,8 @@ export default function ModalAgendarHorario({
 <Botao
   className="w-1/2 rounded-full flex items-center justify-center gap-2"
   onClick={confirmarReagendamento}
-  disabled={carregando || !novoHorarioId}
+  variante={!novoHorarioId ? 'inativo' : undefined}
+  disabled={!novoHorarioId}
 >
   {carregando ? (
     <Loader2 className="animate-spin" />
