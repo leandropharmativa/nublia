@@ -221,13 +221,14 @@ const eventosParaCalendario = viewAtual === 'agenda'
   aoVerPerfil={abrirPerfilPaciente}
   aoVerAgendamento={handleEventoClick}
   aoIniciarAtendimento={(id) => {
-    const paciente = eventos.find(e => e.paciente_id === id)
+    const paciente = pacientes.find(p => p.id === id)
     if (paciente) {
-      const evt = new CustomEvent('IniciarFichaAtendimento', { detail: paciente })
-      window.dispatchEvent(evt)
+      setPacienteSelecionado(paciente)
+      setTimeout(() => setAbaSelecionada(0), 0)
     }
   }}
 />
+
 
 
         </div>
