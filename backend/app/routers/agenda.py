@@ -1,4 +1,3 @@
-# backend/app/routers/agenda.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from typing import List
@@ -6,7 +5,7 @@ from datetime import date
 from pydantic import BaseModel
 
 from app.database import get_session
-from app.models import Agendamento
+from app.models import Agendamento, Usuario  # Certifique-se de importar o modelo de Usuario
 
 router = APIRouter(prefix="/agenda", tags=["Agenda"])
 
@@ -37,11 +36,23 @@ def disponibilizar_horario(agendamento: Agendamento, session: Session = Depends(
     session.refresh(agendamento)
     return agendamento
 
-# ✅ Listar agenda de um prescritor
-@router.get("/prescritor/{prescritor_id}", response_model=List[Agendamento])
+# ✅ Listar agenda de um prescritor (com nome do paciente incluso)
+@router.get("/prescritor/{prescritor_id}")
 def listar_agenda_prescritor(prescritor_id: int, session: Session = Depends(get_session)):
-    result = session.exec(select(Agendamento).where(Agendamento.prescritor_id == prescritor_id))
-    return result.all()
+    result = session.exec(select(Agendamento).where(Agendamento.prescritor_id == prescritor_id)).all()
+
+    agendamentos_com_nome = []
+    for ag in result:
+        paciente_nome = None
+        if ag.paciente_id:
+            paciente = session.get(Usuario, ag.paciente_id)
+            paciente_nome = paciente.name if paciente else None
+
+        agendamento_dict = ag.dict()
+        agendamento_dict["paciente_nome"] = paciente_nome
+        agendamentos_com_nome.append(agendamento_dict)
+
+    return agendamentos_com_nome
 
 # ✅ Agendar horário existente (define paciente_id e muda status)
 @router.post("/agendar", response_model=Agendamento)
@@ -124,4 +135,3 @@ def trocar_paciente(dados: TrocarPacienteRequest, session: Session = Depends(get
     session.commit()
     session.refresh(agendamento)
     return agendamento
-
