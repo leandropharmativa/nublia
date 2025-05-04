@@ -89,6 +89,17 @@ export default function CalendarioAgenda({
   }
 }, [view])
 
+  useEffect(() => {
+  if (view === 'agenda' && eventos.length > 0 && !rangeAtual.start) {
+    const datas = eventos.map(ev => new Date(ev.start))
+    const min = new Date(Math.min(...datas))
+    const max = new Date(Math.max(...datas))
+    max.setHours(23, 59, 59, 999)
+    setRangeAtual({ start: min, end: max })
+  }
+}, [view, eventos])
+
+
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
