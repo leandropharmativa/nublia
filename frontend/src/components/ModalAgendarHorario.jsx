@@ -153,17 +153,27 @@ export default function ModalAgendarHorario({
         </div>
       ) : (
         <>
-          <div className="relative">
-            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Buscar pacientes..."
-              value={filtro}
-              onChange={(e) => setFiltro(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-            />
-          </div>
+<div className="flex items-center gap-2">
+  <div className="relative flex-1 max-w-[75%]">
+    <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+    <input
+      ref={inputRef}
+      type="text"
+      placeholder="Buscar pacientes..."
+      value={filtro}
+      onChange={(e) => setFiltro(e.target.value)}
+      className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+    />
+  </div>
+  <button
+    onClick={() => setMostrarCadastro(true)}
+    className="p-2 rounded-full bg-nublia-primary text-white hover:brightness-110"
+    title="Cadastrar novo paciente"
+  >
+    <UserRoundPlus size={20} />
+  </button>
+</div>
+
 
           <div className="overflow-y-auto max-h-[300px] mt-2">
             {pacientes.map((paciente) => (
