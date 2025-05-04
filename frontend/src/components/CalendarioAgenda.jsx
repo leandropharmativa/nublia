@@ -37,11 +37,12 @@ const localizer = dateFnsLocalizer({
 function ModalFinalizado({ evento, onClose }) {
   if (!evento) return null
 
-  const hora = new Date(evento.start).toLocaleTimeString('pt-BR', {
+  const data = new Date(evento.start).toLocaleDateString('pt-BR')
+  const horaAgendada = new Date(evento.start).toLocaleTimeString('pt-BR', {
     hour: '2-digit',
     minute: '2-digit'
   })
-  const data = new Date(evento.start).toLocaleDateString('pt-BR')
+  const horaAtendimento = evento.hora_atendimento || horaAgendada
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
@@ -49,7 +50,7 @@ function ModalFinalizado({ evento, onClose }) {
         <h2 className="text-lg font-bold text-nublia-primary mb-3">Atendimento Finalizado</h2>
         <p><strong>Paciente:</strong> {evento.nome || evento.title}</p>
         <p><strong>Data:</strong> {data}</p>
-        <p><strong>Hora:</strong> {hora}</p>
+        <p><strong>Hora:</strong> {horaAtendimento}</p>
         <div className="mt-4 text-right">
           <button
             onClick={onClose}
