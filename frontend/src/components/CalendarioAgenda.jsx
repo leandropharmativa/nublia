@@ -57,9 +57,6 @@ export default function CalendarioAgenda({
     onDataChange?.(novaData)
   }
 
-  const limite = new Date(dataAtual)
-  limite.setDate(limite.getDate() + 30)
-
   const eventosVisiveis = view === 'agenda'
     ? eventos
     : eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
