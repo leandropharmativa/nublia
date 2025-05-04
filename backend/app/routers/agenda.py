@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from typing import List
-from datetime import date
+from datetime import date, datetime
 from pydantic import BaseModel
 import traceback 
 
 from app.database import get_session
-from app.models import Agendamento, User  # ✅ Correção aqui
+from app.models import Agendamento, Atendimento, User  
 
 router = APIRouter(prefix="/agenda", tags=["Agenda"])
 
@@ -46,11 +46,20 @@ def listar_agenda_prescritor(prescritor_id: int, session: Session = Depends(get_
     for ag in result:
         paciente_nome = None
         if ag.paciente_id:
-            paciente = session.get(User, ag.paciente_id)  # ✅ Correção aqui
+            paciente = session.get(User, ag.paciente_id)
             paciente_nome = paciente.name if paciente else None
+
+        hora_atendimento = None
+        if ag.status == "finalizado":
+            atendimento = session.exec(
+                select(Atendimento).where(Atendimento.agendamento_id == ag.id)
+            ).first()
+            if atendimento:
+                hora_atendimento = datetime.strptime(str(atendimento.criado_em), "%Y-%m-%d %H:%M:%S.%f").strftime("%H:%M")
 
         agendamento_dict = ag.dict()
         agendamento_dict["paciente_nome"] = paciente_nome
+        agendamento_dict["hora_atendimento"] = hora_atendimento  # <-- aqui!
         agendamentos_com_nome.append(agendamento_dict)
 
     return agendamentos_com_nome
