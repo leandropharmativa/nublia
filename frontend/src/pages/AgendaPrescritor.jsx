@@ -164,13 +164,14 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const limite = new Date(dataAtual)
   limite.setDate(limite.getDate() + 30)
 
-  const eventosVisiveis = eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
-
-  const eventosFiltrados = filtroTexto.length > 1
-    ? eventosVisiveis.filter(ev => ev.title.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(
-        filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-      ))
-    : eventosVisiveis
+  const eventosNoPeriodo = eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
+  const eventosFiltrados = eventosNoPeriodo
+    .filter(ev =>
+      filtroTexto.length <= 1 ||
+      ev.title.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+        .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
+    )
+    .sort((a, b) => new Date(a.start) - new Date(b.start))
 
   return (
     <div className="w-full flex flex-col gap-4 relative">
@@ -186,9 +187,12 @@ function AgendaPrescritor({ mostrarAgenda }) {
 
       {viewAtual === 'agenda' && (
         <div className="mt-2 bg-white rounded p-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">Agendamentos no período</h2>
-          <div className="mb-3 w-full max-w-sm">
-            <div className="relative">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <CalendarClock className="text-nublia-accent" size={20} />
+              Todos agendamentos
+            </h2>
+            <div className="relative w-full max-w-sm">
               <input
                 type="text"
                 placeholder="Filtrar por nome..."
