@@ -77,7 +77,8 @@ def listar_agendamentos_com_pacientes(prescritor_id: int, session: Session = Dep
                         "paciente": {
                             "id": paciente.id,
                             "name": paciente.name,
-                            "email": paciente.email
+                            "email": paciente.email,
+                            "data_nascimento": paciente.data_nascimento
                         }
                     })
 
