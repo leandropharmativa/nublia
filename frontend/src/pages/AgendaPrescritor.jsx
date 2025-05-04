@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, memo } from 'react'
+import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
 import { addHours } from 'date-fns'
 import { Search, User, Eye, CalendarClock } from 'lucide-react'
@@ -9,11 +9,13 @@ import CalendarioAgenda from '../components/CalendarioAgenda'
 import ModalNovoHorario from '../components/ModalNovoHorario'
 import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
-import ListaAgendamentosAgenda from '../components/ListaAgendamentosAgenda' // Certifique-se de importar corretamente
-
+import ListaAgendamentosAgenda from '../components/ListaAgendamentosAgenda'
 
 function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
+  const [pacientes, setPacientes] = useState([])
+  const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
+
   const [modalAberto, setModalAberto] = useState(false)
   const [modalAgendar, setModalAgendar] = useState(false)
   const [slotSelecionado, setSlotSelecionado] = useState(null)
@@ -33,20 +35,19 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const carregarEventos = async () => {
     try {
       const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-const eventosFormatados = data.map(ev => {
-  const start = new Date(`${ev.data}T${ev.hora}`)
-  const end = addHours(start, 1)
-  const title = ev.status === 'agendado' ? ev.paciente_nome || 'Agendado' : 'Disponível'
-
-  return {
-    id: ev.id,
-    title,
-    start,
-    end,
-    status: ev.status,
-    paciente_id: ev.paciente_id
-  }
-})
+      const eventosFormatados = data.map(ev => {
+        const start = new Date(`${ev.data}T${ev.hora}`)
+        const end = addHours(start, 1)
+        const title = ev.status === 'agendado' ? ev.paciente_nome || 'Agendado' : 'Disponível'
+        return {
+          id: ev.id,
+          title,
+          start,
+          end,
+          status: ev.status,
+          paciente_id: ev.paciente_id
+        }
+      })
 
       setEventos(eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start)))
     } catch (error) {
@@ -54,8 +55,20 @@ const eventosFormatados = data.map(ev => {
     }
   }
 
+  const carregarPacientes = async () => {
+    try {
+      const res = await axios.get('https://nublia-backend.onrender.com/users/all')
+      setPacientes(res.data.filter(p => p.role === 'paciente'))
+    } catch {
+      toastErro('Erro ao carregar pacientes.')
+    }
+  }
+
   useEffect(() => {
-    if (mostrarAgenda) carregarEventos()
+    if (mostrarAgenda) {
+      carregarEventos()
+      carregarPacientes()
+    }
   }, [mostrarAgenda])
 
   const handleNovoSlot = (slotInfo) => {
@@ -151,50 +164,30 @@ const eventosFormatados = data.map(ev => {
     setMostrarPerfil(true)
   }
 
-  const limite = new Date(dataAtual)
-  limite.setDate(limite.getDate() + 30)
-
-// 🔍 Filtro aplicado apenas se tiver texto
-const eventosParaAgenda = eventos
-  .filter(ev => {
-    if (filtroTexto.trim().length > 1) {
-      const nomeNormalizado = ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-      const termoBusca = filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-      return nomeNormalizado?.includes(termoBusca)
-    } else if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
-      const dataEv = new Date(ev.start)
-      return dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
-    }
-    return false // se não tem filtro e não está em modo agenda com range, não mostra
-  })
-  .sort((a, b) => new Date(a.start) - new Date(b.start))
-
-const eventosParaCalendario = viewAtual === 'agenda'
-  ? eventos.filter(ev => {
-      const evDate = new Date(ev.start)
-      const inicio = new Date(dataAtual)
-      const fim = new Date(dataAtual)
-      fim.setDate(fim.getDate() + 30)
-      fim.setHours(23, 59, 59, 999)
-      return evDate >= inicio && evDate <= fim
+  const eventosParaAgenda = eventos
+    .filter(ev => {
+      if (filtroTexto.trim().length > 1) {
+        const nomeNormalizado = ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+        const termoBusca = filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+        return nomeNormalizado?.includes(termoBusca)
+      } else if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
+        const dataEv = new Date(ev.start)
+        return dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
+      }
+      return false
     })
-  : eventos
-
-
+    .sort((a, b) => new Date(a.start) - new Date(b.start))
 
   return (
     <div className="w-full flex flex-col gap-4 relative">
-      <div className="w-full">
-<CalendarioAgenda
-  eventos={eventos}
-  aoSelecionarSlot={handleNovoSlot}
-  aoSelecionarEvento={handleEventoClick}
-  onDataChange={setDataAtual}
-  onViewChange={setViewAtual}
-  onRangeChange={setRangeVisivel}
-/>
-
-      </div>
+      <CalendarioAgenda
+        eventos={eventos}
+        aoSelecionarSlot={handleNovoSlot}
+        aoSelecionarEvento={handleEventoClick}
+        onDataChange={setDataAtual}
+        onViewChange={setViewAtual}
+        onRangeChange={setRangeVisivel}
+      />
 
       {viewAtual === 'agenda' && (
         <div className="mt-2 bg-white rounded p-4">
@@ -215,22 +208,21 @@ const eventosParaCalendario = viewAtual === 'agenda'
             </div>
           </div>
 
-<ListaAgendamentosAgenda
-  eventos={eventosParaAgenda}
-  intervaloVisivel={rangeVisivel}
-  aoVerPerfil={abrirPerfilPaciente}
-  aoVerAgendamento={handleEventoClick}
-  aoIniciarAtendimento={(id) => {
-    const paciente = pacientes.find(p => p.id === id)
-    if (paciente) {
-      setPacienteSelecionado(paciente)
-      setTimeout(() => setAbaSelecionada(0), 0)
-    }
-  }}
-/>
-
-
-
+          <ListaAgendamentosAgenda
+            eventos={eventosParaAgenda}
+            aoVerPerfil={abrirPerfilPaciente}
+            aoVerAgendamento={handleEventoClick}
+            aoIniciarAtendimento={(id) => {
+              const paciente = pacientes.find(p => p.id === id)
+              if (paciente) {
+                setPacienteSelecionado(paciente)
+                setTimeout(() => {
+                  const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
+                  window.dispatchEvent(evt)
+                }, 0)
+              }
+            }}
+          />
         </div>
       )}
 
@@ -275,4 +267,3 @@ const eventosParaCalendario = viewAtual === 'agenda'
 }
 
 export default memo(AgendaPrescritor)
-
