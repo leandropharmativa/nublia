@@ -88,7 +88,7 @@ return (
         }}
         onRangeChange={(range) => {
   // console.log('range', range)  // (pode deixar só para debug)
-        }},
+        }}
         messages={{
           next: <ChevronRight size={20} />,
           previous: <ChevronLeft size={20} />,
