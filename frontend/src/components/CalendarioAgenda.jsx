@@ -24,7 +24,8 @@ import {
   User,
   Eye,
   PlayCircle,
-  UserRound
+  UserRound,
+  UserCog
 } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
