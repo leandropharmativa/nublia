@@ -68,11 +68,11 @@ useEffect(() => {
     const max = new Date(Math.max(...datas))
     max.setHours(23, 59, 59, 999)
 
-    // Atualiza a data atual e o range de uma só vez
     setDataAtual(min)
     setRangeAtual({ start: min, end: max })
   }
 }, [view, eventos])
+
 
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
