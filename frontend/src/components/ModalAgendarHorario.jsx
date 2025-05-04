@@ -153,27 +153,26 @@ export default function ModalAgendarHorario({
         </div>
       ) : (
         <>
-<div className="flex items-center gap-2">
-  <div className="relative flex-1 max-w-[90%]">
-    <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-    <input
-      ref={inputRef}
-      type="text"
-      placeholder="Buscar pacientes..."
-      value={filtro}
-      onChange={(e) => setFiltro(e.target.value)}
-      className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-    />
-  </div>
-  <button
-    onClick={() => setMostrarCadastro(true)}
-    className="p-2 rounded-full bg-nublia-accent text-white hover:bg-nublia-orange"
-    title="Cadastrar novo paciente"
-  >
-    <UserRoundPlus size={20} />
-  </button>
-</div>
-
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 max-w-[90%]">
+              <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Buscar pacientes..."
+                value={filtro}
+                onChange={(e) => setFiltro(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+              />
+            </div>
+            <button
+              onClick={() => setMostrarCadastro(true)}
+              className="p-2 rounded-full bg-nublia-accent text-white hover:bg-nublia-orange"
+              title="Cadastrar novo paciente"
+            >
+              <UserRoundPlus size={20} />
+            </button>
+          </div>
 
           <div className="overflow-y-auto max-h-[300px] mt-2">
             {pacientes.map((paciente) => (
@@ -198,13 +197,11 @@ export default function ModalAgendarHorario({
                 </button>
               </div>
             ))}
-
-{filtro.length >= 2 && pacientes.length === 0 && (
-  <p className="text-sm text-gray-500 italic text-center mt-2">
-    Nenhum paciente encontrado.
-  </p>
-)}
-
+            {filtro.length >= 2 && pacientes.length === 0 && (
+              <p className="text-sm text-gray-500 italic text-center mt-2">
+                Nenhum paciente encontrado.
+              </p>
+            )}
           </div>
         </>
       )}
@@ -245,44 +242,28 @@ export default function ModalAgendarHorario({
 
           {statusAtual === 'agendado' && pacienteAtual && (
             <>
-              {!trocandoPaciente && !reagendando ? (
+              {!trocandoPaciente && !reagendando && (
                 <div className="bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
                   <div>
                     <p className="font-medium">{pacienteAtual}</p>
                     <p className="text-xs text-gray-500">Paciente atual</p>
                   </div>
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => setMostrarPerfil(true)}
-                      className="text-nublia-accent hover:text-nublia-orange"
-                      title="Ver perfil"
-                    >
+                    <button onClick={() => setMostrarPerfil(true)} className="text-nublia-accent hover:text-nublia-orange" title="Ver perfil">
                       <User size={18} />
                     </button>
-                    <button
-                      onClick={() => setTrocandoPaciente(true)}
-                      className="text-nublia-accent hover:text-nublia-orange"
-                      title="Trocar paciente"
-                    >
+                    <button onClick={() => setTrocandoPaciente(true)} className="text-nublia-accent hover:text-nublia-orange" title="Trocar paciente">
                       <ArrowLeftRight size={18} />
                     </button>
-                    <button
-                      onClick={() => setReagendando(true)}
-                      className="text-nublia-accent hover:text-nublia-orange"
-                      title="Transferir paciente"
-                    >
+                    <button onClick={() => setReagendando(true)} className="text-nublia-accent hover:text-nublia-orange" title="Transferir paciente">
                       <CalendarClock size={18} />
                     </button>
-                    <button
-                      onClick={() => onDesagendar(agendamentoId)}
-                      className="text-red-500 hover:text-red-600"
-                      title="Remover paciente"
-                    >
+                    <button onClick={() => onDesagendar(agendamentoId)} className="text-red-500 hover:text-red-600" title="Remover paciente">
                       <Trash size={18} />
                     </button>
                   </div>
                 </div>
-              ) : null}
+              )}
 
               {trocandoPaciente && (
                 <>
@@ -291,22 +272,21 @@ export default function ModalAgendarHorario({
                     <Botao variante="claro" className="w-1/2 rounded-full" onClick={() => setTrocandoPaciente(false)}>
                       Cancelar
                     </Botao>
-<Botao
-  className="w-1/2 rounded-full flex items-center justify-center gap-2"
-  onClick={confirmarTrocaPaciente}
-  variante={!selecionado ? 'inativo' : undefined}
-  disabled={!selecionado}
->
-  {carregando ? (
-    <Loader2 className="animate-spin mx-auto" />
-  ) : (
-    <>
-      Confirmar troca
-      <ArrowLeftRight className="w-4 h-4" />
-    </>
-  )}
-</Botao>
-
+                    <Botao
+                      className="w-1/2 rounded-full flex items-center justify-center gap-2"
+                      onClick={confirmarTrocaPaciente}
+                      variante={!selecionado ? 'inativo' : undefined}
+                      disabled={!selecionado}
+                    >
+                      {carregando ? (
+                        <Loader2 className="animate-spin mx-auto" />
+                      ) : (
+                        <>
+                          Confirmar troca
+                          <ArrowLeftRight className="w-4 h-4" />
+                        </>
+                      )}
+                    </Botao>
                   </div>
                 </>
               )}
@@ -344,22 +324,21 @@ export default function ModalAgendarHorario({
                     }}>
                       Cancelar
                     </Botao>
-<Botao
-  className="w-1/2 rounded-full flex items-center justify-center gap-2"
-  onClick={confirmarReagendamento}
-  variante={!novoHorarioId ? 'inativo' : undefined}
-  disabled={!novoHorarioId}
->
-  {carregando ? (
-    <Loader2 className="animate-spin" />
-  ) : (
-    <>
-      Confirmar novo horário
-      <CalendarCheck className="w-4 h-4" />
-    </>
-  )}
-</Botao>
-
+                    <Botao
+                      className="w-1/2 rounded-full flex items-center justify-center gap-2"
+                      onClick={confirmarReagendamento}
+                      variante={!novoHorarioId ? 'inativo' : undefined}
+                      disabled={!novoHorarioId}
+                    >
+                      {carregando ? (
+                        <Loader2 className="animate-spin" />
+                      ) : (
+                        <>
+                          Confirmar novo horário
+                          <CalendarCheck className="w-4 h-4" />
+                        </>
+                      )}
+                    </Botao>
                   </div>
                 </>
               )}
@@ -369,31 +348,37 @@ export default function ModalAgendarHorario({
           {(statusAtual === 'novo_agendamento' || statusAtual === 'disponivel') && (
             <>
               {renderBuscaPaciente()}
-              {selecionado && (
-                <Botao className="mt-4 w-full rounded-full" onClick={() => agendar(selecionado.id)}>
-                  Confirmar agendamento
-                </Botao>
-              )}
-{statusAtual === 'disponivel' && (
-  <div className="flex justify-between pt-4">
-    <Botao
-      variante="claro"
-      className="rounded-full"
-      onClick={() => onRemover(agendamentoId)}
-    >
-      Remover horário
-    </Botao>
-    <Botao
-      className="rounded-full flex items-center gap-2"
-      onClick={() => agendar(selecionado.id)}
-      disabled={!selecionado}
-      variante={!selecionado ? 'inativo' : 'primario'}
-    >
-      Confirmar <CalendarCheck size={16} />
-    </Botao>
-  </div>
-)}
+              {statusAtual === 'disponivel' && (
+                <div className="flex justify-between pt-4">
+                  <Botao
+                    variante="claro"
+                    className="rounded-full p-2"
+                    onClick={() => onRemover(agendamentoId)}
+                    title="Remover horário"
+                  >
+                    <Trash size={18} />
+                  </Botao>
 
+                  <div className="flex gap-2">
+                    <Botao
+                      onClick={onCancelar}
+                      variante="claro"
+                      className="rounded-full"
+                    >
+                      Cancelar
+                    </Botao>
+
+                    <Botao
+                      className="rounded-full flex items-center gap-2"
+                      onClick={() => agendar(selecionado.id)}
+                      disabled={!selecionado}
+                      variante={!selecionado ? 'inativo' : 'primario'}
+                    >
+                      Confirmar <CalendarCheck size={16} />
+                    </Botao>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -408,7 +393,7 @@ export default function ModalAgendarHorario({
             setPacientes([])
             setMostrarCadastro(false)
 
-              if (statusAtual === 'novo_agendamento' || statusAtual === 'disponivel') {
+            if (statusAtual === 'novo_agendamento' || statusAtual === 'disponivel') {
               agendar(paciente.id)
             }
           }}
