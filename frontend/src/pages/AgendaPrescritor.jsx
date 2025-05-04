@@ -25,6 +25,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [resultadosBusca, setResultadosBusca] = useState([])
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
   const [dataAtual, setDataAtual] = useState(new Date())
+  const [viewAtual, setViewAtual] = useState('month')
 
   const user = JSON.parse(localStorage.getItem('user'))
   const dropdownRef = useRef(null)
@@ -259,12 +260,14 @@ function AgendaPrescritor({ mostrarAgenda }) {
         )}
       </div>
 
-      <CalendarioAgenda
-        eventos={eventos}
-        aoSelecionarSlot={handleNovoSlot}
-        aoSelecionarEvento={handleEventoClick}
-        onDataChange={setDataAtual}
-      />
+<CalendarioAgenda
+  eventos={eventos}
+  aoSelecionarSlot={handleNovoSlot}
+  aoSelecionarEvento={handleEventoClick}
+  onDataChange={setDataAtual}
+  onViewChange={setViewAtual}
+/>
+
 
       <ListaAgendamentosAgenda
         eventos={eventos}
