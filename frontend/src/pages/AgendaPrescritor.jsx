@@ -9,6 +9,7 @@ import CalendarioAgenda from '../components/CalendarioAgenda'
 import ModalNovoHorario from '../components/ModalNovoHorario'
 import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
+import ListaAgendamentosAgenda from '../components/ListaAgendamentosAgenda'
 
 function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
@@ -25,7 +26,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
   const [dataAtual, setDataAtual] = useState(new Date())
 
-
   const user = JSON.parse(localStorage.getItem('user'))
   const dropdownRef = useRef(null)
   const debounceTimeout = useRef(null)
@@ -33,34 +33,33 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const carregarEventos = async () => {
     try {
       const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-const eventosFormatados = await Promise.all(
-  data.map(async (ev) => {
-    const start = new Date(`${ev.data}T${ev.hora}`)
-    const end = addHours(start, 1)
-    let title = 'Disponível'
+      const eventosFormatados = await Promise.all(
+        data.map(async (ev) => {
+          const start = new Date(`${ev.data}T${ev.hora}`)
+          const end = addHours(start, 1)
+          let title = 'Disponível'
 
-    if (ev.status === 'agendado' && ev.paciente_id) {
-      try {
-        const paciente = await axios.get(`https://nublia-backend.onrender.com/users/${ev.paciente_id}`)
-        title = paciente.data.name
-      } catch {
-        title = 'Agendado'
-      }
-    }
+          if (ev.status === 'agendado' && ev.paciente_id) {
+            try {
+              const paciente = await axios.get(`https://nublia-backend.onrender.com/users/${ev.paciente_id}`)
+              title = paciente.data.name
+            } catch {
+              title = 'Agendado'
+            }
+          }
 
-        return {
-          id: ev.id,
-          title,
-          start,
-          end,
-          status: ev.status,
-          paciente_id: ev.paciente_id
-           }
+          return {
+            id: ev.id,
+            title,
+            start,
+            end,
+            status: ev.status,
+            paciente_id: ev.paciente_id
+          }
         })
       )
 
-      const ordenados = eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start))
-      setEventos(eventosFormatados)
+      setEventos(eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start)))
     } catch (error) {
       console.error('Erro ao carregar eventos:', error)
     }
@@ -260,25 +259,22 @@ const eventosFormatados = await Promise.all(
         )}
       </div>
 
-<CalendarioAgenda
-  eventos={eventos}
-  aoSelecionarSlot={handleNovoSlot}
-  aoSelecionarEvento={handleEventoClick}
-  onDataChange={setDataAtual}
-/>
+      <CalendarioAgenda
+        eventos={eventos}
+        aoSelecionarSlot={handleNovoSlot}
+        aoSelecionarEvento={handleEventoClick}
+        onDataChange={setDataAtual}
+      />
 
-<ListaAgendamentosAgenda
-  eventos={eventos}
-  dataAtual={dataAtual}
-  aoVerPerfil={abrirPerfilPaciente}
-  aoVerAgendamento={handleEventoClick}
-  aoIniciarAtendimento={(id) => {
-    // você pode usar aqui a lógica de iniciar atendimento se tiver implementada
-    console.log("Iniciar atendimento para paciente", id)
-  }}
-/>
-
-
+      <ListaAgendamentosAgenda
+        eventos={eventos}
+        dataAtual={dataAtual}
+        aoVerPerfil={abrirPerfilPaciente}
+        aoVerAgendamento={handleEventoClick}
+        aoIniciarAtendimento={(id) => {
+          console.log("Iniciar atendimento para paciente", id)
+        }}
+      />
 
       {modalAberto && (
         <ModalNovoHorario
