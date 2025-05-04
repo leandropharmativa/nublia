@@ -1,6 +1,5 @@
 // CalendarioAgenda.jsx
 import { useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import {
   format,
@@ -14,7 +13,6 @@ import {
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarioCustom.css'
-import ModalFinalizado from './ModalFinalizado'
 
 import {
   ChevronLeft,
@@ -26,6 +24,8 @@ import {
   UserCog
 } from 'lucide-react'
 
+import ModalFinalizado from './ModalFinalizado'
+
 const locales = { 'pt-BR': ptBR }
 
 const localizer = dateFnsLocalizer({
@@ -35,48 +35,6 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 })
-
-function ModalFinalizado({ evento, onClose }) {
-  if (!evento) return null
-
-  const data = new Date(evento.start).toLocaleDateString('pt-BR')
-  const horaAgendada = new Date(evento.start).toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-
-  return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-sm">
-        <h2 className="text-lg font-bold text-nublia-primary mb-3">Atendimento Finalizado</h2>
-        <p><strong>Paciente:</strong> {evento.nome || evento.title}</p>
-        <p><strong>Data:</strong> {data}</p>
-        <p><strong>Hora agendada:</strong> {horaAgendada}</p>
-        {evento.criado_em ? (
-          <>
-            <p><strong>Data do atendimento:</strong> {new Date(evento.criado_em).toLocaleDateString('pt-BR')}</p>
-            <p><strong>Hora do atendimento:</strong> {new Date(evento.criado_em).toLocaleTimeString('pt-BR', {
-              hour: '2-digit',
-              minute: '2-digit'
-            })}</p>
-          </>
-        ) : (
-          <p><strong>Hora do atendimento:</strong> ---</p>
-        )}
-
-        <div className="mt-4 text-right">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-full bg-nublia-primary text-white hover:bg-nublia-primaryfocus transition"
-          >
-            Fechar
-          </button>
-        </div>
-      </div>
-    </div>,
-    document.body
-  )
-}
 
 function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
@@ -127,14 +85,13 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
           )
         })}
       </div>
-      {tooltip.visible && createPortal(
+      {tooltip.visible && (
         <div
           className="fixed z-[9999] bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
           style={{ top: tooltip.y - 30, left: tooltip.x, transform: 'translateX(-50%)' }}
         >
           {tooltip.text}
-        </div>,
-        document.body
+        </div>
       )}
     </div>
   )
@@ -146,7 +103,9 @@ export default function CalendarioAgenda({
   aoSelecionarEvento,
   onDataChange,
   onViewChange = () => {},
-  onRangeChange = () => {}
+  onRangeChange = () => {},
+  onAbrirPerfil = () => {},
+  onVerAtendimento = () => {}
 }) {
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
@@ -256,12 +215,11 @@ export default function CalendarioAgenda({
       />
 
       <ModalFinalizado
-      evento={modalFinalizado}
-      onClose={() => setModalFinalizado(null)}
-      onAbrirPerfil={() => console.log('Abrir perfil do paciente', modalFinalizado?.paciente_id)}
-      onVerAtendimento={() => console.log('Ver ficha do atendimento', modalFinalizado?.id)}
+        evento={modalFinalizado}
+        onClose={() => setModalFinalizado(null)}
+        onAbrirPerfil={() => onAbrirPerfil(modalFinalizado?.paciente_id)}
+        onVerAtendimento={() => onVerAtendimento(modalFinalizado?.id)}
       />
-
     </div>
   )
 }
