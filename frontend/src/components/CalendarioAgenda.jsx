@@ -219,9 +219,13 @@ function HeaderComEventos({
             ? `${hora} ${ev.title}`
             : `${hora} Disponível`
 
-          const icone = ev.status === 'agendado'
-            ? <UserRoundCheck size={14} />
-            : <Clock size={14} />
+let icone = <Clock size={14} />
+if (ev.status === 'agendado') {
+  icone = <UserCog size={14} />
+} else if (ev.status === 'finalizado') {
+  icone = <UserRoundCheck size={14} />
+}
+
 
           const cor = ev.status === 'agendado'
             ? 'text-orange-600'
@@ -263,8 +267,10 @@ function HeaderComEventos({
 }
 
 function EventoAgendaCustomizado({ event }) {
-  const isAgendado = event.status === 'agendado'
-  const nome = isAgendado ? event.nome ?? event.title : 'Disponível'
+let nome = 'Disponível'
+if (event.status === 'agendado') nome = event.nome ?? event.title
+else if (event.status === 'finalizado') nome = `Finalizado: ${event.nome ?? event.title}`
+
   const hora = event.start.toLocaleTimeString('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
