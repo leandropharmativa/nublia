@@ -86,7 +86,6 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
           <AnimatePresence>
             {termoBusca.trim() && agendamentos.length > 0 && (
               <motion.div
-                key="agendamentos"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
@@ -123,40 +122,40 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
             )}
 
             {termoBusca.trim() && pacientes.length > 0 && (
-              <motion.ul
-                key="pacientes"
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-3 mt-6"
+                className="mt-6"
               >
                 <h3 className="text-nublia-accent font-semibold mb-2 text-sm">Pacientes sem agendamento:</h3>
-                {pacientes.map((paciente) => (
-                  <li
-                    key={`pac-${paciente.id}`}
-                    className="flex justify-between items-center bg-gray-50 border rounded-lg px-4 py-3 hover:shadow-sm transition"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-800">{paciente.name}</p>
-                      <p className="text-sm text-gray-500">{paciente.email || 'Sem e-mail'}</p>
-                    </div>
-                    <Botao
-                      onClick={() => onSelecionarPaciente(paciente)}
-                      variante="texto"
-                      className="text-sm px-2"
-                      iconeInicio={<User size={18} />}
+                <ul className="space-y-3">
+                  {pacientes.map((paciente) => (
+                    <li
+                      key={`pac-${paciente.id}`}
+                      className="flex justify-between items-center bg-gray-50 border rounded-lg px-4 py-3 hover:shadow-sm transition"
                     >
-                      Selecionar
-                    </Botao>
-                  </li>
-                ))}
-              </motion.ul>
+                      <div>
+                        <p className="font-medium text-gray-800">{paciente.name}</p>
+                        <p className="text-sm text-gray-500">{paciente.email || 'Sem e-mail'}</p>
+                      </div>
+                      <Botao
+                        onClick={() => onSelecionarPaciente(paciente)}
+                        variante="texto"
+                        className="text-sm px-2"
+                        iconeInicio={<User size={18} />}
+                      >
+                        Selecionar
+                      </Botao>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
             )}
 
             {termoBusca.trim() && pacientes.length === 0 && agendamentos.length === 0 && (
               <motion.p
-                key="nenhum"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
