@@ -229,7 +229,7 @@ export default function ModalAgendarHorario({
           {statusAtual === 'agendado' && pacienteAtual && (
             <>
               {!trocandoPaciente && !reagendando ? (
-                <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
+                <div className="bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
                   <div>
                     <p className="font-medium">{pacienteAtual}</p>
                     <p className="text-xs text-gray-500">Paciente atual</p>
