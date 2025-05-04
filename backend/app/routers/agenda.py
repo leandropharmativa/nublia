@@ -3,6 +3,7 @@ from sqlmodel import Session, select
 from typing import List
 from datetime import date
 from pydantic import BaseModel
+import traceback 
 
 from app.database import get_session
 from app.models import Agendamento, User  # ✅ Correção aqui
@@ -80,10 +81,10 @@ def listar_agendamentos_com_pacientes(prescritor_id: int, session: Session = Dep
 
         return resultado
 
-    except Exception as e:
-        print("❌ Erro interno no endpoint /prescritor-com-pacientes:", e)
-        raise HTTPException(status_code=500, detail="Erro interno ao listar agendamentos.")
-
+except Exception as e:
+    print("❌ Erro interno no endpoint /prescritor-com-pacientes:")
+    traceback.print_exc()
+    raise HTTPException(status_code=500, detail="Erro interno ao listar agendamentos.")
 
 
 # ✅ Agendar horário existente
