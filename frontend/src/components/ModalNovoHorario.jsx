@@ -113,10 +113,10 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
         )}
 
         <div className="flex justify-end gap-3 mt-6">
-          <Botao variante="claro" onClick={onCancelar} className="rounded-md">
+          <Botao variante="claro" onClick={onCancelar} className="rounded-full">
             Fechar
           </Botao>
-          <Botao onClick={handleConfirmar} disabled={!horaDigitada}>
+          <Botao className="rounded-full" onClick={handleConfirmar} disabled={!horaDigitada}>
             Adicionar
           </Botao>
         </div>
