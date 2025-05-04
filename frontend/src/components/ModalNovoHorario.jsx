@@ -1,7 +1,7 @@
 import { format, isSameDay } from 'date-fns'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Trash, UserRoundCheck, CalendarPlus2 } from 'lucide-react'
+import { Trash, UserRoundCheck, CalendarPlus } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
 
@@ -101,7 +101,7 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
                     <button
                       onClick={() => removerHorario(item.id)}
                       title="Remover horário"
-                      className="text-gray-400 hover:text-red-500" className="rounded-md"
+                      className="text-gray-400 hover:text-red-500" className="rounded-full"
                     >
                       <Trash size={14} />
                     </button>
