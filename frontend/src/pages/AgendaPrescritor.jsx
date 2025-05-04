@@ -10,6 +10,7 @@ import ModalNovoHorario from '../components/ModalNovoHorario'
 import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import ListaAgendamentosAgenda from '../components/ListaAgendamentosAgenda'
+import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
 
 function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
@@ -35,7 +36,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const user = JSON.parse(localStorage.getItem('user'))
 
   const handleAbrirPerfil = (pacienteId) => {
-  setPacienteSelecionadoId(pacienteId)
+  setPacienteId(pacienteId)
   setMostrarPerfil(true)
   }
 
