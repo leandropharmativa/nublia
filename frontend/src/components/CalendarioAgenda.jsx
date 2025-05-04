@@ -323,17 +323,18 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
 
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
-  const renderLabel = () => {
-    if (view === 'month') return capitalize(f(date, 'MMMM yyyy'))
-    if (view === 'day') return f(date, "dd 'de' MMMM yyyy")
-    if (view === 'week') {
-      const start = startOfWeek(date, { weekStartsOn: 1 })
-      const end = new Date(start)
-      end.setDate(end.getDate() + 6)
-      return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
-    }
-    return label
+const renderLabel = () => {
+  if (view === 'agenda') return 'Todos agendamentos'
+  if (view === 'month') return capitalize(f(date, 'MMMM yyyy'))
+  if (view === 'day') return f(date, "dd 'de' MMMM yyyy")
+  if (view === 'week') {
+    const start = startOfWeek(date, { weekStartsOn: 1 })
+    const end = new Date(start)
+    end.setDate(end.getDate() + 6)
+    return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
   }
+  return label
+}
 
   const contar = () => {
     let eventosFiltrados = eventos
