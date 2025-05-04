@@ -67,8 +67,7 @@ export default function CalendarioAgenda({
     }
   }}
   onSelectEvent={(event) => {
-    if (view !== 'agenda') {
-      aoSelecionarEvento(event)
+    aoSelecionarEvento(event)
     }
   }}
   messages={{
