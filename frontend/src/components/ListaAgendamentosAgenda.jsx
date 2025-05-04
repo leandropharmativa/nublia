@@ -1,4 +1,4 @@
-import { UserRound, Eye, PlayCircle } from 'lucide-react'
+import { UserRound, Eye, PlayCircle, Clock } from 'lucide-react'
 
 export default function ListaAgendamentosAgenda({
   eventos = [],
@@ -36,7 +36,7 @@ export default function ListaAgendamentosAgenda({
                   <p className="text-xs text-gray-500">{data} às {hora}</p>
                 </div>
                 <div className="flex gap-3 items-center text-nublia-accent">
-                  {ev.status === 'agendado' && (
+                  {ev.status === 'agendado' ? (
                     <>
                       <button onClick={() => aoVerPerfil?.(ev.paciente_id)} title="Ver perfil" className="hover:text-nublia-orange">
                         <UserRound size={18} />
@@ -48,6 +48,10 @@ export default function ListaAgendamentosAgenda({
                         <PlayCircle size={18} />
                       </button>
                     </>
+                  ) : (
+                    <button onClick={() => aoVerAgendamento?.(ev)} title="Agendar horário" className="hover:text-nublia-orange">
+                      <Clock size={18} />
+                    </button>
                   )}
                 </div>
               </li>
