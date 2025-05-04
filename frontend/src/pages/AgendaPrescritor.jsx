@@ -217,12 +217,14 @@ const eventosParaCalendario = viewAtual === 'agenda'
             </div>
           </div>
 
-          <ListaAgendamentosAgenda
-            eventos={eventosParaAgenda}
-            aoVerPerfil={abrirPerfilPaciente}
-            aoVerAgendamento={handleEventoClick}
-            aoIniciarAtendimento={(id) => console.log("Iniciar atendimento:", id)}
-          />
+<ListaAgendamentosAgenda
+  eventos={eventosParaAgenda}
+  intervaloVisivel={rangeVisivel}
+  aoVerPerfil={abrirPerfilPaciente}
+  aoVerAgendamento={handleEventoClick}
+  aoIniciarAtendimento={(id) => console.log("Iniciar atendimento:", id)}
+/>
+
         </div>
       )}
 
