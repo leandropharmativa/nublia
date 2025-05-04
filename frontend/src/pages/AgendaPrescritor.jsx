@@ -26,6 +26,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
   const [dataAtual, setDataAtual] = useState(new Date())
   const [viewAtual, setViewAtual] = useState('month')
+  const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
 
   const user = JSON.parse(localStorage.getItem('user'))
 
@@ -189,13 +190,15 @@ const eventosParaCalendario = viewAtual === 'agenda'
   return (
     <div className="w-full flex flex-col gap-4 relative">
       <div className="w-full">
-      <CalendarioAgenda
-        eventos={eventos}
-        aoSelecionarSlot={handleNovoSlot}
-        aoSelecionarEvento={handleEventoClick}
-        onDataChange={setDataAtual}
-        onViewChange={setViewAtual}
-      />
+<CalendarioAgenda
+  eventos={eventos}
+  aoSelecionarSlot={handleNovoSlot}
+  aoSelecionarEvento={handleEventoClick}
+  onDataChange={setDataAtual}
+  onViewChange={setViewAtual}
+  onRangeChange={setRangeVisivel}
+/>
+
       </div>
 
       {viewAtual === 'agenda' && (
