@@ -11,6 +11,7 @@ import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import ListaAgendamentosAgenda from '../components/ListaAgendamentosAgenda' // Certifique-se de importar corretamente
 
+
 function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
   const [modalAberto, setModalAberto] = useState(false)
@@ -160,12 +161,17 @@ function AgendaPrescritor({ mostrarAgenda }) {
     setMostrarPerfil(true)
   }
 
+  const eventosFiltrados = filtroTexto.length > 1
+    ? eventos.filter(ev => ev.title.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(
+        filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+      ))
+    : eventos
+
   return (
     <div className="w-full flex flex-col gap-4 relative">
-      {/* Calendário */}
       <div className="w-full">
         <CalendarioAgenda
-          eventos={eventos}
+          eventos={eventosFiltrados}
           aoSelecionarSlot={handleNovoSlot}
           aoSelecionarEvento={handleEventoClick}
           onDataChange={setDataAtual}
@@ -173,10 +179,10 @@ function AgendaPrescritor({ mostrarAgenda }) {
         />
       </div>
 
-      {/* Filtro + Lista de agendamentos no modo agenda */}
       {viewAtual === 'agenda' && (
         <div className="mt-2 bg-white border border-gray-200 rounded p-4">
-          <div className="mb-2 w-full max-w-sm">
+          <h2 className="text-lg font-semibold text-gray-800 mb-3">Agendamentos no período</h2>
+          <div className="mb-3 w-full max-w-sm">
             <div className="relative">
               <input
                 type="text"
@@ -190,9 +196,8 @@ function AgendaPrescritor({ mostrarAgenda }) {
           </div>
 
           <ListaAgendamentosAgenda
-            eventos={eventos}
+            eventos={eventosFiltrados}
             dataAtual={dataAtual}
-            filtro={filtroTexto}
             aoVerPerfil={abrirPerfilPaciente}
             aoVerAgendamento={handleEventoClick}
             aoIniciarAtendimento={(id) => console.log("Iniciar atendimento:", id)}
@@ -200,7 +205,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
         </div>
       )}
 
-      {/* Modais */}
       {modalAberto && (
         <ModalNovoHorario
           horario={slotSelecionado}
