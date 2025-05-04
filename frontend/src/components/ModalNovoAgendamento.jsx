@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import {
-  Search, User, X, Loader2, CalendarPlus, ArrowLeftRight, UserRoundPlus
+  Search, User, X, Loader2, CalendarPlus, ArrowLeftRight, CalendarCheck2
 } from 'lucide-react'
 import { toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
@@ -56,14 +56,13 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadast
   }, [selecionado, user.id])
 
   useEffect(() => {
-  const listener = (e) => {
-    setSelecionado(e.detail)
-    setMostrarBusca(false)
-  }
-  window.addEventListener('PacienteCadastrado', listener)
-  return () => window.removeEventListener('PacienteCadastrado', listener)
-}, [])
-
+    const listener = (e) => {
+      setSelecionado(e.detail)
+      setMostrarBusca(false)
+    }
+    window.addEventListener('PacienteCadastrado', listener)
+    return () => window.removeEventListener('PacienteCadastrado', listener)
+  }, [])
 
   const confirmar = async () => {
     if (!selecionado?.id || !horarioId) {
@@ -151,16 +150,14 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadast
                 Cancelar
               </Botao>
 
-              {!selecionado && (
-                <Botao
-                  onClick={onCadastrarNovo}
-                  variante="primario"
-                  className="rounded-full px-6 py-2 text-sm"
-                >
-                  <UserRoundPlus size={16} />
-                  Cadastrar novo paciente
-                </Botao>
-              )}
+              <Botao
+                onClick={confirmar}
+                disabled={!selecionado}
+                variante={!selecionado ? 'inativo' : 'primario'}
+                className="rounded-full px-6 py-2 text-sm flex items-center gap-2"
+              >
+                Confirmar <CalendarCheck2 size={16} />
+              </Botao>
             </div>
           </>
         )}
@@ -205,26 +202,6 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadast
                   )
                 })}
             </select>
-
-            <div className="flex justify-between gap-4 pt-6">
-              <Botao
-                onClick={onCancelar}
-                variante="claro"
-                className="rounded-full px-6 py-2 text-sm"
-              >
-                Cancelar
-              </Botao>
-
-              <Botao
-                onClick={confirmar}
-                disabled={!selecionado?.id || !horarioId || carregando}
-                variante={!selecionado?.id || !horarioId ? 'inativo' : 'primario'}
-                className="rounded-full w-full py-2 text-sm"
-              >
-                {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar agendamento'}
-                <CalendarPlus size={16} />
-              </Botao>
-            </div>
           </>
         )}
       </div>
