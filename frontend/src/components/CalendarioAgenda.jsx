@@ -52,8 +52,6 @@ export default function CalendarioAgenda({
     onDataChange?.(novaData)
   }
 
-  const eventosVisiveis = eventos
-
   useEffect(() => {
     if (view === 'agenda' && eventos.length > 0) {
       const datas = eventos.map(ev => new Date(ev.start))
