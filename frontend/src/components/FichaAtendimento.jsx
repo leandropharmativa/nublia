@@ -63,6 +63,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
       const dadosAtendimento = {
         paciente_id: paciente.id,
         prescritor_id: user?.id,
+        agendamento_id: agendamentoId,
         anamnese: formulario.anamnese,
         antropometria: formulario.antropometria,
         dieta: formulario.dieta,
