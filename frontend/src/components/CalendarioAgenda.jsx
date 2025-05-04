@@ -42,8 +42,19 @@ export default function CalendarioAgenda({
   aoSelecionarSlot,
   aoSelecionarEvento,
   onDataChange,
-  onViewChange = () => {}
+  onViewChange = () => {},
+  onRangeChange={(range) => {
+  if (range?.start && range?.end) {
+    const novoRange = {
+      start: new Date(range.start),
+      end: new Date(range.end)
+    }
+    setRangeVisivel(novoRange)
+    onRangeChange(novoRange) // <=== ESSENCIAL
+  }
+}}
 }) {
+
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
 
