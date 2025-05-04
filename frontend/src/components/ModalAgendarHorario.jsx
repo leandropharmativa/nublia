@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
@@ -189,11 +188,20 @@ export default function ModalAgendarHorario({
               </div>
             ))}
 
-            {filtro.length >= 2 && pacientes.length === 0 && (
-              <p className="text-sm text-gray-500 italic text-center mt-2">
-                Nenhum paciente encontrado.
-              </p>
-            )}
+{filtro.length >= 2 && pacientes.length === 0 && (
+  <p className="text-sm text-gray-500 italic text-center mt-2">
+    Nenhum paciente encontrado.
+  </p>
+)}
+
+{trocandoPaciente && (
+  <div className="flex justify-end mt-3">
+    <Botao className="rounded-full" onClick={() => setMostrarCadastro(true)}>
+      Novo paciente
+    </Botao>
+  </div>
+)}
+
           </div>
         </>
       )}
