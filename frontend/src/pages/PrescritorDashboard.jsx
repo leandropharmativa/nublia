@@ -367,6 +367,7 @@ useEffect(() => {
 <>
   {mostrarBuscarPacienteModal && (
 <BuscarPacienteModal
+  user={user}
   onClose={() => setMostrarBuscarPacienteModal(false)}
   onSelecionarPaciente={(paciente, agendamentoId = null) => {
     setPacienteSelecionado(paciente)
@@ -387,6 +388,7 @@ useEffect(() => {
     setMostrarCadastrarPaciente(true)
   }}
 />
+
 
   )}
 
