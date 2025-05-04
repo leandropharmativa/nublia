@@ -46,6 +46,8 @@ def listar_agenda_prescritor(prescritor_id: int, session: Session = Depends(get_
     agendamentos_com_nome = []
     for ag in result:
         paciente_nome = None
+        atendimento = None  # ⬅️ declare aqui fora
+
         if ag.paciente_id:
             paciente = session.get(User, ag.paciente_id)
             paciente_nome = paciente.name if paciente else None
@@ -56,15 +58,19 @@ def listar_agenda_prescritor(prescritor_id: int, session: Session = Depends(get_
                 select(Atendimento).where(Atendimento.agendamento_id == ag.id)
             ).first()
             if atendimento:
-                hora_atendimento = datetime.strptime(str(atendimento.criado_em), "%Y-%m-%d %H:%M:%S.%f").strftime("%H:%M")
+                hora_atendimento = datetime.strptime(
+                    str(atendimento.criado_em), "%Y-%m-%d %H:%M:%S.%f"
+                ).strftime("%H:%M")
 
         agendamento_dict = ag.dict()
         agendamento_dict["paciente_nome"] = paciente_nome
-        agendamento_dict["hora_atendimento"] = hora_atendimento  # <-- aqui!
-        agendamentos_com_nome.append(agendamento_dict)
+        agendamento_dict["hora_atendimento"] = hora_atendimento
 
+        # ✅ Correto: adicionar `criado_em` antes de adicionar à lista
         if atendimento:
-        agendamento_dict["criado_em"] = atendimento.criado_em
+            agendamento_dict["criado_em"] = atendimento.criado_em
+
+        agendamentos_com_nome.append(agendamento_dict)
 
     return agendamentos_com_nome
 
