@@ -387,16 +387,12 @@ export default function ModalAgendarHorario({
       {mostrarCadastro && (
         <CadastrarPacienteModal
           onClose={() => setMostrarCadastro(false)}
-          onPacienteCadastrado={(paciente) => {
-            setSelecionado(paciente)
-            setFiltro('')
-            setPacientes([])
-            setMostrarCadastro(false)
-
-            if (statusAtual === 'novo_agendamento' || statusAtual === 'disponivel') {
-              agendar(paciente.id)
-            }
-          }}
+onPacienteCadastrado={(paciente) => {
+  setSelecionado(paciente)
+  setFiltro('')
+  setPacientes([])
+  setMostrarCadastro(false)
+}}
         />
       )}
 
