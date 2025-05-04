@@ -34,6 +34,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
 
 const carregarEventos = async () => {
   try {
+const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
 const eventosFormatados = data.map(ev => {
   const start = new Date(`${ev.data}T${ev.hora}`)
   const end = addHours(start, 1)
