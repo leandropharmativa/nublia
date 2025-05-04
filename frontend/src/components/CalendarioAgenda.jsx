@@ -60,7 +60,7 @@ export default function CalendarioAgenda({
     : eventos
 
   return (
-    <div className="h-full p-4 bg-white rounded overflow-hidden">
+    <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
         events={eventosVisiveis}
