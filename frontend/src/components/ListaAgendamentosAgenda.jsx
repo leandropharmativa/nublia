@@ -29,7 +29,7 @@ export default function ListaAgendamentosAgenda({
             return (
               <li
                 key={ev.id}
-                className="flex justify-between items-center p-3 border-b"
+                className="flex justify-between items-center p-3 border-b border-gray-200"
               >
                 <div>
                   <p className="font-semibold text-gray-800">{nome}</p>
