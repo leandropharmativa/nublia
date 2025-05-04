@@ -367,15 +367,13 @@ useEffect(() => {
 <>
   {mostrarBuscarPacienteModal && (
 <BuscarPacienteModal
-  user={user}
+  user={user} // 🔥 importante para o endpoint funcionar
   onClose={() => setMostrarBuscarPacienteModal(false)}
   onSelecionarPaciente={(paciente, agendamentoId = null) => {
     setPacienteSelecionado(paciente)
-
     if (agendamentoId) {
-      setAgendamentoSelecionado({ id: agendamentoId }) // armazena o agendamento
+      setAgendamentoSelecionado({ id: agendamentoId })
     }
-
     setMostrarBuscarPacienteModal(false)
     setTimeout(() => setAbaSelecionada(0), 0)
   }}
@@ -388,6 +386,7 @@ useEffect(() => {
     setMostrarCadastrarPaciente(true)
   }}
 />
+
 
 
   )}
