@@ -173,27 +173,29 @@ const eventosParaAgenda = eventos
   )
   .sort((a, b) => new Date(a.start) - new Date(b.start))
 
-  const eventosParaCalendario = viewAtual === 'agenda'
+const eventosParaCalendario = viewAtual === 'agenda'
   ? eventos.filter(ev => {
       const evDate = new Date(ev.start)
-      return (
-        evDate >= new Date(dataAtual.getFullYear(), dataAtual.getMonth(), dataAtual.getDate()) &&
-        evDate <= new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, 0, 23, 59, 59)
-      )
+      const inicio = new Date(dataAtual)
+      const fim = new Date(dataAtual)
+      fim.setDate(fim.getDate() + 30)
+      fim.setHours(23, 59, 59, 999)
+      return evDate >= inicio && evDate <= fim
     })
   : eventos
+
 
 
   return (
     <div className="w-full flex flex-col gap-4 relative">
       <div className="w-full">
-        <CalendarioAgenda
-          eventos={eventosParaCalendario}
-          aoSelecionarSlot={handleNovoSlot}
-          aoSelecionarEvento={handleEventoClick}
-          onDataChange={setDataAtual}
-          onViewChange={setViewAtual}
-        />
+<CalendarioAgenda
+  eventos={eventosParaCalendario}
+  aoSelecionarSlot={handleNovoSlot}
+  aoSelecionarEvento={handleEventoClick}
+  onDataChange={setDataAtual}
+  onViewChange={setViewAtual}
+/>
       </div>
 
       {viewAtual === 'agenda' && (
