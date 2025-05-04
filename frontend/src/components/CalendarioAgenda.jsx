@@ -38,6 +38,36 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
+function ModalFinalizado({ evento, onClose }) {
+  if (!evento) return null
+
+  const hora = new Date(evento.start).toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+  const data = new Date(evento.start).toLocaleDateString('pt-BR')
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+      <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-sm">
+        <h2 className="text-lg font-bold text-nublia-primary mb-3">Atendimento Finalizado</h2>
+        <p><strong>Paciente:</strong> {evento.nome || evento.title}</p>
+        <p><strong>Data:</strong> {data}</p>
+        <p><strong>Hora:</strong> {hora}</p>
+        <div className="mt-4 text-right">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-full bg-nublia-primary text-white hover:bg-nublia-primaryfocus transition"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )
+}
+
 export default function CalendarioAgenda({
   eventos = [],
   aoSelecionarSlot,
@@ -50,6 +80,7 @@ export default function CalendarioAgenda({
   const [dataAtual, setDataAtual] = useState(new Date())
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
   const [eventosFiltrados, setEventosFiltrados] = useState([])
+  const [modalFinalizado, setModalFinalizado] = useState(null)
 
   const handleNavigate = (novaData) => {
     setDataAtual(novaData)
@@ -67,6 +98,14 @@ export default function CalendarioAgenda({
       setEventosFiltrados(eventos)
     }
   }, [view, eventos, rangeVisivel])
+
+  const aoSelecionarEventoOuFinalizado = (ev) => {
+    if (ev.status === 'finalizado') {
+      setModalFinalizado(ev)
+    } else {
+      aoSelecionarEvento(ev)
+    }
+  }
 
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
@@ -97,7 +136,7 @@ export default function CalendarioAgenda({
         }}
         onSelectEvent={(event, e) => {
           if (!e.target.closest('button')) {
-            aoSelecionarEvento(event)
+            aoSelecionarEventoOuFinalizado(event)
           }
         }}
         onRangeChange={(range) => {
@@ -128,19 +167,6 @@ export default function CalendarioAgenda({
             <CustomToolbar {...props} eventos={eventos} />
           ),
           day: { header: CustomDayHeader },
-          month: {
-            dateHeader: (props) => (
-              <HeaderComEventos
-                data={props.date}
-                label={props.label}
-                eventos={eventos}
-                onView={setView}
-                onNavigate={setDataAtual}
-                aoSelecionarEvento={aoSelecionarEvento}
-                aoAdicionarHorario={aoSelecionarSlot}
-              />
-            )
-          },
           agenda: {
             event: EventoAgendaCustomizado,
             date: () => null,
@@ -148,129 +174,19 @@ export default function CalendarioAgenda({
           }
         }}
       />
-    </div>
-  )
-}
 
-function HeaderComEventos({
-  data,
-  label,
-  eventos,
-  onView,
-  onNavigate,
-  aoSelecionarEvento,
-  aoAdicionarHorario
-}) {
-  const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
-
-  const doDia = eventos.filter(ev => isSameCalendarDay(ev.start, data))
-  const agendados = doDia.filter(ev => ev.status === 'agendado').length
-  const disponiveis = doDia.filter(ev => ev.status === 'disponivel').length
-
-  const showTooltip = (e, text) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    setTooltip({
-      visible: true,
-      text,
-      x: rect.left + rect.width / 2,
-      y: rect.top,
-    })
-  }
-
-  const hideTooltip = () => {
-    setTooltip({ visible: false, text: '', x: 0, y: 0 })
-  }
-
-  return (
-    <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
-      <div className="w-full flex justify-between items-center text-[10px] mt-1">
-        <div className="flex gap-2 text-gray-500">
-          {agendados > 0 && (
-            <span className="flex items-center gap-1 text-orange-500">
-              <UserRoundCheck size={10} /> {agendados}
-            </span>
-          )}
-          {disponiveis > 0 && (
-            <span className="flex items-center gap-1 text-nublia-accent">
-              <Clock size={10} /> {disponiveis}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="text-xs font-medium text-gray-700">
-            {label}
-          </span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              aoAdicionarHorario({ start: data })
-            }}
-            className="text-gray-400 hover:text-nublia-accent"
-            title="Adicionar horário"
-          >
-            <CalendarClock size={14} />
-          </button>
-        </div>
-      </div>
-
-<div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
-  {doDia.map(ev => {
-    const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-    const nome = ev.nome ?? ev.title
-const texto = ev.status === 'agendado'
-  ? `${hora} ${nome}`
-  : ev.status === 'finalizado'
-    ? `Finalizado`
-    : `${hora} Disponível`
-
-
-    let icone = <Clock size={14} className="text-gray-400" />
-    if (ev.status === 'agendado') {
-      icone = <UserCog size={14} className="text-orange-600" />
-    } else if (ev.status === 'finalizado') {
-      icone = <UserRoundCheck size={14} className="text-nublia-primary" />
-    }
-
-    return (
-      <span
-        key={ev.id}
-        className="inline-flex items-center justify-center cursor-pointer"
-        onClick={(e) => {
-          e.stopPropagation()
-          aoSelecionarEvento(ev)
-        }}
-        onMouseEnter={(e) => showTooltip(e, texto)}
-        onMouseLeave={hideTooltip}
-      >
-        {icone}
-      </span>
-    )
-  })}
-</div>
-
-
-      {tooltip.visible &&
-        createPortal(
-          <div
-            className="fixed z-[9999] bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
-            style={{
-              top: tooltip.y - 30,
-              left: tooltip.x,
-              transform: 'translateX(-50%)',
-            }}
-          >
-            {tooltip.text}
-          </div>,
-          document.body
-        )}
+      <ModalFinalizado evento={modalFinalizado} onClose={() => setModalFinalizado(null)} />
     </div>
   )
 }
 
 function EventoAgendaCustomizado({ event }) {
-let nome = 'Disponível'
-if (event.status === 'agendado') nome = event.nome ?? event.title
-else if (event.status === 'finalizado') nome = `Finalizado: ${event.nome ?? event.title}`
+  const isAgendado = event.status === 'agendado'
+  const nome = isAgendado
+    ? event.nome ?? event.title
+    : event.status === 'finalizado'
+    ? `Finalizado: ${event.nome ?? event.title}`
+    : 'Disponível'
 
   const hora = event.start.toLocaleTimeString('pt-BR', {
     hour: '2-digit',
@@ -288,45 +204,7 @@ else if (event.status === 'finalizado') nome = `Finalizado: ${event.nome ?? even
         <span className={isAgendado ? 'font-medium text-gray-800' : 'text-gray-400'}>
           {nome}
         </span>
-
-        {isAgendado && (
-          <div className="flex items-center gap-2 text-nublia-accent">
-            <button
-              title="Ver perfil"
-              onClick={(e) => {
-                e.stopPropagation()
-                event.onVerPerfil?.(event.paciente_id)
-              }}
-              className="hover:text-nublia-orange"
-            >
-              <UserRound size={16} />
-            </button>
-
-            <button
-              title="Ver agendamento"
-              onClick={(e) => {
-                e.stopPropagation()
-                event.onVerAgendamento?.(event.id)
-              }}
-              className="hover:text-nublia-orange"
-            >
-              <CalendarDays size={16} />
-            </button>
-
-            <button
-              title="Iniciar atendimento"
-              onClick={(e) => {
-                e.stopPropagation()
-                event.onIniciarAtendimento?.(event.paciente_id)
-              }}
-              className="hover:text-nublia-orange"
-            >
-              <PlayCircle size={16} />
-            </button>
-          </div>
-        )}
       </div>
-
       <div className="text-right text-gray-500 text-xs whitespace-nowrap">
         <div>{dia}</div>
         <div>{hora}</div>
