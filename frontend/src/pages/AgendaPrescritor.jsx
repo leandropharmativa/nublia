@@ -16,6 +16,8 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
   const [pacientes, setPacientes] = useState([])
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
+  const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
+
 
   const [modalAberto, setModalAberto] = useState(false)
   const [modalAgendar, setModalAgendar] = useState(false)
@@ -40,11 +42,15 @@ function AgendaPrescritor({ mostrarAgenda }) {
   setMostrarPerfil(true)
   }
 
-  const handleVerAtendimento = (agendamentoId) => {
-  setAgendamentoSelecionadoId(agendamentoId)
-  setMostrarFicha(true)
+const handleVerAtendimento = async (agendamentoId) => {
+  try {
+    const { data } = await axios.get(`https://nublia-backend.onrender.com/atendimentos/por-agendamento/${agendamentoId}`)
+    setAtendimentoSelecionado(data)
+    setMostrarFicha(true)
+  } catch (error) {
+    console.error("Erro ao carregar atendimento:", error)
   }
-
+}
 
 const carregarEventos = async () => {
   try {
@@ -288,12 +294,16 @@ const eventosFormatados = data.map(ev => {
           onClose={() => setMostrarPerfil(false)}
         />
       )}
-    {mostrarFicha && (
-      <VisualizarAtendimentoModal
-    agendamentoId={agendamentoSelecionadoId}
-    onClose={() => setMostrarFicha(false)}
+{mostrarFicha && atendimentoSelecionado && (
+  <VisualizarAtendimentoModal
+    atendimento={atendimentoSelecionado}
+    onClose={() => {
+      setMostrarFicha(false)
+      setAtendimentoSelecionado(null)
+    }}
   />
 )}
+
     </div>
   )
 }
