@@ -37,11 +37,6 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
-// Função que força a agenda a mostrar todos os eventos disponíveis
-function rangeAllDates({ events }) {
-  return events.map(e => e.start)
-}
-
 export default function CalendarioAgenda({
   eventos = [],
   aoSelecionarSlot,
@@ -57,15 +52,15 @@ export default function CalendarioAgenda({
     onDataChange?.(novaData)
   }
 
-const eventosVisiveis = eventos
+  const eventosVisiveis = eventos
 
   useEffect(() => {
-  if (view === 'agenda' && eventos.length > 0) {
-    const datas = eventos.map(ev => new Date(ev.start))
-    const menorData = new Date(Math.min(...datas))
-    setDataAtual(menorData)
-  }
-}, [view, eventos])
+    if (view === 'agenda' && eventos.length > 0) {
+      const datas = eventos.map(ev => new Date(ev.start))
+      const menorData = new Date(Math.min(...datas))
+      setDataAtual(menorData)
+    }
+  }, [view, eventos])
 
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
@@ -87,6 +82,8 @@ const eventosVisiveis = eventos
         step={15}
         timeslots={1}
         culture="pt-BR"
+        min={new Date(0)}
+        max={new Date(2100, 11, 31)}
         onSelectSlot={({ start }) => {
           if (view !== 'month' && view !== 'agenda') {
             aoSelecionarSlot({ start })
@@ -128,31 +125,26 @@ const eventosVisiveis = eventos
               />
             )
           },
-agenda: {
-  event: EventoAgendaCustomizado,
-  date: () => null,
-  time: () => null,
-  range: () => {
-    if (eventos.length === 0) return []
-
-    const datas = eventos.map(ev => new Date(ev.start))
-    const min = new Date(Math.min(...datas))
-    const max = new Date(Math.max(...datas))
-
-    const dias = []
-    const cursor = new Date(min)
-    while (cursor <= max) {
-      dias.push(new Date(cursor))
-      cursor.setDate(cursor.getDate() + 1)
-    }
-
-    return dias
-  }
-}
-
-
-
- 
+          agenda: {
+            event: EventoAgendaCustomizado,
+            date: () => null,
+            time: () => null,
+            range: () => {
+              if (eventos.length === 0) return []
+              const datas = eventos.map(ev => new Date(ev.start))
+              const min = new Date(Math.min(...datas))
+              const max = new Date(Math.max(...datas))
+              const dias = []
+              let cursor = new Date(min)
+              cursor.setHours(0, 0, 0, 0)
+              max.setHours(0, 0, 0, 0)
+              while (cursor <= max) {
+                dias.push(new Date(cursor))
+                cursor.setDate(cursor.getDate() + 1)
+              }
+              return dias
+            }
+          }
         }}
       />
     </div>
