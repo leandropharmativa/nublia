@@ -9,7 +9,7 @@ import CalendarioAgenda from '../components/CalendarioAgenda'
 import ModalNovoHorario from '../components/ModalNovoHorario'
 import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
-import ListaAgendamentosAgenda from '../components/ListaAgendamentosAgenda'
+import ListaAgendamentosAgenda from '../components/ListaAgendamentosAgenda' // Certifique-se de importar corretamente
 
 function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
@@ -205,7 +205,8 @@ function AgendaPrescritor({ mostrarAgenda }) {
   }
 
   return (
-    <div className="w-full h-[72vh] flex flex-col gap-2 relative">
+    <div className="w-full flex flex-col gap-4 relative">
+      {/* Campo de busca */}
       <div className="pt-2 w-72 relative">
         <div className="relative">
           <input
@@ -260,25 +261,31 @@ function AgendaPrescritor({ mostrarAgenda }) {
         )}
       </div>
 
-<CalendarioAgenda
-  eventos={eventos}
-  aoSelecionarSlot={handleNovoSlot}
-  aoSelecionarEvento={handleEventoClick}
-  onDataChange={setDataAtual}
-  onViewChange={setViewAtual}
-/>
+      {/* Calendário */}
+      <div className="w-full">
+        <CalendarioAgenda
+          eventos={eventos}
+          aoSelecionarSlot={handleNovoSlot}
+          aoSelecionarEvento={handleEventoClick}
+          onDataChange={setDataAtual}
+          onViewChange={setViewAtual}
+        />
+      </div>
 
+      {/* Lista de agendamentos customizada (exibida somente na agenda view) */}
+      {viewAtual === 'agenda' && (
+        <div className="mt-2 max-h-[300px] overflow-auto rounded bg-white border border-gray-200">
+          <ListaAgendamentosAgenda
+            eventos={eventos}
+            dataAtual={dataAtual}
+            aoVerPerfil={abrirPerfilPaciente}
+            aoVerAgendamento={handleEventoClick}
+            aoIniciarAtendimento={(id) => console.log("Iniciar atendimento:", id)}
+          />
+        </div>
+      )}
 
-      <ListaAgendamentosAgenda
-        eventos={eventos}
-        dataAtual={dataAtual}
-        aoVerPerfil={abrirPerfilPaciente}
-        aoVerAgendamento={handleEventoClick}
-        aoIniciarAtendimento={(id) => {
-          console.log("Iniciar atendimento para paciente", id)
-        }}
-      />
-
+      {/* Modais */}
       {modalAberto && (
         <ModalNovoHorario
           horario={slotSelecionado}
@@ -290,18 +297,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
           }}
         />
       )}
-
-     {viewAtual === 'agenda' && (
-    <ListaAgendamentosAgenda
-    eventos={eventos}
-    dataAtual={dataAtual}
-    aoVerPerfil={abrirPerfilPaciente}
-    aoVerAgendamento={handleEventoClick}
-    aoIniciarAtendimento={(id) => {
-      console.log("Iniciar atendimento para paciente", id)
-      }}
-    />
-    )}
 
       {modalAgendar && (
         <ModalAgendarHorario
