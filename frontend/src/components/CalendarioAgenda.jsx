@@ -42,7 +42,18 @@ function ModalFinalizado({ evento, onClose }) {
     hour: '2-digit',
     minute: '2-digit'
   })
-  const horaAtendimento = evento.hora_atendimento || horaAgendada
+  const horaAgendada = new Date(evento.start).toLocaleTimeString('pt-BR', {
+  hour: '2-digit',
+  minute: '2-digit'
+})
+
+const horaAtendimento = evento.hora_atendimento
+  ? new Date(evento.hora_atendimento).toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  : horaAgendada
+
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
