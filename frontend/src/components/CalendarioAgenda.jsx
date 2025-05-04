@@ -41,7 +41,8 @@ export default function CalendarioAgenda({
   eventos = [],
   aoSelecionarSlot,
   aoSelecionarEvento,
-  onDataChange
+  onDataChange,
+  onViewChange = () => {}
 }) {
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
@@ -67,7 +68,10 @@ export default function CalendarioAgenda({
         endAccessor="end"
         view={view}
         date={dataAtual}
-        onView={setView}
+        onView={(novaView) => {
+         setView(novaView)
+          onViewChange?.(novaView) // avisa o componente pai
+        }}
         onNavigate={setDataAtual}
         defaultView="month"
         views={['month', 'agenda']}
