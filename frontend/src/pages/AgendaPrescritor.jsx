@@ -50,7 +50,8 @@ return {
   start,
   end,
   status: ev.status,
-  paciente_id: ev.paciente_id
+  paciente_id: ev.paciente_id,
+  hora_atendimento: ev.hora_atendimento
 }
       })
 
