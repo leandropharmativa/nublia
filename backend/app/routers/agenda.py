@@ -81,10 +81,11 @@ def listar_agendamentos_com_pacientes(prescritor_id: int, session: Session = Dep
 
         return resultado
 
-except Exception as e:
-    print("❌ Erro interno no endpoint /prescritor-com-pacientes:")
-    traceback.print_exc()
-    raise HTTPException(status_code=500, detail="Erro interno ao listar agendamentos.")
+    except Exception as e:
+        print("❌ Erro interno no endpoint /prescritor-com-pacientes:")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail="Erro interno ao listar agendamentos.")
+
 
 
 # ✅ Agendar horário existente
