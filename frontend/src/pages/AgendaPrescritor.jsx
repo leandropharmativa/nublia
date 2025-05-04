@@ -291,6 +291,18 @@ function AgendaPrescritor({ mostrarAgenda }) {
         />
       )}
 
+     {viewAtual === 'agenda' && (
+    <ListaAgendamentosAgenda
+    eventos={eventos}
+    dataAtual={dataAtual}
+    aoVerPerfil={abrirPerfilPaciente}
+    aoVerAgendamento={handleEventoClick}
+    aoIniciarAtendimento={(id) => {
+      console.log("Iniciar atendimento para paciente", id)
+      }}
+    />
+    )}
+
       {modalAgendar && (
         <ModalAgendarHorario
           agendamentoId={agendamentoSelecionado}
