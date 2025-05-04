@@ -42,10 +42,6 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
     buscar()
   }, [termoBusca])
 
-  const selecionarPaciente = (paciente) => {
-    onSelecionarPaciente(paciente)
-  }
-
   // Novo estado:
 const [agendamentos, setAgendamentos] = useState([])
 
@@ -92,7 +88,7 @@ useEffect(() => {
 
         <div className="overflow-y-auto max-h-[320px]">
           <AnimatePresence>
-            {termoBusca.trim() && pacientes.length > 0 && (
+            {termoBusca.trim() && pacientes.length > 0 && agendamentos.length === 0 && (
               <motion.ul
                 key="lista"
                 initial={{ opacity: 0, y: 10 }}
@@ -111,7 +107,7 @@ useEffect(() => {
                       <p className="text-sm text-gray-500">{paciente.email || 'Sem e-mail'}</p>
                     </div>
                     <Botao
-                      onClick={() => selecionarPaciente(paciente)}
+                      onClick={() => onSelecionarPaciente(paciente)}
                       variante="texto"
                       className="text-sm px-2"
                       iconeInicio={<User size={18} />}
