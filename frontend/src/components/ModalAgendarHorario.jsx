@@ -128,10 +128,10 @@ export default function ModalAgendarHorario({
   const renderBuscaPaciente = () => (
     <>
       <label className="text-sm text-gray-600 mb-1">
-        Paciente: {trocandoPaciente && pacienteAtual && (
-        <span className="text-gray-800 font-medium ml-1">{pacienteAtual}</span>
+        Paciente atual: {trocandoPaciente && pacienteAtual && (
+        <span className="text-gray-800 font-bold ml-1">{pacienteAtual}</span>
         )}
-    </label>
+      </label>
 
       {selecionado ? (
         <div className="bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
