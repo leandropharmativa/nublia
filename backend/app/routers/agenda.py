@@ -5,7 +5,7 @@ from datetime import date
 from pydantic import BaseModel
 
 from app.database import get_session
-from app.models import Agendamento, Usuario  # Certifique-se de importar o modelo de Usuario
+from app.models import Agendamento, User  # ✅ Correção aqui
 
 router = APIRouter(prefix="/agenda", tags=["Agenda"])
 
@@ -21,11 +21,11 @@ class DesagendarRequest(BaseModel):
     id: int
 
 class ReagendarRequest(BaseModel):
-    de_id: int  # ID do horário atual
-    para_id: int  # ID do novo horário (disponível)
+    de_id: int
+    para_id: int
 
 class TrocarPacienteRequest(BaseModel):
-    id: int  # ID do agendamento existente
+    id: int
     novo_paciente_id: int
 
 # ✅ Criar horário disponível
@@ -45,7 +45,7 @@ def listar_agenda_prescritor(prescritor_id: int, session: Session = Depends(get_
     for ag in result:
         paciente_nome = None
         if ag.paciente_id:
-            paciente = session.get(Usuario, ag.paciente_id)
+            paciente = session.get(User, ag.paciente_id)  # ✅ Correção aqui
             paciente_nome = paciente.name if paciente else None
 
         agendamento_dict = ag.dict()
@@ -54,13 +54,12 @@ def listar_agenda_prescritor(prescritor_id: int, session: Session = Depends(get_
 
     return agendamentos_com_nome
 
-# ✅ Agendar horário existente (define paciente_id e muda status)
+# ✅ Agendar horário existente
 @router.post("/agendar", response_model=Agendamento)
 def agendar_horario(dados: AgendarHorarioRequest, session: Session = Depends(get_session)):
     agendamento = session.get(Agendamento, dados.id)
     if not agendamento:
         raise HTTPException(status_code=404, detail="Horário não encontrado")
-
     if agendamento.status != "disponivel":
         raise HTTPException(status_code=400, detail="Horário já está agendado")
 
@@ -82,6 +81,7 @@ def remover_agendamento(dados: RemoverAgendamentoRequest, session: Session = Dep
     session.commit()
     return True
 
+# ✅ Desagendar (remover paciente do horário)
 @router.post("/desagendar", response_model=Agendamento)
 def desagendar_horario(dados: DesagendarRequest, session: Session = Depends(get_session)):
     agendamento = session.get(Agendamento, dados.id)
@@ -95,6 +95,7 @@ def desagendar_horario(dados: DesagendarRequest, session: Session = Depends(get_
     session.refresh(agendamento)
     return agendamento
 
+# ✅ Reagendar (trocar de horário)
 @router.post("/reagendar", response_model=Agendamento)
 def reagendar_horario(dados: ReagendarRequest, session: Session = Depends(get_session)):
     horario_antigo = session.get(Agendamento, dados.de_id)
@@ -102,15 +103,11 @@ def reagendar_horario(dados: ReagendarRequest, session: Session = Depends(get_se
 
     if not horario_antigo or not novo_horario:
         raise HTTPException(status_code=404, detail="Agendamento não encontrado.")
-
     if novo_horario.status != "disponivel":
         raise HTTPException(status_code=400, detail="O novo horário já está agendado ou indisponível.")
 
-    # Transferir paciente
     novo_horario.paciente_id = horario_antigo.paciente_id
     novo_horario.status = "agendado"
-
-    # Remover paciente do horário antigo
     horario_antigo.paciente_id = None
     horario_antigo.status = "disponivel"
 
@@ -118,15 +115,14 @@ def reagendar_horario(dados: ReagendarRequest, session: Session = Depends(get_se
     session.add(horario_antigo)
     session.commit()
     session.refresh(novo_horario)
-
     return novo_horario
 
+# ✅ Trocar paciente de um agendamento já agendado
 @router.post("/trocar-paciente", response_model=Agendamento)
 def trocar_paciente(dados: TrocarPacienteRequest, session: Session = Depends(get_session)):
     agendamento = session.get(Agendamento, dados.id)
     if not agendamento:
         raise HTTPException(status_code=404, detail="Agendamento não encontrado.")
-
     if agendamento.status != "agendado":
         raise HTTPException(status_code=400, detail="Esse horário não está agendado.")
 
