@@ -154,7 +154,7 @@ export default function ModalAgendarHorario({
       ) : (
         <>
 <div className="flex items-center gap-2">
-  <div className="relative flex-1 max-w-[75%]">
+  <div className="relative flex-1 max-w-[90%]">
     <Search className="absolute left-3 top-3 text-gray-400" size={20} />
     <input
       ref={inputRef}
@@ -167,7 +167,7 @@ export default function ModalAgendarHorario({
   </div>
   <button
     onClick={() => setMostrarCadastro(true)}
-    className="p-2 rounded-full bg-nublia-primary text-white hover:brightness-110"
+    className="p-2 rounded-full"
     title="Cadastrar novo paciente"
     variante="primario"
   >
