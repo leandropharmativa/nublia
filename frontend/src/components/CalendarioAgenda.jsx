@@ -66,10 +66,11 @@ export default function CalendarioAgenda({
       aoSelecionarSlot({ start })
     }
   }}
-  onSelectEvent={(event) => {
-    aoSelecionarEvento(event)
-    }
-  }}
+onSelectEvent={(event) => {
+  // Permite clique em qualquer view, inclusive 'agenda'
+  aoSelecionarEvento(event)
+}}
+
   messages={{
     next: <ChevronRight size={20} />,
     previous: <ChevronLeft size={20} />,
