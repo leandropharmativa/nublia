@@ -86,6 +86,16 @@ const agendamentosHoje = useMemo(() => {
     }
   }, [])
 
+  useEffect(() => {
+  const listener = (e) => {
+    setPacienteSelecionado(e.detail)
+    setTimeout(() => setAbaSelecionada(0), 0)
+  }
+
+  window.addEventListener('IniciarFichaAtendimento', listener)
+  return () => window.removeEventListener('IniciarFichaAtendimento', listener)
+}, [])
+
 useEffect(() => {
   const carregarConteudoPorAba = async () => {
     if (!user) return
