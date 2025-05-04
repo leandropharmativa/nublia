@@ -241,8 +241,8 @@ function EventoAgendaCustomizado({ event }) {
   })
 
   return (
-    <div className="flex items-center justify-between px-3 py-2 border-b text-sm">
-      {/* Nome e ações */}
+    <div className="flex items-center justify-between px-3 py-2 border-b text-sm text-gray-700">
+      {/* Nome + ações */}
       <div className="flex items-center gap-3">
         <span className={isAgendado ? 'font-medium text-gray-800' : 'text-gray-400'}>
           {nome}
@@ -258,7 +258,7 @@ function EventoAgendaCustomizado({ event }) {
               }}
               className="hover:text-nublia-orange"
             >
-              <Eye size={16} />
+              <UserRound size={16} />
             </button>
 
             <button
@@ -286,7 +286,7 @@ function EventoAgendaCustomizado({ event }) {
         )}
       </div>
 
-      {/* Data e hora */}
+      {/* Dia e Hora */}
       <div className="text-right text-gray-500 text-xs whitespace-nowrap">
         <div>{dia}</div>
         <div>{hora}</div>
