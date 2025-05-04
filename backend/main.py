@@ -27,7 +27,6 @@ app.include_router(agenda.router)
 app.include_router(codigos.router)
 app.include_router(atendimentos.router)
 app.include_router(formulas.router)
-app.include_router(agenda.router)
 
 # Criação automática das tabelas no primeiro startup
 @app.on_event("startup")
