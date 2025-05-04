@@ -1,4 +1,158 @@
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
+import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
+import {
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  isSameWeek,
+  isSameDay,
+  isSameDay as isSameCalendarDay
+} from 'date-fns'
+import ptBR from 'date-fns/locale/pt-BR'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
+import './CalendarioCustom.css'
+
+import {
+  ChevronLeft,
+  ChevronRight,
+  UserRoundCheck,
+  CalendarDays,
+  CalendarClock,
+  Clock,
+  User,
+  Eye,
+  PlayCircle,
+  UserRound
+} from 'lucide-react'
+
+const locales = { 'pt-BR': ptBR }
+
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
+  getDay,
+  locales,
+})
+
+export default function CalendarioAgenda({
+  eventos = [],
+  aoSelecionarSlot,
+  aoSelecionarEvento,
+  onDataChange,
+  onViewChange = () => {}
+}) {
+  const [view, setView] = useState('month')
+  const [dataAtual, setDataAtual] = useState(new Date())
+
+  const handleNavigate = (novaData) => {
+    setDataAtual(novaData)
+    onDataChange?.(novaData)
+  }
+
+const eventosVisiveis = Array.isArray(eventos) ? eventos : []
+
+  const [eventosFiltrados, setEventosFiltrados] = useState([])
+
+useEffect(() => {
+  if (view === 'agenda' && eventos.length > 0) {
+    const datas = eventos.map(ev => new Date(ev.start))
+    const min = new Date(Math.min(...datas))
+    const max = new Date(Math.max(...datas))
+    max.setHours(23, 59, 59, 999)
+
+    const filtrados = eventos.filter(ev => {
+      const data = new Date(ev.start)
+      return data >= min && data <= max
+    })
+
+    setEventosFiltrados(filtrados)
+  } else {
+    setEventosFiltrados(eventos)
+  }
+}, [view, eventos])
+
+
+return (
+    <div className="p-4 bg-white rounded overflow-hidden">
+      <BigCalendar
+        localizer={localizer}
+        events={eventosFiltrados}
+        startAccessor="start"
+        endAccessor="end"
+        view={view}
+        date={dataAtual}
+        onView={(novaView) => {
+          setView(novaView)
+          onViewChange?.(novaView)
+        }}
+        onNavigate={handleNavigate}
+        defaultView="month"
+        views={['month', 'agenda']}
+        selectable={view !== 'month' && view !== 'agenda'}
+        step={15}
+        timeslots={1}
+        culture="pt-BR"
+        min={new Date(0)}
+        max={new Date(2100, 11, 31)}
+        onSelectSlot={({ start }) => {
+          if (view !== 'month' && view !== 'agenda') {
+            aoSelecionarSlot({ start })
+          }
+        }}
+        onSelectEvent={(event, e) => {
+          if (!e.target.closest('button')) {
+            aoSelecionarEvento(event)
+          }
+        }}
+        onRangeChange={(range) => {
+  // console.log('range', range)  // (pode deixar só para debug)
+        }}
+        messages={{
+          next: <ChevronRight size={20} />,
+          previous: <ChevronLeft size={20} />,
+          today: 'Hoje',
+          month: 'Mês',
+          week: 'Semana',
+          day: 'Dia',
+          agenda: 'Agenda',
+          noEventsInRange: 'Sem eventos neste período.',
+          date: 'Data',
+          time: 'Horário',
+          event: 'Agendamento'
+        }}
+        components={{
+          toolbar: (props) => (
+            <CustomToolbar {...props} eventos={eventos} />
+          ),
+          day: { header: CustomDayHeader },
+          month: {
+            dateHeader: (props) => (
+              <HeaderComEventos
+                data={props.date}
+                label={props.label}
+                eventos={eventos}
+                onView={setView}
+                onNavigate={setDataAtual}
+                aoSelecionarEvento={aoSelecionarEvento}
+                aoAdicionarHorario={aoSelecionarSlot}
+              />
+            )
+          },
+agenda: {
   event: EventoAgendaCustomizado,
+  date: () => null,
+  time: () => null
+}
+
+        }}
+      />
+    </div>
+  )
+}
+
 function HeaderComEventos({
   data,
   label,
@@ -267,3 +421,4 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
     </div>
   )
 }
+// ... restante do arquivo permanece o mesmo (HeaderComEventos, EventoAgendaCustomizado, etc.)
