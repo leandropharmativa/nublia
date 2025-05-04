@@ -52,9 +52,10 @@ const eventosFormatados = data.map(ev => {
     status: ev.status,
     paciente_id: ev.paciente_id,
     hora_atendimento: ev.hora_atendimento ? new Date(ev.hora_atendimento) : null,
-    criado_em: ev.criado_em ? new Date(ev.criado_em) : null // ✅ ADICIONE ESTA LINHA
+    criado_em: ev.criado_em ? new Date(ev.criado_em) : null  // ✅ GARANTE QUE VAI PARA O MODAL
   }
 })
+
 
 
     setEventos(eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start)))
