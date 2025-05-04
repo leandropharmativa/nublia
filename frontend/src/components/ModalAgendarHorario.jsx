@@ -169,6 +169,7 @@ export default function ModalAgendarHorario({
     onClick={() => setMostrarCadastro(true)}
     className="p-2 rounded-full bg-nublia-primary text-white hover:brightness-110"
     title="Cadastrar novo paciente"
+    variante="primario"
   >
     <UserRoundPlus size={20} />
   </button>
