@@ -374,16 +374,26 @@ export default function ModalAgendarHorario({
                   Confirmar agendamento
                 </Botao>
               )}
-              {statusAtual === 'disponivel' && (
-                <div className="flex justify-between pt-4">
-                  <Botao variante="claro" className="rounded-full" onClick={() => onRemover(agendamentoId)}>
-                    Remover horário
-                  </Botao>
-                  <Botao className="rounded-full" onClick={() => setMostrarCadastro(true)}>
-                    Novo paciente
-                  </Botao>
-                </div>
-              )}
+{statusAtual === 'disponivel' && (
+  <div className="flex justify-between pt-4">
+    <Botao
+      variante="claro"
+      className="rounded-full"
+      onClick={() => onRemover(agendamentoId)}
+    >
+      Remover horário
+    </Botao>
+    <Botao
+      className="rounded-full flex items-center gap-2"
+      onClick={() => agendar(selecionado.id)}
+      disabled={!selecionado}
+      variante={!selecionado ? 'inativo' : 'primario'}
+    >
+      Confirmar <CalendarCheck size={16} />
+    </Botao>
+  </div>
+)}
+
             </>
           )}
         </div>
