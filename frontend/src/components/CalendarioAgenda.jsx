@@ -59,6 +59,14 @@ export default function CalendarioAgenda({
 
 const eventosVisiveis = eventos
 
+  useEffect(() => {
+  if (view === 'agenda' && eventos.length > 0) {
+    const datas = eventos.map(ev => new Date(ev.start))
+    const menorData = new Date(Math.min(...datas))
+    setDataAtual(menorData)
+  }
+}, [view, eventos])
+
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
