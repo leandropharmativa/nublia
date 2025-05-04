@@ -164,12 +164,12 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const limite = new Date(dataAtual)
   limite.setDate(limite.getDate() + 30)
 
-const eventosFiltrados = eventos
+// 🔍 Filtro aplicado apenas se tiver texto
+const eventosParaAgenda = eventos
   .filter(ev =>
-    (viewAtual !== 'agenda' ? (ev.start >= dataAtual && ev.start <= limite) : true) &&
-    (filtroTexto.length <= 1 ||
-      ev.title.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-        .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')))
+    filtroTexto.length <= 1 ||
+    ev.title.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+      .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
   )
   .sort((a, b) => new Date(a.start) - new Date(b.start))
 
@@ -205,7 +205,7 @@ const eventosFiltrados = eventos
           </div>
 
           <ListaAgendamentosAgenda
-            eventos={eventosFiltrados}
+            eventos={eventosParaAgenda}
             aoVerPerfil={abrirPerfilPaciente}
             aoVerAgendamento={handleEventoClick}
             aoIniciarAtendimento={(id) => console.log("Iniciar atendimento:", id)}
