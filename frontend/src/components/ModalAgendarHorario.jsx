@@ -258,7 +258,7 @@ export default function ModalAgendarHorario({
                     <button onClick={() => setReagendando(true)} className="text-nublia-accent hover:text-nublia-orange" title="Transferir paciente">
                       <CalendarClock size={18} />
                     </button>
-                    <button onClick={() => onDesagendar(agendamentoId)} className="text-red-500 hover:text-red-600" title="Remover paciente">
+                    <button onClick={() => onDesagendar(agendamentoId)} className="text-nublia-orange hover:text-red-600" title="Remover paciente">
                       <Trash size={18} />
                     </button>
                   </div>
