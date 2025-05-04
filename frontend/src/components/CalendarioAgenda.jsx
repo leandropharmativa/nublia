@@ -229,17 +229,17 @@ function EventoAgendaCustomizado({ event }) {
   const isAgendado = event.status === 'agendado'
 
   return (
-    <div className="flex items-center gap-2 px-2 py-1 text-sm text-gray-700 pointer-events-none">
+    <div className="flex items-center gap-2 px-2 py-1 text-sm text-gray-700">
       <span className={isAgendado ? 'font-medium text-gray-800' : 'text-gray-400'}>
-        {isAgendado ? event.nome : 'Disponível'}
+        {isAgendado ? event.nome ?? event.title : 'Disponível'}
       </span>
 
       {isAgendado && (
         <>
-          <User size={16} className="text-nublia-accent pointer-events-auto" />
+          <User size={16} className="text-nublia-accent" />
           <button
             title="Ver perfil"
-            className="text-nublia-accent hover:text-nublia-orange pointer-events-auto"
+            className="text-nublia-accent hover:text-nublia-orange"
             onClick={(e) => {
               e.stopPropagation()
               event.onVerPerfil?.(event.paciente_id)
@@ -250,7 +250,7 @@ function EventoAgendaCustomizado({ event }) {
 
           <button
             title="Iniciar atendimento"
-            className="text-nublia-accent hover:text-nublia-orange pointer-events-auto"
+            className="text-nublia-accent hover:text-nublia-orange"
             onClick={(e) => {
               e.stopPropagation()
               event.onIniciarAtendimento?.(event.paciente_id)
