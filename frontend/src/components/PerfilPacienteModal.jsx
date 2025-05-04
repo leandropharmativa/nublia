@@ -27,7 +27,7 @@ export default function PerfilPacienteModal({ paciente, pacienteId, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-60">
       <div className="bg-white p-6 rounded-2xl w-full max-w-xl mx-4">
         <h2 className="text-xl font-bold text-nublia-accent mb-4">Perfil do Paciente</h2>
 
