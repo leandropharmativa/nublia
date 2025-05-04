@@ -54,6 +54,32 @@ def listar_agenda_prescritor(prescritor_id: int, session: Session = Depends(get_
 
     return agendamentos_com_nome
 
+# ✅ Novo endpoint: listar agendamentos com dados do paciente
+@router.get("/prescritor-com-pacientes/{prescritor_id}")
+def listar_agendamentos_com_pacientes(prescritor_id: int, session: Session = Depends(get_session)):
+    agendamentos = session.exec(
+        select(Agendamento).where(Agendamento.prescritor_id == prescritor_id)
+    ).all()
+
+    resultado = []
+    for ag in agendamentos:
+        if ag.paciente_id:
+            paciente = session.get(User, ag.paciente_id)
+            if paciente:
+                resultado.append({
+                    "id": ag.id,
+                    "inicio": ag.inicio,
+                    "status": ag.status,
+                    "paciente_id": ag.paciente_id,
+                    "paciente": {
+                        "id": paciente.id,
+                        "name": paciente.name,
+                        "email": paciente.email
+                    }
+                })
+
+    return resultado
+
 # ✅ Agendar horário existente
 @router.post("/agendar", response_model=Agendamento)
 def agendar_horario(dados: AgendarHorarioRequest, session: Session = Depends(get_session)):
