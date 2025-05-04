@@ -90,10 +90,9 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
 
     if (agendamentoId) {
       try {
-await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
-  id: agendamentoId
-})
-
+        await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
+          id: agendamentoId,
+        })
         toastSucesso('Agendamento finalizado com sucesso!')
       } catch (err) {
         console.error('Erro ao finalizar agendamento:', err)
@@ -127,7 +126,136 @@ await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
 
   return (
     <div className="bg-white p-6 rounded-2xl w-full">
-      {/* ...código da interface permanece igual... */}
+      {/* Cabeçalho */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h2 className="text-2xl font-bold text-nublia-accent">Ficha de Atendimento</h2>
+
+            <button
+              onClick={handleSalvar}
+              className="text-nublia-accent hover:text-nublia-orange transition"
+              title="Salvar atendimento"
+            >
+              <Save size={24} />
+            </button>
+
+            <button
+              onClick={() => setMostrarConfirmacaoFinalizar(true)}
+              className="text-white bg-nublia-accent hover:bg-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2"
+              title="Finalizar atendimento"
+            >
+              <CheckCircle size={18} /> Finalizar
+            </button>
+
+            {!atendimentoId && (
+              <button
+                onClick={handleDescartar}
+                className="text-nublia-accent hover:text-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2 border border-nublia-accent"
+                title="Descartar atendimento"
+              >
+                <ClipboardX size={18} /> Descartar
+              </button>
+            )}
+          </div>
+          <p className="text-sm text-gray-700 font-semibold mt-1">
+            {paciente.name} {calcularIdade(paciente.data_nascimento) ? `• ${calcularIdade(paciente.data_nascimento)} anos` : ''}
+          </p>
+        </div>
+      </div>
+
+      {/* Abas */}
+      <div className="flex border-b mb-6">
+        {abas.map((aba) => (
+          <button
+            key={aba}
+            onClick={() => setAbaAtiva(aba)}
+            className={`px-4 py-2 capitalize transition ${
+              abaAtiva === aba
+                ? 'border-b-2 border-nublia-accent font-semibold text-nublia-accent'
+                : 'text-gray-600 hover:text-nublia-accent'
+            }`}
+          >
+            {aba}
+          </button>
+        ))}
+      </div>
+
+      {/* Conteúdo da aba */}
+      <div className="space-y-4">
+        {abaAtiva === 'paciente' ? (
+          <>
+            <div className="space-y-2 text-sm text-gray-700">
+              <div><strong>Email:</strong> {paciente.email || 'Não informado'}</div>
+              <div><strong>Telefone:</strong> {paciente.telefone || 'Não informado'}</div>
+              <div><strong>Sexo:</strong> {paciente.sexo || 'Não informado'}</div>
+              <div><strong>Data de Nascimento:</strong> {paciente.data_nascimento || 'Não informada'}</div>
+              <div><strong>Observações:</strong> {paciente.observacoes || 'Nenhuma observação registrada.'}</div>
+            </div>
+
+            {atendimentosAnteriores.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-sm font-semibold text-nublia-accent mb-2 flex items-center gap-2">
+                  <List size={16} /> Atendimentos anteriores
+                </h3>
+                <ul className="text-sm text-gray-700 divide-y divide-gray-200">
+                  {(mostrarTodos ? atendimentosAnteriores : atendimentosAnteriores.slice(0, 5)).map((a) => (
+                    <li key={a.id} className="flex items-center justify-between py-1">
+                      <button
+                        className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1 text-sm"
+                        onClick={() => setModalVisualizar(a)}
+                      >
+                        <Eye size={16} />
+                        <span className="text-xs text-gray-600">
+                          {new Date(a.criado_em).toLocaleDateString('pt-BR')} • {new Date(a.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+
+                {atendimentosAnteriores.length > 5 && (
+                  <button
+                    onClick={() => setMostrarTodos(!mostrarTodos)}
+                    className="mt-3 px-4 py-1 text-xs font-semibold rounded-full border border-nublia-accent text-nublia-accent hover:bg-nublia-accent hover:text-white transform hover:scale-[1.03] transition flex items-center gap-2"
+                  >
+                    {mostrarTodos ? <ListMinus size={14} /> : <ListPlus size={14} />}
+                    {mostrarTodos ? 'Mostrar menos' : 'Ver todos'}
+                  </button>
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          <textarea
+            placeholder={`Escreva as informações de ${abaAtiva}...`}
+            value={formulario[abaAtiva]}
+            onChange={handleChange}
+            className="w-full h-80 p-4 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+          />
+        )}
+      </div>
+
+      {modalVisualizar && (
+        <VisualizarAtendimentoModal
+          atendimento={modalVisualizar}
+          onClose={() => setModalVisualizar(null)}
+        />
+      )}
+
+      {/* Modal de confirmação para DESCARTAR */}
+      <ModalConfirmacao
+        aberto={mostrarConfirmacaoSaida}
+        titulo="Descartar atendimento?"
+        mensagem="Há informações preenchidas na ficha. Deseja realmente sair e perder os dados?"
+        textoBotaoConfirmar="Sim, descartar"
+        textoBotaoExtra="Continuar preenchendo"
+        onConfirmar={() => {
+          setMostrarConfirmacaoSaida(false)
+          onFinalizar()
+        }}
+        onCancelar={() => setMostrarConfirmacaoSaida(false)}
+      />
 
       {/* Modal de confirmação para FINALIZAR */}
       <ModalConfirmacao
