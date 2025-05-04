@@ -12,6 +12,7 @@ import {
   CalendarClock,
   CalendarSync,
   CalendarCheck,
+  UserRoundPlus
 } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
@@ -196,8 +197,9 @@ export default function ModalAgendarHorario({
 
 {trocandoPaciente && (
   <div className="flex justify-end mt-3">
-    <Botao className="rounded-full" onClick={() => setMostrarCadastro(true)}>
-      Novo paciente
+    <Botao className="rounded-full flex items-center justify-center gap-2" onClick={() => setMostrarCadastro(true)}>
+    Cadastrar Novo paciente
+    <UserRoundPlus className="w-4 h-4" />
     </Botao>
   </div>
 )}
