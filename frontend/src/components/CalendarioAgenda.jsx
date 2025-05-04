@@ -57,9 +57,7 @@ export default function CalendarioAgenda({
     onDataChange?.(novaData)
   }
 
-  const eventosVisiveis = view === 'agenda'
-    ? eventos
-    : eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
+const eventosVisiveis = eventos
 
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
