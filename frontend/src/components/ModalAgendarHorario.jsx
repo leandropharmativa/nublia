@@ -2,7 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
 import PerfilPacienteModal from './PerfilPacienteModal'
-import { Search, User, X, Loader2, ArrowLeftRight, Trash, CalendarClock, CalendarSync } from 'lucide-react'
+import {
+  Search,
+  User,
+  X,
+  Loader2,
+  ArrowLeftRight,
+  Trash,
+  CalendarClock,
+  CalendarSync,
+  CalendarCheck,
+} from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
 
@@ -145,7 +155,7 @@ export default function ModalAgendarHorario({
               placeholder="Buscar pacientes..."
               value={filtro}
               onChange={(e) => setFiltro(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+              className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
             />
           </div>
 
@@ -261,14 +271,10 @@ export default function ModalAgendarHorario({
                 <>
                   {renderBuscaPaciente()}
                   <div className="flex gap-2 mt-3">
-                    <Botao variante="claro" className="w-1/2" onClick={() => setTrocandoPaciente(false)}>
+                    <Botao variante="claro" className="w-1/2 rounded-full" onClick={() => setTrocandoPaciente(false)}>
                       Cancelar
                     </Botao>
-                    <Botao
-                      className="w-1/2"
-                      onClick={confirmarTrocaPaciente}
-                      disabled={carregando || !selecionado}
-                    >
+                    <Botao className="w-1/2 rounded-full" onClick={confirmarTrocaPaciente} disabled={carregando || !selecionado}>
                       {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar troca'}
                     </Botao>
                   </div>
@@ -284,17 +290,16 @@ export default function ModalAgendarHorario({
                   <select
                     value={novoHorarioId || ''}
                     onChange={(e) => setNovoHorarioId(parseInt(e.target.value))}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm"
+                    className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
                   >
                     <option value="">Selecione um novo horário</option>
-                    {[...horariosDisponiveis]
+                    {horariosDisponiveis
                       .filter(h => h.data && h.hora)
                       .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
                       .map((h) => {
                         const [ano, mes, dia] = h.data.split('-').map(Number)
                         const [hora, minuto] = h.hora.split(':').map(Number)
                         const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
-
                         return (
                           <option key={h.id} value={h.id}>
                             {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
@@ -303,14 +308,21 @@ export default function ModalAgendarHorario({
                       })}
                   </select>
                   <div className="flex gap-2 mt-3">
-                    <Botao variante="claro" className="w-1/2" onClick={() => {
+                    <Botao variante="claro" className="w-1/2 rounded-full" onClick={() => {
                       setReagendando(false)
                       setNovoHorarioId(null)
                     }}>
                       Cancelar
                     </Botao>
-                    <Botao className="w-1/2" onClick={confirmarReagendamento} disabled={carregando}>
-                      {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar novo horário'}
+                    <Botao className="w-1/2 rounded-full flex items-center justify-center gap-2" onClick={confirmarReagendamento} disabled={carregando}>
+                      {carregando ? (
+                        <Loader2 className="animate-spin" />
+                      ) : (
+                        <>
+                          Confirmar novo horário
+                          <CalendarCheck className="w-4 h-4" />
+                        </>
+                      )}
                     </Botao>
                   </div>
                 </>
@@ -322,16 +334,16 @@ export default function ModalAgendarHorario({
             <>
               {renderBuscaPaciente()}
               {selecionado && (
-                <Botao className="mt-4 w-full" onClick={() => agendar(selecionado.id)}>
+                <Botao className="mt-4 w-full rounded-full" onClick={() => agendar(selecionado.id)}>
                   Confirmar agendamento
                 </Botao>
               )}
               {statusAtual === 'disponivel' && (
                 <div className="flex justify-between pt-4">
-                  <Botao variante="claro" onClick={() => onRemover(agendamentoId)}>
+                  <Botao variante="claro" className="rounded-full" onClick={() => onRemover(agendamentoId)}>
                     Remover horário
                   </Botao>
-                  <Botao onClick={() => setMostrarCadastro(true)}>
+                  <Botao className="rounded-full" onClick={() => setMostrarCadastro(true)}>
                     Novo paciente
                   </Botao>
                 </div>
