@@ -164,12 +164,12 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const limite = new Date(dataAtual)
   limite.setDate(limite.getDate() + 30)
 
-  const eventosNoPeriodo = eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
-  const eventosFiltrados = eventosNoPeriodo
+  const eventosFiltrados = eventos
     .filter(ev =>
-      filtroTexto.length <= 1 ||
-      ev.title.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-        .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
+      (viewAtual !== 'agenda' || (ev.start >= dataAtual && ev.start <= limite)) &&
+      (filtroTexto.length <= 1 ||
+        ev.title.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+          .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')))
     )
     .sort((a, b) => new Date(a.start) - new Date(b.start))
 
