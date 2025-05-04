@@ -37,6 +37,11 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
+// Função que força a agenda a mostrar todos os eventos disponíveis
+function rangeAllDates({ events }) {
+  return events.map(e => e.start)
+}
+
 export default function CalendarioAgenda({
   eventos = [],
   aoSelecionarSlot,
@@ -55,7 +60,6 @@ export default function CalendarioAgenda({
   const limite = new Date(dataAtual)
   limite.setDate(limite.getDate() + 30)
 
-  // Para a view "agenda", mostra todos os eventos; para as demais, filtra por data
   const eventosVisiveis = view === 'agenda'
     ? eventos
     : eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
@@ -71,7 +75,7 @@ export default function CalendarioAgenda({
         date={dataAtual}
         onView={(novaView) => {
           setView(novaView)
-          onViewChange?.(novaView) // avisa o componente pai
+          onViewChange?.(novaView)
         }}
         onNavigate={handleNavigate}
         defaultView="month"
@@ -124,7 +128,8 @@ export default function CalendarioAgenda({
           agenda: {
             event: EventoAgendaCustomizado,
             date: () => null,
-            time: () => null
+            time: () => null,
+            range: rangeAllDates
           }
         }}
       />
