@@ -56,32 +56,40 @@ def listar_agenda_prescritor(prescritor_id: int, session: Session = Depends(get_
 
 @router.get("/prescritor-com-pacientes/{prescritor_id}")
 def listar_agendamentos_com_pacientes(prescritor_id: int, session: Session = Depends(get_session)):
-    agendamentos = session.exec(
-        select(Agendamento).where(Agendamento.prescritor_id == prescritor_id)
-    ).all()
+    try:
+        agendamentos = session.exec(
+            select(Agendamento).where(Agendamento.prescritor_id == prescritor_id)
+        ).all()
 
-    resultado = []
-    for ag in agendamentos:
-        paciente_data = None
+        resultado = []
+        for ag in agendamentos:
+            paciente_data = None
+            try:
+                if ag.paciente_id:
+                    paciente = session.get(User, ag.paciente_id)
+                    if paciente:
+                        paciente_data = {
+                            "id": paciente.id,
+                            "name": paciente.name,
+                            "email": paciente.email
+                        }
+            except Exception as e:
+                print(f"Erro ao buscar paciente {ag.paciente_id}: {e}")
 
-        if ag.paciente_id:
-            paciente = session.get(User, ag.paciente_id)
-            if paciente:
-                paciente_data = {
-                    "id": paciente.id,
-                    "name": paciente.name,
-                    "email": paciente.email
-                }
+            resultado.append({
+                "id": ag.id,
+                "inicio": str(ag.inicio) if ag.inicio else None,
+                "status": ag.status,
+                "paciente_id": ag.paciente_id,
+                "paciente": paciente_data
+            })
 
-        resultado.append({
-            "id": ag.id,
-            "inicio": ag.inicio,
-            "status": ag.status,
-            "paciente_id": ag.paciente_id,
-            "paciente": paciente_data  # <- pode ser None
-        })
+        return resultado
 
-    return resultado
+    except Exception as e:
+        print(f"Erro geral ao buscar agendamentos: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno ao listar agendamentos.")
+
 
 # ✅ Agendar horário existente
 @router.post("/agendar", response_model=Agendamento)
