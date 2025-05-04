@@ -57,7 +57,11 @@ export default function CalendarioAgenda({
 
 const eventosVisiveis = view === 'agenda'
   ? eventos
-  : eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
+  : (() => {
+      const limite = new Date(dataAtual)
+      limite.setDate(limite.getDate() + 30)
+      return eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
+    })()
 
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
@@ -72,7 +76,7 @@ const eventosVisiveis = view === 'agenda'
          setView(novaView)
           onViewChange?.(novaView) // avisa o componente pai
         }}
-        onNavigate={setDataAtual}
+        onNavigate={handleNavigate}
         defaultView="month"
         views={['month', 'agenda']}
         selectable={view !== 'month' && view !== 'agenda'}
