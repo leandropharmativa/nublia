@@ -129,7 +129,7 @@ export default function ModalAgendarHorario({
     <>
       <label className="text-sm text-gray-600 mb-1">Paciente:</label>
       {selecionado ? (
-        <div className="bg-gray-100 border border-nublia-accent rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
+        <div className="bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
           <div>
             <p className="font-medium">{selecionado.name}</p>
             <p className="text-xs text-gray-500">{selecionado.email || 'Sem e-mail'}</p>
