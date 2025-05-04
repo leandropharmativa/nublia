@@ -63,32 +63,27 @@ def listar_agendamentos_com_pacientes(prescritor_id: int, session: Session = Dep
 
         resultado = []
         for ag in agendamentos:
-            paciente_data = None
-            try:
-                if ag.paciente_id:
-                    paciente = session.get(User, ag.paciente_id)
-                    if paciente:
-                        paciente_data = {
+            if ag.paciente_id:
+                paciente = session.get(User, ag.paciente_id)
+                if paciente:
+                    resultado.append({
+                        "id": ag.id,
+                        "inicio": ag.inicio,
+                        "status": ag.status,
+                        "paciente_id": ag.paciente_id,
+                        "paciente": {
                             "id": paciente.id,
                             "name": paciente.name,
                             "email": paciente.email
                         }
-            except Exception as e:
-                print(f"Erro ao buscar paciente {ag.paciente_id}: {e}")
-
-            resultado.append({
-                "id": ag.id,
-                "inicio": str(ag.inicio) if ag.inicio else None,
-                "status": ag.status,
-                "paciente_id": ag.paciente_id,
-                "paciente": paciente_data
-            })
+                    })
 
         return resultado
 
     except Exception as e:
-        print(f"Erro geral ao buscar agendamentos: {e}")
+        print("❌ Erro interno no endpoint /prescritor-com-pacientes:", e)
         raise HTTPException(status_code=500, detail="Erro interno ao listar agendamentos.")
+
 
 
 # ✅ Agendar horário existente
