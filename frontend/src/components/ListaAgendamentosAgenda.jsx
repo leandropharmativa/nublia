@@ -1,23 +1,12 @@
-import { UserRound, CalendarDays, PlayCircle } from 'lucide-react'
-import { isWithinInterval } from 'date-fns'
+import { UserRound, Eye, PlayCircle } from 'lucide-react'
 
 export default function ListaAgendamentosAgenda({
   eventos = [],
-  intervaloVisivel = null, // { start, end }
   aoVerPerfil,
   aoVerAgendamento,
   aoIniciarAtendimento
 }) {
-  const eventosFiltrados = intervaloVisivel
-    ? eventos.filter(ev =>
-        isWithinInterval(new Date(ev.start), {
-          start: intervaloVisivel.start,
-          end: intervaloVisivel.end
-        })
-      )
-    : eventos
-
-  const eventosOrdenados = eventosFiltrados.sort((a, b) => new Date(a.start) - new Date(b.start))
+  const eventosOrdenados = eventos.sort((a, b) => new Date(a.start) - new Date(b.start))
 
   return (
     <div className="mt-4">
@@ -25,9 +14,9 @@ export default function ListaAgendamentosAgenda({
         Agendamentos visíveis
       </h2>
       {eventosOrdenados.length === 0 ? (
-        <p className="text-sm text-gray-500">Nenhum agendamento encontrado neste período.</p>
+        <p className="text-sm text-gray-500">Nenhum agendamento encontrado.</p>
       ) : (
-        <ul className="divide-y border rounded-md overflow-hidden">
+        <ul className="border rounded-md overflow-hidden">
           {eventosOrdenados.map(ev => {
             const hora = ev.start.toLocaleTimeString('pt-BR', {
               hour: '2-digit',
@@ -43,7 +32,7 @@ export default function ListaAgendamentosAgenda({
             return (
               <li
                 key={ev.id}
-                className="flex justify-between items-center p-3 hover:bg-yellow-50 transition"
+                className="flex justify-between items-center p-3 border-b"
               >
                 <div>
                   <p className="font-semibold text-gray-800">{nome}</p>
@@ -56,7 +45,7 @@ export default function ListaAgendamentosAgenda({
                         <UserRound size={18} />
                       </button>
                       <button onClick={() => aoVerAgendamento?.(ev)} title="Ver agendamento" className="hover:text-nublia-orange">
-                        <CalendarDays size={18} />
+                        <Eye size={18} />
                       </button>
                       <button onClick={() => aoIniciarAtendimento?.(ev.paciente_id)} title="Iniciar atendimento" className="hover:text-nublia-orange">
                         <PlayCircle size={18} />
