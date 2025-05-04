@@ -47,7 +47,7 @@ export default function PrescritorDashboard() {
   const [mostrarCadastrarPaciente, setMostrarCadastrarPaciente] = useState(false)
   const [origemNovoAgendamento, setOrigemNovoAgendamento] = useState(false)
   const [callbackAoCadastrarPaciente, setCallbackAoCadastrarPaciente] = useState(null)
-  const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
+  const [mostrar, setMostrar] = useState(false)
 
 
   const [pacientePerfil, setPacientePerfil] = useState(null)
@@ -363,22 +363,28 @@ useEffect(() => {
 
 <>
   {mostrarBuscarPacienteModal && (
-    <BuscarPacienteModal
-      onClose={() => setMostrarBuscarPacienteModal(false)}
-      onSelecionarPaciente={(paciente) => {
-        setPacienteSelecionado(paciente)
-        setMostrarBuscarPacienteModal(false)
-        setTimeout(() => setAbaSelecionada(0), 0)
-      }}
-      onCadastrarNovo={() => {
-        setMostrarBuscarPacienteModal(false)
-        setCallbackAoCadastrarPaciente((paciente) => {
-          setPacienteSelecionado(paciente)
-          setTimeout(() => setAbaSelecionada(0), 0)
-        })
-        setMostrarCadastrarPaciente(true)
-      }}
-    />
+<BuscarPacienteModal
+  onClose={() => setMostrarBuscarPacienteModal(false)}
+  onSelecionarPaciente={(paciente, agendamentoId = null) => {
+    setPacienteSelecionado(paciente)
+
+    if (agendamentoId) {
+      setAgendamentoSelecionado({ id: agendamentoId }) // armazena o agendamento
+    }
+
+    setMostrarBuscarPacienteModal(false)
+    setTimeout(() => setAbaSelecionada(0), 0)
+  }}
+  onCadastrarNovo={() => {
+    setMostrarBuscarPacienteModal(false)
+    setCallbackAoCadastrarPaciente((paciente) => {
+      setPacienteSelecionado(paciente)
+      setTimeout(() => setAbaSelecionada(0), 0)
+    })
+    setMostrarCadastrarPaciente(true)
+  }}
+/>
+
   )}
 
   {mostrarPerfilPacienteModal && pacientePerfil && (
