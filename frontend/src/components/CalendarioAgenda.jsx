@@ -51,18 +51,17 @@ function ModalFinalizado({ evento, onClose }) {
         <p><strong>Paciente:</strong> {evento.nome || evento.title}</p>
         <p><strong>Data:</strong> {data}</p>
         <p><strong>Hora agendada:</strong> {horaAgendada}</p>
-<p><strong>Hora agendada:</strong> {horaAgendada}</p>
-{evento.hora_atendimento ? (
-  <>
-    <p><strong>Data do atendimento:</strong> {new Date(evento.hora_atendimento).toLocaleDateString('pt-BR')}</p>
-    <p><strong>Hora do atendimento:</strong> {new Date(evento.hora_atendimento).toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit'
-    })}</p>
-  </>
-) : (
-  <p><strong>Hora do atendimento:</strong> ---</p>
-)}
+        {evento.criado_em ? (
+          <>
+            <p><strong>Data do atendimento:</strong> {new Date(evento.criado_em).toLocaleDateString('pt-BR')}</p>
+            <p><strong>Hora do atendimento:</strong> {new Date(evento.criado_em).toLocaleTimeString('pt-BR', {
+              hour: '2-digit',
+              minute: '2-digit'
+            })}</p>
+          </>
+        ) : (
+          <p><strong>Hora do atendimento:</strong> ---</p>
+        )}
 
         <div className="mt-4 text-right">
           <button
