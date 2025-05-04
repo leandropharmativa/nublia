@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, memo } from 'react'
 import axios from 'axios'
 import { addHours } from 'date-fns'
-import { Search, User, Eye } from 'lucide-react'
+import { Search, User, Eye, CalendarClock } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import 'react-toastify/dist/ReactToastify.css'
 
