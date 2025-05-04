@@ -62,6 +62,15 @@ export default function CalendarioAgenda({
     }
   }, [view, eventos])
 
+  const [rangeAtual, setRangeAtual] = useState({ start: null, end: null })
+
+const eventosVisiveis = view === 'agenda' && rangeAtual.start && rangeAtual.end
+  ? eventos.filter(ev =>
+      new Date(ev.start) >= rangeAtual.start &&
+      new Date(ev.start) <= rangeAtual.end
+    )
+  : eventos
+
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
@@ -94,6 +103,19 @@ export default function CalendarioAgenda({
             aoSelecionarEvento(event)
           }
         }}
+        onRangeChange={(range) => {
+  if (view === 'agenda') {
+    // range pode ser um array (para agenda), ou objeto { start, end } para mês/semana
+    if (Array.isArray(range)) {
+      const start = range[0]
+      const end = range[range.length - 1]
+      setRangeAtual({ start, end })
+    } else {
+      setRangeAtual(range)
+    }
+  }
+}}
+
         messages={{
           next: <ChevronRight size={20} />,
           previous: <ChevronLeft size={20} />,
