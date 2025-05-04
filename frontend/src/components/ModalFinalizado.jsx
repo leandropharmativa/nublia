@@ -40,8 +40,12 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
         <div className="flex items-center justify-between gap-3 mb-3">
           <strong className="text-base text-gray-800">{nome}</strong>
           <div className="flex gap-2">
-            <button onClick={onAbrirPerfil}><UserRound size={18} className="text-gray-600 hover:text-nublia-primary" /></button>
-            <button onClick={onVerAtendimento}><FileText size={18} className="text-gray-600 hover:text-nublia-primary" /></button>
+            <button onClick={onAbrirPerfil} title="Ver perfil">
+              <UserRound size={18} className="text-gray-600 hover:text-nublia-primary" />
+            </button>
+            <button onClick={onVerAtendimento} title="Ver atendimento">
+              <FileText size={18} className="text-gray-600 hover:text-nublia-primary" />
+            </button>
           </div>
         </div>
 
