@@ -111,7 +111,7 @@ export default function CalendarioAgenda({
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={eventosFiltrados}
+        events={eventosFiltrados.map(ev => ({ ...ev, title: ev.nome || ev.title }))}
         startAccessor="start"
         endAccessor="end"
         view={view}
@@ -150,8 +150,8 @@ export default function CalendarioAgenda({
           }
         }}
         messages={{
-          next: <ChevronRight size={20} />,
-          previous: <ChevronLeft size={20} />,
+          next: 'Próximo',
+          previous: 'Anterior',
           today: 'Hoje',
           month: 'Mês',
           week: 'Semana',
