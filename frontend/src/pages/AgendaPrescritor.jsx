@@ -51,8 +51,7 @@ return {
   end,
   status: ev.status,
   paciente_id: ev.paciente_id
-}ente_id: ev.paciente_id
-        }
+}
       })
 
       setEventos(eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start)))
