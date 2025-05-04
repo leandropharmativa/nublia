@@ -7,6 +7,7 @@ import Botao from './Botao'
 export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSelecionarPaciente }) {
   const [termoBusca, setTermoBusca] = useState('')
   const [pacientes, setPacientes] = useState([])
+  const [agendamentos, setAgendamentos] = useState([])
 
   const inputRef = useRef(null)
 
@@ -17,7 +18,7 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
   }, [])
 
   useEffect(() => {
-    const buscar = async () => {
+    const buscarPacientes = async () => {
       if (termoBusca.trim() === '') {
         setPacientes([])
         return
@@ -25,7 +26,6 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
 
       try {
         const response = await axios.get('https://nublia-backend.onrender.com/users/all')
-
         const pacientesFiltrados = response.data
           .filter(u => u.role === 'paciente')
           .filter(p =>
@@ -39,35 +39,44 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
       }
     }
 
-    buscar()
+    buscarPacientes()
   }, [termoBusca])
 
-  // Novo estado:
-const [agendamentos, setAgendamentos] = useState([])
+  useEffect(() => {
+    const buscarAgendamentos = async () => {
+      if (termoBusca.trim() === '') {
+        setAgendamentos([])
+        return
+      }
 
-useEffect(() => {
-  const buscarAgendamentos = async () => {
-    if (termoBusca.trim() === '') {
-      setAgendamentos([])
-      return
+      try {
+        const response = await axios.get('https://nublia-backend.onrender.com/agenda/todos')
+        const dados = response.data.filter(a => a.status === 'agendado')
+
+        const agendamentosComPaciente = await Promise.all(
+          dados.map(async (a) => {
+            try {
+              const res = await axios.get(`https://nublia-backend.onrender.com/users/${a.paciente_id}`)
+              return { ...a, paciente: res.data }
+            } catch {
+              return a
+            }
+          })
+        )
+
+        const filtrados = agendamentosComPaciente.filter(
+          a => a.paciente?.name?.toLowerCase().includes(termoBusca.toLowerCase())
+        )
+
+        setAgendamentos(filtrados)
+      } catch (error) {
+        console.error('Erro ao buscar agendamentos:', error)
+        setAgendamentos([])
+      }
     }
 
-    try {
-      const response = await axios.get('https://nublia-backend.onrender.com/agenda/todos') // ajuste conforme o endpoint real
-
-      const resultados = response.data
-        .filter(a => a.status === 'agendado' && a.paciente?.name?.toLowerCase().includes(termoBusca.toLowerCase()))
-
-      setAgendamentos(resultados)
-    } catch (error) {
-      console.error('Erro ao buscar agendamentos:', error)
-      setAgendamentos([])
-    }
-  }
-
-  buscarAgendamentos()
-}, [termoBusca])
-
+    buscarAgendamentos()
+  }, [termoBusca])
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -88,9 +97,46 @@ useEffect(() => {
 
         <div className="overflow-y-auto max-h-[320px]">
           <AnimatePresence>
+            {termoBusca.trim() && agendamentos.length > 0 && (
+              <motion.div
+                key="agendamentos"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.2 }}
+                className="mt-4"
+              >
+                <h3 className="text-nublia-primary font-semibold mb-2 text-sm">Agendamentos encontrados:</h3>
+                <ul className="space-y-3">
+                  {agendamentos.map((ag) => (
+                    <li
+                      key={ag.id}
+                      className="flex justify-between items-center bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 hover:shadow-sm transition"
+                    >
+                      <div>
+                        <p className="font-medium text-gray-800">{ag.paciente.name}</p>
+                        <p className="text-sm text-gray-500">{ag.paciente.email || 'Sem e-mail'}</p>
+                        <p className="text-xs text-gray-600 mt-1">
+                          {new Date(ag.inicio).toLocaleDateString()} às {new Date(ag.inicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                      <Botao
+                        onClick={() => onSelecionarPaciente(ag.paciente, ag.id)}
+                        variante="texto"
+                        className="text-sm px-2"
+                        iconeInicio={<User size={18} />}
+                      >
+                        Selecionar
+                      </Botao>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+
             {termoBusca.trim() && pacientes.length > 0 && agendamentos.length === 0 && (
               <motion.ul
-                key="lista"
+                key="pacientes"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
@@ -119,45 +165,7 @@ useEffect(() => {
               </motion.ul>
             )}
 
-            {termoBusca.trim() && agendamentos.length > 0 && (
-  <motion.div
-    key="agendamentos"
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 10 }}
-    transition={{ duration: 0.2 }}
-    className="mt-6"
-  >
-    <h3 className="text-nublia-primary font-semibold mb-2 text-sm">Agendamentos encontrados:</h3>
-    <ul className="space-y-3">
-      {agendamentos.map((ag) => (
-        <li
-          key={ag.id}
-          className="flex justify-between items-center bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 hover:shadow-sm transition"
-        >
-          <div>
-            <p className="font-medium text-gray-800">{ag.paciente.name}</p>
-            <p className="text-sm text-gray-500">{ag.paciente.email || 'Sem e-mail'}</p>
-            <p className="text-xs text-gray-600 mt-1">
-              {new Date(ag.inicio).toLocaleDateString()} às {new Date(ag.inicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </p>
-          </div>
-          <Botao
-            onClick={() => onSelecionarPaciente(ag.paciente, ag.id)}
-            variante="texto"
-            className="text-sm px-2"
-            iconeInicio={<User size={18} />}
-          >
-            Selecionar
-          </Botao>
-        </li>
-      ))}
-    </ul>
-  </motion.div>
-)}
-
-
-            {termoBusca.trim() && pacientes.length === 0 && (
+            {termoBusca.trim() && pacientes.length === 0 && agendamentos.length === 0 && (
               <motion.p
                 key="nenhum"
                 initial={{ opacity: 0 }}
