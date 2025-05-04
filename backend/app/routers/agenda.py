@@ -90,6 +90,20 @@ def listar_agendamentos_com_pacientes(prescritor_id: int, session: Session = Dep
         traceback.print_exc()
         raise HTTPException(status_code=500, detail="Erro interno ao listar agendamentos.")
 
+class FinalizarAgendamentoRequest(BaseModel):
+    id: int  # ID do agendamento
+
+@router.post("/finalizar", response_model=Agendamento)
+def finalizar_agendamento(dados: FinalizarAgendamentoRequest, session: Session = Depends(get_session)):
+    agendamento = session.get(Agendamento, dados.id)
+    if not agendamento:
+        raise HTTPException(status_code=404, detail="Agendamento não encontrado.")
+
+    agendamento.status = "finalizado"
+    session.add(agendamento)
+    session.commit()
+    session.refresh(agendamento)
+    return agendamento
 
 
 # ✅ Agendar horário existente
