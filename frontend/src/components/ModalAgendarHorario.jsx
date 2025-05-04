@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
@@ -276,21 +277,12 @@ export default function ModalAgendarHorario({
                 <>
                   {renderBuscaPaciente()}
                   <div className="flex gap-2 mt-3">
-<Botao
-  className="w-1/2 rounded-full flex items-center justify-center gap-2"
-  onClick={confirmarReagendamento}
-  disabled={carregando || !novoHorarioId}
->
-  {carregando ? (
-    <Loader2 className="animate-spin" />
-  ) : (
-    <>
-      Confirmar novo horário
-      <CalendarCheck className="w-4 h-4" />
-    </>
-  )}
-</Botao>
-
+                    <Botao variante="claro" className="w-1/2 rounded-full" onClick={() => setTrocandoPaciente(false)}>
+                      Cancelar
+                    </Botao>
+                    <Botao className="w-1/2 rounded-full" onClick={confirmarTrocaPaciente} disabled={carregando || !selecionado}>
+                      {carregando ? <Loader2 className="animate-spin mx-auto" /> : 'Confirmar troca'}
+                    </Botao>
                   </div>
                 </>
               )}
