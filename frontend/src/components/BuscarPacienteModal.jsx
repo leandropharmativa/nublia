@@ -102,10 +102,11 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
                       <div>
                         <p className="font-medium text-gray-800">{ag.paciente.name}</p>
                         <p className="text-sm text-gray-500">{ag.paciente.email || 'Sem e-mail'}</p>
-                        <p className="text-xs text-gray-600 mt-1">
-                          {new Date(ag.inicio).toLocaleDateString()} às{' '}
-                          {new Date(ag.inicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
+<p className="text-xs text-gray-600 mt-1">
+  {new Date(`${ag.data}T${ag.hora}`).toLocaleDateString()} às{' '}
+  {new Date(`${ag.data}T${ag.hora}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+</p>
+
                       </div>
                       <Botao
                         onClick={() => onSelecionarPaciente(ag.paciente, ag.id)}
