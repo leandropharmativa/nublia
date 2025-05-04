@@ -23,6 +23,8 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [filtroPaciente, setFiltroPaciente] = useState('')
   const [resultadosBusca, setResultadosBusca] = useState([])
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
+  const [dataAtual, setDataAtual] = useState(new Date())
+
 
   const user = JSON.parse(localStorage.getItem('user'))
   const dropdownRef = useRef(null)
@@ -258,11 +260,25 @@ const eventosFormatados = await Promise.all(
         )}
       </div>
 
-      <CalendarioAgenda
-        eventos={eventos}
-        aoSelecionarSlot={handleNovoSlot}
-        aoSelecionarEvento={handleEventoClick}
-      />
+<CalendarioAgenda
+  eventos={eventos}
+  aoSelecionarSlot={handleNovoSlot}
+  aoSelecionarEvento={handleEventoClick}
+  onDataChange={setDataAtual}
+/>
+
+<ListaAgendamentosAgenda
+  eventos={eventos}
+  dataAtual={dataAtual}
+  aoVerPerfil={abrirPerfilPaciente}
+  aoVerAgendamento={handleEventoClick}
+  aoIniciarAtendimento={(id) => {
+    // você pode usar aqui a lógica de iniciar atendimento se tiver implementada
+    console.log("Iniciar atendimento para paciente", id)
+  }}
+/>
+
+
 
       {modalAberto && (
         <ModalNovoHorario
