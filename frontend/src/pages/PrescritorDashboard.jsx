@@ -265,15 +265,18 @@ useEffect(() => {
             <Tab.Panels className="w-full">
               {pacienteSelecionado && (
                 <Tab.Panel>
-                  <FichaAtendimento
-                    paciente={pacienteSelecionado}
-                    onFinalizar={() => {
-                      setPacienteSelecionado(null)
-                      setTimeout(() => setAbaSelecionada(0), 50)
-                      setAbaSelecionada(0)
-                    }}
-                    onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
-                  />
+<FichaAtendimento
+  paciente={pacienteSelecionado}
+  agendamentoId={agendamentoSelecionado?.id || null}  // ← Aqui está o detalhe
+  onFinalizar={() => {
+    setPacienteSelecionado(null)
+    setAgendamentoSelecionado(null) // limpa após uso
+    setTimeout(() => setAbaSelecionada(0), 50)
+    setAbaSelecionada(0)
+  }}
+  onAtendimentoSalvo={() => carregarAtendimentos(user.id)}
+/>
+
                 </Tab.Panel>
               )}
 
