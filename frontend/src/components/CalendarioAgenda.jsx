@@ -55,23 +55,21 @@ export default function CalendarioAgenda({
 const eventosVisiveis = Array.isArray(eventos) ? eventos : []
 
   const [eventosFiltrados, setEventosFiltrados] = useState([])
+  const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
+
 
 useEffect(() => {
-  if (view === 'agenda' && eventos.length > 0) {
-    const datas = eventos.map(ev => new Date(ev.start))
-    const min = new Date(Math.min(...datas))
-    const max = new Date(Math.max(...datas))
-    max.setHours(23, 59, 59, 999)
-
+  if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
     const filtrados = eventos.filter(ev => {
       const data = new Date(ev.start)
-      return data >= min && data <= max
+      return data >= rangeVisivel.start && data <= rangeVisivel.end
     })
-
     setEventosFiltrados(filtrados)
   } else {
     setEventosFiltrados(eventos)
   }
+}, [view, eventos, rangeVisivel])
+
 }, [view, eventos])
 
 
@@ -108,8 +106,11 @@ return (
           }
         }}
         onRangeChange={(range) => {
-  // console.log('range', range)  // (pode deixar só para debug)
+          if (range?.start && range?.end) {
+          setRangeVisivel({ start: new Date(range.start), end: new Date(range.end) })
+          }
         }}
+
         messages={{
           next: <ChevronRight size={20} />,
           previous: <ChevronLeft size={20} />,
