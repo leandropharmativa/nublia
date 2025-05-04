@@ -69,8 +69,10 @@ def listar_agendamentos_com_pacientes(prescritor_id: int, session: Session = Dep
                 if paciente:
                     resultado.append({
                         "id": ag.id,
-                        "inicio": ag.inicio,
+                        "data": ag.data,
+                        "hora": ag.hora,
                         "status": ag.status,
+                        "observacao": ag.observacao,
                         "paciente_id": ag.paciente_id,
                         "paciente": {
                             "id": paciente.id,
@@ -86,6 +88,7 @@ def listar_agendamentos_com_pacientes(prescritor_id: int, session: Session = Dep
         print("❌ Erro interno no endpoint /prescritor-com-pacientes:")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail="Erro interno ao listar agendamentos.")
+
 
 
 # ✅ Agendar horário existente
