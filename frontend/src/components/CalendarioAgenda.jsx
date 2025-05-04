@@ -46,7 +46,6 @@ export default function CalendarioAgenda({
 }) {
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
-  const [rangeAtual, setRangeAtual] = useState({ start: null, end: null })
 
   const handleNavigate = (novaData) => {
     setDataAtual(novaData)
@@ -55,20 +54,7 @@ export default function CalendarioAgenda({
 
 const eventosVisiveis = Array.isArray(eventos) ? eventos : []
 
-useEffect(() => {
-  if (view === 'agenda' && eventos.length > 0) {
-    const datas = eventos.map(ev => new Date(ev.start))
-    const min = new Date(Math.min(...datas))
-    const max = new Date(Math.max(...datas))
-    max.setHours(23, 59, 59, 999)
-
-    setDataAtual(min)
-    setRangeAtual({ start: min, end: max })
-  }
-}, [view, eventos])
-
-
-  return (
+return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
@@ -101,20 +87,8 @@ useEffect(() => {
           }
         }}
         onRangeChange={(range) => {
-          if (view === 'agenda') {
-            if (Array.isArray(range)) {
-              const start = new Date(range[0])
-              const end = new Date(range[range.length - 1])
-              end.setHours(23, 59, 59, 999)
-              setRangeAtual({ start, end })
-            } else if (range?.start && range?.end) {
-              const start = new Date(range.start)
-              const end = new Date(range.end)
-              end.setHours(23, 59, 59, 999)
-              setRangeAtual({ start, end })
-            }
-          }
-        }}
+  // console.log('range', range)  // (pode deixar só para debug)
+        }},
         messages={{
           next: <ChevronRight size={20} />,
           previous: <ChevronLeft size={20} />,
