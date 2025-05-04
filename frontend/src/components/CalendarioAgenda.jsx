@@ -23,7 +23,8 @@ import {
   Clock,
   User,
   Eye,
-  PlayCircle
+  PlayCircle,
+  UserRound
 } from 'lucide-react'
 
 const locales = { 'pt-BR': ptBR }
