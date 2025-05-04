@@ -51,9 +51,10 @@ function ModalFinalizado({ evento, onClose }) {
         <p><strong>Paciente:</strong> {evento.nome || evento.title}</p>
         <p><strong>Data:</strong> {data}</p>
         <p><strong>Hora agendada:</strong> {horaAgendada}</p>
-        {evento.hora_atendimento && (
-          <p><strong>Hora do atendimento:</strong> {evento.hora_atendimento}</p>
-        )}
+{evento.hora_atendimento && (
+  <p><strong>Hora do atendimento:</strong> {evento.hora_atendimento}h</p>
+)}
+
         <div className="mt-4 text-right">
           <button
             onClick={onClose}
