@@ -47,7 +47,7 @@ export default function PrescritorDashboard() {
   const [mostrarCadastrarPaciente, setMostrarCadastrarPaciente] = useState(false)
   const [origemNovoAgendamento, setOrigemNovoAgendamento] = useState(false)
   const [callbackAoCadastrarPaciente, setCallbackAoCadastrarPaciente] = useState(null)
-  const [mostrar, setMostrar] = useState(false)
+  const [mostrarBuscarPacienteModal, setMostrarBuscarPacienteModal] = useState(false)
 
 
   const [pacientePerfil, setPacientePerfil] = useState(null)
