@@ -206,7 +206,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
 
           <ListaAgendamentosAgenda
             eventos={eventosFiltrados}
-            dataAtual={dataAtual}
             aoVerPerfil={abrirPerfilPaciente}
             aoVerAgendamento={handleEventoClick}
             aoIniciarAtendimento={(id) => console.log("Iniciar atendimento:", id)}
