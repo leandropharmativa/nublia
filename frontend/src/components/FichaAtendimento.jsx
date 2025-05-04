@@ -85,7 +85,8 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
     }
   }
 
-  const handleFinalizar = async () => {
+const handleFinalizar = async () => {
+  try {
     await handleSalvar()
 
     if (agendamentoId) {
@@ -93,26 +94,21 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
           id: agendamentoId,
         })
-        toastSucesso('Agendamento finalizado com sucesso!')
       } catch (err) {
         console.error('Erro ao finalizar agendamento:', err)
         toastErro('Erro ao atualizar agendamento.')
+        return
       }
     }
 
-    toastSucesso('Atendimento finalizado!')
+    toastSucesso('Atendimento salvo e finalizado!')
     onFinalizar()
+  } catch (err) {
+    console.error('Erro ao finalizar atendimento:', err)
+    toastErro('Erro ao finalizar atendimento.')
   }
+}
 
-  const houveAlteracao = Object.values(formulario).some(valor => valor.trim() !== '')
-
-  const handleDescartar = () => {
-    if (!salvoUltimaVersao && houveAlteracao) {
-      setMostrarConfirmacaoSaida(true)
-    } else {
-      onFinalizar()
-    }
-  }
 
   const calcularIdade = (data) => {
     if (!data) return null
