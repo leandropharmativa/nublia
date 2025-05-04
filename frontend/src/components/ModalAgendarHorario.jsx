@@ -369,12 +369,12 @@ export default function ModalAgendarHorario({
                     </Botao>
 
                     <Botao
-                      className="rounded-full flex items-center gap-2"
+                      className="rounded-full flex items-center gap-2 px-4"
                       onClick={() => agendar(selecionado.id)}
                       disabled={!selecionado}
                       variante={!selecionado ? 'inativo' : 'primario'}
                     >
-                      Confirmar <CalendarCheck size={16} />
+                      Confirmar Agendamento<CalendarCheck size={16} />
                     </Botao>
                   </div>
                 </div>
