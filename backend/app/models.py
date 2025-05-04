@@ -72,6 +72,7 @@ class Atendimento(SQLModel, table=True):
 class AtendimentoCreate(SQLModel):
     paciente_id: int
     prescritor_id: int
+    agendamento_id: Optional[int] = None
     anamnese: Optional[str] = None
     antropometria: Optional[str] = None
     dieta: Optional[str] = None
