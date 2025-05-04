@@ -45,81 +45,79 @@ export default function CalendarioAgenda({
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
 
+  const limite = new Date(dataAtual)
+  limite.setDate(limite.getDate() + 30)
+
+  const eventosVisiveis = view === 'agenda'
+    ? eventos.filter(ev => ev.start >= dataAtual && ev.start <= limite)
+    : eventos
+
   return (
     <div className="h-full p-4 bg-white rounded overflow-hidden">
-<BigCalendar
-  localizer={localizer}
-  events={eventos}
-  startAccessor="start"
-  endAccessor="end"
-  view={view}
-  date={dataAtual}
-  onView={setView}
-  onNavigate={setDataAtual}
-  defaultView="month"
-  views={['month', 'agenda']}
-  selectable={view !== 'month' && view !== 'agenda'}
-  step={15}
-  timeslots={1}
-  culture="pt-BR"
-  onSelectSlot={({ start }) => {
-    if (view !== 'month' && view !== 'agenda') {
-      aoSelecionarSlot({ start })
-    }
-  }}
-onSelectEvent={(event, e) => {
-  // Só executa se NÃO clicar diretamente em um botão
-  if (!e.target.closest('button')) {
-    aoSelecionarEvento(event)
-  }
-}}
-
-    range={(view === 'agenda') 
-    ? () => {
-        const start = new Date(dataAtual)
-        const end = new Date(start)
-        end.setDate(end.getDate() + 30)
-        return [start, end]
-      }
-    : undefined}
-
-  messages={{
-    next: <ChevronRight size={20} />,
-    previous: <ChevronLeft size={20} />,
-    today: 'Hoje',
-    month: 'Mês',
-    week: 'Semana',
-    day: 'Dia',
-    agenda: 'Agenda',
-    noEventsInRange: 'Sem eventos neste período.',
-    date: 'Data',
-    time: 'Horário',
-    event: 'Agendamento'
-  }}
-  components={{
-    toolbar: (props) => (
-      <CustomToolbar {...props} eventos={eventos} />
-    ),
-    day: { header: CustomDayHeader },
-    month: {
-      dateHeader: (props) => (
-        <HeaderComEventos
-          data={props.date}
-          label={props.label}
-          eventos={eventos}
-          onView={setView}
-          onNavigate={setDataAtual}
-          aoSelecionarEvento={aoSelecionarEvento}
-          aoAdicionarHorario={aoSelecionarSlot}
-        />
-      )
-    },
-    agenda: {
-      event: EventoAgendaCustomizado
-    }
-  }}
-/>
-</div>
+      <BigCalendar
+        localizer={localizer}
+        events={eventosVisiveis}
+        startAccessor="start"
+        endAccessor="end"
+        view={view}
+        date={dataAtual}
+        onView={setView}
+        onNavigate={setDataAtual}
+        defaultView="month"
+        views={['month', 'agenda']}
+        selectable={view !== 'month' && view !== 'agenda'}
+        step={15}
+        timeslots={1}
+        culture="pt-BR"
+        onSelectSlot={({ start }) => {
+          if (view !== 'month' && view !== 'agenda') {
+            aoSelecionarSlot({ start })
+          }
+        }}
+        onSelectEvent={(event, e) => {
+          if (!e.target.closest('button')) {
+            aoSelecionarEvento(event)
+          }
+        }}
+        messages={{
+          next: <ChevronRight size={20} />,
+          previous: <ChevronLeft size={20} />,
+          today: 'Hoje',
+          month: 'Mês',
+          week: 'Semana',
+          day: 'Dia',
+          agenda: 'Agenda',
+          noEventsInRange: 'Sem eventos neste período.',
+          date: 'Data',
+          time: 'Horário',
+          event: 'Agendamento'
+        }}
+        components={{
+          toolbar: (props) => (
+            <CustomToolbar {...props} eventos={eventos} />
+          ),
+          day: { header: CustomDayHeader },
+          month: {
+            dateHeader: (props) => (
+              <HeaderComEventos
+                data={props.date}
+                label={props.label}
+                eventos={eventos}
+                onView={setView}
+                onNavigate={setDataAtual}
+                aoSelecionarEvento={aoSelecionarEvento}
+                aoAdicionarHorario={aoSelecionarSlot}
+              />
+            )
+          },
+          agenda: {
+            event: EventoAgendaCustomizado,
+            date: () => null,
+            time: () => null
+          }
+        }}
+      />
+    </div>
   )
 }
 
@@ -154,7 +152,6 @@ function HeaderComEventos({
 
   return (
     <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
-      {/* Linha superior: contagem (esquerda) + data (direita) */}
       <div className="w-full flex justify-between items-center text-[10px] mt-1">
         <div className="flex gap-2 text-gray-500">
           {agendados > 0 && (
@@ -169,10 +166,9 @@ function HeaderComEventos({
           )}
         </div>
         <div className="flex items-center gap-1">
-<span className="text-xs font-medium text-gray-700">
-  {label}
-</span>
-
+          <span className="text-xs font-medium text-gray-700">
+            {label}
+          </span>
           <button
             onClick={(e) => {
               e.stopPropagation()
@@ -186,7 +182,6 @@ function HeaderComEventos({
         </div>
       </div>
 
-      {/* Ícones dos eventos */}
       <div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
         {doDia.map(ev => {
           const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
@@ -252,7 +247,6 @@ function EventoAgendaCustomizado({ event }) {
 
   return (
     <div className="flex items-center justify-between px-3 py-2 border-b text-sm text-gray-700">
-      {/* Nome + ações */}
       <div className="flex items-center gap-3">
         <span className={isAgendado ? 'font-medium text-gray-800' : 'text-gray-400'}>
           {nome}
@@ -296,7 +290,6 @@ function EventoAgendaCustomizado({ event }) {
         )}
       </div>
 
-      {/* Dia e Hora */}
       <div className="text-right text-gray-500 text-xs whitespace-nowrap">
         <div>{dia}</div>
         <div>{hora}</div>
@@ -304,7 +297,6 @@ function EventoAgendaCustomizado({ event }) {
     </div>
   )
 }
-
 
 function CustomDayHeader({ label, date }) {
   const isSunday = date.getDay() === 0
