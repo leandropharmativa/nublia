@@ -21,15 +21,12 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [pacienteAtual, setPacienteAtual] = useState(null)
   const [pacienteId, setPacienteId] = useState(null)
   const [horarioSelecionado, setHorarioSelecionado] = useState(null)
-  const [filtroPaciente, setFiltroPaciente] = useState('')
-  const [resultadosBusca, setResultadosBusca] = useState([])
+  const [filtroTexto, setFiltroTexto] = useState('')
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
   const [dataAtual, setDataAtual] = useState(new Date())
   const [viewAtual, setViewAtual] = useState('month')
 
   const user = JSON.parse(localStorage.getItem('user'))
-  const dropdownRef = useRef(null)
-  const debounceTimeout = useRef(null)
 
   const carregarEventos = async () => {
     try {
@@ -70,27 +67,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
     if (mostrarAgenda) carregarEventos()
   }, [mostrarAgenda])
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setFiltroPaciente('')
-        setResultadosBusca([])
-      }
-    }
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') {
-        setFiltroPaciente('')
-        setResultadosBusca([])
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('keydown', handleEsc)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('keydown', handleEsc)
-    }
-  }, [])
-
   const handleNovoSlot = (slotInfo) => {
     setSlotSelecionado(slotInfo.start)
     setModalAberto(true)
@@ -109,7 +85,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
       })
       toastSucesso(`Horário ${hora} cadastrado com sucesso!`)
       carregarEventos()
-
       if (!manterAberto) {
         setModalAberto(false)
         setSlotSelecionado(null)
@@ -180,25 +155,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
     }
   }
 
-  const buscarPorPaciente = useCallback((texto) => {
-    setFiltroPaciente(texto)
-
-    if (debounceTimeout.current) clearTimeout(debounceTimeout.current)
-
-    debounceTimeout.current = setTimeout(() => {
-      if (texto.length < 2) {
-        setResultadosBusca([])
-        return
-      }
-
-      const resultados = eventos.filter((ev) =>
-        ev.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, '')
-          .includes(texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ''))
-      )
-      setResultadosBusca(resultados)
-    }, 300)
-  }, [eventos])
-
   const abrirPerfilPaciente = (id) => {
     setPacienteId(id)
     setMostrarPerfil(true)
@@ -206,61 +162,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
 
   return (
     <div className="w-full flex flex-col gap-4 relative">
-      {/* Campo de busca */}
-      <div className="pt-2 w-72 relative">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Buscar paciente..."
-            value={filtroPaciente}
-            onChange={(e) => buscarPorPaciente(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent shadow-sm"
-          />
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-        </div>
-
-        {resultadosBusca.length > 0 && (
-          <div
-            ref={dropdownRef}
-            className="absolute top-12 left-0 w-full max-h-64 overflow-y-auto z-50 bg-white border border-gray-200 shadow-xl rounded-lg text-sm"
-          >
-            <ul>
-              {resultadosBusca.map(ev => (
-                <li
-                  key={ev.id}
-                  className="px-4 py-3 border-b border-gray-100 hover:bg-yellow-50 transition-all flex justify-between items-center"
-                >
-                  <div>
-                    <p className="font-semibold text-gray-800">{ev.title}</p>
-                    <p className="text-gray-500 text-xs">
-                      {ev.start.toLocaleDateString('pt-BR')} às {ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    {ev.paciente_id && (
-                      <button
-                        onClick={() => abrirPerfilPaciente(ev.paciente_id)}
-                        title="Ver perfil"
-                        className="text-nublia-accent hover:text-nublia-orange"
-                      >
-                        <User size={18} />
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleEventoClick(ev)}
-                      title="Ver agendamento"
-                      className="text-nublia-accent hover:text-nublia-orange"
-                    >
-                      <Eye size={18} />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
       {/* Calendário */}
       <div className="w-full">
         <CalendarioAgenda
@@ -272,12 +173,26 @@ function AgendaPrescritor({ mostrarAgenda }) {
         />
       </div>
 
-      {/* Lista de agendamentos customizada (exibida somente na agenda view) */}
+      {/* Filtro + Lista de agendamentos no modo agenda */}
       {viewAtual === 'agenda' && (
-        <div className="mt-2 max-h-[300px] overflow-auto rounded bg-white border border-gray-200">
+        <div className="mt-2 bg-white border border-gray-200 rounded p-4">
+          <div className="mb-2 w-full max-w-sm">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Filtrar por nome..."
+                value={filtroTexto}
+                onChange={(e) => setFiltroTexto(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent shadow-sm"
+              />
+              <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+            </div>
+          </div>
+
           <ListaAgendamentosAgenda
             eventos={eventos}
             dataAtual={dataAtual}
+            filtro={filtroTexto}
             aoVerPerfil={abrirPerfilPaciente}
             aoVerAgendamento={handleEventoClick}
             aoIniciarAtendimento={(id) => console.log("Iniciar atendimento:", id)}
