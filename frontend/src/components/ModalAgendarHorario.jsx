@@ -167,9 +167,8 @@ export default function ModalAgendarHorario({
   </div>
   <button
     onClick={() => setMostrarCadastro(true)}
-    className="p-2 rounded-full"
+    className="p-2 rounded-full bg-nublia-accent text-white hover:bg-nublia-orange"
     title="Cadastrar novo paciente"
-    variante="primario"
   >
     <UserRoundPlus size={20} />
   </button>
