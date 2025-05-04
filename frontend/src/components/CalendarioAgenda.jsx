@@ -51,14 +51,12 @@ function ModalFinalizado({ evento, onClose }) {
         <p><strong>Paciente:</strong> {evento.nome || evento.title}</p>
         <p><strong>Data:</strong> {data}</p>
         <p><strong>Hora agendada:</strong> {horaAgendada}</p>
-{evento.hora_atendimento && (
-  <p>
-    <strong>Hora do atendimento:</strong>{' '}
-    {typeof evento.hora_atendimento === 'string'
-      ? evento.hora_atendimento + 'h'
-      : '---'}
-  </p>
-)}
+        {evento.hora_atendimento && typeof evento.hora_atendimento === 'string' ? (
+        <p><strong>Hora do atendimento:</strong> {evento.hora_atendimento}h</p>
+        ) : (
+        <p><strong>Hora do atendimento:</strong> ---</p>
+        )}
+
 
 
         <div className="mt-4 text-right">
