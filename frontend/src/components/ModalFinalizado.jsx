@@ -30,7 +30,7 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
     : null
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/30">
       <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-sm relative">
         <CalendarCheck className="absolute top-4 left-4 text-nublia-primary" size={20} />
         <h2 className="text-lg font-bold text-nublia-primary mb-4 text-center">
