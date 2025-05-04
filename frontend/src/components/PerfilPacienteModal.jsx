@@ -18,7 +18,7 @@ export default function PerfilPacienteModal({ paciente, pacienteId, onClose }) {
 
   if (!dados) {
     return (
-      <div className="fixed z-[60] inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded-2xl w-full max-w-md mx-4">
           <p className="text-gray-600 text-center">Carregando perfil do paciente...</p>
         </div>
