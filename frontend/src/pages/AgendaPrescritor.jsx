@@ -34,26 +34,27 @@ function AgendaPrescritor({ mostrarAgenda }) {
 
 const carregarEventos = async () => {
   try {
-    const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-    const eventosFormatados = data.map(ev => {
-      const start = new Date(`${ev.data}T${ev.hora}`)
-      const end = addHours(start, 1)
-      const title =
-        ev.status === 'agendado' || ev.status === 'finalizado'
-          ? ev.paciente_nome || 'Paciente'
-          : 'Disponível'
+const eventosFormatados = data.map(ev => {
+  const start = new Date(`${ev.data}T${ev.hora}`)
+  const end = addHours(start, 1)
+  const title =
+    ev.status === 'agendado' || ev.status === 'finalizado'
+      ? ev.paciente_nome || 'Paciente'
+      : 'Disponível'
 
-      return {
-        id: ev.id,
-        title,
-        nome: ev.paciente_nome,
-        start,
-        end,
-        status: ev.status,
-        paciente_id: ev.paciente_id,
-        hora_atendimento: ev.hora_atendimento ? new Date(ev.hora_atendimento) : null // ✅ AQUI
-      }
-    })
+  return {
+    id: ev.id,
+    title,
+    nome: ev.paciente_nome,
+    start,
+    end,
+    status: ev.status,
+    paciente_id: ev.paciente_id,
+    hora_atendimento: ev.hora_atendimento ? new Date(ev.hora_atendimento) : null,
+    criado_em: ev.criado_em ? new Date(ev.criado_em) : null // ✅ ADICIONE ESTA LINHA
+  }
+})
+
 
     setEventos(eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start)))
   } catch (error) {
