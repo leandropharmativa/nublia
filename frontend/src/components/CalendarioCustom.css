@@ -97,3 +97,13 @@
   color: #374151; /* gray-700 */
   white-space: nowrap;
 }
+.rbc-agenda-view table thead th:first-child,
+.rbc-agenda-view table tbody td:first-child {
+  display: none;
+}
+
+.rbc-agenda-view table thead th:nth-child(2),
+.rbc-agenda-view table tbody td:nth-child(2) {
+  display: none;
+}
+
