@@ -66,9 +66,11 @@ export default function CalendarioAgenda({
       aoSelecionarSlot({ start })
     }
   }}
-onSelectEvent={(event) => {
-  // Permite clique em qualquer view, inclusive 'agenda'
-  aoSelecionarEvento(event)
+onSelectEvent={(event, e) => {
+  // Só executa se NÃO clicar diretamente em um botão
+  if (!e.target.closest('button')) {
+    aoSelecionarEvento(event)
+  }
 }}
 
   messages={{
