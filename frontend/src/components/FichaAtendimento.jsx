@@ -90,9 +90,10 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
 
     if (agendamentoId) {
       try {
-        await axios.put(`https://nublia-backend.onrender.com/agenda/${agendamentoId}`, {
-          status: 'finalizado'
-        })
+await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
+  id: agendamentoId
+})
+
         toastSucesso('Agendamento finalizado com sucesso!')
       } catch (err) {
         console.error('Erro ao finalizar agendamento:', err)
