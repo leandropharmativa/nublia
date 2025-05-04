@@ -1,3 +1,4 @@
+// CalendarioAgenda.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
@@ -43,20 +44,16 @@ function ModalFinalizado({ evento, onClose }) {
     minute: '2-digit'
   })
 
-  const horaAtendimento = evento.hora_atendimento
-    ? new Date(evento.hora_atendimento).toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    : horaAgendada
-
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
       <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-sm">
         <h2 className="text-lg font-bold text-nublia-primary mb-3">Atendimento Finalizado</h2>
         <p><strong>Paciente:</strong> {evento.nome || evento.title}</p>
         <p><strong>Data:</strong> {data}</p>
-        <p><strong>Hora:</strong> {horaAtendimento}</p>
+        <p><strong>Hora agendada:</strong> {horaAgendada}</p>
+        {evento.hora_atendimento && (
+          <p><strong>Hora do atendimento:</strong> {evento.hora_atendimento}</p>
+        )}
         <div className="mt-4 text-right">
           <button
             onClick={onClose}
@@ -70,7 +67,6 @@ function ModalFinalizado({ evento, onClose }) {
     document.body
   )
 }
-
 
 function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
