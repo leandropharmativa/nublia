@@ -484,14 +484,27 @@ useEffect(() => {
               })
               .catch(() => toastErro('Erro ao agendar paciente.'))
           }}
-          onIniciarAtendimento={(pacienteId, agendamentoId) => {
-            const paciente = pacientes.find(p => p.id === pacienteId)
-            if (paciente) {
-              setPacienteSelecionado(paciente)
-              setAgendamentoSelecionado({ id: agendamentoId })
-              setTimeout(() => setAbaSelecionada(0), 0)
-              }
-          }}
+onIniciarAtendimento={(pacienteId, agendamentoId) => {
+  console.log('[DEBUG] Clique detectado no botão Iniciar Atendimento')
+  console.log('Paciente ID:', pacienteId)
+  console.log('Agendamento ID:', agendamentoId)
+
+  const paciente = pacientes.find(p => p.id === pacienteId)
+  if (paciente) {
+    setPacienteSelecionado(paciente)
+    setAgendamentoSelecionado({ id: agendamentoId })
+    console.log('[DEBUG] Paciente selecionado:', paciente)
+    console.log('[DEBUG] Agendamento selecionado:', { id: agendamentoId })
+
+    setTimeout(() => {
+      console.log('[DEBUG] Mudando aba para ficha')
+      setAbaSelecionada(0)
+    }, 0)
+  } else {
+    console.warn('[WARN] Paciente não encontrado!')
+  }
+}}
+
         />
       )}
 
