@@ -50,7 +50,7 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
   return (
     <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
       <div className="flex justify-between items-center text-[10px] mt-1">
-        <span className="text-xs font-bold text-gray-700">{label}</span>
+        <span className="text-xs font-bold text-gray-400">{label}</span>
         <button
           onClick={(e) => {
             e.stopPropagation()
