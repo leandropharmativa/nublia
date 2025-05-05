@@ -40,3 +40,15 @@ def atualizar_atendimento(atendimento_id: int, atendimento: AtendimentoCreate):
         session.commit()
         session.refresh(db_atendimento)
         return db_atendimento
+
+# ✅ Rota para buscar atendimento por agendamento_id
+@router.get("/atendimentos/por-agendamento/{agendamento_id}")
+def buscar_por_agendamento(agendamento_id: int):
+    with Session(engine) as session:
+        atendimento = session.exec(
+            select(Atendimento).where(Atendimento.agendamento_id == agendamento_id)
+        ).first()
+        if not atendimento:
+            raise HTTPException(status_code=404, detail="Atendimento não encontrado.")
+        return atendimento
+
