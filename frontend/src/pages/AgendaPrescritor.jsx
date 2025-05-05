@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import CalendarioAgenda from '../components/CalendarioAgenda'
 import ModalNovoHorario from '../components/ModalNovoHorario'
+import ModalFinalizado from '../components/ModalFinalizado'
 import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import ListaAgendamentosAgenda from '../components/ListaAgendamentosAgenda'
