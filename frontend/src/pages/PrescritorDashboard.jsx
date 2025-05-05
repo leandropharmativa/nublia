@@ -503,13 +503,6 @@ useEffect(() => {
   />
 )}
 
-
-
-
-
-        />
-      )}
-
 {mostrarCadastrarPaciente && (
   <CadastrarPacienteModal
     onClose={() => setMostrarCadastrarPaciente(false)}
