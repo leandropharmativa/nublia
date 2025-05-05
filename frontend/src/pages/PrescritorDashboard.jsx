@@ -484,6 +484,14 @@ useEffect(() => {
               })
               .catch(() => toastErro('Erro ao agendar paciente.'))
           }}
+          onIniciarAtendimento={(pacienteId, agendamentoId) => {
+            const paciente = pacientes.find(p => p.id === pacienteId)
+            if (paciente) {
+              setPacienteSelecionado(paciente)
+              setAgendamentoSelecionado({ id: agendamentoId })
+              setTimeout(() => setAbaSelecionada(0), 0)
+              }
+          }}
         />
       )}
 
