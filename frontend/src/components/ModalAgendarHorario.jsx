@@ -277,12 +277,11 @@ export default function ModalAgendarHorario({
 
 <button
   onClick={() => {
-    console.log('[DEBUG] Clique detectado no botão Iniciar Atendimento')
-    console.log('Paciente ID:', pacienteId)
-    console.log('Agendamento ID:', agendamentoId)
-    if (pacienteId && agendamentoId) {
-      console.log('Chamando onIniciarAtendimento...')
-      onIniciarAtendimento?.(pacienteId, agendamentoId)
+    console.log('[DEBUG] Disparando evento global para iniciar ficha')
+    if (pacienteId) {
+      window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+        detail: { id: pacienteId }
+      }))
       onCancelar()
     }
   }}
@@ -291,6 +290,7 @@ export default function ModalAgendarHorario({
 >
   <PlayCircle size={18} />
 </button>
+
 
 
   <button
