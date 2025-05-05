@@ -259,15 +259,19 @@ export default function ModalAgendarHorario({
                     </button>
                     <button onClick={() => setReagendando(true)} className="text-nublia-accent hover:text-nublia-orange" title="Transferir paciente">
                       <CalendarClock size={18} />
-                    </button>
-                    <button onClick={() => {
-                      if (pacienteId) {
-                        onIniciarAtendimento?.(pacienteId)
-                        onCancelar()
-                      }
-                    }} className="text-nublia-accent hover:text-nublia-orange" title="Iniciar atendimento">
-                      <PlayCircle size={18} />
-                    </button>
+<button
+  onClick={() => {
+    if (pacienteId && agendamentoId) {
+      onIniciarAtendimento?.(pacienteId, agendamentoId)
+      onCancelar()
+    }
+  }}
+  className="text-nublia-accent hover:text-nublia-orange"
+  title="Iniciar atendimento"
+>
+  <PlayCircle size={18} />
+</button>
+
                     <button onClick={() => onDesagendar(agendamentoId)} className="text-nublia-orange hover:text-red-600" title="Remover paciente">
                       <Trash size={18} />
                     </button>
