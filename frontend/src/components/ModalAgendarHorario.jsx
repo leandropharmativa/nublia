@@ -12,7 +12,8 @@ import {
   CalendarClock,
   CalendarSync,
   CalendarCheck,
-  UserRoundPlus
+  UserRoundPlus,
+  PlayCircle
 } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
