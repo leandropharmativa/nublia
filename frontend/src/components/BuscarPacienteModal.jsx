@@ -41,29 +41,37 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
     buscarPacientes()
   }, [termoBusca])
 
-  useEffect(() => {
-    const buscarAgendamentos = async () => {
-      if (!termoBusca.trim() || !user?.id) {
-        setAgendamentos([])
-        return
-      }
-
-      try {
-        const res = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor-com-pacientes/${user.id}`)
-        const ags = res.data.filter(
-          a =>
-            a.status === 'agendado' &&
-            a.paciente?.name?.toLowerCase().includes(termoBusca.toLowerCase())
-        )
-        setAgendamentos(ags)
-      } catch (err) {
-        console.error('Erro ao buscar agendamentos:', err)
-        setAgendamentos([])
-      }
+useEffect(() => {
+  const buscarAgendamentos = async () => {
+    if (!termoBusca.trim() || !user?.id) {
+      setAgendamentos([])
+      return
     }
 
-    buscarAgendamentos()
-  }, [termoBusca, user])
+    try {
+      const res = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor-com-pacientes/${user.id}`)
+      const ags = res.data.filter(
+        a =>
+          a.status === 'agendado' &&
+          a.paciente?.name?.toLowerCase().includes(termoBusca.toLowerCase())
+      )
+
+      const ordenados = ags.sort((a, b) => {
+        const dataA = new Date(`${a.data}T${a.hora}`)
+        const dataB = new Date(`${b.data}T${b.hora}`)
+        return dataA - dataB
+      })
+
+      setAgendamentos(ordenados)
+    } catch (err) {
+      console.error('Erro ao buscar agendamentos:', err)
+      setAgendamentos([])
+    }
+  }
+
+  buscarAgendamentos()
+}, [termoBusca, user])
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
