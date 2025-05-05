@@ -36,7 +36,7 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
-function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
+function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdicionarHorario }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
   const doDia = eventos.filter(ev => isSameCalendarDay(ev.start, data))
 
@@ -49,10 +49,22 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
 
   return (
     <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
+      {/* Número do dia + botão adicionar horário */}
       <div className="flex justify-between items-center text-[10px] mt-1">
         <span className="text-xs font-medium text-gray-700">{label}</span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            aoAdicionarHorario?.(data)
+          }}
+          className="text-gray-400 hover:text-nublia-primary"
+          title="Adicionar horário"
+        >
+          <CalendarClock size={14} />
+        </button>
       </div>
 
+      {/* Ícones de status */}
       <div className="flex flex-wrap items-start gap-[4px] mt-1 overflow-visible">
         {doDia.map(ev => {
           const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
@@ -98,6 +110,7 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
     </div>
   )
 }
+
 
 
 export default function CalendarioAgenda({
