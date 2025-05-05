@@ -208,6 +208,35 @@ const eventosFormatados = data.map(ev => {
     })
     .sort((a, b) => new Date(a.start) - new Date(b.start))
 
+    useEffect(() => {
+    const handleVisualizar = (e) => {
+      setMostrarFicha(true)
+      setAtendimentoSelecionado(e.detail)
+    }
+
+    window.addEventListener('VisualizarAtendimento', handleVisualizar)
+    return () => window.removeEventListener('VisualizarAtendimento', handleVisualizar)
+  }, [])
+
+  const handleVerAtendimento = async (agendamentoId) => {
+    try {
+      const res = await fetch('https://nublia-backend.onrender.com/atendimentos/')
+      const todos = await res.json()
+      const atendimento = todos.find(a => a.agendamento_id === agendamentoId)
+
+      if (!atendimento) {
+        toastErro('Atendimento não encontrado.')
+        return
+      }
+
+      // dispara evento para o useEffect acima
+      const evt = new CustomEvent('VisualizarAtendimento', { detail: atendimento })
+      window.dispatchEvent(evt)
+    } catch (err) {
+      toastErro('Erro ao carregar atendimento.')
+    }
+  }
+
   return (
     <div className="w-full flex flex-col gap-4 relative">
       <CalendarioAgenda
@@ -218,7 +247,7 @@ const eventosFormatados = data.map(ev => {
         onViewChange={setViewAtual}
         onRangeChange={setRangeVisivel}
         onAbrirPerfil={handleAbrirPerfil}
-        onVerAtendimento={handleVerAtendimento}
+        onVerAtendimento={handleVerAtendimento} {/* <-- função atualizada */}
       />
 
       {viewAtual === 'agenda' && (
@@ -294,18 +323,16 @@ const eventosFormatados = data.map(ev => {
           onClose={() => setMostrarPerfil(false)}
         />
       )}
-{mostrarFicha && atendimentoSelecionado && (
-  <VisualizarAtendimentoModal
-    atendimento={atendimentoSelecionado}
-    onClose={() => {
-      setMostrarFicha(false)
-      setAtendimentoSelecionado(null)
-    }}
-  />
-)}
 
+      {mostrarFicha && atendimentoSelecionado && (
+        <VisualizarAtendimentoModal
+          atendimento={atendimentoSelecionado}
+          onClose={() => setMostrarFicha(false)}
+        />
+      )}
     </div>
   )
 }
+
 
 export default memo(AgendaPrescritor)
