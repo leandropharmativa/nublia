@@ -1,3 +1,4 @@
+
 // CalendarioAgenda.jsx
 import { useState, useEffect } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
@@ -36,7 +37,7 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
-function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdicionarHorario }) {
+function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
   const doDia = eventos.filter(ev => isSameCalendarDay(ev.start, data))
 
@@ -49,23 +50,10 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
 
   return (
     <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
-      {/* Número do dia + botão adicionar horário */}
       <div className="flex justify-between items-center text-[10px] mt-1">
         <span className="text-xs font-medium text-gray-700">{label}</span>
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            aoAdicionarHorario?.(data)
-          }}
-          className="text-gray-400 hover:text-nublia-primary"
-          title="Adicionar horário"
-        >
-          <CalendarClock size={14} />
-        </button>
       </div>
-
-      {/* Ícones de status */}
-      <div className="flex flex-wrap items-start gap-[4px] mt-1 overflow-visible">
+      <div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
         {doDia.map(ev => {
           const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
           const nome = ev.nome ?? ev.title
@@ -75,11 +63,11 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
             ? 'Finalizado'
             : `${hora} Disponível`
 
-          let icone = <Clock size={14} className="text-gray-400 min-w-[18px] h-5" />
+          let icone = <Clock size={14} className="text-gray-400" />
           if (ev.status === 'agendado') {
-            icone = <UserCog size={14} className="text-orange-600 min-w-[18px] h-5" />
+            icone = <UserCog size={14} className="text-orange-600" />
           } else if (ev.status === 'finalizado') {
-            icone = <UserRoundCheck size={14} className="text-nublia-primary min-w-[18px] h-5" />
+            icone = <UserRoundCheck size={14} className="text-nublia-primary" />
           }
 
           return (
@@ -98,10 +86,9 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
           )
         })}
       </div>
-
       {tooltip.visible && (
         <div
-          className="fixed z-[99] bg-white text-gray-700 text-xs font-normal px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
+          className="fixed z-[99] bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
           style={{ top: tooltip.y - 30, left: tooltip.x, transform: 'translateX(-50%)' }}
         >
           {tooltip.text}
@@ -110,8 +97,6 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
     </div>
   )
 }
-
-
 
 export default function CalendarioAgenda({
   eventos = [],
