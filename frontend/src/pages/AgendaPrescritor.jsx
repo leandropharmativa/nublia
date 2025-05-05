@@ -246,44 +246,39 @@ const eventosParaAgenda = eventos
               />
               <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             </div>
-            <div className="flex gap-2 mt-2">
+<div className="flex gap-2 mt-2">
   <button
-    onClick={() => setFiltroStatus(null)}
-    title="Todos"
-    className={`p-2 rounded-full border ${
-      filtroStatus === null ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-    }`}
-  >
-    Todos
-  </button>
-  <button
-    onClick={() => setFiltroStatus('disponivel')}
+    onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
     title="Disponíveis"
-    className={`p-2 rounded-full border ${
+    className={`p-2 rounded-full border transition ${
       filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
     }`}
   >
     <Clock size={18} />
   </button>
+
   <button
-    onClick={() => setFiltroStatus('agendado')}
+    onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? null : 'agendado')}
     title="Agendados"
-    className={`p-2 rounded-full border ${
+    className={`p-2 rounded-full border transition ${
       filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
     }`}
   >
     <UserRound size={18} />
   </button>
+
   <button
-    onClick={() => setFiltroStatus('finalizado')}
+    onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? null : 'finalizado')}
     title="Finalizados"
-    className={`p-2 rounded-full border ${
+    className={`p-2 rounded-full border transition ${
       filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
     }`}
   >
     <UserRoundCheck size={18} />
   </button>
 </div>
+
+
 
           </div>
 
