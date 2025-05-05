@@ -12,8 +12,7 @@ import {
   CalendarClock,
   CalendarSync,
   CalendarCheck,
-  UserRoundPlus,
-  PlayCircle
+  UserRoundPlus
 } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
@@ -272,6 +271,7 @@ export default function ModalAgendarHorario({
   </button>
 </div>
 
+                </div>
               )}
 
               {trocandoPaciente && (
