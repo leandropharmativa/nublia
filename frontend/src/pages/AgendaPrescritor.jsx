@@ -242,21 +242,29 @@ const eventosParaAgenda = eventos
             </div>
           </div>
 
-          <ListaAgendamentosAgenda
-            eventos={eventosParaAgenda}
-            aoVerPerfil={abrirPerfilPaciente}
-            aoVerAgendamento={handleEventoClick}
-            aoIniciarAtendimento={(id) => {
-              const paciente = pacientes.find(p => p.id === id)
-              if (paciente) {
-                setPacienteSelecionado(paciente)
-                setTimeout(() => {
-                  const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
-                  window.dispatchEvent(evt)
-                }, 0)
-              }
-            }}
-          />
+<ListaAgendamentosAgenda
+  eventos={eventosParaAgenda}
+  aoVerPerfil={abrirPerfilPaciente}
+  aoVerAgendamento={(evento) => {
+    if (evento.status === 'finalizado') {
+      setAgendamentoSelecionado(evento)
+      setMostrarVisualizarAtendimentoModal(true)
+    } else {
+      handleEventoClick(evento)
+    }
+  }}
+  aoIniciarAtendimento={(id) => {
+    const paciente = pacientes.find(p => p.id === id)
+    if (paciente) {
+      setPacienteSelecionado(paciente)
+      setTimeout(() => {
+        const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
+        window.dispatchEvent(evt)
+      }, 0)
+    }
+  }}
+/>
+
         </div>
       )}
 
