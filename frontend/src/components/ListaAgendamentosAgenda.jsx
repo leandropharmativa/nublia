@@ -1,4 +1,4 @@
-import { UserRound, Eye, PlayCircle, Clock } from 'lucide-react'
+import { UserRound, Eye, PlayCircle, Clock, UserRoundCheck } from 'lucide-react'
 
 export default function ListaAgendamentosAgenda({
   eventos = [],
