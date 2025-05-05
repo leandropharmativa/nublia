@@ -431,75 +431,78 @@ useEffect(() => {
       )}
 
 
-      {mostrarAgendamentoModal && agendamentoSelecionado && (
-        <ModalAgendarHorario
-          agendamentoId={agendamentoSelecionado.id}
-          statusAtual={agendamentoSelecionado.status}
-          pacienteAtual={agendamentoSelecionado.pacienteNome}
-          pacienteId={agendamentoSelecionado.pacienteId}
-          horarioSelecionado={agendamentoSelecionado.dataHora}
-          onCancelar={() => {
-            setAgendamentoSelecionado(null)
-            setMostrarAgendamentoModal(false)
-          }}
-          onAtualizarAgenda={() => carregarAgenda(user.id)}
-          onRemover={(id) => {
-            fetch(`https://nublia-backend.onrender.com/agenda/${id}`, {
-              method: 'DELETE'
-            }).then(() => {
-              toastSucesso('Horário removido com sucesso!')
-              setAgendamentoSelecionado(null)
-              setMostrarAgendamentoModal(false)
-              carregarAgenda(user.id)
-            }).catch(() => {
-              toastErro('Erro ao remover horário.')
-            })
-          }}
-          onDesagendar={(id) => {
-            fetch(`https://nublia-backend.onrender.com/agenda/desagendar`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ id })
-            }).then(() => {
-              toastSucesso('Agendamento cancelado!')
-              setAgendamentoSelecionado(null)
-              setMostrarAgendamentoModal(false)
-              carregarAgenda(user.id)
-            }).catch(() => {
-              toastErro('Erro ao desagendar.')
-            })
-          }}
-          onConfirmar={(horarioId, pacienteId) => {
-            fetch('https://nublia-backend.onrender.com/agenda/agendar', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
-            })
-              .then((res) => {
-                if (!res.ok) throw new Error()
-                toastSucesso('Paciente agendado com sucesso!')
-                setMostrarAgendamentoModal(false)
-                setAgendamentoSelecionado(null)
-                carregarAgenda(user.id)
-              })
-              .catch(() => toastErro('Erro ao agendar paciente.'))
-          }}
-onIniciarAtendimento={(pacienteId, agendamentoId) => {
-  console.log('[DEBUG] Entrou em onIniciarAtendimento')
-  console.log('[DEBUG] Lista de pacientes:', pacientes)
-  const paciente = pacientes.find(p => p.id === pacienteId)
-  if (!paciente) {
-    console.warn('[WARN] Paciente não encontrado na lista!')
-    return
-  }
-  console.log('[DEBUG] Paciente encontrado:', paciente)
-  setPacienteSelecionado(paciente)
-  setAgendamentoSelecionado({ id: agendamentoId })
-  setTimeout(() => {
-    console.log('[DEBUG] Mudando aba para ficha')
-    setAbaSelecionada(0)
-  }, 0)
-}}
+{mostrarAgendamentoModal && agendamentoSelecionado && (
+  <ModalAgendarHorario
+    agendamentoId={agendamentoSelecionado.id}
+    statusAtual={agendamentoSelecionado.status}
+    pacienteAtual={agendamentoSelecionado.pacienteNome}
+    pacienteId={agendamentoSelecionado.pacienteId}
+    horarioSelecionado={agendamentoSelecionado.dataHora}
+    onCancelar={() => {
+      setAgendamentoSelecionado(null)
+      setMostrarAgendamentoModal(false)
+    }}
+    onAtualizarAgenda={() => {
+      carregarAgenda(user.id)
+      carregarPacientes() // ✅ garante que a lista de pacientes esteja atualizada
+    }}
+    onRemover={(id) => {
+      fetch(`https://nublia-backend.onrender.com/agenda/${id}`, {
+        method: 'DELETE'
+      }).then(() => {
+        toastSucesso('Horário removido com sucesso!')
+        setAgendamentoSelecionado(null)
+        setMostrarAgendamentoModal(false)
+        carregarAgenda(user.id)
+        carregarPacientes() // ✅ necessário aqui também
+      }).catch(() => {
+        toastErro('Erro ao remover horário.')
+      })
+    }}
+    onDesagendar={(id) => {
+      fetch(`https://nublia-backend.onrender.com/agenda/desagendar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      }).then(() => {
+        toastSucesso('Agendamento cancelado!')
+        setAgendamentoSelecionado(null)
+        setMostrarAgendamentoModal(false)
+        carregarAgenda(user.id)
+        carregarPacientes() // ✅ aqui também
+      }).catch(() => {
+        toastErro('Erro ao desagendar.')
+      })
+    }}
+    onConfirmar={(horarioId, pacienteId) => {
+      fetch('https://nublia-backend.onrender.com/agenda/agendar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error()
+          toastSucesso('Paciente agendado com sucesso!')
+          setMostrarAgendamentoModal(false)
+          setAgendamentoSelecionado(null)
+          carregarAgenda(user.id)
+          carregarPacientes() // ✅ recarrega após agendar
+        })
+        .catch(() => toastErro('Erro ao agendar paciente.'))
+    }}
+    onIniciarAtendimento={(pacienteId, agendamentoId) => {
+      const paciente = pacientes.find(p => p.id === pacienteId)
+      if (!paciente) {
+        console.warn('[WARN] Paciente não encontrado na lista!')
+        return
+      }
+      setPacienteSelecionado(paciente)
+      setAgendamentoSelecionado({ id: agendamentoId })
+      setTimeout(() => setAbaSelecionada(0), 0)
+    }}
+  />
+)}
+
 
 
 
