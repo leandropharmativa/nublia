@@ -276,19 +276,24 @@ export default function ModalAgendarHorario({
   </button>
 
 <button
-  onClick={() => {
+  onClick={async () => {
     console.log('[DEBUG] Disparando evento global para iniciar ficha')
-    if (pacienteId) {
-const paciente = {
-  id: pacienteId,
-  name: pacienteAtual || 'Paciente'
-}
+    try {
+      const res = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+      const paciente = res.data
 
-window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-  detail: paciente
-}))
+      if (!paciente || !paciente.data_nascimento) {
+        toastErro('Paciente sem data de nascimento.')
+        return
+      }
 
+      window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+        detail: paciente
+      }))
       onCancelar()
+    } catch (err) {
+      console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
+      toastErro('Erro ao iniciar atendimento.')
     }
   }}
   className="text-nublia-accent hover:text-nublia-orange"
@@ -296,6 +301,7 @@ window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
 >
   <PlayCircle size={18} />
 </button>
+
 
 
 
