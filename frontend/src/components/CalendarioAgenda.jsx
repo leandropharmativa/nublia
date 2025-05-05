@@ -48,69 +48,67 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
 
   const hideTooltip = () => setTooltip({ visible: false, text: '', x: 0, y: 0 })
 
-  return (
-    <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
-      {/* Número do dia + botão adicionar horário */}
-      <div className="flex justify-between items-center text-[10px] mt-1">
-        <span className="text-xs font-medium text-gray-700">{label}</span>
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            aoAdicionarHorario?.(data)
-          }}
-          className="text-gray-400 hover:text-nublia-primary"
-          title="Adicionar horário"
-        >
-          <CalendarClock size={14} />
-        </button>
-      </div>
-
-      {/* Ícones de status */}
-      <div className="flex flex-wrap items-start gap-[4px] mt-1 overflow-visible">
-        {doDia.map(ev => {
-          const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-          const nome = ev.nome ?? ev.title
-          const texto = ev.status === 'agendado'
-            ? `${hora} ${nome}`
-            : ev.status === 'finalizado'
-            ? 'Finalizado'
-            : `${hora} Disponível`
-
-          let icone = <Clock size={14} className="text-gray-400 min-w-[18px] h-5" />
-          if (ev.status === 'agendado') {
-            icone = <UserCog size={14} className="text-orange-600 min-w-[18px] h-5" />
-          } else if (ev.status === 'finalizado') {
-            icone = <UserRoundCheck size={14} className="text-nublia-primary min-w-[18px] h-5" />
-          }
-
-          return (
-            <span
-              key={ev.id}
-              className="inline-flex items-center justify-center cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation()
-                aoSelecionarEvento(ev)
-              }}
-              onMouseEnter={(e) => showTooltip(e, texto)}
-              onMouseLeave={hideTooltip}
-            >
-              {icone}
-            </span>
-          )
-        })}
-      </div>
-
-      {tooltip.visible && (
-        <div
-          className="fixed z-[99] bg-white text-gray-700 text-xs font-normal px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
-          style={{ top: tooltip.y - 30, left: tooltip.x, transform: 'translateX(-50%)' }}
-        >
-          {tooltip.text}
-        </div>
-      )}
+return (
+  <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
+    <div className="flex justify-between items-center text-[10px] mt-1">
+      <span className="text-xs font-medium text-gray-700">{label}</span>
+      <button
+        onClick={(e) => {
+          e.stopPropagation()
+          aoSelecionarEvento({ status: 'novo_agendamento', start: data })
+        }}
+        className="text-gray-400 hover:text-nublia-primary"
+        title="Adicionar horário"
+      >
+        <CalendarClock size={14} />
+      </button>
     </div>
-  )
-}
+
+    <div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
+      {doDia.map(ev => {
+        const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        const nome = ev.nome ?? ev.title
+        const texto = ev.status === 'agendado'
+          ? `${hora} ${nome}`
+          : ev.status === 'finalizado'
+          ? 'Finalizado'
+          : `${hora} Disponível`
+
+        let icone = <Clock size={14} className="text-gray-400" />
+        if (ev.status === 'agendado') {
+          icone = <UserCog size={14} className="text-orange-600" />
+        } else if (ev.status === 'finalizado') {
+          icone = <UserRoundCheck size={14} className="text-nublia-primary" />
+        }
+
+        return (
+          <span
+            key={ev.id}
+            className="inline-flex items-center justify-center cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation()
+              aoSelecionarEvento(ev)
+            }}
+            onMouseEnter={(e) => showTooltip(e, texto)}
+            onMouseLeave={hideTooltip}
+          >
+            {icone}
+          </span>
+        )
+      })}
+    </div>
+
+    {tooltip.visible && (
+      <div
+        className="fixed z-[99] bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
+        style={{ top: tooltip.y - 30, left: tooltip.x, transform: 'translateX(-50%)' }}
+      >
+        {tooltip.text}
+      </div>
+    )}
+  </div>
+)
+
 
 
 
