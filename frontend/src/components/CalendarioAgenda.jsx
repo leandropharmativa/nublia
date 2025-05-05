@@ -52,7 +52,8 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
       <div className="flex justify-between items-center text-[10px] mt-1">
         <span className="text-xs font-medium text-gray-700">{label}</span>
       </div>
-      <div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
+
+      <div className="flex flex-wrap items-start gap-[4px] mt-1 overflow-visible">
         {doDia.map(ev => {
           const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
           const nome = ev.nome ?? ev.title
@@ -62,11 +63,11 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
             ? 'Finalizado'
             : `${hora} Disponível`
 
-          let icone = <Clock size={14} className="text-gray-400" />
+          let icone = <Clock size={14} className="text-gray-400 min-w-[18px] h-5" />
           if (ev.status === 'agendado') {
-            icone = <UserCog size={14} className="text-orange-600" />
+            icone = <UserCog size={14} className="text-orange-600 min-w-[18px] h-5" />
           } else if (ev.status === 'finalizado') {
-            icone = <UserRoundCheck size={14} className="text-nublia-primary" />
+            icone = <UserRoundCheck size={14} className="text-nublia-primary min-w-[18px] h-5" />
           }
 
           return (
@@ -85,9 +86,10 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
           )
         })}
       </div>
+
       {tooltip.visible && (
         <div
-          className="fixed z-[99] bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
+          className="fixed z-[99] bg-white text-gray-700 text-xs font-normal px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
           style={{ top: tooltip.y - 30, left: tooltip.x, transform: 'translateX(-50%)' }}
         >
           {tooltip.text}
@@ -96,6 +98,7 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
     </div>
   )
 }
+
 
 export default function CalendarioAgenda({
   eventos = [],
