@@ -88,7 +88,7 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento }) {
       </div>
       {tooltip.visible && (
         <div
-          className="fixed z-[99] bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
+          className="fixed z-[9999] bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
           style={{ top: tooltip.y - 30, left: tooltip.x, transform: 'translateX(-50%)' }}
         >
           {tooltip.text}
