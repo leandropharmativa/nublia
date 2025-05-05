@@ -275,18 +275,23 @@ export default function ModalAgendarHorario({
     <CalendarClock size={18} />
   </button>
 
-  <button
-    onClick={() => {
-      if (pacienteId && agendamentoId) {
-        onIniciarAtendimento?.(pacienteId, agendamentoId)
-        onCancelar()
-      }
-    }}
-    className="text-nublia-accent hover:text-nublia-orange"
-    title="Iniciar atendimento"
-  >
-    <PlayCircle size={18} />
-  </button>
+<button
+  onClick={() => {
+    console.log('[DEBUG] Clique detectado no botão Iniciar Atendimento')
+    console.log('Paciente ID:', pacienteId)
+    console.log('Agendamento ID:', agendamentoId)
+    if (pacienteId && agendamentoId) {
+      console.log('Chamando onIniciarAtendimento...')
+      onIniciarAtendimento?.(pacienteId, agendamentoId)
+      onCancelar()
+    }
+  }}
+  className="text-nublia-accent hover:text-nublia-orange"
+  title="Iniciar atendimento"
+>
+  <PlayCircle size={18} />
+</button>
+
 
   <button
     onClick={() => onDesagendar(agendamentoId)}
