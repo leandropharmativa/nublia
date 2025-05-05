@@ -490,8 +490,14 @@ onIniciarAtendimento={(pacienteId, agendamentoId) => {
     console.log('Paciente ID:', pacienteId)
     console.log('Agendamento ID:', agendamentoId)
     console.log('[DEBUG] Chamando onIniciarAtendimento...')
-    console.log('[DEBUG] pacientes.length:', pacientes.length)
-    console.log('[DEBUG] Estado atual de pacientes:', pacientes)
+    console.log('[DEBUG] pacientes:', pacientes)
+    console.log('[DEBUG] pacientes.length:', pacientes?.length)
+
+    if (!pacientes || pacientes.length === 0) {
+    console.warn('[WARN] Lista de pacientes ainda não carregada.')
+    return
+    }
+
     const paciente = pacientes.find(p => p.id === pacienteId)
     console.log('[DEBUG] Resultado de pacientes.find:', paciente)
 
