@@ -49,7 +49,7 @@ export default function ListaAgendamentosAgenda({
     </button>
   </>
 ) : ev.status === 'finalizado' ? (
-  <button onClick={() => aoVerAgendamento?.(ev)} title="Ver atendimento finalizado">
+  <button onClick={() => aoVerAgendamento?.(ev)} title="Ver atendimento finalizado" className="text-nublia-primary">
     <UserRoundCheck size={18} />
   </button>
 ) : (
