@@ -279,9 +279,15 @@ export default function ModalAgendarHorario({
   onClick={() => {
     console.log('[DEBUG] Disparando evento global para iniciar ficha')
     if (pacienteId) {
-      window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-        detail: { id: pacienteId }
-      }))
+const paciente = {
+  id: pacienteId,
+  name: pacienteAtual || 'Paciente'
+}
+
+window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+  detail: paciente
+}))
+
       onCancelar()
     }
   }}
