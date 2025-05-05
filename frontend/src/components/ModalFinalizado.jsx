@@ -1,4 +1,3 @@
-// components/ModalFinalizado.jsx
 import { createPortal } from 'react-dom'
 import {
   CalendarCheck,
@@ -32,26 +31,33 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
       <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-sm relative">
-        <CalendarCheck className="absolute top-4 left-4 text-nublia-primary" size={20} />
-        <h2 className="text-lg font-bold text-nublia-primary mb-4 text-center">
-          Atendimento Finalizado
-        </h2>
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <CalendarCheck className="text-nublia-primary" size={22} />
+          <h2 className="text-lg font-bold text-nublia-primary">
+            Atendimento Finalizado
+          </h2>
+        </div>
 
         <div className="flex items-center justify-between gap-3 mb-3">
           <strong className="text-base text-gray-800">{nome}</strong>
           <div className="flex gap-2">
-<button onClick={onAbrirPerfil}>
-  <UserRound size={18} className="text-gray-600 hover:text-nublia-primary" />
-</button>
-<button onClick={onVerAtendimento}>
-  <FileText size={18} className="text-gray-600 hover:text-nublia-primary" />
-</button>
-
+            <button onClick={onAbrirPerfil} title="Ver perfil">
+              <UserRound
+                size={18}
+                className="text-nublia-accent hover:text-nublia-orange transition"
+              />
+            </button>
+            <button onClick={onVerAtendimento} title="Ver atendimento">
+              <FileText
+                size={18}
+                className="text-nublia-accent hover:text-nublia-orange transition"
+              />
+            </button>
           </div>
         </div>
 
         <div className="mb-2 text-gray-700">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="font-semibold">Agendamento:</span>
             <Calendar size={14} className="text-gray-500" />
             <span>{data}</span>
@@ -60,7 +66,7 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
           </div>
 
           {evento.criado_em ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold">Atendimento:</span>
               <Calendar size={14} className="text-gray-500" />
               <span>{dataAtend}</span>
