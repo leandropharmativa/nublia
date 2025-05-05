@@ -199,19 +199,23 @@ const handleEventoClick = async (evento) => {
     setMostrarPerfil(true)
   }
 
-  const eventosParaAgenda = eventos
-    .filter(ev => {
-      if (filtroTexto.trim().length > 1) {
-        const nomeNormalizado = ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-        const termoBusca = filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-        return nomeNormalizado?.includes(termoBusca)
-      } else if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
-        const dataEv = new Date(ev.start)
-        return dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
-      }
-      return false
-    })
-    .sort((a, b) => new Date(a.start) - new Date(b.start))
+const eventosParaAgenda = eventos
+  .filter(ev => {
+    if (filtroTexto.trim().length > 1) {
+      const nomeNormalizado = ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+      const termoBusca = filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+      return nomeNormalizado?.includes(termoBusca)
+    } else if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
+      const dataEv = new Date(ev.start)
+      return dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
+    }
+    return false
+  })
+  .map(ev => ({
+    ...ev,
+    status: ev.status || (ev.paciente_id ? 'agendado' : 'disponivel'), // 🔧 força status presente
+  }))
+  .sort((a, b) => new Date(a.start) - new Date(b.start))
 
   return (
     <div className="w-full flex flex-col gap-4 relative">
