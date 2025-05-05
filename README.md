@@ -8,49 +8,72 @@ Sistema de atendimento e gestão para prescritores de saúde (nutricionistas, m�
 
 ```
 nublia/
-├─ backend/
-│  ├─ app/
-│  │  ├─ database.py
-│  │  ├─ models.py
-│  │  ├─ routers/
-│  │  │  ├─ agenda.py
-│  │  │  ├─ atendimentos.py
-│  │  │  ├─ codigos.py
-│  │  │  ├─ formulas.py
-│  │  │  ├─ pacientes.py
-│  │  │  ├─ root.py
-│  │  │  ├─ users.py
-│  ├─ main.py
-│  ├─ requirements.txt
-├─ frontend/
-│  ├─ src/
-│  │  ├─ components/
-│  │  │  ├─ AtendimentosRecentes.jsx
-│  │  │  ├─ BuscaPacienteModal.jsx
-│  │  │  ├─ CadastrarPacienteModal.jsx
-│  │  │  ├─ FichaAtendimento.jsx
-│  │  │  ├─ FormulaForm.jsx
-│  │  │  ├─ FormulaSidebar.jsx
-│  │  │  ├─ ModalConfirmacao.jsx
-│  │  │  ├─ ModalMensagem.jsx
-│  │  │  ├─ PerfilPacienteModal.jsx
-│  │  │  ├─ VisualizarAtednimentoModal.jsx
-│  │  ├─ pages/
-│  │  │  ├─ Admin.jsx
-│  │  │  ├─ FarmaciaDashboard.jsx
-│  │  │  ├─ FichaAtendimento.jsx
-│  │  │  ├─ Login.jsx
-│  │  │  ├─ PrescritorDashboard.jsx
-│  │  │  ├─ Register.jsx
-│  │  ├─ App.jsx
-│  │  ├─ index.css
-│  │  ├─ main.jsx
-│  ├─ index.html
-│  ├─ package.json
-│  ├─ postcss.config.js
-│  ├─ tailwind.config.js
-│  ├─ vercel.json
-│  ├─ vite.config.js
+├── README.md
+├── estrutura.txt
+├── backend/
+│   ├── main.py
+│   ├── readme.txt
+│   ├── requirements.txt
+│   └── app/
+│       ├── database.py
+│       ├── models.py
+│       └── routers/
+│           ├── agenda.py
+│           ├── atendimentos.py
+│           ├── codigos.py
+│           ├── formulas.py
+│           ├── pacientes.py
+│           ├── root.py
+│           └── users.py
+├── frontend/
+│   ├── index.html
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── tailwind.config.js
+│   ├── vercel.json
+│   ├── vite.config.js
+│   ├── public/
+│   │   └── favicon.png
+│   └── src/
+│       ├── App.jsx
+│       ├── index.css
+│       ├── main.jsx
+│       ├── components/
+│       │   ├── AtendimentosRecentes.jsx
+│       │   ├── Botao.jsx
+│       │   ├── BuscarPacienteModal.jsx
+│       │   ├── CadastrarPacienteModal.jsx
+│       │   ├── CalendarioAgenda.jsx
+│       │   ├── CalendarioCustom.css
+│       │   ├── CampoTexto.jsx
+│       │   ├── FichaAtendimento.jsx
+│       │   ├── FormulaForm.jsx
+│       │   ├── FormulaSidebar.jsx
+│       │   ├── FormulasSugeridas.jsx
+│       │   ├── Layout.jsx
+│       │   ├── ListaAgendamentosAgenda.jsx
+│       │   ├── MinhasFormulas.jsx
+│       │   ├── ModalAgendarHorario.jsx
+│       │   ├── ModalConfirmacao.jsx
+│       │   ├── ModalFinalizado.jsx
+│       │   ├── ModalMensagem.jsx
+│       │   ├── ModalNovoAgendamento.jsx
+│       │   ├── ModalNovoHorario.jsx
+│       │   ├── PerfilPacienteModal.jsx
+│       │   └── VisualizarAtendimentoModal.jsx
+│       ├── pages/
+│       │   ├── Admin.jsx
+│       │   ├── AgendaPrescritor.jsx
+│       │   ├── FarmaciaDashboard.jsx
+│       │   ├── FichaAtendimento.jsx
+│       │   ├── Login.jsx
+│       │   ├── PrescritorDashboard.jsx
+│       │   └── Register.jsx
+│       ├── routes/
+│       │   └── PrivateRoute.jsx
+│       └── utils/
+│           ├── cn.js
+│           └── toastUtils.jsx
 ```
 
 ---
@@ -73,34 +96,34 @@ nublia/
 - Proteção de perfis com código de ativação
 - Dashboard exclusivo para prescritor
 - Lista de atendimentos recentes com filtro por paciente
-- Iniciar atendimento via busca de paciente
+- Início de atendimento via busca ou agenda
 - Cadastro rápido de novo paciente
-- Cadastro e gerenciamento de fórmulas por farmácias
-- Interface com múltiplos modais de interação (confirmação, visualização, perfil)
-- Controle de autenticação seguro via JWT
-- Interface responsiva e moderna
-- Deploy contínuo com GitHub → Vercel/Render
+- Cadastro, edição e exclusão de fórmulas por farmácias
+- Visualização de fórmulas sugeridas pelos prescritores
+- Modais para confirmação, visualização e perfil do paciente
+- Agendamentos por horário com reagendamento e finalização
+- Deploy contínuo GitHub → Vercel (frontend) / Render (backend)
 
 ---
 
 ## 📋 Boas Práticas
 
-- Código limpo e 100% comentado
-- Separação por camadas (components, pages, routers)
-- Banco de dados PostgreSQL profissional
-- Tokens Bearer para segurança das rotas
-- Organização para crescimento do projeto a longo prazo
+- Código limpo e comentado
+- Separação clara por camadas (components, pages, routes)
+- Banco PostgreSQL com ORM (SQLModel)
+- Segurança com JWT e tokens Bearer
+- Projeto modular e escalável
 
 ---
 
 ## 🔥 Próximas Etapas
 
 - Ficha de atendimento completa (anamnese, antropometria, exames)
-- Integração com farmácias e clínicas
-- Área exclusiva para pacientes (dietas, prescrições)
-- Sistema de notificações
-- Reagendamento e cancelamento de consultas
+- Sistema de notificações internas
+- Área exclusiva do paciente (dietas, prescrições, exames)
+- Integração direta de fórmulas nas prescrições
 - Upload de arquivos (exames, imagens)
+- Histórico completo de atendimentos
 
 ---
 
@@ -110,6 +133,9 @@ nublia/
 |----------------------------|--------|
 | Backend API                | ✅     |
 | Frontend Interface         | ✅     |
+| Painel da Farmácia         | ✅     |
+| Fórmulas Sugeridas         | ✅     |
+| Agenda do Prescritor       | ✅     |
 | Deploy Backend (Render)    | ✅     |
 | Deploy Frontend (Vercel)   | ✅     |
 | Integração GitHub Actions  | 🔜     |
@@ -126,3 +152,4 @@ Feito para otimizar a saúde e inovar o atendimento de maneira digital, humaniza
 
 - Backend: https://nublia-backend.onrender.com/
 - Frontend: https://nublia-frontend.vercel.app/
+- Repositório: https://github.com/leandropharmativa/nublia/
