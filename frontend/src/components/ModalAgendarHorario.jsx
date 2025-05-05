@@ -12,7 +12,8 @@ import {
   CalendarClock,
   CalendarSync,
   CalendarCheck,
-  UserRoundPlus
+  UserRoundPlus,
+  PlayCircle
 } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
@@ -248,21 +249,29 @@ export default function ModalAgendarHorario({
                     <p className="font-medium">{pacienteAtual}</p>
                     <p className="text-xs text-gray-500">Paciente atual</p>
                   </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setMostrarPerfil(true)} className="text-nublia-accent hover:text-nublia-orange" title="Ver perfil">
-                      <User size={18} />
-                    </button>
-                    <button onClick={() => setTrocandoPaciente(true)} className="text-nublia-accent hover:text-nublia-orange" title="Trocar paciente">
-                      <ArrowLeftRight size={18} />
-                    </button>
-                    <button onClick={() => setReagendando(true)} className="text-nublia-accent hover:text-nublia-orange" title="Transferir paciente">
-                      <CalendarClock size={18} />
-                    </button>
-                    <button onClick={() => onDesagendar(agendamentoId)} className="text-nublia-orange hover:text-red-600" title="Remover paciente">
-                      <Trash size={18} />
-                    </button>
-                  </div>
-                </div>
+<div className="flex gap-2">
+  <button onClick={() => setMostrarPerfil(true)} className="text-nublia-accent hover:text-nublia-orange" title="Ver perfil">
+    <User size={18} />
+  </button>
+  <button onClick={() => setTrocandoPaciente(true)} className="text-nublia-accent hover:text-nublia-orange" title="Trocar paciente">
+    <ArrowLeftRight size={18} />
+  </button>
+  <button onClick={() => setReagendando(true)} className="text-nublia-accent hover:text-nublia-orange" title="Transferir paciente">
+    <CalendarClock size={18} />
+  </button>
+  <button onClick={() => {
+    if (agendamentoId && pacienteId) {
+      onConfirmar(agendamentoId, pacienteId)
+      onCancelar()  // Fecha o modal
+    }
+  }} className="text-nublia-accent hover:text-nublia-orange" title="Iniciar atendimento">
+    <PlayCircle size={18} />
+  </button>
+  <button onClick={() => onDesagendar(agendamentoId)} className="text-nublia-orange hover:text-red-600" title="Remover paciente">
+    <Trash size={18} />
+  </button>
+</div>
+
               )}
 
               {trocandoPaciente && (
