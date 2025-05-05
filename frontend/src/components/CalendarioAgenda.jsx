@@ -48,7 +48,7 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
   const hideTooltip = () => setTooltip({ visible: false, text: '', x: 0, y: 0 })
 
   return (
-    <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
+    <div className="relative flex flex-col justify-start px-1 h-full min-h-[75px] overflow-visible">
       <div className="flex justify-between items-center text-[10px] mt-1">
         <span className="text-xs font-bold text-gray-400">{label}</span>
         <button
