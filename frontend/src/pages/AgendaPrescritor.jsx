@@ -231,6 +231,9 @@ const eventosParaAgenda = eventos
         onRangeChange={setRangeVisivel}
         onAbrirPerfil={handleAbrirPerfil}
         onVerAtendimento={handleVerAtendimento}
+        aoAdicionarHorario={(data) => {
+           handleNovoSlot({ start: data })
+  }}
       />
 
       {viewAtual === 'agenda' && (
