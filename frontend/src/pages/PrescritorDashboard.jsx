@@ -488,22 +488,23 @@ onIniciarAtendimento={(pacienteId, agendamentoId) => {
   console.log('[DEBUG] Clique detectado no botão Iniciar Atendimento')
   console.log('Paciente ID:', pacienteId)
   console.log('Agendamento ID:', agendamentoId)
+  console.log('Chamando onIniciarAtendimento...')
 
   const paciente = pacientes.find(p => p.id === pacienteId)
+  console.log('[DEBUG] Resultado de pacientes.find:', paciente)
+
   if (paciente) {
     setPacienteSelecionado(paciente)
     setAgendamentoSelecionado({ id: agendamentoId })
-    console.log('[DEBUG] Paciente selecionado:', paciente)
-    console.log('[DEBUG] Agendamento selecionado:', { id: agendamentoId })
-
     setTimeout(() => {
       console.log('[DEBUG] Mudando aba para ficha')
       setAbaSelecionada(0)
     }, 0)
   } else {
-    console.warn('[WARN] Paciente não encontrado!')
+    console.warn('[WARN] Paciente não encontrado no array!')
   }
 }}
+
 
         />
       )}
