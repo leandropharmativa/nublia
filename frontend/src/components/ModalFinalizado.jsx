@@ -4,7 +4,8 @@ import {
   Calendar,
   Clock,
   UserRound,
-  FileText
+  FileText,
+  X
 } from 'lucide-react'
 
 export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerAtendimento }) {
@@ -31,7 +32,16 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
       <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-sm relative">
-        <div className="flex items-center justify-center gap-2 mb-4">
+        {/* Botão X no canto */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-400 hover:text-nublia-primary transition"
+        >
+          <X size={20} />
+        </button>
+
+        {/* Título com ícone */}
+        <div className="flex items-center gap-2 mb-4">
           <CalendarCheck className="text-nublia-primary" size={22} />
           <h2 className="text-lg font-bold text-nublia-primary">
             Atendimento Finalizado
@@ -76,15 +86,6 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
           ) : (
             <div className="text-gray-500 mt-2">Hora do atendimento: ---</div>
           )}
-        </div>
-
-        <div className="mt-5 text-right">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-full bg-nublia-primary text-white hover:bg-nublia-primaryfocus transition"
-          >
-            Fechar
-          </button>
         </div>
       </div>
     </div>,
