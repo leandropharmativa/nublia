@@ -133,26 +133,23 @@ const handleEventoClick = async (evento) => {
   setHorarioSelecionado(evento.start)
 
   if (evento.status === 'agendado' && evento.paciente_id) {
-    console.log('[DEBUG] Evento é agendado. Buscando paciente:', evento.paciente_id)
     try {
       const res = await axios.get(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
-      console.log('[DEBUG] Paciente carregado:', res.data)
       setPacienteAtual(res.data.name)
       setPacienteId(res.data.id)
     } catch {
-      console.warn('[WARN] Erro ao buscar paciente.')
       setPacienteAtual('Paciente não encontrado')
       setPacienteId(null)
     }
   } else {
-    console.log('[DEBUG] Evento não é agendado. Limpando paciente.')
     setPacienteAtual(null)
     setPacienteId(null)
   }
 
-  console.log('[DEBUG] Abrindo modal de agendamento...')
+  console.log('[DEBUG] statusAtual enviado ao modal:', evento.status)
   setModalAgendar(true)
 }
+
 
 
   const confirmarAgendamento = async (agendamentoId, pacienteId) => {
