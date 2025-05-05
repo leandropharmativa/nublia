@@ -50,7 +50,7 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
   return (
     <div className="relative flex flex-col justify-between px-1 h-full overflow-visible">
       <div className="flex justify-between items-center text-[10px] mt-1">
-        <span className="text-xs font-medium text-gray-700">{label}</span>
+        <span className="text-xs font-bold text-gray-700">{label}</span>
         <button
           onClick={(e) => {
             e.stopPropagation()
@@ -99,7 +99,7 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
 
       {tooltip.visible && (
         <div
-          className="fixed z-[99] bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
+          className="fixed z-[99] font-normal bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
           style={{ top: tooltip.y - 30, left: tooltip.x, transform: 'translateX(-50%)' }}
         >
           {tooltip.text}
