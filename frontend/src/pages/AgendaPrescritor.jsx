@@ -35,6 +35,8 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [dataAtual, setDataAtual] = useState(new Date())
   const [viewAtual, setViewAtual] = useState('month')
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
+  const [filtroStatus, setFiltroStatus] = useState(null) // null = todos
+
 
   const user = JSON.parse(localStorage.getItem('user'))
 
@@ -200,21 +202,23 @@ const handleEventoClick = async (evento) => {
 
 const eventosParaAgenda = eventos
   .filter(ev => {
-    if (filtroTexto.trim().length > 1) {
-      const nomeNormalizado = ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-      const termoBusca = filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-      return nomeNormalizado?.includes(termoBusca)
-    } else if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
+    const nomeFiltrado = filtroTexto.trim().length > 1
+      ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+          .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
+      : true
+
+    const statusFiltrado = filtroStatus ? ev.status === filtroStatus : true
+
+    if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
       const dataEv = new Date(ev.start)
-      return dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
+      const dentroDoRange = dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
+      return nomeFiltrado && statusFiltrado && dentroDoRange
     }
-    return false
+
+    return nomeFiltrado && statusFiltrado
   })
-  .map(ev => ({
-    ...ev,
-    status: ev.status || (ev.paciente_id ? 'agendado' : 'disponivel'), // 🔧 força status presente
-  }))
   .sort((a, b) => new Date(a.start) - new Date(b.start))
+
 
   return (
     <div className="w-full flex flex-col gap-4 relative">
@@ -242,6 +246,45 @@ const eventosParaAgenda = eventos
               />
               <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             </div>
+            <div className="flex gap-2 mt-2">
+  <button
+    onClick={() => setFiltroStatus(null)}
+    title="Todos"
+    className={`p-2 rounded-full border ${
+      filtroStatus === null ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+    }`}
+  >
+    Todos
+  </button>
+  <button
+    onClick={() => setFiltroStatus('disponivel')}
+    title="Disponíveis"
+    className={`p-2 rounded-full border ${
+      filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+    }`}
+  >
+    <Clock size={18} />
+  </button>
+  <button
+    onClick={() => setFiltroStatus('agendado')}
+    title="Agendados"
+    className={`p-2 rounded-full border ${
+      filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+    }`}
+  >
+    <UserRound size={18} />
+  </button>
+  <button
+    onClick={() => setFiltroStatus('finalizado')}
+    title="Finalizados"
+    className={`p-2 rounded-full border ${
+      filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+    }`}
+  >
+    <UserRoundCheck size={18} />
+  </button>
+</div>
+
           </div>
 
 <ListaAgendamentosAgenda
