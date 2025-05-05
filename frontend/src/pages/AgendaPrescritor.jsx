@@ -23,6 +23,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [slotSelecionado, setSlotSelecionado] = useState(null)
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null)
   const [agendamentoSelecionadoId, setAgendamentoSelecionadoId] = useState(null)
+  const [modalFinalizadoAberto, setModalFinalizadoAberto] = useState(null)
   const [agendamentoStatus, setAgendamentoStatus] = useState(null)
   const [pacienteAtual, setPacienteAtual] = useState(null)
   const [pacienteId, setPacienteId] = useState(null)
@@ -247,8 +248,7 @@ const eventosParaAgenda = eventos
   aoVerPerfil={abrirPerfilPaciente}
   aoVerAgendamento={(evento) => {
     if (evento.status === 'finalizado') {
-      setAgendamentoSelecionado(evento)
-      setMostrarVisualizarAtendimentoModal(true)
+      setModalFinalizadoAberto(evento)
     } else {
       handleEventoClick(evento)
     }
@@ -264,6 +264,7 @@ const eventosParaAgenda = eventos
     }
   }}
 />
+
 
         </div>
       )}
@@ -311,6 +312,15 @@ const eventosParaAgenda = eventos
           onClose={() => setMostrarFicha(false)}
         />
       )}
+      {modalFinalizadoAberto && (
+  <ModalFinalizado
+    evento={modalFinalizadoAberto}
+    onClose={() => setModalFinalizadoAberto(null)}
+    onAbrirPerfil={() => abrirPerfilPaciente(modalFinalizadoAberto?.paciente_id)}
+    onVerAtendimento={() => handleVerAtendimento(modalFinalizadoAberto?.id)}
+  />
+)}
+
     </div>
   )
 }
