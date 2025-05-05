@@ -488,6 +488,7 @@ onIniciarAtendimento={(pacienteId, agendamentoId) => {
   console.log('[DEBUG] Clique detectado no botão Iniciar Atendimento')
   console.log('Paciente ID:', pacienteId)
   console.log('Agendamento ID:', agendamentoId)
+  console.log('[DEBUG] Estado atual de pacientes:', pacientes)
   console.log('Chamando onIniciarAtendimento...')
 
   const paciente = pacientes.find(p => p.id === pacienteId)
