@@ -221,10 +221,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
       {viewAtual === 'agenda' && (
         <div className="mt-2 bg-white rounded p-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <CalendarClock className="text-nublia-accent" size={20} />
-              Todos agendamentos
-            </h2>
             <div className="relative w-full max-w-sm">
               <input
                 type="text"
