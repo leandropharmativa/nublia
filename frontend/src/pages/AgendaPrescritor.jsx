@@ -18,7 +18,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
   const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
 
-
   const [modalAberto, setModalAberto] = useState(false)
   const [modalAgendar, setModalAgendar] = useState(false)
   const [slotSelecionado, setSlotSelecionado] = useState(null)
@@ -38,52 +37,50 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const user = JSON.parse(localStorage.getItem('user'))
 
   const handleAbrirPerfil = (pacienteId) => {
-  setPacienteId(pacienteId)
-  setMostrarPerfil(true)
+    setPacienteId(pacienteId)
+    setMostrarPerfil(true)
   }
 
-const handleVerAtendimento = async (agendamentoId) => {
-  try {
-    const { data } = await axios.get(`https://nublia-backend.onrender.com/atendimentos/por-agendamento/${agendamentoId}`)
-    setAtendimentoSelecionado(data)
-    setMostrarFicha(true)
-  } catch (error) {
-    console.error("Erro ao carregar atendimento:", error)
+  const handleVerAtendimento = async (agendamentoId) => {
+    try {
+      const { data } = await axios.get(`https://nublia-backend.onrender.com/atendimentos/por-agendamento/${agendamentoId}`)
+      setAtendimentoSelecionado(data)
+      setMostrarFicha(true)
+    } catch (error) {
+      console.error("Erro ao carregar atendimento:", error)
+      toastErro('Atendimento não encontrado.')
+    }
   }
-}
 
-const carregarEventos = async () => {
-  try {
-const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-const eventosFormatados = data.map(ev => {
-  const start = new Date(`${ev.data}T${ev.hora}`)
-  const end = addHours(start, 1)
-  const title =
-    ev.status === 'agendado' || ev.status === 'finalizado'
-      ? ev.paciente_nome || 'Paciente'
-      : 'Disponível'
+  const carregarEventos = async () => {
+    try {
+      const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+      const eventosFormatados = data.map(ev => {
+        const start = new Date(`${ev.data}T${ev.hora}`)
+        const end = addHours(start, 1)
+        const title =
+          ev.status === 'agendado' || ev.status === 'finalizado'
+            ? ev.paciente_nome || 'Paciente'
+            : 'Disponível'
 
-  return {
-    id: ev.id,
-    title,
-    nome: ev.paciente_nome,
-    start,
-    end,
-    status: ev.status,
-    paciente_id: ev.paciente_id,
-    hora_atendimento: ev.hora_atendimento ? new Date(ev.hora_atendimento) : null,
-    criado_em: ev.criado_em ? new Date(ev.criado_em) : null  // ✅ GARANTE QUE VAI PARA O MODAL
+        return {
+          id: ev.id,
+          title,
+          nome: ev.paciente_nome,
+          start,
+          end,
+          status: ev.status,
+          paciente_id: ev.paciente_id,
+          hora_atendimento: ev.hora_atendimento ? new Date(ev.hora_atendimento) : null,
+          criado_em: ev.criado_em ? new Date(ev.criado_em) : null
+        }
+      })
+
+      setEventos(eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start)))
+    } catch (error) {
+      console.error('Erro ao carregar eventos:', error)
+    }
   }
-})
-
-
-
-    setEventos(eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start)))
-  } catch (error) {
-    console.error('Erro ao carregar eventos:', error)
-  }
-}
-
 
   const carregarPacientes = async () => {
     try {
@@ -208,35 +205,6 @@ const eventosFormatados = data.map(ev => {
     })
     .sort((a, b) => new Date(a.start) - new Date(b.start))
 
-    useEffect(() => {
-    const handleVisualizar = (e) => {
-      setMostrarFicha(true)
-      setAtendimentoSelecionado(e.detail)
-    }
-
-    window.addEventListener('VisualizarAtendimento', handleVisualizar)
-    return () => window.removeEventListener('VisualizarAtendimento', handleVisualizar)
-  }, [])
-
-  const handleVerAtendimento = async (agendamentoId) => {
-    try {
-      const res = await fetch('https://nublia-backend.onrender.com/atendimentos/')
-      const todos = await res.json()
-      const atendimento = todos.find(a => a.agendamento_id === agendamentoId)
-
-      if (!atendimento) {
-        toastErro('Atendimento não encontrado.')
-        return
-      }
-
-      // dispara evento para o useEffect acima
-      const evt = new CustomEvent('VisualizarAtendimento', { detail: atendimento })
-      window.dispatchEvent(evt)
-    } catch (err) {
-      toastErro('Erro ao carregar atendimento.')
-    }
-  }
-
   return (
     <div className="w-full flex flex-col gap-4 relative">
       <CalendarioAgenda
@@ -247,7 +215,7 @@ const eventosFormatados = data.map(ev => {
         onViewChange={setViewAtual}
         onRangeChange={setRangeVisivel}
         onAbrirPerfil={handleAbrirPerfil}
-        onVerAtendimento={handleVerAtendimento} {/* <-- função atualizada */}
+        onVerAtendimento={handleVerAtendimento}
       />
 
       {viewAtual === 'agenda' && (
@@ -333,6 +301,5 @@ const eventosFormatados = data.map(ev => {
     </div>
   )
 }
-
 
 export default memo(AgendaPrescritor)
