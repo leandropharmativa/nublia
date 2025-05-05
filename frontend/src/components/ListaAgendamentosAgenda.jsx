@@ -36,23 +36,28 @@ export default function ListaAgendamentosAgenda({
                   <p className="text-xs text-gray-500">{data} às {hora}</p>
                 </div>
                 <div className="flex gap-3 items-center text-nublia-accent">
-                  {ev.status === 'agendado' ? (
-                    <>
-                      <button onClick={() => aoVerPerfil?.(ev.paciente_id)} title="Ver perfil" className="hover:text-nublia-orange">
-                        <UserRound size={18} />
-                      </button>
-                      <button onClick={() => aoVerAgendamento?.(ev)} title="Ver agendamento" className="hover:text-nublia-orange">
-                        <Eye size={18} />
-                      </button>
-                      <button onClick={() => aoIniciarAtendimento?.(ev.paciente_id)} title="Iniciar atendimento" className="hover:text-nublia-orange">
-                        <PlayCircle size={18} />
-                      </button>
-                    </>
-                  ) : (
-                    <button onClick={() => aoVerAgendamento?.(ev)} title="Agendar horário" className="hover:text-nublia-orange">
-                      <Clock size={18} />
-                    </button>
-                  )}
+{ev.status === 'agendado' ? (
+  <>
+    <button onClick={() => aoVerPerfil?.(ev.paciente_id)} title="Ver perfil">
+      <UserRound size={18} />
+    </button>
+    <button onClick={() => aoVerAgendamento?.(ev)} title="Ver agendamento">
+      <Eye size={18} />
+    </button>
+    <button onClick={() => aoIniciarAtendimento?.(ev.paciente_id)} title="Iniciar atendimento">
+      <PlayCircle size={18} />
+    </button>
+  </>
+) : ev.status === 'finalizado' ? (
+  <button onClick={() => aoVerAgendamento?.(ev)} title="Ver atendimento finalizado">
+    <UserRoundCheck size={18} />
+  </button>
+) : (
+  <button onClick={() => aoVerAgendamento?.(ev)} title="Agendar horário">
+    <Clock size={18} />
+  </button>
+)}
+
                 </div>
               </li>
             )
