@@ -211,22 +211,27 @@ export default function CalendarioAgenda({
   eventos={eventosDoDia}
   onVerPerfil={onAbrirPerfil}
   onVerAgendamento={aoSelecionarEventoOuFinalizado}
-  onIniciarAtendimento={(evento) => {
-    if (evento?.paciente_id) {
-      // simula exatamente o que AgendaPrescritor espera
-      const evt = new CustomEvent('AbrirFichaPaciente', {
-        detail: {
-          id: evento.paciente_id,
-          nome: evento.nome || evento.title || 'Paciente',
-          email: evento.email || '',
-          data_nascimento: evento.data_nascimento || '2000-01-01'
-        }
-      })
-      window.dispatchEvent(evt)
-    } else {
-      toastErro('Paciente não encontrado para este agendamento.')
-    }
-  }}
+onIniciarAtendimento={(pacienteId) => {
+  if (!pacienteId) {
+    toastErro('Paciente não encontrado para este agendamento.')
+    return
+  }
+
+  fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+    .then(res => res.json())
+    .then(paciente => {
+      if (!paciente || !paciente.data_nascimento) {
+        toastErro('Paciente sem data de nascimento.')
+        return
+      }
+
+      window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
+        detail: paciente
+      }))
+    })
+    .catch(() => toastErro('Erro ao buscar paciente.'))
+}}
+
 />
 
 
