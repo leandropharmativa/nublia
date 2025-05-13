@@ -207,12 +207,18 @@ export default function CalendarioAgenda({
           date={dataAtual}
           eventos={eventos}
         />
-        <CustomDayView
-          eventos={eventosDoDia}
-          onVerPerfil={onAbrirPerfil}
-          onVerAgendamento={aoSelecionarEventoOuFinalizado}
-          onIniciarAtendimento={iniciarAtendimentoViaEvento}
-        />
+<CustomDayView
+  eventos={eventosDoDia}
+  onVerPerfil={onAbrirPerfil}
+  onVerAgendamento={aoSelecionarEventoOuFinalizado}
+  onIniciarAtendimento={(evento) => {
+    if (evento?.paciente_id) {
+      // Envia apenas o ID como o agenda view faz
+      onVerAtendimento(evento.paciente_id)
+    }
+  }}
+/>
+
       </div>
     )
   }
