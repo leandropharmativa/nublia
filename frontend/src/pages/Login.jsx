@@ -47,11 +47,18 @@ export default function Login({ onLogin }) {
       localStorage.setItem("token", access_token)
       localStorage.setItem("user", JSON.stringify(user))
       if (onLogin) onLogin(user)
-      if (user.role === "admin") navigate("/admin", { replace: true })
-      else if (user.role === "prescritor") navigate("/prescritor", { replace: true })
-      else if (user.role === "paciente") navigate("/painel-paciente", { replace: true })
-      else navigate("/", { replace: true })
-    } catch {
+if (user.role === "admin") {
+  navigate("/admin", { replace: true })
+} else if (user.role === "prescritor") {
+  navigate("/prescritor", { replace: true })
+} else if (user.role === "farmacia") {
+  navigate("/farmacia", { replace: true })
+} else if (user.role === "paciente") {
+  navigate("/painel-paciente", { replace: true })
+} else {
+  navigate("/", { replace: true })
+}
+ catch {
       setErro("Email ou senha inválidos.")
     } finally {
       setCarregando(false)
