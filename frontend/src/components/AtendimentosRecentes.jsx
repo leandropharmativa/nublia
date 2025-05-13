@@ -55,7 +55,7 @@ export default function AtendimentosRecentes({
         <ul className="divide-y divide-gray-200">
           {atendimentos.slice(0, quantidadeVisivel).map((a) => {
             const nome = getNomePaciente(a.paciente_id)
-            const dataHora = formatarDataHora(a.data_hora || a.data || a.created_at) // segura múltiplas possibilidades
+            const dataHora = formatarDataHora(a.criado_em)
 
             return (
               <li key={a.id} className="py-2 text-sm text-gray-600">
