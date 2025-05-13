@@ -126,7 +126,6 @@ function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendi
   )
 }
 
-
 export default function CalendarioAgenda({
   eventos = [],
   aoSelecionarSlot,
@@ -186,19 +185,12 @@ export default function CalendarioAgenda({
           date={dataAtual}
           eventos={eventos}
         />
-<CustomDayView
-  eventos={eventosDoDia}
-  onVerPerfil={onAbrirPerfil}
-  onVerAgendamento={(evento) => aoSelecionarEventoOuFinalizado(evento)}
-onIniciarAtendimento={(evento) => {
-  if (evento && evento.status === 'agendado') {
-    onVerAtendimento(evento.id)
-  }
-}}
-
-/>
-
-
+        <CustomDayView
+          eventos={eventosDoDia}
+          onVerPerfil={onAbrirPerfil}
+          onVerAgendamento={onVerAtendimento}
+          onIniciarAtendimento={(pacienteId) => aoSelecionarEvento({ paciente_id: pacienteId })}
+        />
       </div>
     )
   }
