@@ -1,4 +1,3 @@
-// CalendarioAgenda.jsx
 import { useState, useEffect } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import {
@@ -7,8 +6,7 @@ import {
   startOfWeek,
   getDay,
   isSameWeek,
-  isSameDay,
-  isSameDay as isSameCalendarDay
+  isSameDay
 } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -25,6 +23,7 @@ import {
 } from 'lucide-react'
 
 import ModalFinalizado from './ModalFinalizado'
+import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
 
 const locales = { 'pt-BR': ptBR }
 
@@ -36,9 +35,9 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
-function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdicionarHorario }) {
+function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdicionarHorario, aoMudarParaDia }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
-  const doDia = eventos.filter(ev => isSameCalendarDay(ev.start, data))
+  const doDia = eventos.filter(ev => isSameDay(ev.start, data))
 
   const showTooltip = (e, text) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -50,7 +49,12 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
   return (
     <div className="relative flex flex-col justify-start px-1 h-full min-h-[75px] overflow-visible">
       <div className="flex justify-between items-center text-[10px] mt-1">
-        <span className="text-xs font-bold text-gray-400">{label}</span>
+        <span
+          className="text-xs font-bold text-gray-400 cursor-pointer hover:text-nublia-primary"
+          onClick={() => aoMudarParaDia?.(data)}
+        >
+          {label}
+        </span>
         <button
           onClick={(e) => {
             e.stopPropagation()
@@ -109,6 +113,19 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
   )
 }
 
+function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendimento }) {
+  return (
+    <div className="mt-4">
+      <ListaAgendamentosAgenda
+        eventos={eventos}
+        aoVerPerfil={onVerPerfil}
+        aoVerAgendamento={onVerAgendamento}
+        aoIniciarAtendimento={onIniciarAtendimento}
+      />
+    </div>
+  )
+}
+
 export default function CalendarioAgenda({
   eventos = [],
   aoSelecionarSlot,
@@ -128,6 +145,11 @@ export default function CalendarioAgenda({
   const handleNavigate = (novaData) => {
     setDataAtual(novaData)
     onDataChange?.(novaData)
+  }
+
+  const handleViewChange = (novaView) => {
+    setView(novaView)
+    onViewChange?.(novaView)
   }
 
   useEffect(() => {
@@ -150,6 +172,29 @@ export default function CalendarioAgenda({
     }
   }
 
+  if (view === 'day') {
+    const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
+    return (
+      <div className="p-4 bg-white rounded overflow-hidden">
+        <CustomToolbar
+          view={view}
+          views={['month', 'agenda', 'day']}
+          onNavigate={handleNavigate}
+          onView={handleViewChange}
+          label=""
+          date={dataAtual}
+          eventos={eventos}
+        />
+        <CustomDayView
+          eventos={eventosDoDia}
+          onVerPerfil={onAbrirPerfil}
+          onVerAgendamento={onVerAtendimento}
+          onIniciarAtendimento={(pacienteId) => aoSelecionarEvento({ paciente_id: pacienteId })}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
@@ -159,13 +204,10 @@ export default function CalendarioAgenda({
         endAccessor="end"
         view={view}
         date={dataAtual}
-        onView={(novaView) => {
-          setView(novaView)
-          onViewChange?.(novaView)
-        }}
+        onView={handleViewChange}
         onNavigate={handleNavigate}
         defaultView="month"
-        views={['month', 'agenda']}
+        views={['month', 'agenda', 'day']}
         selectable={view !== 'month' && view !== 'agenda'}
         step={15}
         timeslots={1}
@@ -207,7 +249,6 @@ export default function CalendarioAgenda({
         }}
         components={{
           toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
-          day: { header: CustomDayHeader },
           month: {
             dateHeader: (props) => (
               <HeaderComEventos
@@ -216,6 +257,10 @@ export default function CalendarioAgenda({
                 eventos={eventos}
                 aoSelecionarEvento={aoSelecionarEventoOuFinalizado}
                 aoAdicionarHorario={aoSelecionarSlot}
+                aoMudarParaDia={(dia) => {
+                  setDataAtual(dia)
+                  setView('day')
+                }}
               />
             )
           },
@@ -266,16 +311,6 @@ function EventoAgendaCustomizado({ event }) {
         <div>{dia}</div>
         <div>{hora}</div>
       </div>
-    </div>
-  )
-}
-
-function CustomDayHeader({ label, date }) {
-  const isSunday = date.getDay() === 0
-  const colorClass = isSunday ? 'text-orange-500' : 'text-nublia-accent'
-  return (
-    <div className={`text-sm font-semibold text-center uppercase ${colorClass}`}>
-      {label}
     </div>
   )
 }
