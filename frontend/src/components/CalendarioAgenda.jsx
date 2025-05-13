@@ -190,12 +190,28 @@ export default function CalendarioAgenda({
   eventos={eventosDoDia}
   onVerPerfil={onAbrirPerfil}
   onVerAgendamento={(evento) => aoSelecionarEventoOuFinalizado(evento)}
-  onIniciarAtendimento={(evento) => {
-    if (evento?.paciente_id) {
-      onVerAtendimento(evento.id) // esse é o ID do agendamento
+  onIniciarAtendimento={async (evento) => {
+    if (!evento?.paciente_id) return
+
+    try {
+      const res = await fetch(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
+      const paciente = await res.json()
+
+      if (!paciente || !paciente.data_nascimento) {
+        toastErro('Paciente sem data de nascimento.')
+        return
+      }
+
+      window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+        detail: paciente
+      }))
+    } catch (err) {
+      console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
+      toastErro('Erro ao iniciar atendimento.')
     }
   }}
 />
+
 
 
       </div>
