@@ -106,8 +106,16 @@
 .rbc-agenda-view table tbody td:nth-child(2) {
   display: none;
 }
-.borda-dia-hoje {
-  border: 2px solid #f97316 !important; /* laranja Nublia */
-  border-radius: 8px;
+/* Remove o fundo azul-claro do dia atual */
+.rbc-day-bg.rbc-today {
+  background-color: transparent !important;
 }
+
+/* Adiciona borda laranja arredondada */
+.borda-dia-hoje {
+  border: 2px solid #f97316; /* Laranja Nublia */
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
 
