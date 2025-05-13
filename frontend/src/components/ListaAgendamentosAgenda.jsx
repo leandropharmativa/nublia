@@ -44,9 +44,9 @@ export default function ListaAgendamentosAgenda({
     <button onClick={() => aoVerAgendamento?.(ev)} title="Ver agendamento">
       <Eye size={18} />
     </button>
-<button onClick={() => aoIniciarAtendimento?.(ev)} title="Iniciar atendimento">
-  <PlayCircle size={18} />
-</button>
+    <button onClick={() => aoIniciarAtendimento?.(ev.paciente_id)} title="Iniciar atendimento">
+      <PlayCircle size={18} />
+    </button>
   </>
 ) : ev.status === 'finalizado' ? (
   <button onClick={() => aoVerAgendamento?.(ev)} title="Ver atendimento finalizado" className="text-nublia-primary">
