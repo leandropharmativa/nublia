@@ -213,11 +213,22 @@ export default function CalendarioAgenda({
   onVerAgendamento={aoSelecionarEventoOuFinalizado}
   onIniciarAtendimento={(evento) => {
     if (evento?.paciente_id) {
-      // Envia apenas o ID como o agenda view faz
-      onVerAtendimento(evento.paciente_id)
+      // simula exatamente o que AgendaPrescritor espera
+      const evt = new CustomEvent('AbrirFichaPaciente', {
+        detail: {
+          id: evento.paciente_id,
+          nome: evento.nome || evento.title || 'Paciente',
+          email: evento.email || '',
+          data_nascimento: evento.data_nascimento || '2000-01-01'
+        }
+      })
+      window.dispatchEvent(evt)
+    } else {
+      toastErro('Paciente não encontrado para este agendamento.')
     }
   }}
 />
+
 
       </div>
     )
