@@ -137,7 +137,7 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
             <>
               <Botao
                 onClick={excluir}
-                variante="perigo"
+                variante="danger"
                 className="rounded-full h-10 px-4"
               >
                 <Trash size={16} className="mr-2" />
