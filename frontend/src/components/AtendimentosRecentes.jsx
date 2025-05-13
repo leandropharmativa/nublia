@@ -1,6 +1,19 @@
 import { useEffect, useState } from 'react'
 import { User, FileText, Search, CalendarCheck2 } from 'lucide-react'
 
+// Função utilitária para formatar data e hora em português
+const formatarDataHora = (isoString) => {
+  const data = new Date(isoString)
+  const opcoes = { day: '2-digit', month: 'long', year: 'numeric' }
+  const dataFormatada = data.toLocaleDateString('pt-BR', opcoes)
+  const hora = data.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+  return `${dataFormatada} às ${hora}h`
+}
+
 export default function AtendimentosRecentes({
   atendimentos,
   pacientes = [],
@@ -13,8 +26,8 @@ export default function AtendimentosRecentes({
 
   useEffect(() => {
     const calcularQuantidade = () => {
-      const alturaDisponivel = window.innerHeight - 300 // 300px estimados para título + margem + busca
-      const alturaItem = 48 // cada item ~48px de altura
+      const alturaDisponivel = window.innerHeight - 300
+      const alturaItem = 60 // aumentamos para incluir a nova linha
       const maxItens = Math.floor(alturaDisponivel / alturaItem)
       setQuantidadeVisivel(Math.max(3, maxItens))
     }
@@ -42,25 +55,30 @@ export default function AtendimentosRecentes({
         <ul className="divide-y divide-gray-200">
           {atendimentos.slice(0, quantidadeVisivel).map((a) => {
             const nome = getNomePaciente(a.paciente_id)
+            const dataHora = formatarDataHora(a.data_hora || a.data || a.created_at) // segura múltiplas possibilidades
+
             return (
-              <li key={a.id} className="flex items-center gap-2 py-2 text-sm text-gray-400">
-                <span className="truncate flex items-center gap-1">
-                  {nome}
-                  <button
-                    onClick={() => onVerPerfil(a.paciente_id)}
-                    title={`Ver perfil de ${nome}`}
-                    className="text-nublia-accent hover:text-nublia-orange"
-                  >
-                    <User size={16} />
-                  </button>
-                  <button
-                    onClick={() => onVerAtendimento(a)}
-                    title={`Ver atendimento de ${nome}`}
-                    className="text-nublia-accent hover:text-nublia-orange"
-                  >
-                    <FileText size={16} />
-                  </button>
-                </span>
+              <li key={a.id} className="py-2 text-sm text-gray-600">
+                <div className="flex items-center justify-between gap-2 text-gray-700">
+                  <span className="truncate flex items-center gap-1">
+                    {nome}
+                    <button
+                      onClick={() => onVerPerfil(a.paciente_id)}
+                      title={`Ver perfil de ${nome}`}
+                      className="text-nublia-accent hover:text-nublia-orange"
+                    >
+                      <User size={16} />
+                    </button>
+                    <button
+                      onClick={() => onVerAtendimento(a)}
+                      title={`Ver atendimento de ${nome}`}
+                      className="text-nublia-accent hover:text-nublia-orange"
+                    >
+                      <FileText size={16} />
+                    </button>
+                  </span>
+                </div>
+                <div className="text-xs text-gray-400 ml-1 mt-1">{dataHora}</div>
               </li>
             )
           })}
