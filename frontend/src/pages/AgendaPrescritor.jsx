@@ -300,7 +300,6 @@ aoIniciarAtendimento={(evento) => {
     handleVerAtendimento(evento.id)
   }
 }}
-
 />
 
 
