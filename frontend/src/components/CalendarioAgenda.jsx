@@ -214,7 +214,7 @@ const handleNavigate = (action) => {
       <div className="p-4 bg-white rounded overflow-hidden">
         <CustomToolbar
           view={view}
-          views={['month', 'agenda', 'day']}
+          views={['month', 'day', 'agenda']}
           onNavigate={handleNavigate}
           onView={handleViewChange}
           label=""
