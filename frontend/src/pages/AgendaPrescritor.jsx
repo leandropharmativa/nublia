@@ -59,26 +59,30 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const carregarEventos = async () => {
     try {
       const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-      const eventosFormatados = data.map(ev => {
-        const start = new Date(`${ev.data}T${ev.hora}`)
-        const end = addHours(start, 1)
-        const title =
-          ev.status === 'agendado' || ev.status === 'finalizado'
-            ? ev.paciente_nome || 'Paciente'
-            : 'Disponível'
+const eventosFormatados = data.map(ev => {
+  const start = new Date(`${ev.data}T${ev.hora}`)
+  const end = addHours(start, 1)
 
-        return {
-          id: ev.id,
-          title,
-          nome: ev.paciente_nome,
-          start,
-          end,
-          status: ev.status,
-          paciente_id: ev.paciente_id,
-          hora_atendimento: ev.hora_atendimento ? new Date(ev.hora_atendimento) : null,
-          criado_em: ev.criado_em ? new Date(ev.criado_em) : null
-        }
-      })
+  return {
+    id: ev.id,
+    title:
+      ev.status === 'agendado' || ev.status === 'finalizado'
+        ? ev.paciente_nome || 'Paciente'
+        : 'Disponível',
+    nome: ev.paciente_nome || 'Paciente',
+    start,
+    end,
+    status: ev.status,
+    paciente_id: ev.paciente_id,
+    data: ev.data,
+    hora: ev.hora,
+    hora_atendimento: ev.hora_atendimento ? new Date(ev.hora_atendimento) : null,
+    criado_em: ev.criado_em ? new Date(ev.criado_em) : null,
+    email: ev.email || '', // opcional, se disponível
+    data_nascimento: ev.data_nascimento || '2000-01-01' // opcional
+  }
+})
+
 
       setEventos(eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start)))
     } catch (error) {
