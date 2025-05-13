@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
+import { FlaskConical, Save, Trash, XCircle } from 'lucide-react'
+import Botao from './Botao'
 
 export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinalizar }) {
   const [nome, setNome] = useState('')
@@ -77,12 +79,13 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
   }
 
   return (
-    <div className="w-full max-w-2xl space-y-6 bg-white p-6 rounded-lg shadow">
-      <h2 className="text-2xl font-bold text-nublia-primary">
+    <div className="w-full max-w-2xl space-y-6 bg-transparent p-0">
+      <h2 className="text-xl font-bold text-nublia-primary flex items-center gap-2">
+        <FlaskConical size={24} />
         {formulaSelecionada ? 'Editar Fórmula' : 'Nova Fórmula'}
       </h2>
 
-      {erro && <p className="text-red-500">{erro}</p>}
+      {erro && <p className="text-red-500 text-sm">{erro}</p>}
 
       <div className="space-y-4">
         <div>
@@ -124,32 +127,34 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
           />
         </div>
 
-        <div className="flex flex-wrap gap-4 mt-6">
-          <button
-            onClick={salvar}
-            className="bg-nublia-primary hover:bg-nublia-primaryfocus text-white px-6 py-2 rounded-full text-sm"
-          >
-            {formulaSelecionada ? 'Atualizar Fórmula' : 'Salvar Fórmula'}
-          </button>
+        <div className="flex flex-wrap gap-3 mt-6">
+          <Botao onClick={salvar} variante="primario" className="rounded-full h-10 px-4">
+            <Save size={16} className="mr-2" />
+            {formulaSelecionada ? 'Atualizar' : 'Salvar'}
+          </Botao>
 
           {formulaSelecionada && (
             <>
-              <button
+              <Botao
                 onClick={excluir}
-                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full text-sm"
+                variante="perigo"
+                className="rounded-full h-10 px-4"
               >
-                Excluir Fórmula
-              </button>
+                <Trash size={16} className="mr-2" />
+                Excluir
+              </Botao>
 
-              <button
+              <Botao
                 onClick={() => {
                   limparFormulario()
                   onFinalizar()
                 }}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-full text-sm"
+                variante="claro"
+                className="rounded-full h-10 px-4"
               >
-                Cancelar Edição
-              </button>
+                <XCircle size={16} className="mr-2" />
+                Cancelar
+              </Botao>
             </>
           )}
         </div>
