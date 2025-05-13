@@ -83,10 +83,11 @@ export default function Register() {
       {/* Lado direito com formulário */}
       <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
         <div className="absolute top-6 right-6 flex items-center gap-2">
-          <p className="text-subtle">Já tem conta?</p>
+          <p className="text-subtle text-nublia-texthead">Já tem conta?</p>
           <button
             onClick={() => navigate('/')}
-            className="btn-primary rounded-full text-sm px-4 py-1"
+            variante="login"
+            className="rounded-full text-sm py-1"
           >
             Fazer login
           </button>
