@@ -47,19 +47,14 @@ export default function Login({ onLogin }) {
       localStorage.setItem("token", access_token)
       localStorage.setItem("user", JSON.stringify(user))
       if (onLogin) onLogin(user)
+      
+      // ✅ Correção aqui: inclusão do redirecionamento para farmácia
+      if (user.role === "admin") navigate("/admin", { replace: true })
+      else if (user.role === "prescritor") navigate("/prescritor", { replace: true })
+      else if (user.role === "farmacia") navigate("/farmacia", { replace: true })
+      else if (user.role === "paciente") navigate("/painel-paciente", { replace: true })
+      else navigate("/", { replace: true })
 
-      // Redirecionamento baseado no role
-      if (user.role === "admin") {
-        navigate("/admin", { replace: true })
-      } else if (user.role === "prescritor") {
-        navigate("/prescritor", { replace: true })
-      } else if (user.role === "farmacia") {
-        navigate("/farmacia", { replace: true })
-      } else if (user.role === "paciente") {
-        navigate("/painel-paciente", { replace: true })
-      } else {
-        navigate("/", { replace: true })
-      }
     } catch {
       setErro("Email ou senha inválidos.")
     } finally {
@@ -118,7 +113,7 @@ export default function Login({ onLogin }) {
           onSubmit={temSenha === false ? handleCriarSenha : handleLogin}
           className="w-full max-w-sm"
         >
-          <h2 className="text-title mb-6 text-nublia-texthead">Entrar na Nublia</h2>
+          <h2 className="text-title mb-6" text-nublia-texthead>Entrar na Nublia</h2>
 
           {mensagem && <div className="alert-success">{mensagem}</div>}
           {erro && <div className="alert-warning">{erro}</div>}
