@@ -295,16 +295,12 @@ const eventosParaAgenda = eventos
       handleEventoClick(evento)
     }
   }}
-  aoIniciarAtendimento={(id) => {
-    const paciente = pacientes.find(p => p.id === id)
-    if (paciente) {
-      setPacienteSelecionado(paciente)
-      setTimeout(() => {
-        const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
-        window.dispatchEvent(evt)
-      }, 0)
-    }
-  }}
+aoIniciarAtendimento={(evento) => {
+  if (evento.status === 'agendado') {
+    handleVerAtendimento(evento.id)
+  }
+}}
+
 />
 
 
