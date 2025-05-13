@@ -128,8 +128,8 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
         </div>
 
         <div className="flex flex-wrap gap-3 mt-6">
-          <Botao onClick={salvar} variante="primario" className="rounded-full h-10 px-4">
-            <Save size={16} className="mr-2" />
+          <Botao onClick={salvar} variante="primario" className="rounded-full h-10 px-4 flex items-center gap-2">
+            <Save size={16} />
             {formulaSelecionada ? 'Atualizar' : 'Salvar'}
           </Botao>
 
@@ -137,10 +137,10 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
             <>
               <Botao
                 onClick={excluir}
-                variante="danger"
-                className="rounded-full h-10 px-4"
+                variante="perigo"
+                className="rounded-full h-10 px-4 flex items-center gap-2"
               >
-                <Trash size={16} className="mr-2" />
+                <Trash size={16} />
                 Excluir
               </Botao>
 
@@ -150,9 +150,9 @@ export default function FormulaForm({ farmaciaId, formulaSelecionada, onFinaliza
                   onFinalizar()
                 }}
                 variante="claro"
-                className="rounded-full h-10 px-4"
+                className="rounded-full h-10 px-4 flex items-center gap-2"
               >
-                <XCircle size={16} className="mr-2" />
+                <XCircle size={16} />
                 Cancelar
               </Botao>
             </>
