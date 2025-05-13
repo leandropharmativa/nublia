@@ -143,10 +143,24 @@ export default function CalendarioAgenda({
   const [eventosFiltrados, setEventosFiltrados] = useState([])
   const [modalFinalizado, setModalFinalizado] = useState(null)
 
-  const handleNavigate = (novaData) => {
-    setDataAtual(novaData)
-    onDataChange?.(novaData)
+const handleNavigate = (action) => {
+  let novaData = new Date(dataAtual)
+
+  if (view === 'day') {
+    if (action === 'PREV') novaData.setDate(novaData.getDate() - 1)
+    else if (action === 'NEXT') novaData.setDate(novaData.getDate() + 1)
+    else if (action === 'TODAY') novaData = new Date()
+    else if (action instanceof Date) novaData = action
+  } else {
+    novaData = action instanceof Date
+      ? action
+      : new Date(dataAtual)
   }
+
+  setDataAtual(novaData)
+  onDataChange?.(novaData)
+}
+
 
   const handleViewChange = (novaView) => {
     setView(novaView)
