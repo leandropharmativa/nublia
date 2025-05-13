@@ -253,6 +253,23 @@ onIniciarAtendimento={(pacienteId) => {
     )
   }
 
+  const estiloDoDia = (date) => {
+  const hoje = new Date()
+  const isToday =
+    date.getDate() === hoje.getDate() &&
+    date.getMonth() === hoje.getMonth() &&
+    date.getFullYear() === hoje.getFullYear()
+
+  if (isToday) {
+    return {
+      className: 'borda-dia-hoje'
+    }
+  }
+
+  return {}
+}
+
+
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
@@ -269,6 +286,7 @@ onIniciarAtendimento={(pacienteId) => {
         selectable={view !== 'month' && view !== 'agenda'}
         step={15}
         timeslots={1}
+        dayPropGetter={estiloDoDia}
         culture="pt-BR"
         min={new Date(0)}
         max={new Date(2100, 11, 31)}
