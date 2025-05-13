@@ -24,6 +24,7 @@ import {
 
 import ModalFinalizado from './ModalFinalizado'
 import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
+import { toastErro } from '../utils/toastUtils'
 
 const locales = { 'pt-BR': ptBR }
 
@@ -126,7 +127,6 @@ function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendi
   )
 }
 
-
 export default function CalendarioAgenda({
   eventos = [],
   aoSelecionarSlot,
@@ -173,24 +173,7 @@ export default function CalendarioAgenda({
     }
   }
 
-  if (view === 'day') {
-    const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
-    return (
-      <div className="p-4 bg-white rounded overflow-hidden">
-        <CustomToolbar
-          view={view}
-          views={['month', 'agenda', 'day']}
-          onNavigate={handleNavigate}
-          onView={handleViewChange}
-          label=""
-          date={dataAtual}
-          eventos={eventos}
-        />
-<CustomDayView
-  eventos={eventosDoDia}
-  onVerPerfil={onAbrirPerfil}
-  onVerAgendamento={(evento) => aoSelecionarEventoOuFinalizado(evento)}
-  onIniciarAtendimento={async (evento) => {
+  const iniciarAtendimentoViaEvento = async (evento) => {
     if (!evento?.paciente_id) return
 
     try {
@@ -209,11 +192,27 @@ export default function CalendarioAgenda({
       console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
       toastErro('Erro ao iniciar atendimento.')
     }
-  }}
-/>
+  }
 
-
-
+  if (view === 'day') {
+    const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
+    return (
+      <div className="p-4 bg-white rounded overflow-hidden">
+        <CustomToolbar
+          view={view}
+          views={['month', 'agenda', 'day']}
+          onNavigate={handleNavigate}
+          onView={handleViewChange}
+          label=""
+          date={dataAtual}
+          eventos={eventos}
+        />
+        <CustomDayView
+          eventos={eventosDoDia}
+          onVerPerfil={onAbrirPerfil}
+          onVerAgendamento={aoSelecionarEventoOuFinalizado}
+          onIniciarAtendimento={iniciarAtendimentoViaEvento}
+        />
       </div>
     )
   }
