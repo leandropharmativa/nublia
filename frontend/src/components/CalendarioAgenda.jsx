@@ -265,7 +265,7 @@ onIniciarAtendimento={(pacienteId) => {
         onView={handleViewChange}
         onNavigate={handleNavigate}
         defaultView="month"
-        views={['month', 'agenda', 'day']}
+        views={['month', 'day', 'agenda']}
         selectable={view !== 'month' && view !== 'agenda'}
         step={15}
         timeslots={1}
