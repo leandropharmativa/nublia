@@ -190,8 +190,13 @@ export default function CalendarioAgenda({
   eventos={eventosDoDia}
   onVerPerfil={onAbrirPerfil}
   onVerAgendamento={(evento) => aoSelecionarEventoOuFinalizado(evento)}
-  onIniciarAtendimento={(evento) => aoSelecionarEventoOuFinalizado(evento)}
+  onIniciarAtendimento={(evento) => {
+    if (evento?.paciente_id) {
+      onVerAtendimento(evento.id) // esse é o ID do agendamento
+    }
+  }}
 />
+
 
       </div>
     )
