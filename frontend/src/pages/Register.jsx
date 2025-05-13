@@ -85,11 +85,11 @@ export default function Register() {
  <div className="absolute top-6 right-6 flex items-center gap-2">
           <p className="text-subtle text-nublia-texthead">Já tem conta?</p>
           <Botao
-            onClick={() => navigate('/register')}
+            onClick={() => navigate('/')}
             variante="login"
             className="text-sm px-4 py-1 rounded-full"
           >
-            Já tem conta?
+            Faça Login
           </Botao>
         </div>
 
