@@ -47,14 +47,10 @@ export default function Login({ onLogin }) {
       localStorage.setItem("token", access_token)
       localStorage.setItem("user", JSON.stringify(user))
       if (onLogin) onLogin(user)
-      
-      // ✅ Correção aqui: inclusão do redirecionamento para farmácia
       if (user.role === "admin") navigate("/admin", { replace: true })
       else if (user.role === "prescritor") navigate("/prescritor", { replace: true })
-      else if (user.role === "farmacia") navigate("/farmacia", { replace: true })
       else if (user.role === "paciente") navigate("/painel-paciente", { replace: true })
       else navigate("/", { replace: true })
-
     } catch {
       setErro("Email ou senha inválidos.")
     } finally {
@@ -100,13 +96,14 @@ export default function Login({ onLogin }) {
       <div className="w-1/2 bg-white relative flex items-center justify-center px-6">
         <div className="absolute top-6 right-6 flex items-center gap-2">
           <p className="text-subtle text-nublia-texthead">Novo no Nublia?</p>
-          <Botao
-            onClick={() => navigate('/register')}
-            variante="login"
-            className="text-sm px-4 py-1 rounded-full"
-          >
-            Criar conta
-          </Botao>
+<Botao
+  onClick={() => navigate('/register')}
+  variante="login"
+  className="text-sm px-4 py-1 rounded-full"
+>
+  Criar conta
+</Botao>
+
         </div>
 
         <form
@@ -141,25 +138,27 @@ export default function Login({ onLogin }) {
             />
           </div>
 
-          <Botao
-            type="submit"
-            disabled={carregando}
-            className="mb-3 w-full h-11 rounded-md"
-            variante="login"
-          >
-            {carregando && (
-              <svg
-                className="animate-spin h-5 w-5 text-blue-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
-              </svg>
-            )}
-            {temSenha === false ? "Criar Senha" : "Entrar"}
-          </Botao>
+<Botao
+  type="submit"
+  disabled={carregando}
+  className="mb-3 w-full h-11 rounded-md"
+  variante="login"
+>
+  {carregando && (
+    <svg
+      className="animate-spin h-5 w-5 text-blue-600"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
+    </svg>
+  )}
+  {temSenha === false ? "Criar Senha" : "Entrar"}
+</Botao>
+
+
         </form>
       </div>
     </div>
