@@ -213,12 +213,16 @@ export default function CalendarioAgenda({
             )
           },
           // ⛔️ Impede que BigCalendar renderize conteúdo padrão do day view
-          day: {
-            event: () => null,
-            time: () => null,
-            date: () => null
-          }
-        }}
+  day: {
+    // ⛔️ Remove TUDO do layout padrão do day view
+    header: () => null,
+    event: () => null,
+    timeGutterHeader: () => null,
+    timeGutter: () => null,
+    dateCellWrapper: () => null,
+    dayWrapper: () => null
+  }
+}}
       />
 
       <ModalFinalizado
