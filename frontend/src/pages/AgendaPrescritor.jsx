@@ -219,6 +219,11 @@ const eventosParaAgenda = eventos
       return nomeFiltrado && statusFiltrado && dentroDoRange
     }
 
+    if (viewAtual === 'day') {
+  const ehMesmoDia = isSameDay(new Date(ev.start), new Date(dataAtual))
+  return nomeFiltrado && statusFiltrado && ehMesmoDia
+}
+
     return nomeFiltrado && statusFiltrado
   })
   .sort((a, b) => new Date(a.start) - new Date(b.start))
@@ -240,7 +245,7 @@ const eventosParaAgenda = eventos
   }}
       />
 
-{(viewAtual === 'agenda' || viewAtual === 'day') && (
+{['agenda', 'day'].includes(viewAtual) && (
   <div className="mt-2 bg-white rounded p-4">
     <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
       <div className="relative w-full max-w-sm">
@@ -292,32 +297,30 @@ const eventosParaAgenda = eventos
       </div>
     </div>
 
+    <ListaAgendamentosAgenda
+      eventos={eventosParaAgenda}
+      aoVerPerfil={abrirPerfilPaciente}
+      aoVerAgendamento={(evento) => {
+        if (evento.status === 'finalizado') {
+          setModalFinalizadoAberto(evento)
+        } else {
+          handleEventoClick(evento)
+        }
+      }}
+      aoIniciarAtendimento={(id) => {
+        const paciente = pacientes.find(p => p.id === id)
+        if (paciente) {
+          setPacienteSelecionado(paciente)
+          setTimeout(() => {
+            const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
+            window.dispatchEvent(evt)
+          }, 0)
+        }
+      }}
+    />
+  </div>
+)}
 
-<ListaAgendamentosAgenda
-  eventos={eventosParaAgenda}
-  aoVerPerfil={abrirPerfilPaciente}
-  aoVerAgendamento={(evento) => {
-    if (evento.status === 'finalizado') {
-      setModalFinalizadoAberto(evento)
-    } else {
-      handleEventoClick(evento)
-    }
-  }}
-  aoIniciarAtendimento={(id) => {
-    const paciente = pacientes.find(p => p.id === id)
-    if (paciente) {
-      setPacienteSelecionado(paciente)
-      setTimeout(() => {
-        const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
-        window.dispatchEvent(evt)
-      }, 0)
-    }
-  }}
-/>
-
-
-        </div>
-      )}
 
       {modalAberto && (
         <ModalNovoHorario
