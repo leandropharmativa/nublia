@@ -1,6 +1,7 @@
 import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
 import { addHours } from 'date-fns'
+import { addDays } from 'date-fns'
 import { Search, User, Eye, CalendarClock, UserRoundCheck, Clock, UserRound } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import 'react-toastify/dist/ReactToastify.css'
@@ -222,7 +223,7 @@ const eventosParaAgenda = eventos
     // Caso contrário, filtra por data visível
     if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
       const dataEv = new Date(ev.start)
-      const dentroDoRange = dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
+      const dentroDoRange = dataEv >= rangeVisivel.start && dataEv < addDays(rangeVisivel.end, 1)
       return nomeFiltrado && statusFiltrado && dentroDoRange
     }
 
