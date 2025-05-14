@@ -244,8 +244,9 @@ const eventosParaAgenda = eventos
   }}
       />
 
+{/* 🔁 Barra de filtros visível no topo da agenda ou day view */}
 {['agenda', 'day'].includes(viewAtual) && (
-  <div className="mt-2 bg-white rounded p-4">
+  <div className="bg-white rounded p-4 mt-2">
     <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
       <div className="relative w-full max-w-sm">
         <input
@@ -257,7 +258,6 @@ const eventosParaAgenda = eventos
         />
         <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
       </div>
-
       <div className="flex gap-2">
         <button
           onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
@@ -270,7 +270,6 @@ const eventosParaAgenda = eventos
         >
           <Clock size={18} />
         </button>
-
         <button
           onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? null : 'agendado')}
           title="Agendados"
@@ -282,7 +281,6 @@ const eventosParaAgenda = eventos
         >
           <UserRound size={18} />
         </button>
-
         <button
           onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? null : 'finalizado')}
           title="Finalizados"
@@ -296,7 +294,12 @@ const eventosParaAgenda = eventos
         </button>
       </div>
     </div>
+  </div>
+)}
 
+{/* ✅ Renderizar lista apenas na agenda */}
+{viewAtual === 'agenda' && (
+  <div className="bg-white rounded p-4 -mt-2">
     <ListaAgendamentosAgenda
       eventos={eventosParaAgenda}
       aoVerPerfil={abrirPerfilPaciente}
@@ -321,7 +324,32 @@ const eventosParaAgenda = eventos
   </div>
 )}
 
-
+{/* ✅ Renderizar lista apenas no day */}
+{viewAtual === 'day' && (
+  <div className="bg-white rounded p-4 -mt-2">
+    <ListaAgendamentosAgenda
+      eventos={eventosParaAgenda}
+      aoVerPerfil={abrirPerfilPaciente}
+      aoVerAgendamento={(evento) => {
+        if (evento.status === 'finalizado') {
+          setModalFinalizadoAberto(evento)
+        } else {
+          handleEventoClick(evento)
+        }
+      }}
+      aoIniciarAtendimento={(id) => {
+        const paciente = pacientes.find(p => p.id === id)
+        if (paciente) {
+          setPacienteSelecionado(paciente)
+          setTimeout(() => {
+            const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
+            window.dispatchEvent(evt)
+          }, 0)
+        }
+      }}
+    />
+  </div>
+)}
 
       {modalAberto && (
         <ModalNovoHorario
