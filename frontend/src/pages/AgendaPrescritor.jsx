@@ -56,6 +56,14 @@ function AgendaPrescritor({ mostrarAgenda }) {
     }
   }
 
+  const eventosDoDiaFiltrados = eventos
+  .filter(ev => isSameDay(ev.start, dataAtual))
+  .filter(ev => {
+    if (!filtroStatus) return true
+    return ev.status === filtroStatus
+  })
+  .sort((a, b) => new Date(a.start) - new Date(b.start))
+
   const carregarEventos = async () => {
     try {
       const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
@@ -240,21 +248,10 @@ const eventosParaAgenda = eventos
   }}
       />
 
-{viewAtual === 'agenda' && (
+{viewAtual === 'day' && (
   <div className="mt-2 bg-white rounded p-4">
-    <div className="flex items-center justify-between mb-3">
-      <div className="relative w-full max-w-sm">
-        <input
-          type="text"
-          placeholder="Filtrar por nome..."
-          value={filtroTexto}
-          onChange={(e) => setFiltroTexto(e.target.value)}
-          className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary shadow-sm"
-        />
-        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-      </div>
-
-      <div className="flex gap-2 mt-2">
+    <div className="flex justify-end mb-3">
+      <div className="flex gap-2">
         <button
           onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
           title="Disponíveis"
@@ -286,7 +283,7 @@ const eventosParaAgenda = eventos
     </div>
 
     <ListaAgendamentosAgenda
-      eventos={eventosParaAgenda}
+      eventos={eventosDoDiaFiltrados}
       aoVerPerfil={abrirPerfilPaciente}
       aoVerAgendamento={(evento) => {
         if (evento.status === 'finalizado') {
@@ -308,6 +305,7 @@ const eventosParaAgenda = eventos
     />
   </div>
 )}
+
 
 {viewAtual === 'day' && (
   <div className="mt-2 bg-white rounded p-4">
