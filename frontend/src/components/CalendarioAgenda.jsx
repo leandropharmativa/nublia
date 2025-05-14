@@ -1,4 +1,3 @@
-// CalendarioAgenda.jsx
 import { useState, useEffect } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import {
@@ -7,7 +6,9 @@ import {
   startOfWeek,
   getDay,
   isSameWeek,
-  isSameDay
+  isSameDay,
+  startOfDay,
+  endOfDay
 } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -127,6 +128,18 @@ export default function CalendarioAgenda({
     }
   }
 
+  const estiloDoDia = (date) => {
+    const hoje = new Date()
+    const isToday =
+      date.getDate() === hoje.getDate() &&
+      date.getMonth() === hoje.getMonth() &&
+      date.getFullYear() === hoje.getFullYear()
+    if (isToday) {
+      return { className: 'ring-2 ring-nublia-accent rounded-md' }
+    }
+    return {}
+  }
+
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
@@ -146,6 +159,7 @@ export default function CalendarioAgenda({
         culture="pt-BR"
         min={new Date(0)}
         max={new Date(2100, 11, 31)}
+        dayPropGetter={estiloDoDia}
         onSelectSlot={({ start }) => {
           if (view !== 'month' && view !== 'agenda') {
             aoSelecionarSlot({ start })
@@ -159,8 +173,8 @@ export default function CalendarioAgenda({
         onRangeChange={(range) => {
           if (range?.start && range?.end) {
             const novoRange = {
-              start: new Date(range.start),
-              end: new Date(range.end)
+              start: startOfDay(new Date(range.start)),
+              end: endOfDay(new Date(range.end))
             }
             setRangeVisivel(novoRange)
             onRangeChange(novoRange)
@@ -197,6 +211,12 @@ export default function CalendarioAgenda({
                 }}
               />
             )
+          },
+          // ⛔️ Impede que BigCalendar renderize conteúdo padrão do day view
+          day: {
+            event: () => null,
+            time: () => null,
+            date: () => null
           }
         }}
       />
