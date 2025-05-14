@@ -231,50 +231,37 @@ if (view === 'day') {
         eventos={eventos}
       />
 
-<div className="flex gap-2 mb-3 mt-2">
+<div className="flex gap-2 mt-2">
   <button
-    onClick={() =>
-      setFiltroStatus(filtroStatus === 'disponivel' ? 'todos' : 'disponivel')
-    }
-    className={`p-2 rounded-full transition ${
-      filtroStatus === 'disponivel'
-        ? 'bg-nublia-primary text-white'
-        : 'bg-gray-100 text-gray-500'
-    }`}
+    onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
     title="Disponíveis"
+    className={`p-2 rounded-full border transition ${
+      filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+    }`}
   >
     <Clock size={18} />
   </button>
 
   <button
-    onClick={() =>
-      setFiltroStatus(filtroStatus === 'agendado' ? 'todos' : 'agendado')
-    }
-    className={`p-2 rounded-full transition ${
-      filtroStatus === 'agendado'
-        ? 'bg-nublia-primary text-white'
-        : 'bg-gray-100 text-gray-500'
-    }`}
+    onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? null : 'agendado')}
     title="Agendados"
+    className={`p-2 rounded-full border transition ${
+      filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+    }`}
   >
-    <UserCog size={18} />
+    <UserRound size={18} />
   </button>
 
   <button
-    onClick={() =>
-      setFiltroStatus(filtroStatus === 'finalizado' ? 'todos' : 'finalizado')
-    }
-    className={`p-2 rounded-full transition ${
-      filtroStatus === 'finalizado'
-        ? 'bg-nublia-primary text-white'
-        : 'bg-gray-100 text-gray-500'
-    }`}
+    onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? null : 'finalizado')}
     title="Finalizados"
+    className={`p-2 rounded-full border transition ${
+      filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+    }`}
   >
     <UserRoundCheck size={18} />
   </button>
 </div>
-
 
 
       <CustomDayView
