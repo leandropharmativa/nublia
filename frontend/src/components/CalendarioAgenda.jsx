@@ -143,37 +143,28 @@ export default function CalendarioAgenda({
   const [eventosFiltrados, setEventosFiltrados] = useState([])
   const [modalFinalizado, setModalFinalizado] = useState(null)
 
-  const handleNavigate = (action) => {
-    let novaData = new Date(dataAtual)
+const handleNavigate = (action) => {
+  let novaData = new Date(dataAtual)
 
-    if (view === 'day') {
-      if (action === 'PREV') novaData.setDate(novaData.getDate() - 1)
-      else if (action === 'NEXT') novaData.setDate(novaData.getDate() + 1)
-      else if (action === 'TODAY') novaData = new Date()
-      else if (action instanceof Date) novaData = action
-    } else {
-      novaData = action instanceof Date ? action : new Date(dataAtual)
-    }
-
-    setDataAtual(novaData)
-    onDataChange?.(novaData)
-
-    if (view === 'day') {
-      const novoRange = { start: novaData, end: novaData }
-      setRangeVisivel(novoRange)
-      onRangeChange?.(novoRange)
-    }
+  if (view === 'day') {
+    if (action === 'PREV') novaData.setDate(novaData.getDate() - 1)
+    else if (action === 'NEXT') novaData.setDate(novaData.getDate() + 1)
+    else if (action === 'TODAY') novaData = new Date()
+    else if (action instanceof Date) novaData = action
+  } else {
+    novaData = action instanceof Date
+      ? action
+      : new Date(dataAtual)
   }
+
+  setDataAtual(novaData)
+  onDataChange?.(novaData)
+}
+
 
   const handleViewChange = (novaView) => {
     setView(novaView)
     onViewChange?.(novaView)
-
-    if (novaView === 'day') {
-      const novoRange = { start: dataAtual, end: dataAtual }
-      setRangeVisivel(novoRange)
-      onRangeChange?.(novoRange)
-    }
   }
 
   useEffect(() => {
@@ -196,20 +187,88 @@ export default function CalendarioAgenda({
     }
   }
 
-  const estiloDoDia = (date) => {
-    const hoje = new Date()
-    const isToday =
-      date.getDate() === hoje.getDate() &&
-      date.getMonth() === hoje.getMonth() &&
-      date.getFullYear() === hoje.getFullYear()
+  const iniciarAtendimentoViaEvento = async (evento) => {
+    if (!evento?.paciente_id) return
 
-    if (isToday) {
-      return {
-        className: 'borda-dia-hoje'
+    try {
+      const res = await fetch(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
+      const paciente = await res.json()
+
+      if (!paciente || !paciente.data_nascimento) {
+        toastErro('Paciente sem data de nascimento.')
+        return
       }
+
+      window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+        detail: paciente
+      }))
+    } catch (err) {
+      console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
+      toastErro('Erro ao iniciar atendimento.')
     }
-    return {}
   }
+
+  if (view === 'day') {
+    const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
+    return (
+      <div className="p-4 bg-white rounded overflow-hidden">
+        <CustomToolbar
+          view={view}
+          views={['month', 'day', 'agenda']}
+          onNavigate={handleNavigate}
+          onView={handleViewChange}
+          label=""
+          date={dataAtual}
+          eventos={eventos}
+        />
+<CustomDayView
+  eventos={eventosDoDia}
+  onVerPerfil={onAbrirPerfil}
+  onVerAgendamento={aoSelecionarEventoOuFinalizado}
+onIniciarAtendimento={(pacienteId) => {
+  if (!pacienteId) {
+    toastErro('Paciente não encontrado para este agendamento.')
+    return
+  }
+
+  fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+    .then(res => res.json())
+    .then(paciente => {
+      if (!paciente || !paciente.data_nascimento) {
+        toastErro('Paciente sem data de nascimento.')
+        return
+      }
+
+      window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
+        detail: paciente
+      }))
+    })
+    .catch(() => toastErro('Erro ao buscar paciente.'))
+}}
+
+/>
+
+
+      </div>
+    )
+  }
+
+  const estiloDoDia = (date) => {
+  const hoje = new Date()
+  const isToday =
+    date.getDate() === hoje.getDate() &&
+    date.getMonth() === hoje.getMonth() &&
+    date.getFullYear() === hoje.getFullYear()
+
+  if (isToday) {
+    return {
+      className: 'borda-dia-hoje'
+    }
+  }
+
+  return {}
+}
+
 
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
@@ -277,9 +336,6 @@ export default function CalendarioAgenda({
                 aoMudarParaDia={(dia) => {
                   setDataAtual(dia)
                   setView('day')
-                  const novoRange = { start: dia, end: dia }
-                  setRangeVisivel(novoRange)
-                  onRangeChange(novoRange)
                 }}
               />
             )
