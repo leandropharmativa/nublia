@@ -27,7 +27,6 @@ import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
 import { toastErro } from '../utils/toastUtils'
 
 const locales = { 'pt-BR': ptBR }
-const [filtroStatus, setFiltroStatus] = useState('todos')
 
 const localizer = dateFnsLocalizer({
   format,
@@ -143,6 +142,8 @@ export default function CalendarioAgenda({
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
   const [eventosFiltrados, setEventosFiltrados] = useState([])
   const [modalFinalizado, setModalFinalizado] = useState(null)
+
+  const [filtroStatus, setFiltroStatus] = useState('todos')
 
 const handleNavigate = (action) => {
   let novaData = new Date(dataAtual)
