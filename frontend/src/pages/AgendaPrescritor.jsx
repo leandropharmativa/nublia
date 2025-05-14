@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
-import { addHours } from 'date-fns'
+import { addHours, isSameDay } from 'date-fns'
 import { Search, User, Eye, CalendarClock, UserRoundCheck, Clock, UserRound } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import 'react-toastify/dist/ReactToastify.css'
@@ -35,8 +35,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [dataAtual, setDataAtual] = useState(new Date())
   const [viewAtual, setViewAtual] = useState('month')
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
-  const [filtroStatus, setFiltroStatus] = useState(null) // null = todos
-
+  const [filtroStatus, setFiltroStatus] = useState(null)
 
   const user = JSON.parse(localStorage.getItem('user'))
 
@@ -51,50 +50,36 @@ function AgendaPrescritor({ mostrarAgenda }) {
       setAtendimentoSelecionado(data)
       setMostrarFicha(true)
     } catch (error) {
-      console.error("Erro ao carregar atendimento:", error)
       toastErro('Atendimento não encontrado.')
     }
   }
 
-  const eventosDoDiaFiltrados = eventos
-  .filter(ev => isSameDay(ev.start, dataAtual))
-  .filter(ev => {
-    if (!filtroStatus) return true
-    return ev.status === filtroStatus
-  })
-  .sort((a, b) => new Date(a.start) - new Date(b.start))
-
   const carregarEventos = async () => {
     try {
       const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-const eventosFormatados = data.map(ev => {
-  const start = new Date(`${ev.data}T${ev.hora}`)
-  const end = addHours(start, 1)
-
-  return {
-    id: ev.id,
-    title:
-      ev.status === 'agendado' || ev.status === 'finalizado'
-        ? ev.paciente_nome || 'Paciente'
-        : 'Disponível',
-    nome: ev.paciente_nome || 'Paciente',
-    start,
-    end,
-    status: ev.status,
-    paciente_id: ev.paciente_id,
-    data: ev.data,
-    hora: ev.hora,
-    hora_atendimento: ev.hora_atendimento ? new Date(ev.hora_atendimento) : null,
-    criado_em: ev.criado_em ? new Date(ev.criado_em) : null,
-    email: ev.email || '', // opcional, se disponível
-    data_nascimento: ev.data_nascimento || '2000-01-01' // opcional
-  }
-})
-
+      const eventosFormatados = data.map(ev => {
+        const start = new Date(`${ev.data}T${ev.hora}`)
+        const end = addHours(start, 1)
+        return {
+          id: ev.id,
+          title: ev.paciente_nome || 'Paciente',
+          nome: ev.paciente_nome || 'Paciente',
+          start,
+          end,
+          status: ev.status,
+          paciente_id: ev.paciente_id,
+          data: ev.data,
+          hora: ev.hora,
+          hora_atendimento: ev.hora_atendimento ? new Date(ev.hora_atendimento) : null,
+          criado_em: ev.criado_em ? new Date(ev.criado_em) : null,
+          email: ev.email || '',
+          data_nascimento: ev.data_nascimento || '2000-01-01'
+        }
+      })
 
       setEventos(eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start)))
     } catch (error) {
-      console.error('Erro ao carregar eventos:', error)
+      toastErro('Erro ao carregar eventos.')
     }
   }
 
@@ -119,118 +104,48 @@ const eventosFormatados = data.map(ev => {
     setModalAberto(true)
   }
 
-  const confirmarHorario = async (horaDigitada, manterAberto = false) => {
-    const data = slotSelecionado.toISOString().split('T')[0]
-    const hora = horaDigitada
+  const handleEventoClick = async (evento) => {
+    setAgendamentoSelecionado(evento.id)
+    setAgendamentoStatus(evento.status)
+    setHorarioSelecionado(evento.start)
 
-    try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/disponibilizar', {
-        prescritor_id: user.id,
-        data,
-        hora,
-        status: 'disponivel'
-      })
-      toastSucesso(`Horário ${hora} cadastrado com sucesso!`)
-      carregarEventos()
-      if (!manterAberto) {
-        setModalAberto(false)
-        setSlotSelecionado(null)
+    if (evento.status === 'agendado' && evento.paciente_id) {
+      try {
+        const res = await axios.get(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
+        setPacienteAtual(res.data.name)
+        setPacienteId(res.data.id)
+      } catch {
+        setPacienteAtual('Paciente não encontrado')
+        setPacienteId(null)
       }
-    } catch {
-      toastErro('Erro ao cadastrar horário.')
-    }
-  }
-
-const handleEventoClick = async (evento) => {
-  console.log('[DEBUG] Evento clicado:', evento)
-
-  setAgendamentoSelecionado(evento.id)
-  setAgendamentoStatus(evento.status)
-  setHorarioSelecionado(evento.start)
-
-  if (evento.status === 'agendado' && evento.paciente_id) {
-    try {
-      const res = await axios.get(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
-      setPacienteAtual(res.data.name)
-      setPacienteId(res.data.id)
-    } catch {
-      setPacienteAtual('Paciente não encontrado')
+    } else {
+      setPacienteAtual(null)
       setPacienteId(null)
     }
-  } else {
-    setPacienteAtual(null)
-    setPacienteId(null)
+
+    setModalAgendar(true)
   }
 
-  console.log('[DEBUG] statusAtual enviado ao modal:', evento.status)
-  setModalAgendar(true)
-}
+  const eventosParaAgenda = eventos
+    .filter(ev => {
+      const nomeFiltrado = filtroTexto.trim().length > 1
+        ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+            .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
+        : true
+      const statusFiltrado = filtroStatus ? ev.status === filtroStatus : true
+      if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
+        const dataEv = new Date(ev.start)
+        const dentroDoRange = dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
+        return nomeFiltrado && statusFiltrado && dentroDoRange
+      }
+      return nomeFiltrado && statusFiltrado
+    })
+    .sort((a, b) => new Date(a.start) - new Date(b.start))
 
-
-
-  const confirmarAgendamento = async (agendamentoId, pacienteId) => {
-    try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/agendar', {
-        id: agendamentoId,
-        paciente_id: pacienteId
-      })
-      toastSucesso('Paciente agendado com sucesso!')
-      setModalAgendar(false)
-      setAgendamentoSelecionado(null)
-      carregarEventos()
-    } catch {
-      toastErro('Erro ao agendar paciente.')
-    }
-  }
-
-  const desagendarHorario = async (id) => {
-    try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/desagendar', { id })
-      toastSucesso('Paciente removido do horário!')
-      setModalAgendar(false)
-      setAgendamentoSelecionado(null)
-      carregarEventos()
-    } catch {
-      toastErro('Erro ao desagendar.')
-    }
-  }
-
-  const removerHorario = async (id) => {
-    try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
-      toastSucesso('Horário removido com sucesso!')
-      setModalAgendar(false)
-      setAgendamentoSelecionado(null)
-      carregarEventos()
-    } catch {
-      toastErro('Erro ao remover horário.')
-    }
-  }
-
-  const abrirPerfilPaciente = (id) => {
-    setPacienteId(id)
-    setMostrarPerfil(true)
-  }
-
-const eventosParaAgenda = eventos
-  .filter(ev => {
-    const nomeFiltrado = filtroTexto.trim().length > 1
-      ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-          .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
-      : true
-
-    const statusFiltrado = filtroStatus ? ev.status === filtroStatus : true
-
-    if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
-      const dataEv = new Date(ev.start)
-      const dentroDoRange = dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
-      return nomeFiltrado && statusFiltrado && dentroDoRange
-    }
-
-    return nomeFiltrado && statusFiltrado
-  })
-  .sort((a, b) => new Date(a.start) - new Date(b.start))
-
+  const eventosDoDiaFiltrados = eventos
+    .filter(ev => isSameDay(ev.start, dataAtual))
+    .filter(ev => !filtroStatus || ev.status === filtroStatus)
+    .sort((a, b) => new Date(a.start) - new Date(b.start))
 
   return (
     <div className="w-full flex flex-col gap-4 relative">
@@ -243,111 +158,111 @@ const eventosParaAgenda = eventos
         onRangeChange={setRangeVisivel}
         onAbrirPerfil={handleAbrirPerfil}
         onVerAtendimento={handleVerAtendimento}
-        aoAdicionarHorario={(data) => {
-           handleNovoSlot({ start: data })
-  }}
+        aoAdicionarHorario={(data) => handleNovoSlot({ start: data })}
       />
 
-{viewAtual === 'day' && (
-  <div className="mt-2 bg-white rounded p-4">
-    <div className="flex justify-end mb-3">
-      <div className="flex gap-2">
-        <button
-          onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
-          title="Disponíveis"
-          className={`p-2 rounded-full border transition ${
-            filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-          }`}
-        >
-          <Clock size={18} />
-        </button>
-        <button
-          onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? null : 'agendado')}
-          title="Agendados"
-          className={`p-2 rounded-full border transition ${
-            filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-          }`}
-        >
-          <UserRound size={18} />
-        </button>
-        <button
-          onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? null : 'finalizado')}
-          title="Finalizados"
-          className={`p-2 rounded-full border transition ${
-            filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-          }`}
-        >
-          <UserRoundCheck size={18} />
-        </button>
-      </div>
-    </div>
+      {viewAtual === 'agenda' && (
+        <div className="mt-2 bg-white rounded p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="relative w-full max-w-sm">
+              <input
+                type="text"
+                placeholder="Filtrar por nome..."
+                value={filtroTexto}
+                onChange={(e) => setFiltroTexto(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary shadow-sm"
+              />
+              <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+            </div>
 
-    <ListaAgendamentosAgenda
-      eventos={eventosDoDiaFiltrados}
-      aoVerPerfil={abrirPerfilPaciente}
-      aoVerAgendamento={(evento) => {
-        if (evento.status === 'finalizado') {
-          setModalFinalizadoAberto(evento)
-        } else {
-          handleEventoClick(evento)
-        }
-      }}
-      aoIniciarAtendimento={(id) => {
-        const paciente = pacientes.find(p => p.id === id)
-        if (paciente) {
-          setPacienteSelecionado(paciente)
-          setTimeout(() => {
-            const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
-            window.dispatchEvent(evt)
-          }, 0)
-        }
-      }}
-    />
-  </div>
-)}
+            <div className="flex gap-2 mt-2">
+              {[{ icon: Clock, key: 'disponivel' }, { icon: UserRound, key: 'agendado' }, { icon: UserRoundCheck, key: 'finalizado' }].map(({ icon: Icon, key }) => (
+                <button
+                  key={key}
+                  onClick={() => setFiltroStatus(filtroStatus === key ? null : key)}
+                  title={key}
+                  className={`p-2 rounded-full border transition ${
+                    filtroStatus === key ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+                  }`}
+                >
+                  <Icon size={18} />
+                </button>
+              ))}
+            </div>
+          </div>
 
+          <ListaAgendamentosAgenda
+            eventos={eventosParaAgenda}
+            aoVerPerfil={handleAbrirPerfil}
+            aoVerAgendamento={(evento) => {
+              if (evento.status === 'finalizado') {
+                setModalFinalizadoAberto(evento)
+              } else {
+                handleEventoClick(evento)
+              }
+            }}
+            aoIniciarAtendimento={(id) => {
+              const paciente = pacientes.find(p => p.id === id)
+              if (paciente) {
+                setPacienteSelecionado(paciente)
+                setTimeout(() => {
+                  const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
+                  window.dispatchEvent(evt)
+                }, 0)
+              }
+            }}
+          />
+        </div>
+      )}
 
-{viewAtual === 'day' && (
-  <div className="mt-2 bg-white rounded p-4">
-    <div className="flex justify-end mb-3">
-      <div className="flex gap-2">
-        <button
-          onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
-          title="Disponíveis"
-          className={`p-2 rounded-full border transition ${
-            filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-          }`}
-        >
-          <Clock size={18} />
-        </button>
-        <button
-          onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? null : 'agendado')}
-          title="Agendados"
-          className={`p-2 rounded-full border transition ${
-            filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-          }`}
-        >
-          <UserRound size={18} />
-        </button>
-        <button
-          onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? null : 'finalizado')}
-          title="Finalizados"
-          className={`p-2 rounded-full border transition ${
-            filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-          }`}
-        >
-          <UserRoundCheck size={18} />
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      {viewAtual === 'day' && (
+        <div className="mt-2 bg-white rounded p-4">
+          <div className="flex justify-end mb-3">
+            <div className="flex gap-2">
+              {[{ icon: Clock, key: 'disponivel' }, { icon: UserRound, key: 'agendado' }, { icon: UserRoundCheck, key: 'finalizado' }].map(({ icon: Icon, key }) => (
+                <button
+                  key={key}
+                  onClick={() => setFiltroStatus(filtroStatus === key ? null : key)}
+                  title={key}
+                  className={`p-2 rounded-full border transition ${
+                    filtroStatus === key ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+                  }`}
+                >
+                  <Icon size={18} />
+                </button>
+              ))}
+            </div>
+          </div>
 
+          <ListaAgendamentosAgenda
+            eventos={eventosDoDiaFiltrados}
+            aoVerPerfil={handleAbrirPerfil}
+            aoVerAgendamento={(evento) => {
+              if (evento.status === 'finalizado') {
+                setModalFinalizadoAberto(evento)
+              } else {
+                handleEventoClick(evento)
+              }
+            }}
+            aoIniciarAtendimento={(id) => {
+              const paciente = pacientes.find(p => p.id === id)
+              if (paciente) {
+                setPacienteSelecionado(paciente)
+                setTimeout(() => {
+                  const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
+                  window.dispatchEvent(evt)
+                }, 0)
+              }
+            }}
+          />
+        </div>
+      )}
 
+      {/* modais */}
       {modalAberto && (
         <ModalNovoHorario
           horario={slotSelecionado}
-          onConfirmar={confirmarHorario}
+          onConfirmar={(hora, manterAberto) => {}}
           onAtualizar={carregarEventos}
           onCancelar={() => {
             setModalAberto(false)
@@ -363,39 +278,33 @@ const eventosParaAgenda = eventos
           pacienteAtual={pacienteAtual}
           pacienteId={pacienteId}
           horarioSelecionado={horarioSelecionado}
-          onConfirmar={confirmarAgendamento}
+          onConfirmar={() => {}}
           onCancelar={() => {
             setModalAgendar(false)
             setAgendamentoSelecionado(null)
           }}
-          onRemover={removerHorario}
-          onDesagendar={desagendarHorario}
+          onRemover={() => {}}
+          onDesagendar={() => {}}
           onAtualizarAgenda={carregarEventos}
         />
       )}
 
       {mostrarPerfil && pacienteId && (
-        <PerfilPacienteModal
-          pacienteId={pacienteId}
-          onClose={() => setMostrarPerfil(false)}
-        />
+        <PerfilPacienteModal pacienteId={pacienteId} onClose={() => setMostrarPerfil(false)} />
       )}
 
       {mostrarFicha && atendimentoSelecionado && (
-        <VisualizarAtendimentoModal
-          atendimento={atendimentoSelecionado}
-          onClose={() => setMostrarFicha(false)}
+        <VisualizarAtendimentoModal atendimento={atendimentoSelecionado} onClose={() => setMostrarFicha(false)} />
+      )}
+
+      {modalFinalizadoAberto && (
+        <ModalFinalizado
+          evento={modalFinalizadoAberto}
+          onClose={() => setModalFinalizadoAberto(null)}
+          onAbrirPerfil={() => handleAbrirPerfil(modalFinalizadoAberto?.paciente_id)}
+          onVerAtendimento={() => handleVerAtendimento(modalFinalizadoAberto?.id)}
         />
       )}
-      {modalFinalizadoAberto && (
-  <ModalFinalizado
-    evento={modalFinalizadoAberto}
-    onClose={() => setModalFinalizadoAberto(null)}
-    onAbrirPerfil={() => abrirPerfilPaciente(modalFinalizadoAberto?.paciente_id)}
-    onVerAtendimento={() => handleVerAtendimento(modalFinalizadoAberto?.id)}
-  />
-)}
-
     </div>
   )
 }
