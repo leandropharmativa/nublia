@@ -19,7 +19,8 @@ import {
   CalendarDays,
   CalendarClock,
   Clock,
-  UserCog
+  UserCog,
+  UserRound
 } from 'lucide-react'
 
 import ModalFinalizado from './ModalFinalizado'
