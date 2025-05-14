@@ -1,4 +1,3 @@
-// AgendaPrescritor.jsx
 import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
 import { addHours, isSameDay, startOfDay, endOfDay } from 'date-fns'
@@ -17,32 +16,41 @@ import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal
 function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
   const [pacientes, setPacientes] = useState([])
-
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
   const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
-
   const [modalAberto, setModalAberto] = useState(false)
   const [modalAgendar, setModalAgendar] = useState(false)
   const [slotSelecionado, setSlotSelecionado] = useState(null)
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null)
   const [modalFinalizadoAberto, setModalFinalizadoAberto] = useState(null)
-
   const [agendamentoStatus, setAgendamentoStatus] = useState(null)
   const [pacienteAtual, setPacienteAtual] = useState(null)
   const [pacienteId, setPacienteId] = useState(null)
   const [horarioSelecionado, setHorarioSelecionado] = useState(null)
-
   const [filtroTexto, setFiltroTexto] = useState('')
-  const [filtroStatus, setFiltroStatus] = useState(null)
-
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
   const [mostrarFicha, setMostrarFicha] = useState(false)
-
   const [dataAtual, setDataAtual] = useState(new Date())
   const [viewAtual, setViewAtual] = useState('month')
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
+  const [filtroStatus, setFiltroStatus] = useState(null)
 
   const user = JSON.parse(localStorage.getItem('user'))
+
+  const handleAbrirPerfil = (pacienteId) => {
+    setPacienteId(pacienteId)
+    setMostrarPerfil(true)
+  }
+
+  const handleVerAtendimento = async (agendamentoId) => {
+    try {
+      const { data } = await axios.get(`https://nublia-backend.onrender.com/atendimentos/por-agendamento/${agendamentoId}`)
+      setAtendimentoSelecionado(data)
+      setMostrarFicha(true)
+    } catch {
+      toastErro('Atendimento não encontrado.')
+    }
+  }
 
   const carregarEventos = async () => {
     try {
@@ -52,18 +60,16 @@ function AgendaPrescritor({ mostrarAgenda }) {
         const end = addHours(start, 1)
         return {
           id: ev.id,
-          title: ev.status === 'agendado' || ev.status === 'finalizado' ? ev.paciente_nome || 'Paciente' : 'Disponível',
-          nome: ev.paciente_nome || 'Paciente',
+          title: ev.status === 'agendado' || ev.status === 'finalizado'
+            ? ev.paciente_nome || 'Paciente'
+            : 'Disponível',
+          nome: ev.paciente_nome,
           start,
           end,
           status: ev.status,
           paciente_id: ev.paciente_id,
-          data: ev.data,
-          hora: ev.hora,
           hora_atendimento: ev.hora_atendimento ? new Date(ev.hora_atendimento) : null,
-          criado_em: ev.criado_em ? new Date(ev.criado_em) : null,
-          email: ev.email || '',
-          data_nascimento: ev.data_nascimento || '2000-01-01'
+          criado_em: ev.criado_em ? new Date(ev.criado_em) : null
         }
       })
       setEventos(eventosFormatados.sort((a, b) => new Date(a.start) - new Date(b.start)))
@@ -88,45 +94,30 @@ function AgendaPrescritor({ mostrarAgenda }) {
     }
   }, [mostrarAgenda])
 
-  const eventosFiltrados = eventos.filter(ev => {
-    const nomeMatch = filtroTexto.trim().length > 1
-      ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-          .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
-      : true
-    const statusMatch = filtroStatus ? ev.status === filtroStatus : true
-
-    if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
-      const dataEv = new Date(ev.start)
-      return (
-        nomeMatch &&
-        statusMatch &&
-        dataEv >= startOfDay(rangeVisivel.start) &&
-        dataEv <= endOfDay(rangeVisivel.end)
-      )
-    }
-
-    return nomeMatch && statusMatch
-  })
-
-  const eventosDoDia = eventosFiltrados.filter(ev => isSameDay(ev.start, dataAtual))
-
   const handleNovoSlot = (slotInfo) => {
     setSlotSelecionado(slotInfo.start)
     setModalAberto(true)
   }
 
-  const handleAbrirPerfil = (pacienteId) => {
-    setPacienteId(pacienteId)
-    setMostrarPerfil(true)
-  }
+  const confirmarHorario = async (horaDigitada, manterAberto = false) => {
+    const data = slotSelecionado.toISOString().split('T')[0]
+    const hora = horaDigitada
 
-  const handleVerAtendimento = async (agendamentoId) => {
     try {
-      const { data } = await axios.get(`https://nublia-backend.onrender.com/atendimentos/por-agendamento/${agendamentoId}`)
-      setAtendimentoSelecionado(data)
-      setMostrarFicha(true)
+      await axios.post('https://nublia-backend.onrender.com/agenda/disponibilizar', {
+        prescritor_id: user.id,
+        data,
+        hora,
+        status: 'disponivel'
+      })
+      toastSucesso(`Horário ${hora} cadastrado com sucesso!`)
+      carregarEventos()
+      if (!manterAberto) {
+        setModalAberto(false)
+        setSlotSelecionado(null)
+      }
     } catch {
-      toastErro('Atendimento não encontrado.')
+      toastErro('Erro ao cadastrar horário.')
     }
   }
 
@@ -152,6 +143,23 @@ function AgendaPrescritor({ mostrarAgenda }) {
     setModalAgendar(true)
   }
 
+  const eventosParaAgenda = eventos.filter(ev => {
+    const nomeFiltrado = filtroTexto.trim().length > 1
+      ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+        .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
+      : true
+
+    const statusFiltrado = filtroStatus ? ev.status === filtroStatus : true
+
+    if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
+      const dataEv = new Date(ev.start)
+      return nomeFiltrado && statusFiltrado &&
+        dataEv >= startOfDay(rangeVisivel.start) && dataEv <= endOfDay(rangeVisivel.end)
+    }
+
+    return nomeFiltrado && statusFiltrado
+  }).sort((a, b) => new Date(a.start) - new Date(b.start))
+
   return (
     <div className="w-full flex flex-col gap-4 relative">
       <CalendarioAgenda
@@ -163,10 +171,10 @@ function AgendaPrescritor({ mostrarAgenda }) {
         onRangeChange={setRangeVisivel}
         onAbrirPerfil={handleAbrirPerfil}
         onVerAtendimento={handleVerAtendimento}
-        aoAdicionarHorario={({ start }) => handleNovoSlot({ start })}
+        aoAdicionarHorario={(data) => handleNovoSlot({ start: data })}
       />
 
-      {viewAtual === 'day' && (
+      {(viewAtual === 'agenda' || viewAtual === 'day') && (
         <div className="mt-2 bg-white rounded p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="relative w-full max-w-sm">
@@ -180,23 +188,34 @@ function AgendaPrescritor({ mostrarAgenda }) {
               <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             </div>
             <div className="flex gap-2 mt-2">
-              <button onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')} title="Disponíveis"
-                className={`p-2 rounded-full border transition ${filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}>
+              <button
+                onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
+                title="Disponíveis"
+                className={`p-2 rounded-full border transition ${filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}
+              >
                 <Clock size={18} />
               </button>
-              <button onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? null : 'agendado')} title="Agendados"
-                className={`p-2 rounded-full border transition ${filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}>
+              <button
+                onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? null : 'agendado')}
+                title="Agendados"
+                className={`p-2 rounded-full border transition ${filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}
+              >
                 <UserRound size={18} />
               </button>
-              <button onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? null : 'finalizado')} title="Finalizados"
-                className={`p-2 rounded-full border transition ${filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}>
+              <button
+                onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? null : 'finalizado')}
+                title="Finalizados"
+                className={`p-2 rounded-full border transition ${filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}
+              >
                 <UserRoundCheck size={18} />
               </button>
             </div>
           </div>
 
           <ListaAgendamentosAgenda
-            eventos={eventosDoDia}
+            eventos={viewAtual === 'day'
+              ? eventosParaAgenda.filter(ev => isSameDay(ev.start, dataAtual))
+              : eventosParaAgenda}
             aoVerPerfil={handleAbrirPerfil}
             aoVerAgendamento={(evento) => {
               if (evento.status === 'finalizado') {
@@ -221,7 +240,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
       {modalAberto && (
         <ModalNovoHorario
           horario={slotSelecionado}
-          onConfirmar={() => carregarEventos()}
+          onConfirmar={confirmarHorario}
           onAtualizar={carregarEventos}
           onCancelar={() => {
             setModalAberto(false)
