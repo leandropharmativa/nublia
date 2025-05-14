@@ -219,9 +219,17 @@ const eventosParaAgenda = eventos
       return nomeFiltrado && statusFiltrado && dentroDoRange
     }
 
+    if (viewAtual === 'day') {
+      const dataEvISO = ev.start.toISOString().split('T')[0]
+      const dataAtualISO = dataAtual.toISOString().split('T')[0]
+      const mesmoDia = dataEvISO === dataAtualISO
+      return nomeFiltrado && statusFiltrado && mesmoDia
+    }
+
     return nomeFiltrado && statusFiltrado
   })
   .sort((a, b) => new Date(a.start) - new Date(b.start))
+
 
 
   return (
@@ -240,7 +248,7 @@ const eventosParaAgenda = eventos
   }}
       />
 
- {(viewAtual === 'agenda' || viewAtual === 'day') && (
+{(viewAtual === 'agenda' || viewAtual === 'day') && (
   <div className="mt-2 bg-white rounded p-4">
     <div className="flex items-center justify-between mb-3">
       <div className="relative w-full max-w-sm">
@@ -316,6 +324,7 @@ const eventosParaAgenda = eventos
     />
   </div>
 )}
+
 
 
       {modalAberto && (
