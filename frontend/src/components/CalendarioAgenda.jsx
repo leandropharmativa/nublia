@@ -231,54 +231,50 @@ if (view === 'day') {
         eventos={eventos}
       />
 
-     <div className="flex gap-2 mb-3 mt-2">
+<div className="flex gap-2 mb-3 mt-2">
   <button
-    onClick={() => setFiltroStatus('todos')}
-    className={`px-3 py-1 rounded-full text-sm border flex items-center gap-1 ${
-      filtroStatus === 'todos'
-        ? 'bg-nublia-primary text-white'
-        : 'bg-white text-gray-600 border-gray-300'
-    }`}
-  >
-    <span className="text-sm">Todos</span>
-  </button>
-
-  <button
-    onClick={() => setFiltroStatus('disponivel')}
-    className={`px-3 py-1 rounded-full text-sm border flex items-center gap-1 ${
+    onClick={() =>
+      setFiltroStatus(filtroStatus === 'disponivel' ? 'todos' : 'disponivel')
+    }
+    className={`p-2 rounded-full transition ${
       filtroStatus === 'disponivel'
         ? 'bg-nublia-primary text-white'
-        : 'bg-white text-gray-600 border-gray-300'
+        : 'bg-gray-100 text-gray-500'
     }`}
+    title="Disponíveis"
   >
-    <Clock size={14} />
-    <span className="text-sm">Disponíveis</span>
+    <Clock size={16} />
   </button>
 
   <button
-    onClick={() => setFiltroStatus('agendado')}
-    className={`px-3 py-1 rounded-full text-sm border flex items-center gap-1 ${
+    onClick={() =>
+      setFiltroStatus(filtroStatus === 'agendado' ? 'todos' : 'agendado')
+    }
+    className={`p-2 rounded-full transition ${
       filtroStatus === 'agendado'
         ? 'bg-nublia-primary text-white'
-        : 'bg-white text-gray-600 border-gray-300'
+        : 'bg-gray-100 text-gray-500'
     }`}
+    title="Agendados"
   >
-    <UserCog size={14} />
-    <span className="text-sm">Agendados</span>
+    <UserCog size={16} />
   </button>
 
   <button
-    onClick={() => setFiltroStatus('finalizado')}
-    className={`px-3 py-1 rounded-full text-sm border flex items-center gap-1 ${
+    onClick={() =>
+      setFiltroStatus(filtroStatus === 'finalizado' ? 'todos' : 'finalizado')
+    }
+    className={`p-2 rounded-full transition ${
       filtroStatus === 'finalizado'
         ? 'bg-nublia-primary text-white'
-        : 'bg-white text-gray-600 border-gray-300'
+        : 'bg-gray-100 text-gray-500'
     }`}
+    title="Finalizados"
   >
-    <UserRoundCheck size={14} />
-    <span className="text-sm">Finalizados</span>
+    <UserRoundCheck size={16} />
   </button>
 </div>
+
 
       <CustomDayView
         eventos={filtrarEventos(eventosDoDia, filtroStatus)}
