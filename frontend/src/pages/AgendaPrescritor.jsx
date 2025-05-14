@@ -166,7 +166,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
         aoAdicionarHorario={({ start }) => handleNovoSlot({ start })}
       />
 
-      {(viewAtual === 'agenda' || viewAtual === 'day') && (
+      {viewAtual === 'day' && (
         <div className="mt-2 bg-white rounded p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="relative w-full max-w-sm">
@@ -196,7 +196,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
           </div>
 
           <ListaAgendamentosAgenda
-            eventos={viewAtual === 'day' ? eventosDoDia : eventosFiltrados}
+            eventos={eventosDoDia}
             aoVerPerfil={handleAbrirPerfil}
             aoVerAgendamento={(evento) => {
               if (evento.status === 'finalizado') {
