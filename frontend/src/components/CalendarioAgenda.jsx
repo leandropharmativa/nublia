@@ -243,7 +243,7 @@ if (view === 'day') {
     }`}
     title="Disponíveis"
   >
-    <Clock size={16} />
+    <Clock size={18} />
   </button>
 
   <button
@@ -257,7 +257,7 @@ if (view === 'day') {
     }`}
     title="Agendados"
   >
-    <UserCog size={16} />
+    <UserCog size={18} />
   </button>
 
   <button
@@ -271,9 +271,10 @@ if (view === 'day') {
     }`}
     title="Finalizados"
   >
-    <UserRoundCheck size={16} />
+    <UserRoundCheck size={18} />
   </button>
 </div>
+
 
 
       <CustomDayView
