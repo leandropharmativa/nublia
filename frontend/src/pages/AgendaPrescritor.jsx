@@ -213,6 +213,13 @@ const eventosParaAgenda = eventos
 
     const statusFiltrado = filtroStatus ? ev.status === filtroStatus : true
 
+    // 🔁 Novo comportamento:
+    // Se estiver buscando por nome, ignora o range visível
+    if (filtroTexto.trim().length > 1) {
+      return nomeFiltrado && statusFiltrado
+    }
+
+    // Caso contrário, filtra por data visível
     if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
       const dataEv = new Date(ev.start)
       const dentroDoRange = dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
@@ -222,7 +229,6 @@ const eventosParaAgenda = eventos
     return nomeFiltrado && statusFiltrado
   })
   .sort((a, b) => new Date(a.start) - new Date(b.start))
-
 
   return (
     <div className="w-full flex flex-col gap-4 relative">
