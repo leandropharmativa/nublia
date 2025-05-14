@@ -216,94 +216,93 @@ const filtrarEventos = (lista, status) => {
     }
   }
 
-  if (view === 'day') {
-    const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
-    return (
-      <div className="p-4 bg-white rounded overflow-hidden">
-        <CustomToolbar
-          view={view}
-          views={['month', 'day', 'agenda']}
-          onNavigate={handleNavigate}
-          onView={handleViewChange}
-          label=""
-          date={dataAtual}
-          eventos={eventos}
-        />
-<>
-  <div className="flex gap-2 mb-3">
-    <button
-      onClick={() => setFiltroStatus('todos')}
-      className={`px-3 py-1 rounded-full text-sm border ${
-        filtroStatus === 'todos'
-          ? 'bg-nublia-primary text-white'
-          : 'bg-white text-gray-600 border-gray-300'
-      }`}
-    >
-      Todos
-    </button>
-    <button
-      onClick={() => setFiltroStatus('disponivel')}
-      className={`px-3 py-1 rounded-full text-sm border ${
-        filtroStatus === 'disponivel'
-          ? 'bg-nublia-primary text-white'
-          : 'bg-white text-gray-600 border-gray-300'
-      }`}
-    >
-      Disponíveis
-    </button>
-    <button
-      onClick={() => setFiltroStatus('agendado')}
-      className={`px-3 py-1 rounded-full text-sm border ${
-        filtroStatus === 'agendado'
-          ? 'bg-nublia-primary text-white'
-          : 'bg-white text-gray-600 border-gray-300'
-      }`}
-    >
-      Agendados
-    </button>
-    <button
-      onClick={() => setFiltroStatus('finalizado')}
-      className={`px-3 py-1 rounded-full text-sm border ${
-        filtroStatus === 'finalizado'
-          ? 'bg-nublia-primary text-white'
-          : 'bg-white text-gray-600 border-gray-300'
-      }`}
-    >
-      Finalizados
-    </button>
-  </div>
+if (view === 'day') {
+  const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
 
-  <CustomDayView
-    eventos={filtrarEventos(eventosDoDia, filtroStatus)}
-  onVerPerfil={onAbrirPerfil}
-  onVerAgendamento={aoSelecionarEventoOuFinalizado}
-onIniciarAtendimento={(pacienteId) => {
-  if (!pacienteId) {
-    toastErro('Paciente não encontrado para este agendamento.')
-    return
-  }
+  return (
+    <div className="p-4 bg-white rounded overflow-hidden">
+      <CustomToolbar
+        view={view}
+        views={['month', 'day', 'agenda']}
+        onNavigate={handleNavigate}
+        onView={handleViewChange}
+        label=""
+        date={dataAtual}
+        eventos={eventos}
+      />
 
-  fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-    .then(res => res.json())
-    .then(paciente => {
-      if (!paciente || !paciente.data_nascimento) {
-        toastErro('Paciente sem data de nascimento.')
-        return
-      }
-
-      window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
-        detail: paciente
-      }))
-    })
-    .catch(() => toastErro('Erro ao buscar paciente.'))
-}}
-
-/>
-
-
+      <div className="flex gap-2 mb-3 mt-2">
+        <button
+          onClick={() => setFiltroStatus('todos')}
+          className={`px-3 py-1 rounded-full text-sm border ${
+            filtroStatus === 'todos'
+              ? 'bg-nublia-primary text-white'
+              : 'bg-white text-gray-600 border-gray-300'
+          }`}
+        >
+          Todos
+        </button>
+        <button
+          onClick={() => setFiltroStatus('disponivel')}
+          className={`px-3 py-1 rounded-full text-sm border ${
+            filtroStatus === 'disponivel'
+              ? 'bg-nublia-primary text-white'
+              : 'bg-white text-gray-600 border-gray-300'
+          }`}
+        >
+          Disponíveis
+        </button>
+        <button
+          onClick={() => setFiltroStatus('agendado')}
+          className={`px-3 py-1 rounded-full text-sm border ${
+            filtroStatus === 'agendado'
+              ? 'bg-nublia-primary text-white'
+              : 'bg-white text-gray-600 border-gray-300'
+          }`}
+        >
+          Agendados
+        </button>
+        <button
+          onClick={() => setFiltroStatus('finalizado')}
+          className={`px-3 py-1 rounded-full text-sm border ${
+            filtroStatus === 'finalizado'
+              ? 'bg-nublia-primary text-white'
+              : 'bg-white text-gray-600 border-gray-300'
+          }`}
+        >
+          Finalizados
+        </button>
       </div>
-    )
-  }
+
+      <CustomDayView
+        eventos={filtrarEventos(eventosDoDia, filtroStatus)}
+        onVerPerfil={onAbrirPerfil}
+        onVerAgendamento={aoSelecionarEventoOuFinalizado}
+        onIniciarAtendimento={(pacienteId) => {
+          if (!pacienteId) {
+            toastErro('Paciente não encontrado para este agendamento.')
+            return
+          }
+
+          fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+            .then(res => res.json())
+            .then(paciente => {
+              if (!paciente || !paciente.data_nascimento) {
+                toastErro('Paciente sem data de nascimento.')
+                return
+              }
+
+              window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
+                detail: paciente
+              }))
+            })
+            .catch(() => toastErro('Erro ao buscar paciente.'))
+        }}
+      />
+    </div>
+  )
+}
+
 
   const estiloDoDia = (date) => {
   const hoje = new Date()
