@@ -253,7 +253,7 @@ const eventosParaAgenda = eventos
               />
               <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             </div>
-<div className="flex gap-2 mt-2">
+<div className="flex gap-2">
   <button
     onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
     title="Disponíveis"
