@@ -240,43 +240,6 @@ const eventosParaAgenda = eventos
   }}
       />
 
-      {viewAtual === 'day' && (
-  <div className="mt-2 bg-white rounded p-4">
-    <div className="flex justify-end mb-3">
-      <div className="flex gap-2">
-        <button
-          onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
-          title="Disponíveis"
-          className={`p-2 rounded-full border transition ${
-            filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-          }`}
-        >
-          <Clock size={18} />
-        </button>
-        <button
-          onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? null : 'agendado')}
-          title="Agendados"
-          className={`p-2 rounded-full border transition ${
-            filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-          }`}
-        >
-          <UserRound size={18} />
-        </button>
-        <button
-          onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? null : 'finalizado')}
-          title="Finalizados"
-          className={`p-2 rounded-full border transition ${
-            filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-          }`}
-        >
-          <UserRoundCheck size={18} />
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
       {viewAtual === 'agenda' && (
         <div className="mt-2 bg-white rounded p-4">
           <div className="flex items-center justify-between mb-3">
@@ -321,7 +284,6 @@ const eventosParaAgenda = eventos
     <UserRoundCheck size={18} />
   </button>
 </div>
-
 
 
 
