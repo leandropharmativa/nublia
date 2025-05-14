@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import {
@@ -28,6 +27,7 @@ import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
 import { toastErro } from '../utils/toastUtils'
 
 const locales = { 'pt-BR': ptBR }
+const [filtroStatus, setFiltroStatus] = useState('todos')
 
 const localizer = dateFnsLocalizer({
   format,
@@ -162,6 +162,12 @@ const handleNavigate = (action) => {
   onDataChange?.(novaData)
 }
 
+const filtrarEventos = (lista, status) => {
+  if (status === 'todos') return lista
+  return lista.filter(ev => ev.status === status)
+}
+
+
 
   const handleViewChange = (novaView) => {
     setView(novaView)
@@ -222,8 +228,52 @@ const handleNavigate = (action) => {
           date={dataAtual}
           eventos={eventos}
         />
-<CustomDayView
-  eventos={eventosDoDia}
+<>
+  <div className="flex gap-2 mb-3">
+    <button
+      onClick={() => setFiltroStatus('todos')}
+      className={`px-3 py-1 rounded-full text-sm border ${
+        filtroStatus === 'todos'
+          ? 'bg-nublia-primary text-white'
+          : 'bg-white text-gray-600 border-gray-300'
+      }`}
+    >
+      Todos
+    </button>
+    <button
+      onClick={() => setFiltroStatus('disponivel')}
+      className={`px-3 py-1 rounded-full text-sm border ${
+        filtroStatus === 'disponivel'
+          ? 'bg-nublia-primary text-white'
+          : 'bg-white text-gray-600 border-gray-300'
+      }`}
+    >
+      Disponíveis
+    </button>
+    <button
+      onClick={() => setFiltroStatus('agendado')}
+      className={`px-3 py-1 rounded-full text-sm border ${
+        filtroStatus === 'agendado'
+          ? 'bg-nublia-primary text-white'
+          : 'bg-white text-gray-600 border-gray-300'
+      }`}
+    >
+      Agendados
+    </button>
+    <button
+      onClick={() => setFiltroStatus('finalizado')}
+      className={`px-3 py-1 rounded-full text-sm border ${
+        filtroStatus === 'finalizado'
+          ? 'bg-nublia-primary text-white'
+          : 'bg-white text-gray-600 border-gray-300'
+      }`}
+    >
+      Finalizados
+    </button>
+  </div>
+
+  <CustomDayView
+    eventos={filtrarEventos(eventosDoDia, filtroStatus)}
   onVerPerfil={onAbrirPerfil}
   onVerAgendamento={aoSelecionarEventoOuFinalizado}
 onIniciarAtendimento={(pacienteId) => {
