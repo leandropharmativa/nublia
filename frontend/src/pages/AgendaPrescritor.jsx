@@ -240,9 +240,9 @@ const eventosParaAgenda = eventos
   }}
       />
 
-      {viewAtual === 'agenda' && (
-        <div className="mt-2 bg-white rounded p-4">
-          <div className="flex items-center justify-between mb-3">
+      {['agenda', 'day'].includes(viewAtual) && (
+  <div className="mt-2 bg-white rounded p-4">
+    <div className="flex items-center justify-between mb-3">
             <div className="relative w-full max-w-sm">
               <input
                 type="text"
