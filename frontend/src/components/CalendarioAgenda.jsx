@@ -232,37 +232,40 @@ if (view === 'day') {
         eventos={eventos}
       />
 
-<div className="flex gap-2 mt-2">
-  <button
-    onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
-    title="Disponíveis"
-    className={`p-2 rounded-full border transition ${
-      filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-    }`}
-  >
-    <Clock size={18} />
-  </button>
+<div className="flex justify-end mt-4 mb-2">
+  <div className="flex gap-2">
+    <button
+      onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
+      title="Disponíveis"
+      className={`p-2 rounded-full border transition ${
+        filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+      }`}
+    >
+      <Clock size={18} />
+    </button>
 
-  <button
-    onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? null : 'agendado')}
-    title="Agendados"
-    className={`p-2 rounded-full border transition ${
-      filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-    }`}
-  >
-    <UserRound size={18} />
-  </button>
+    <button
+      onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? null : 'agendado')}
+      title="Agendados"
+      className={`p-2 rounded-full border transition ${
+        filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+      }`}
+    >
+      <UserRound size={18} />
+    </button>
 
-  <button
-    onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? null : 'finalizado')}
-    title="Finalizados"
-    className={`p-2 rounded-full border transition ${
-      filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-    }`}
-  >
-    <UserRoundCheck size={18} />
-  </button>
+    <button
+      onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? null : 'finalizado')}
+      title="Finalizados"
+      className={`p-2 rounded-full border transition ${
+        filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+      }`}
+    >
+      <UserRoundCheck size={18} />
+    </button>
+  </div>
 </div>
+
 
 
       <CustomDayView
