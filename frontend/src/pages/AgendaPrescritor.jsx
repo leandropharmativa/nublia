@@ -1,6 +1,7 @@
 import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
 import { addHours } from 'date-fns'
+import { isSameDay } from 'date-fns'
 import { Search, User, Eye, CalendarClock, UserRoundCheck, Clock, UserRound } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import 'react-toastify/dist/ReactToastify.css'
@@ -215,14 +216,12 @@ const eventosParaAgenda = eventos
 
     if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
       const dataEv = new Date(ev.start)
-      const dentroDoRange = dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
-      return nomeFiltrado && statusFiltrado && dentroDoRange
+      return nomeFiltrado && statusFiltrado && dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
     }
 
     if (viewAtual === 'day') {
-  const ehMesmoDia = isSameDay(new Date(ev.start), new Date(dataAtual))
-  return nomeFiltrado && statusFiltrado && ehMesmoDia
-}
+      return nomeFiltrado && statusFiltrado && isSameDay(new Date(ev.start), new Date(dataAtual))
+    }
 
     return nomeFiltrado && statusFiltrado
   })
@@ -258,6 +257,7 @@ const eventosParaAgenda = eventos
         />
         <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
       </div>
+
       <div className="flex gap-2">
         <button
           onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
@@ -320,6 +320,7 @@ const eventosParaAgenda = eventos
     />
   </div>
 )}
+
 
 
       {modalAberto && (
