@@ -1,3 +1,4 @@
+// CalendarioAgenda.jsx
 import { useState, useEffect } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import {
@@ -23,7 +24,6 @@ import {
 } from 'lucide-react'
 
 import ModalFinalizado from './ModalFinalizado'
-import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
 import { toastErro } from '../utils/toastUtils'
 
 const locales = { 'pt-BR': ptBR }
@@ -37,22 +37,15 @@ const localizer = dateFnsLocalizer({
 })
 
 function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdicionarHorario, aoMudarParaDia }) {
-  const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
   const doDia = eventos.filter(ev => isSameDay(ev.start, data))
-
-  const showTooltip = (e, text) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    setTooltip({ visible: true, text, x: rect.left + rect.width / 2, y: rect.top })
-  }
-
-  const hideTooltip = () => setTooltip({ visible: false, text: '', x: 0, y: 0 })
-
   return (
     <div className="relative flex flex-col justify-start px-1 h-full min-h-[75px] overflow-visible">
       <div className="flex justify-between items-center text-[10px] mt-1">
         <span
           className="text-xs font-bold text-gray-400 cursor-pointer hover:text-nublia-primary"
-          onClick={() => aoMudarParaDia?.(data)}
+          onClick={() => {
+            aoMudarParaDia?.(data)
+          }}
         >
           {label}
         </span>
@@ -71,20 +64,9 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
       <div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
         {doDia.map(ev => {
           const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-          const nome = ev.nome ?? ev.title
-          const texto = ev.status === 'agendado'
-            ? `${hora} ${nome}`
-            : ev.status === 'finalizado'
-            ? 'Finalizado'
-            : `${hora} Disponível`
-
           let icone = <Clock size={14} className="text-gray-400" />
-          if (ev.status === 'agendado') {
-            icone = <UserCog size={14} className="text-orange-600" />
-          } else if (ev.status === 'finalizado') {
-            icone = <UserRoundCheck size={14} className="text-nublia-primary" />
-          }
-
+          if (ev.status === 'agendado') icone = <UserCog size={14} className="text-orange-600" />
+          else if (ev.status === 'finalizado') icone = <UserRoundCheck size={14} className="text-nublia-primary" />
           return (
             <span
               key={ev.id}
@@ -93,36 +75,12 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
                 e.stopPropagation()
                 aoSelecionarEvento(ev)
               }}
-              onMouseEnter={(e) => showTooltip(e, texto)}
-              onMouseLeave={hideTooltip}
             >
               {icone}
             </span>
           )
         })}
       </div>
-
-      {tooltip.visible && (
-        <div
-          className="fixed z-[99] font-normal bg-white text-gray-700 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none transition-all duration-150"
-          style={{ top: tooltip.y - 30, left: tooltip.x, transform: 'translateX(-50%)' }}
-        >
-          {tooltip.text}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendimento }) {
-  return (
-    <div className="mt-4">
-      <ListaAgendamentosAgenda
-        eventos={eventos}
-        aoVerPerfil={onVerPerfil}
-        aoVerAgendamento={onVerAgendamento}
-        aoIniciarAtendimento={onIniciarAtendimento}
-      />
     </div>
   )
 }
@@ -140,44 +98,26 @@ export default function CalendarioAgenda({
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
-  const [eventosFiltrados, setEventosFiltrados] = useState([])
   const [modalFinalizado, setModalFinalizado] = useState(null)
 
-const handleNavigate = (action) => {
-  let novaData = new Date(dataAtual)
-
-  if (view === 'day') {
-    if (action === 'PREV') novaData.setDate(novaData.getDate() - 1)
-    else if (action === 'NEXT') novaData.setDate(novaData.getDate() + 1)
-    else if (action === 'TODAY') novaData = new Date()
-    else if (action instanceof Date) novaData = action
-  } else {
-    novaData = action instanceof Date
-      ? action
-      : new Date(dataAtual)
+  const handleNavigate = (action) => {
+    let novaData = new Date(dataAtual)
+    if (view === 'day') {
+      if (action === 'PREV') novaData.setDate(novaData.getDate() - 1)
+      else if (action === 'NEXT') novaData.setDate(novaData.getDate() + 1)
+      else if (action === 'TODAY') novaData = new Date()
+      else if (action instanceof Date) novaData = action
+    } else {
+      novaData = action instanceof Date ? action : new Date(dataAtual)
+    }
+    setDataAtual(novaData)
+    onDataChange?.(novaData)
   }
-
-  setDataAtual(novaData)
-  onDataChange?.(novaData)
-}
-
 
   const handleViewChange = (novaView) => {
     setView(novaView)
     onViewChange?.(novaView)
   }
-
-  useEffect(() => {
-    if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
-      const filtrados = eventos.filter(ev => {
-        const data = new Date(ev.start)
-        return data >= rangeVisivel.start && data <= rangeVisivel.end
-      })
-      setEventosFiltrados(filtrados)
-    } else {
-      setEventosFiltrados(eventos)
-    }
-  }, [view, eventos, rangeVisivel])
 
   const aoSelecionarEventoOuFinalizado = (ev) => {
     if (ev.status === 'finalizado') {
@@ -187,94 +127,11 @@ const handleNavigate = (action) => {
     }
   }
 
-  const iniciarAtendimentoViaEvento = async (evento) => {
-    if (!evento?.paciente_id) return
-
-    try {
-      const res = await fetch(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
-      const paciente = await res.json()
-
-      if (!paciente || !paciente.data_nascimento) {
-        toastErro('Paciente sem data de nascimento.')
-        return
-      }
-
-      window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-        detail: paciente
-      }))
-    } catch (err) {
-      console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
-      toastErro('Erro ao iniciar atendimento.')
-    }
-  }
-
-  if (view === 'day') {
-    const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
-    return (
-      <div className="p-4 bg-white rounded overflow-hidden">
-        <CustomToolbar
-          view={view}
-          views={['month', 'day', 'agenda']}
-          onNavigate={handleNavigate}
-          onView={handleViewChange}
-          label=""
-          date={dataAtual}
-          eventos={eventos}
-        />
-<CustomDayView
-  eventos={eventosDoDia}
-  onVerPerfil={onAbrirPerfil}
-  onVerAgendamento={aoSelecionarEventoOuFinalizado}
-onIniciarAtendimento={(pacienteId) => {
-  if (!pacienteId) {
-    toastErro('Paciente não encontrado para este agendamento.')
-    return
-  }
-
-  fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-    .then(res => res.json())
-    .then(paciente => {
-      if (!paciente || !paciente.data_nascimento) {
-        toastErro('Paciente sem data de nascimento.')
-        return
-      }
-
-      window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
-        detail: paciente
-      }))
-    })
-    .catch(() => toastErro('Erro ao buscar paciente.'))
-}}
-
-/>
-
-
-      </div>
-    )
-  }
-
-  const estiloDoDia = (date) => {
-  const hoje = new Date()
-  const isToday =
-    date.getDate() === hoje.getDate() &&
-    date.getMonth() === hoje.getMonth() &&
-    date.getFullYear() === hoje.getFullYear()
-
-  if (isToday) {
-    return {
-      className: 'borda-dia-hoje'
-    }
-  }
-
-  return {}
-}
-
-
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={eventosFiltrados.map(ev => ({ ...ev, title: ev.nome || ev.title }))}
+        events={eventos.map(ev => ({ ...ev, title: ev.nome || ev.title }))}
         startAccessor="start"
         endAccessor="end"
         view={view}
@@ -286,7 +143,6 @@ onIniciarAtendimento={(pacienteId) => {
         selectable={view !== 'month' && view !== 'agenda'}
         step={15}
         timeslots={1}
-        dayPropGetter={estiloDoDia}
         culture="pt-BR"
         min={new Date(0)}
         max={new Date(2100, 11, 31)}
@@ -336,14 +192,11 @@ onIniciarAtendimento={(pacienteId) => {
                 aoMudarParaDia={(dia) => {
                   setDataAtual(dia)
                   setView('day')
+                  onDataChange?.(dia)
+                  onViewChange?.('day')
                 }}
               />
             )
-          },
-          agenda: {
-            event: EventoAgendaCustomizado,
-            date: () => null,
-            time: () => null
           }
         }}
       />
@@ -358,42 +211,8 @@ onIniciarAtendimento={(pacienteId) => {
   )
 }
 
-function EventoAgendaCustomizado({ event }) {
-  const isAgendado = event.status === 'agendado'
-  const nome = isAgendado
-    ? event.nome ?? event.title
-    : event.status === 'finalizado'
-    ? `Finalizado: ${event.nome ?? event.title}`
-    : 'Disponível'
-
-  const hora = event.start.toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-  const dia = event.start.toLocaleDateString('pt-BR', {
-    weekday: 'short',
-    day: '2-digit',
-    month: '2-digit'
-  })
-
-  return (
-    <div className="flex items-center justify-between px-3 py-2 border-b text-sm text-gray-700">
-      <div className="flex items-center gap-3">
-        <span className={isAgendado ? 'font-medium text-gray-800' : 'text-gray-400'}>
-          {nome}
-        </span>
-      </div>
-      <div className="text-right text-gray-500 text-xs whitespace-nowrap">
-        <div>{dia}</div>
-        <div>{hora}</div>
-      </div>
-    </div>
-  )
-}
-
 function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
-
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
   const renderLabel = () => {
@@ -408,26 +227,10 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
     return label
   }
 
-  const contar = () => {
-    let eventosFiltrados = eventos
-    if (view === 'week') {
-      eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
-    } else if (view === 'day') {
-      eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
-    }
-    const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
-    const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
-    return { agendados, disponiveis }
-  }
+  const agendados = eventos.filter(e => isSameDay(e.start, date) && e.status === 'agendado').length
+  const disponiveis = eventos.filter(e => isSameDay(e.start, date) && e.status === 'disponivel').length
 
-  const { agendados, disponiveis } = contar()
-
-  const labels = {
-    month: 'Mês',
-    agenda: 'Agenda',
-    week: 'Semana',
-    day: 'Dia'
-  }
+  const labels = { month: 'Mês', agenda: 'Agenda', week: 'Semana', day: 'Dia' }
 
   return (
     <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
@@ -458,11 +261,9 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
             <button
               key={v}
               onClick={() => onView(v)}
-              className={`text-sm px-2 py-1 rounded-full transition ${
-                view === v
-                  ? 'bg-nublia-accent text-white'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
+              className={`text-sm px-2 py-1 rounded-full transition ${view === v
+                ? 'bg-nublia-accent text-white'
+                : 'text-gray-600 hover:bg-gray-100'}`}
             >
               {labels[v] || v}
             </button>
