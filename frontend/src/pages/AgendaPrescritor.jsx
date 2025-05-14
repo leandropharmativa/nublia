@@ -1,8 +1,8 @@
-// 🔧 AgendaPrescritor.jsx — versão com filtros no day view corrigidos
+// 🔧 AgendaPrescritor.jsx — versão final com filtros e sincronização day view
 import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
 import { addHours, isSameDay } from 'date-fns'
-import { Search, User, Eye, CalendarClock, UserRoundCheck, Clock, UserRound } from 'lucide-react'
+import { Search, UserRound, Eye, CalendarClock, UserRoundCheck, Clock } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -17,6 +17,7 @@ import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal
 function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
   const [pacientes, setPacientes] = useState([])
+
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
   const [atendimentoSelecionado, setAtendimentoSelecionado] = useState(null)
 
@@ -25,34 +26,23 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [slotSelecionado, setSlotSelecionado] = useState(null)
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null)
   const [modalFinalizadoAberto, setModalFinalizadoAberto] = useState(null)
+
   const [agendamentoStatus, setAgendamentoStatus] = useState(null)
   const [pacienteAtual, setPacienteAtual] = useState(null)
   const [pacienteId, setPacienteId] = useState(null)
   const [horarioSelecionado, setHorarioSelecionado] = useState(null)
+
   const [filtroTexto, setFiltroTexto] = useState('')
+  const [filtroStatus, setFiltroStatus] = useState(null)
+
   const [mostrarPerfil, setMostrarPerfil] = useState(false)
   const [mostrarFicha, setMostrarFicha] = useState(false)
+
   const [dataAtual, setDataAtual] = useState(new Date())
   const [viewAtual, setViewAtual] = useState('month')
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
-  const [filtroStatus, setFiltroStatus] = useState(null)
 
   const user = JSON.parse(localStorage.getItem('user'))
-
-  const handleAbrirPerfil = (pacienteId) => {
-    setPacienteId(pacienteId)
-    setMostrarPerfil(true)
-  }
-
-  const handleVerAtendimento = async (agendamentoId) => {
-    try {
-      const { data } = await axios.get(`https://nublia-backend.onrender.com/atendimentos/por-agendamento/${agendamentoId}`)
-      setAtendimentoSelecionado(data)
-      setMostrarFicha(true)
-    } catch {
-      toastErro('Atendimento não encontrado.')
-    }
-  }
 
   const carregarEventos = async () => {
     try {
@@ -98,28 +88,39 @@ function AgendaPrescritor({ mostrarAgenda }) {
     }
   }, [mostrarAgenda])
 
+  const eventosFiltrados = eventos.filter(ev => {
+    const nomeMatch = filtroTexto.trim().length > 1
+      ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+          .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
+      : true
+    const statusMatch = filtroStatus ? ev.status === filtroStatus : true
+    if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
+      const dataEv = new Date(ev.start)
+      const dentroDoRange = dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
+      return nomeMatch && statusMatch && dentroDoRange
+    }
+    return nomeMatch && statusMatch
+  })
+
+  const eventosDoDia = eventosFiltrados.filter(ev => isSameDay(ev.start, dataAtual))
+
   const handleNovoSlot = (slotInfo) => {
     setSlotSelecionado(slotInfo.start)
     setModalAberto(true)
   }
 
-  const confirmarHorario = async (horaDigitada, manterAberto = false) => {
-    const data = slotSelecionado.toISOString().split('T')[0]
+  const handleAbrirPerfil = (pacienteId) => {
+    setPacienteId(pacienteId)
+    setMostrarPerfil(true)
+  }
+
+  const handleVerAtendimento = async (agendamentoId) => {
     try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/disponibilizar', {
-        prescritor_id: user.id,
-        data,
-        hora: horaDigitada,
-        status: 'disponivel'
-      })
-      toastSucesso(`Horário ${horaDigitada} cadastrado com sucesso!`)
-      carregarEventos()
-      if (!manterAberto) {
-        setModalAberto(false)
-        setSlotSelecionado(null)
-      }
+      const { data } = await axios.get(`https://nublia-backend.onrender.com/atendimentos/por-agendamento/${agendamentoId}`)
+      setAtendimentoSelecionado(data)
+      setMostrarFicha(true)
     } catch {
-      toastErro('Erro ao cadastrar horário.')
+      toastErro('Atendimento não encontrado.')
     }
   }
 
@@ -144,17 +145,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
 
     setModalAgendar(true)
   }
-
-  const eventosFiltrados = eventos.filter(ev => {
-    const nomeMatch = filtroTexto.trim().length > 1
-      ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-        .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
-      : true
-    const statusMatch = filtroStatus ? ev.status === filtroStatus : true
-    return nomeMatch && statusMatch
-  })
-
-  const eventosDoDia = eventosFiltrados.filter(ev => isSameDay(ev.start, dataAtual))
 
   return (
     <div className="w-full flex flex-col gap-4 relative">
@@ -225,7 +215,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
       {modalAberto && (
         <ModalNovoHorario
           horario={slotSelecionado}
-          onConfirmar={confirmarHorario}
+          onConfirmar={() => carregarEventos()}
           onAtualizar={carregarEventos}
           onCancelar={() => {
             setModalAberto(false)
@@ -241,19 +231,10 @@ function AgendaPrescritor({ mostrarAgenda }) {
           pacienteAtual={pacienteAtual}
           pacienteId={pacienteId}
           horarioSelecionado={horarioSelecionado}
-          onConfirmar={async (agendamentoId, pacienteId) => {
-            try {
-              await axios.post('https://nublia-backend.onrender.com/agenda/agendar', {
-                id: agendamentoId,
-                paciente_id: pacienteId
-              })
-              toastSucesso('Paciente agendado com sucesso!')
-              setModalAgendar(false)
-              setAgendamentoSelecionado(null)
-              carregarEventos()
-            } catch {
-              toastErro('Erro ao agendar paciente.')
-            }
+          onConfirmar={() => {
+            setModalAgendar(false)
+            setAgendamentoSelecionado(null)
+            carregarEventos()
           }}
           onCancelar={() => {
             setModalAgendar(false)
@@ -261,14 +242,14 @@ function AgendaPrescritor({ mostrarAgenda }) {
           }}
           onRemover={async (id) => {
             await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
-            toastSucesso('Horário removido!')
+            toastSucesso('Horário removido com sucesso!')
             setModalAgendar(false)
             setAgendamentoSelecionado(null)
             carregarEventos()
           }}
           onDesagendar={async (id) => {
             await axios.post('https://nublia-backend.onrender.com/agenda/desagendar', { id })
-            toastSucesso('Desmarcado com sucesso!')
+            toastSucesso('Horário desmarcado com sucesso!')
             setModalAgendar(false)
             setAgendamentoSelecionado(null)
             carregarEventos()
