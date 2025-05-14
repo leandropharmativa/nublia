@@ -162,10 +162,18 @@ const handleNavigate = (action) => {
 }
 
 
-  const handleViewChange = (novaView) => {
-    setView(novaView)
-    onViewChange?.(novaView)
+const handleViewChange = (novaView) => {
+  setView(novaView)
+  onViewChange?.(novaView)
+
+  // 🔧 Atualiza rangeVisivel quando entrar no day view
+  if (novaView === 'day') {
+    const dia = new Date(dataAtual)
+    const novoRange = { start: dia, end: dia }
+    setRangeVisivel(novoRange)
+    onRangeChange?.(novoRange)
   }
+}
 
   useEffect(() => {
     if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
