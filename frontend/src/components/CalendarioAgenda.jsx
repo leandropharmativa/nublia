@@ -64,7 +64,6 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
 
       <div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
         {doDia.map(ev => {
-          const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
           let icone = <Clock size={14} className="text-gray-400" />
           if (ev.status === 'agendado') icone = <UserCog size={14} className="text-orange-600" />
           else if (ev.status === 'finalizado') icone = <UserRoundCheck size={14} className="text-nublia-primary" />
@@ -103,9 +102,9 @@ export default function CalendarioAgenda({
 
   const handleNavigate = (action) => {
     let novaData = new Date(dataAtual)
-    if (view === 'day') {
-      if (action === 'PREV') novaData.setDate(novaData.getDate() - 1)
-      else if (action === 'NEXT') novaData.setDate(novaData.getDate() + 1)
+    if (view === 'agenda') {
+      if (action === 'PREV') novaData.setDate(novaData.getDate() - 7)
+      else if (action === 'NEXT') novaData.setDate(novaData.getDate() + 7)
       else if (action === 'TODAY') novaData = new Date()
       else if (action instanceof Date) novaData = action
     } else {
@@ -134,8 +133,11 @@ export default function CalendarioAgenda({
       date.getDate() === hoje.getDate() &&
       date.getMonth() === hoje.getMonth() &&
       date.getFullYear() === hoje.getFullYear()
+
     if (isToday) {
-      return { className: 'ring-2 ring-nublia-accent rounded-md' }
+      return {
+        className: 'border-2 border-orange-500 rounded-md'
+      }
     }
     return {}
   }
@@ -152,19 +154,15 @@ export default function CalendarioAgenda({
         onView={handleViewChange}
         onNavigate={handleNavigate}
         defaultView="month"
-        views={['month', 'day', 'agenda']}
-        selectable={view !== 'month' && view !== 'agenda'}
+        views={['month', 'agenda']} // ⛔️ "day" removido!
+        selectable
         step={15}
         timeslots={1}
         culture="pt-BR"
         min={new Date(0)}
         max={new Date(2100, 11, 31)}
         dayPropGetter={estiloDoDia}
-        onSelectSlot={({ start }) => {
-          if (view !== 'month' && view !== 'agenda') {
-            aoSelecionarSlot({ start })
-          }
-        }}
+        onSelectSlot={({ start }) => aoSelecionarSlot({ start })}
         onSelectEvent={(event, e) => {
           if (!e.target.closest('button')) {
             aoSelecionarEventoOuFinalizado(event)
@@ -185,8 +183,6 @@ export default function CalendarioAgenda({
           previous: 'Anterior',
           today: 'Hoje',
           month: 'Mês',
-          week: 'Semana',
-          day: 'Dia',
           agenda: 'Agenda',
           noEventsInRange: 'Sem eventos neste período.',
           date: 'Data',
@@ -205,24 +201,13 @@ export default function CalendarioAgenda({
                 aoAdicionarHorario={aoSelecionarSlot}
                 aoMudarParaDia={(dia) => {
                   setDataAtual(dia)
-                  setView('day')
                   onDataChange?.(dia)
                   onViewChange?.('day')
                 }}
               />
             )
-          },
-          // ⛔️ Impede que BigCalendar renderize conteúdo padrão do day view
-  day: {
-    // ⛔️ Remove TUDO do layout padrão do day view
-    header: () => null,
-    event: () => null,
-    timeGutterHeader: () => null,
-    timeGutter: () => null,
-    dateCellWrapper: () => null,
-    dayWrapper: () => null
-  }
-}}
+          }
+        }}
       />
 
       <ModalFinalizado
@@ -241,20 +226,14 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
 
   const renderLabel = () => {
     if (view === 'month') return capitalize(f(date, 'MMMM yyyy'))
-    if (view === 'day') return f(date, "dd 'de' MMMM yyyy")
-    if (view === 'week') {
-      const start = startOfWeek(date, { weekStartsOn: 1 })
-      const end = new Date(start)
-      end.setDate(end.getDate() + 6)
-      return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
-    }
+    if (view === 'agenda') return f(date, "MMMM yyyy")
     return label
   }
 
   const agendados = eventos.filter(e => isSameDay(e.start, date) && e.status === 'agendado').length
   const disponiveis = eventos.filter(e => isSameDay(e.start, date) && e.status === 'disponivel').length
 
-  const labels = { month: 'Mês', agenda: 'Agenda', week: 'Semana', day: 'Dia' }
+  const labels = { month: 'Mês', agenda: 'Agenda' }
 
   return (
     <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
