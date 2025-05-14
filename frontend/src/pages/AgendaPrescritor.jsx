@@ -1,7 +1,7 @@
-// 🔧 AgendaPrescritor.jsx — versão final com filtros e sincronização day view
+// AgendaPrescritor.jsx
 import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
-import { addHours, isSameDay } from 'date-fns'
+import { addHours, isSameDay, startOfDay, endOfDay } from 'date-fns'
 import { Search, UserRound, Eye, CalendarClock, UserRoundCheck, Clock } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import 'react-toastify/dist/ReactToastify.css'
@@ -94,11 +94,17 @@ function AgendaPrescritor({ mostrarAgenda }) {
           .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
       : true
     const statusMatch = filtroStatus ? ev.status === filtroStatus : true
+
     if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
       const dataEv = new Date(ev.start)
-      const dentroDoRange = dataEv >= rangeVisivel.start && dataEv <= rangeVisivel.end
-      return nomeMatch && statusMatch && dentroDoRange
+      return (
+        nomeMatch &&
+        statusMatch &&
+        dataEv >= startOfDay(rangeVisivel.start) &&
+        dataEv <= endOfDay(rangeVisivel.end)
+      )
     }
+
     return nomeMatch && statusMatch
   })
 
