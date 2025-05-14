@@ -249,7 +249,7 @@ const eventosParaAgenda = eventos
                 placeholder="Filtrar por nome..."
                 value={filtroTexto}
                 onChange={(e) => setFiltroTexto(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary shadow-sm"
+                className="pl-10 pr-4 py-[6px] w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary shadow-sm"
               />
               <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             </div>
