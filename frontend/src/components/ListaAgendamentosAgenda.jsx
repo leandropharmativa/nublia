@@ -24,7 +24,15 @@ export default function ListaAgendamentosAgenda({
               day: '2-digit',
               month: '2-digit'
             })
-            const nome = ev.status === 'agendado' ? ev.title : 'Disponível'
+
+            let nome
+            if (ev.status === 'agendado') {
+              nome = ev.title
+            } else if (ev.status === 'finalizado') {
+              nome = <span className="text-nublia-primary font-semibold">{ev.title}</span>
+            } else {
+              nome = 'Disponível'
+            }
 
             return (
               <li
@@ -36,28 +44,27 @@ export default function ListaAgendamentosAgenda({
                   <p className="text-xs text-gray-500">{data} às {hora}</p>
                 </div>
                 <div className="flex gap-3 items-center text-nublia-accent">
-{ev.status === 'agendado' ? (
-  <>
-    <button onClick={() => aoVerPerfil?.(ev.paciente_id)} title="Ver perfil">
-      <UserRound size={18} />
-    </button>
-    <button onClick={() => aoVerAgendamento?.(ev)} title="Ver agendamento">
-      <Eye size={18} />
-    </button>
-    <button onClick={() => aoIniciarAtendimento?.(ev.paciente_id)} title="Iniciar atendimento">
-      <PlayCircle size={18} />
-    </button>
-  </>
-) : ev.status === 'finalizado' ? (
-  <button onClick={() => aoVerAgendamento?.(ev)} title="Ver atendimento finalizado" className="text-nublia-primary">
-    <UserRoundCheck size={18} />
-  </button>
-) : (
-  <button onClick={() => aoVerAgendamento?.(ev)} title="Agendar horário">
-    <Clock size={18} />
-  </button>
-)}
-
+                  {ev.status === 'agendado' ? (
+                    <>
+                      <button onClick={() => aoVerPerfil?.(ev.paciente_id)} title="Ver perfil">
+                        <UserRound size={18} />
+                      </button>
+                      <button onClick={() => aoVerAgendamento?.(ev)} title="Ver agendamento">
+                        <Eye size={18} />
+                      </button>
+                      <button onClick={() => aoIniciarAtendimento?.(ev.paciente_id)} title="Iniciar atendimento">
+                        <PlayCircle size={18} />
+                      </button>
+                    </>
+                  ) : ev.status === 'finalizado' ? (
+                    <button onClick={() => aoVerAgendamento?.(ev)} title="Ver atendimento finalizado" className="text-nublia-primary">
+                      <UserRoundCheck size={18} />
+                    </button>
+                  ) : (
+                    <button onClick={() => aoVerAgendamento?.(ev)} title="Agendar horário">
+                      <Clock size={18} />
+                    </button>
+                  )}
                 </div>
               </li>
             )
