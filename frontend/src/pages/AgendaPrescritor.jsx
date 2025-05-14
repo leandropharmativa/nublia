@@ -241,7 +241,7 @@ const eventosParaAgenda = eventos
       />
 
       {viewAtual === 'agenda' && (
-        <div className="bg-white rounded p-4">
+        <div className="bg-white rounded">
           <div className="flex items-center justify-between">
             <div className="relative w-full max-w-sm">
               <input
