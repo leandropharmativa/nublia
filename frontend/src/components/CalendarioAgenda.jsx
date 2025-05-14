@@ -231,48 +231,54 @@ if (view === 'day') {
         eventos={eventos}
       />
 
-      <div className="flex gap-2 mb-3 mt-2">
-        <button
-          onClick={() => setFiltroStatus('todos')}
-          className={`px-3 py-1 rounded-full text-sm border ${
-            filtroStatus === 'todos'
-              ? 'bg-nublia-primary text-white'
-              : 'bg-white text-gray-600 border-gray-300'
-          }`}
-        >
-          Todos
-        </button>
-        <button
-          onClick={() => setFiltroStatus('disponivel')}
-          className={`px-3 py-1 rounded-full text-sm border ${
-            filtroStatus === 'disponivel'
-              ? 'bg-nublia-primary text-white'
-              : 'bg-white text-gray-600 border-gray-300'
-          }`}
-        >
-          Disponíveis
-        </button>
-        <button
-          onClick={() => setFiltroStatus('agendado')}
-          className={`px-3 py-1 rounded-full text-sm border ${
-            filtroStatus === 'agendado'
-              ? 'bg-nublia-primary text-white'
-              : 'bg-white text-gray-600 border-gray-300'
-          }`}
-        >
-          Agendados
-        </button>
-        <button
-          onClick={() => setFiltroStatus('finalizado')}
-          className={`px-3 py-1 rounded-full text-sm border ${
-            filtroStatus === 'finalizado'
-              ? 'bg-nublia-primary text-white'
-              : 'bg-white text-gray-600 border-gray-300'
-          }`}
-        >
-          Finalizados
-        </button>
-      </div>
+     <div className="flex gap-2 mb-3 mt-2">
+  <button
+    onClick={() => setFiltroStatus('todos')}
+    className={`px-3 py-1 rounded-full text-sm border flex items-center gap-1 ${
+      filtroStatus === 'todos'
+        ? 'bg-nublia-primary text-white'
+        : 'bg-white text-gray-600 border-gray-300'
+    }`}
+  >
+    <span className="text-sm">Todos</span>
+  </button>
+
+  <button
+    onClick={() => setFiltroStatus('disponivel')}
+    className={`px-3 py-1 rounded-full text-sm border flex items-center gap-1 ${
+      filtroStatus === 'disponivel'
+        ? 'bg-nublia-primary text-white'
+        : 'bg-white text-gray-600 border-gray-300'
+    }`}
+  >
+    <Clock size={14} />
+    <span className="text-sm">Disponíveis</span>
+  </button>
+
+  <button
+    onClick={() => setFiltroStatus('agendado')}
+    className={`px-3 py-1 rounded-full text-sm border flex items-center gap-1 ${
+      filtroStatus === 'agendado'
+        ? 'bg-nublia-primary text-white'
+        : 'bg-white text-gray-600 border-gray-300'
+    }`}
+  >
+    <UserCog size={14} />
+    <span className="text-sm">Agendados</span>
+  </button>
+
+  <button
+    onClick={() => setFiltroStatus('finalizado')}
+    className={`px-3 py-1 rounded-full text-sm border flex items-center gap-1 ${
+      filtroStatus === 'finalizado'
+        ? 'bg-nublia-primary text-white'
+        : 'bg-white text-gray-600 border-gray-300'
+    }`}
+  >
+    <UserRoundCheck size={14} />
+    <span className="text-sm">Finalizados</span>
+  </button>
+</div>
 
       <CustomDayView
         eventos={filtrarEventos(eventosDoDia, filtroStatus)}
