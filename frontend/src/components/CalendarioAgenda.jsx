@@ -40,6 +40,7 @@ const localizer = dateFnsLocalizer({
 function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdicionarHorario, aoMudarParaDia }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
   const doDia = eventos.filter(ev => isSameDay(ev.start, data))
+  const agora = new Date()
 
   const showTooltip = (e, text) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -73,17 +74,30 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
         {doDia.map(ev => {
           const hora = ev.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
           const nome = ev.nome ?? ev.title
+          const horarioPassado = ev.status === 'disponivel' && new Date(ev.start) < agora
+
           const texto = ev.status === 'agendado'
             ? `${hora} ${nome}`
             : ev.status === 'finalizado'
-            ? 'Finalizado'
-            : `${hora} Disponível`
+              ? 'Finalizado'
+              : horarioPassado
+                ? 'Agendamento indisponível'
+                : `${hora} Disponível`
 
-          let icone = <Clock size={14} className="text-gray-400" />
+          let icone
           if (ev.status === 'agendado') {
             icone = <UserCog size={14} className="text-orange-600" />
           } else if (ev.status === 'finalizado') {
             icone = <UserRoundCheck size={14} className="text-nublia-primary" />
+          } else {
+            icone = (
+              <Clock
+                size={14}
+                className={horarioPassado
+                  ? "text-nublia-primary opacity-50 cursor-not-allowed"
+                  : "text-gray-400 hover:text-nublia-primary"}
+              />
+            )
           }
 
           return (
@@ -92,7 +106,7 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
               className="inline-flex items-center justify-center cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation()
-                aoSelecionarEvento(ev)
+                if (!horarioPassado) aoSelecionarEvento(ev)
               }}
               onMouseEnter={(e) => showTooltip(e, texto)}
               onMouseLeave={hideTooltip}
