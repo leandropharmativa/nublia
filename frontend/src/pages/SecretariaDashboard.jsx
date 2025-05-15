@@ -31,15 +31,19 @@ export default function SecretariaDashboard() {
     carregarAgenda(userData.prescritor_id)
   }, [])
 
-  const buscarPrescritor = async (id) => {
-    try {
-      const res = await fetch(`https://nublia-backend.onrender.com/users/${id}`)
-      const data = await res.json()
-      setNomePrescritor(data.name || data.nome || 'Prescritor')
-    } catch {
-      setNomePrescritor('Prescritor')
-    }
+const buscarPrescritor = async (id) => {
+  try {
+    const res = await fetch(`https://nublia-backend.onrender.com/users/${id}`)
+    const data = await res.json()
+    console.log('[DEBUG] Resposta do prescritor:', data)  // 👈 insira isso
+
+    setNomePrescritor(data.name || 'Prescritor')
+  } catch {
+    console.warn('[WARN] Falha ao carregar prescritor.')
+    setNomePrescritor('Prescritor')
   }
+}
+
 
   const carregarAgenda = async (prescritorId) => {
     try {
