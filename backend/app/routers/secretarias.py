@@ -70,3 +70,28 @@ def criar_secretaria(data: SecretariaCreate, session: Session = Depends(get_sess
         "email": nova.email,
         "prescritor_id": nova.prescritor_id
     }
+
+@router.delete("/{id}", response_model=dict)
+def deletar_secretaria(id: int, session: Session = Depends(get_session)):
+    secretaria = session.get(Secretaria, id)
+    if not secretaria:
+        raise HTTPException(status_code=404, detail="Secretária não encontrada.")
+    
+    session.delete(secretaria)
+    session.commit()
+    return {"ok": True, "mensagem": "Secretária removida com sucesso."}
+
+class AlterarSenhaRequest(BaseModel):
+    nova_senha: str
+
+@router.put("/{id}/senha", response_model=dict)
+def alterar_senha_secretaria(id: int, data: AlterarSenhaRequest, session: Session = Depends(get_session)):
+    secretaria = session.get(Secretaria, id)
+    if not secretaria:
+        raise HTTPException(status_code=404, detail="Secretária não encontrada.")
+
+    secretaria.senha_hash = bcrypt.hash(data.nova_senha)
+    session.add(secretaria)
+    session.commit()
+    return {"ok": True, "mensagem": "Senha atualizada com sucesso."}
+
