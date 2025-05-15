@@ -41,3 +41,32 @@ def login_secretaria(data: LoginRequest, session: Session = Depends(get_session)
 
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return TokenResponse(access_token=token, nome=secretaria.nome)
+
+# ✅ NOVO: Cadastro de secretária
+class SecretariaCreate(BaseModel):
+    nome: str
+    email: str
+    senha: str
+    prescritor_id: int
+
+@router.post("/", response_model=dict)
+def criar_secretaria(data: SecretariaCreate, session: Session = Depends(get_session)):
+    existente = session.exec(select(Secretaria).where(Secretaria.email == data.email)).first()
+    if existente:
+        raise HTTPException(status_code=400, detail="Este e-mail já está cadastrado como secretária.")
+
+    nova = Secretaria(
+        nome=data.nome,
+        email=data.email,
+        senha_hash=bcrypt.hash(data.senha),
+        prescritor_id=data.prescritor_id
+    )
+    session.add(nova)
+    session.commit()
+    session.refresh(nova)
+    return {
+        "id": nova.id,
+        "nome": nova.nome,
+        "email": nova.email,
+        "prescritor_id": nova.prescritor_id
+    }
