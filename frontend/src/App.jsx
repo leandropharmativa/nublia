@@ -4,6 +4,7 @@ import Register from './pages/Register'
 import Admin from './pages/Admin'
 import FarmaciaDashboard from './pages/FarmaciaDashboard'
 import PrescritorDashboard from './pages/PrescritorDashboard'
+import SecretariaDashboard from './pages/SecretariaDashboard'
 import PrivateRoute from './routes/PrivateRoute'
 
 // Página de acesso negado
@@ -48,6 +49,11 @@ export default function App() {
       <Route path="/prescritor" element={
         <PrivateRoute allowedRoles={['prescritor']}>
           <PrescritorDashboard />
+        </PrivateRoute>
+      } />
+      <Route path="/secretaria" element={
+        <PrivateRoute allowedRoles={['secretaria']}>
+          <SecretariaDashboard />
         </PrivateRoute>
       } />
       
