@@ -53,6 +53,8 @@ export default function Login({ onLogin }) {
       else if (user.role === "prescritor") navigate("/prescritor", { replace: true })
       else if (user.role === "farmacia") navigate("/farmacia", { replace: true })
       else if (user.role === "paciente") navigate("/painel-paciente", { replace: true })
+      else if (user.role === "secretaria") navigate("/secretaria", { replace: true })
+
       else navigate("/", { replace: true })
 
     } catch {
