@@ -2,8 +2,7 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { toastErro, toastSucesso } from '../utils/toastUtils'
 import Botao from './Botao'
-import { UserPlus, Trash, KeyRound, X } from 'lucide-react'
-import { Loader2 } from 'lucide-react'
+import { UserPlus, Trash, KeyRound, X, Loader2 } from 'lucide-react'
 
 export default function CadastroSecretaria() {
   const [nome, setNome] = useState('')
@@ -126,21 +125,21 @@ export default function CadastroSecretaria() {
             placeholder="Nome da secretária"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            className="rounded-xl border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
+            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
           />
           <input
             type="email"
             placeholder="E-mail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded-xl border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
+            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
           />
           <input
             type="password"
             placeholder="Senha de acesso"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
-            className="rounded-xl border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
+            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
           />
         </div>
 
@@ -178,7 +177,7 @@ export default function CadastroSecretaria() {
               placeholder="Nova senha"
               value={novaSenha}
               onChange={(e) => setNovaSenha(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
+              className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
             />
             <div className="flex justify-end mt-4">
               <Botao
