@@ -125,21 +125,21 @@ export default function CadastroSecretaria() {
             placeholder="Nome da secretária"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
+            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
           />
           <input
             type="email"
             placeholder="E-mail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
+            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
           />
           <input
             type="password"
             placeholder="Senha de acesso"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
-            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
+            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
           />
         </div>
 
@@ -177,7 +177,7 @@ export default function CadastroSecretaria() {
               placeholder="Nova senha"
               value={novaSenha}
               onChange={(e) => setNovaSenha(e.target.value)}
-              className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent focus:border-nublia-accent"
+              className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
             />
             <div className="flex justify-end mt-4">
               <Botao
