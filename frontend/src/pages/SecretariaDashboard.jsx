@@ -11,25 +11,35 @@ export default function SecretariaDashboard() {
   const [nomePrescritor, setNomePrescritor] = useState('')
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const local = localStorage.getItem('user')
-    if (!local) {
-      navigate('/login')
-      return
-    }
+useEffect(() => {
+  const local = localStorage.getItem('user')
+  if (!local) {
+    navigate('/login')
+    return
+  }
 
+  try {
     const userData = JSON.parse(local)
-    if (userData?.role !== 'secretaria') {
+
+    // ⚠️ Validação robusta
+    if (userData?.role !== 'secretaria' || !userData?.prescritor_id) {
+      console.warn('[WARN] Usuário inválido ou sem prescritor vinculado.')
       navigate('/')
       return
     }
 
-    setUser(userData) // define o usuário no estado
+    setUser(userData)
 
-    // ⚠️ use diretamente userData.prescritor_id
+    // ✅ Use userData diretamente aqui
     buscarPrescritor(userData.prescritor_id)
     carregarAgenda(userData.prescritor_id)
-  }, [])
+
+  } catch (err) {
+    console.error('[ERRO] Falha ao processar user do localStorage:', err)
+    navigate('/')
+  }
+}, [])
+
 
 const buscarPrescritor = async (id) => {
   try {
