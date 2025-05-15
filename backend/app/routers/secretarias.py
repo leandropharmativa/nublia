@@ -40,7 +40,17 @@ def login_secretaria(data: LoginRequest, session: Session = Depends(get_session)
     }
 
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-    return TokenResponse(access_token=token, nome=secretaria.nome)
+    return {
+    "access_token": token,
+    "token_type": "bearer",
+    "user": {
+        "id": secretaria.id,
+        "nome": secretaria.nome,
+        "email": secretaria.email,
+        "role": "secretaria",
+        "prescritor_id": secretaria.prescritor_id
+    }
+}
 
 # ✅ NOVO: Cadastro de secretária
 class SecretariaCreate(BaseModel):
