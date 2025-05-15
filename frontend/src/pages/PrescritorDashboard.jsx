@@ -33,6 +33,7 @@ import ModalNovoHorario from '../components/ModalNovoHorario'
 import FichaAtendimento from '../components/FichaAtendimento'
 import Botao from '../components/Botao'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
+import CadastroSecretaria from '../components/CadastroSecretaria'
 
 export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
@@ -358,7 +359,12 @@ useEffect(() => {
                 <MinhasFormulas usuarioId={user?.id} />
               </Tab.Panel>
               <Tab.Panel><div className="flex flex-col justify-center items-center py-16 text-nublia-textcont italic">Área de dietas (em breve)</div></Tab.Panel>
-              <Tab.Panel><div className="flex flex-col justify-center items-center py-16 text-nublia-textcont italic">Configurações da conta (em breve)</div></Tab.Panel>
+              <Tab.Panel>
+                <div className="py-8 px-4 sm:px-0">
+                  <h2 className="text-lg font-semibold text-nublia-accent mb-4">Configurações da conta</h2>
+                  <CadastroSecretaria />
+                </div>
+              </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
         </div>
