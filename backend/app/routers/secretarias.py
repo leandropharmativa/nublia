@@ -95,3 +95,20 @@ def alterar_senha_secretaria(id: int, data: AlterarSenhaRequest, session: Sessio
     session.commit()
     return {"ok": True, "mensagem": "Senha atualizada com sucesso."}
 
+@router.get("/prescritor/{prescritor_id}", response_model=list[dict])
+def listar_secretarias(prescritor_id: int, session: Session = Depends(get_session)):
+    secretarias = session.exec(
+        select(Secretaria).where(Secretaria.prescritor_id == prescritor_id)
+    ).all()
+
+    return [
+        {
+            "id": s.id,
+            "nome": s.nome,
+            "email": s.email,
+            "prescritor_id": s.prescritor_id
+        }
+        for s in secretarias
+    ]
+
+
