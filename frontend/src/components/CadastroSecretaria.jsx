@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import axios from 'axios'
 import { toastErro, toastSucesso } from '../utils/toastUtils'
 import Botao from './Botao'
