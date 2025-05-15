@@ -35,7 +35,7 @@ export default function SecretariaDashboard() {
     try {
       const res = await fetch(`https://nublia-backend.onrender.com/users/${id}`)
       const data = await res.json()
-      setNomePrescritor(data.name || 'Prescritor')
+      setNomePrescritor(data.name || data.nome || 'Prescritor')
     } catch {
       setNomePrescritor('Prescritor')
     }
