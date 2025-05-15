@@ -114,4 +114,5 @@ class Secretaria(SQLModel, table=True):
     nome: str
     email: str
     senha_hash: str
-    prescritor_id: int = Field(foreign_key="usuario.id")
+    prescritor_id: int = Field(foreign_key="user.id")
+
