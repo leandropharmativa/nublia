@@ -41,9 +41,11 @@ export default function ModalAgendarHorario({
   const [horariosDisponiveis, setHorariosDisponiveis] = useState([])
   const [novoHorarioId, setNovoHorarioId] = useState(null)
   const [carregando, setCarregando] = useState(false)
-
+  
   const inputRef = useRef(null)
   const user = JSON.parse(localStorage.getItem('user'))
+
+  const horarioPassado = horarioSelecionado && new Date(horarioSelecionado) < new Date()
 
   useEffect(() => {
     if ((trocandoPaciente || statusAtual !== 'agendado') && inputRef.current) {
@@ -259,13 +261,17 @@ export default function ModalAgendarHorario({
     <User size={18} />
   </button>
 
-  <button
-    onClick={() => setTrocandoPaciente(true)}
-    className="text-nublia-accent hover:text-nublia-orange"
-    title="Trocar paciente"
-  >
-    <ArrowLeftRight size={18} />
-  </button>
+<button
+  onClick={() => setTrocandoPaciente(true)}
+  className={`text-nublia-accent hover:text-nublia-orange ${
+    horarioPassado ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
+  }`}
+  title="Trocar paciente"
+  disabled={horarioPassado}
+>
+  <ArrowLeftRight size={18} />
+</button>
+
 
   <button
     onClick={() => setReagendando(true)}
@@ -349,26 +355,33 @@ export default function ModalAgendarHorario({
                     Paciente atual: <strong>{pacienteAtual}</strong>
                   </p>
                   <label className="text-sm text-gray-600 mb-1 mt-2">Transferir para outro horário:</label>
-                  <select
-                    value={novoHorarioId || ''}
-                    onChange={(e) => setNovoHorarioId(parseInt(e.target.value))}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-                  >
-                    <option value="">Selecione um novo horário</option>
-                    {horariosDisponiveis
-                      .filter(h => h.data && h.hora)
-                      .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
-                      .map((h) => {
-                        const [ano, mes, dia] = h.data.split('-').map(Number)
-                        const [hora, minuto] = h.hora.split(':').map(Number)
-                        const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
-                        return (
-                          <option key={h.id} value={h.id}>
-                            {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
-                          </option>
-                        )
-                      })}
-                  </select>
+<select
+  value={novoHorarioId || ''}
+  onChange={(e) => setNovoHorarioId(parseInt(e.target.value))}
+  className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+>
+  <option value="">Selecione um novo horário</option>
+  {horariosDisponiveis
+    .filter(h => {
+      if (!h.data || !h.hora) return false
+      const [ano, mes, dia] = h.data.split('-').map(Number)
+      const [hora, minuto] = h.hora.split(':').map(Number)
+      const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
+      return dataHora > new Date()
+    })
+    .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
+    .map(h => {
+      const [ano, mes, dia] = h.data.split('-').map(Number)
+      const [hora, minuto] = h.hora.split(':').map(Number)
+      const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
+      return (
+        <option key={h.id} value={h.id}>
+          {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+        </option>
+      )
+    })}
+</select>
+
                   <div className="flex gap-2 mt-3">
                     <Botao variante="claro" className="w-1/2 rounded-full" onClick={() => {
                       setReagendando(false)
