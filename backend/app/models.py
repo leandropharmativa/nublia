@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, Literal
 from datetime import date, time, datetime
 from pydantic import BaseModel
@@ -108,3 +108,10 @@ class AgendamentoComNome(BaseModel):
 
     class Config:
         orm_mode = True
+
+class Secretaria(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nome: str
+    email: str
+    senha_hash: str
+    prescritor_id: int = Field(foreign_key="usuario.id")
