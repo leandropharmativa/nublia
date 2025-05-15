@@ -3,6 +3,7 @@ import axios from 'axios'
 import { toastErro, toastSucesso } from '../utils/toastUtils'
 import Botao from './Botao'
 import { UserPlus, Trash, KeyRound } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 export default function CadastroSecretaria() {
   const [nome, setNome] = useState('')
@@ -12,6 +13,24 @@ export default function CadastroSecretaria() {
   const [carregando, setCarregando] = useState(false)
 
   const [secretariaCadastrada, setSecretariaCadastrada] = useState(null)
+
+  useEffect(() => {
+  const buscarSecretaria = async () => {
+    try {
+      const res = await axios.get(`https://nublia-backend.onrender.com/secretarias/prescritor/${prescritorId}`)
+      if (res.data.length > 0) {
+        setSecretariaCadastrada(res.data[0]) // atualmente só há uma por prescritor
+      }
+    } catch (err) {
+      console.error('Erro ao buscar secretária vinculada:', err)
+    }
+  }
+
+  if (prescritorId) {
+    buscarSecretaria()
+  }
+}, [prescritorId])
+
 
   const user = JSON.parse(localStorage.getItem('user'))
   const prescritorId = user?.id
