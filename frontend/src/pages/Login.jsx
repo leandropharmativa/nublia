@@ -58,9 +58,7 @@ if (tipoUsuario === 'secretaria') {
   token = response.data.access_token
   userData = response.data.user // ✅ agora sim inclui todos os campos corretamente
 }
-
-
-      } else {
+       else {
         response = await axios.post(`${API_URL}/login`,
           new URLSearchParams({ username: email, password: senha }),
           { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
