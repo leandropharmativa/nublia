@@ -1,5 +1,4 @@
 // 📄 pages/SecretariaDashboard.jsx
-
 import { useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import CalendarioAgenda from '../components/CalendarioAgenda'
@@ -25,7 +24,9 @@ export default function SecretariaDashboard() {
       return
     }
 
-    setUser(userData)
+    setUser(userData) // define o usuário no estado
+
+    // ⚠️ use diretamente userData.prescritor_id
     buscarPrescritor(userData.prescritor_id)
     carregarAgenda(userData.prescritor_id)
   }, [])
@@ -34,7 +35,7 @@ export default function SecretariaDashboard() {
     try {
       const res = await fetch(`https://nublia-backend.onrender.com/users/${id}`)
       const data = await res.json()
-      setNomePrescritor(data.name)
+      setNomePrescritor(data.name || 'Prescritor')
     } catch {
       setNomePrescritor('Prescritor')
     }
@@ -47,8 +48,8 @@ export default function SecretariaDashboard() {
 
       const eventosFormatados = await Promise.all(
         data.map(async (e) => {
-          let nome = 'Agendado'
-          if (e.status === 'agendado' && e.paciente_id) {
+          let nome = e.paciente_nome || 'Agendado'
+          if (e.status === 'agendado' && e.paciente_id && !e.paciente_nome) {
             try {
               const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${e.paciente_id}`)
               const paciente = await resPaciente.json()
@@ -56,7 +57,6 @@ export default function SecretariaDashboard() {
             } catch {}
           }
 
-          // ⏰ Conversão frontend segura (sem depender do backend formatar)
           const dataHora = new Date(`${e.data}T${e.hora}`)
           const end = new Date(dataHora)
           end.setHours(end.getHours() + 1)
