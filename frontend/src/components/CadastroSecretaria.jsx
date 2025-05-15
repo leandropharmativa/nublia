@@ -18,21 +18,25 @@ export default function CadastroSecretaria() {
 const prescritorId = user?.id
 
 useEffect(() => {
-  const buscarSecretaria = async () => {
-    try {
-      const res = await axios.get(`https://nublia-backend.onrender.com/secretarias/prescritor/${prescritorId}`)
+  const userLocal = localStorage.getItem('user')
+  if (!userLocal) return
+
+  const user = JSON.parse(userLocal)
+  const id = user?.id
+
+  if (!id) return
+
+  axios.get(`https://nublia-backend.onrender.com/secretarias/prescritor/${id}`)
+    .then(res => {
       if (res.data.length > 0) {
         setSecretariaCadastrada(res.data[0])
       }
-    } catch (err) {
+    })
+    .catch(err => {
       console.error('Erro ao buscar secretária vinculada:', err)
-    }
-  }
+    })
+}, [])
 
-  if (prescritorId) {
-    buscarSecretaria()
-  }
-}, [prescritorId])
 
   const cadastrarSecretaria = async () => {
     if (!nome || !email || !senha) {
