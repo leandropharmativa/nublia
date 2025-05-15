@@ -14,6 +14,7 @@ export default function Login({ onLogin }) {
   const [carregando, setCarregando] = useState(false)
   const [temSenha, setTemSenha] = useState(null)
   const [mensagem, setMensagem] = useState('')
+  const [tipoUsuario, setTipoUsuario] = useState(null) // 'usuario' ou 'secretaria'
 
   const API_URL = "https://nublia-backend.onrender.com"
 
@@ -25,10 +26,14 @@ export default function Login({ onLogin }) {
     try {
       const response = await axios.get(`${API_URL}/usuarios/checar-email/${email}`)
       setTemSenha(response.data.tem_senha)
-      setMensagem(response.data.tem_senha ? "Email reconhecido. Digite sua senha." : "Primeiro acesso? Crie sua senha.")
+      setTipoUsuario(response.data.tipo)
+      setMensagem(response.data.tem_senha
+        ? "Email reconhecido. Digite sua senha."
+        : "Primeiro acesso? Crie sua senha.")
     } catch {
       setErro("Email não encontrado.")
       setTemSenha(null)
+      setTipoUsuario(null)
     } finally {
       setCarregando(false)
     }
@@ -37,24 +42,47 @@ export default function Login({ onLogin }) {
   const handleLogin = async (e) => {
     e.preventDefault()
     setErro('')
-    try {
-      setCarregando(true)
-      const response = await axios.post(`${API_URL}/login`,
-        new URLSearchParams({ username: email, password: senha }),
-        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-      )
-      const { user, access_token } = response.data
-      localStorage.setItem("token", access_token)
-      localStorage.setItem("user", JSON.stringify(user))
-      if (onLogin) onLogin(user)
-      
-      // ✅ Correção aqui: inclusão do redirecionamento para farmácia
-      if (user.role === "admin") navigate("/admin", { replace: true })
-      else if (user.role === "prescritor") navigate("/prescritor", { replace: true })
-      else if (user.role === "farmacia") navigate("/farmacia", { replace: true })
-      else if (user.role === "paciente") navigate("/painel-paciente", { replace: true })
-      else if (user.role === "secretaria") navigate("/secretaria", { replace: true })
+    setCarregando(true)
 
+    try {
+      let response
+      let userData
+      let token
+
+      if (tipoUsuario === 'secretaria') {
+        response = await axios.post(`${API_URL}/secretarias/login`, {
+          email,
+          senha
+        })
+
+        token = response.data.access_token
+        userData = {
+          role: 'secretaria',
+          nome: response.data.nome,
+          id: response.data.id,
+          email,
+          prescritor_id: response.data.prescritor_id
+        }
+
+      } else {
+        response = await axios.post(`${API_URL}/login`,
+          new URLSearchParams({ username: email, password: senha }),
+          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+        )
+
+        token = response.data.access_token
+        userData = response.data.user
+      }
+
+      localStorage.setItem("token", token)
+      localStorage.setItem("user", JSON.stringify(userData))
+      if (onLogin) onLogin(userData)
+
+      if (userData.role === "admin") navigate("/admin", { replace: true })
+      else if (userData.role === "prescritor") navigate("/prescritor", { replace: true })
+      else if (userData.role === "farmacia") navigate("/farmacia", { replace: true })
+      else if (userData.role === "paciente") navigate("/painel-paciente", { replace: true })
+      else if (userData.role === "secretaria") navigate("/secretaria", { replace: true })
       else navigate("/", { replace: true })
 
     } catch {
