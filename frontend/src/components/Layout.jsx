@@ -29,7 +29,7 @@ export default function Layout({ children }) {
   }
 
   const user = JSON.parse(localStorage.getItem('user')) || {}
-  const nome = user?.name || 'Usuário'
+  const nome = user?.name || user?.nome || 'Usuário'
   const role = user?.role || 'admin'
 
   return (
