@@ -49,20 +49,16 @@ export default function Login({ onLogin }) {
       let userData
       let token
 
-      if (tipoUsuario === 'secretaria') {
-        response = await axios.post(`${API_URL}/secretarias/login`, {
-          email,
-          senha
-        })
+if (tipoUsuario === 'secretaria') {
+  response = await axios.post(`${API_URL}/secretarias/login`, {
+    email,
+    senha
+  })
 
-        token = response.data.access_token
-        userData = {
-          role: 'secretaria',
-          nome: response.data.nome,
-          id: response.data.id,
-          email,
-          prescritor_id: response.data.prescritor_id
-        }
+  token = response.data.access_token
+  userData = response.data.user // ✅ agora sim inclui todos os campos corretamente
+}
+
 
       } else {
         response = await axios.post(`${API_URL}/login`,
