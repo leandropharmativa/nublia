@@ -34,7 +34,9 @@ export default function ListaAgendamentosAgenda({
             } else if (ev.status === 'finalizado') {
               nome = <span className="text-nublia-primary font-semibold">{ev.title}</span>
             } else {
-              nome = horarioPassado ? 'Agendamento indisponível' : 'Disponível'
+              nome = horarioPassado
+                ? <span className="text-nublia-primary">Agendamento indisponível</span>
+                : 'Disponível'
             }
 
             return (
