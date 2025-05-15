@@ -1,6 +1,7 @@
 # Importações principais
 from fastapi import APIRouter, HTTPException, Depends, Body
 from sqlmodel import Session, select
+from app.models import Secretaria
 from app.models import User, UserCreate, CodigoAtivacao
 from app.database import engine
 from passlib.context import CryptContext
@@ -121,14 +122,26 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 @router.get("/usuarios/checar-email/{email}")
 def checar_email(email: str):
     with Session(engine) as session:
+        # Primeiro, busca na tabela User
         user = session.exec(select(User).where(User.email == email)).first()
+        if user:
+            return {
+                "existe": True,
+                "tipo": "usuario",
+                "tem_senha": bool(user.password)
+            }
 
-        if not user:
-            raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        # Se não achar, tenta na tabela Secretaria
+        secretaria = session.exec(select(Secretaria).where(Secretaria.email == email)).first()
+        if secretaria:
+            return {
+                "existe": True,
+                "tipo": "secretaria",
+                "tem_senha": bool(secretaria.senha_hash)
+            }
 
-        return {
-            "tem_senha": bool(user.password)
-        }
+        # Nenhum encontrado
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
 
 # 🛠 ROTA: Criar senha para usuários sem senha (primeiro acesso)
 class CriarSenhaRequest(BaseModel):
