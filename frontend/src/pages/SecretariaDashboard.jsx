@@ -1,7 +1,9 @@
+// 📄 pages/SecretariaDashboard.jsx
+
 import { useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import CalendarioAgenda from '../components/CalendarioAgenda'
-import { CalendarDays, LogOut } from 'lucide-react'
+import { CalendarDays } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 export default function SecretariaDashboard() {
@@ -42,6 +44,7 @@ export default function SecretariaDashboard() {
     try {
       const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${prescritorId}`)
       const data = await res.json()
+
       const eventosFormatados = await Promise.all(
         data.map(async (e) => {
           let nome = 'Agendado'
@@ -52,18 +55,26 @@ export default function SecretariaDashboard() {
               nome = paciente.name
             } catch {}
           }
-          return { ...e, nome }
+
+          // ⏰ Conversão frontend segura (sem depender do backend formatar)
+          const dataHora = new Date(`${e.data}T${e.hora}`)
+          const end = new Date(dataHora)
+          end.setHours(end.getHours() + 1)
+
+          return {
+            ...e,
+            nome,
+            start: dataHora,
+            end,
+            title: nome
+          }
         })
       )
+
       setEventos(eventosFormatados)
     } catch (err) {
       console.error('Erro ao carregar agenda:', err)
     }
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('user')
-    navigate('/login')
   }
 
   return (
@@ -80,13 +91,6 @@ export default function SecretariaDashboard() {
             </p>
           )}
         </div>
-        <button
-          onClick={handleLogout}
-          className="text-sm text-gray-500 hover:text-nublia-orange flex items-center gap-1"
-        >
-          <LogOut size={16} />
-          Sair
-        </button>
       </div>
 
       <CalendarioAgenda
