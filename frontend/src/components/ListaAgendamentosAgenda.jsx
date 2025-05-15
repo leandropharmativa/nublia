@@ -7,6 +7,7 @@ export default function ListaAgendamentosAgenda({
   aoIniciarAtendimento
 }) {
   const eventosOrdenados = eventos.sort((a, b) => new Date(a.start) - new Date(b.start))
+  const agora = new Date()
 
   return (
     <div className="mt-4">
@@ -25,13 +26,15 @@ export default function ListaAgendamentosAgenda({
               month: '2-digit'
             })
 
+            const horarioPassado = ev.status === 'disponivel' && new Date(ev.start) < agora
+
             let nome
             if (ev.status === 'agendado') {
               nome = ev.title
             } else if (ev.status === 'finalizado') {
               nome = <span className="text-nublia-primary font-semibold">{ev.title}</span>
             } else {
-              nome = 'Disponível'
+              nome = horarioPassado ? 'Agendamento indisponível' : 'Disponível'
             }
 
             return (
@@ -61,8 +64,21 @@ export default function ListaAgendamentosAgenda({
                       <UserRoundCheck size={18} />
                     </button>
                   ) : (
-                    <button onClick={() => aoVerAgendamento?.(ev)} title="Agendar horário">
-                      <Clock size={18} />
+                    <button
+                      onClick={() => {
+                        if (!horarioPassado) aoVerAgendamento?.(ev)
+                      }}
+                      title={horarioPassado ? "Agendamento indisponível" : "Agendar horário"}
+                      disabled={horarioPassado}
+                    >
+                      <Clock
+                        size={18}
+                        className={
+                          horarioPassado
+                            ? "text-nublia-primary opacity-50 cursor-not-allowed"
+                            : "hover:text-nublia-primary"
+                        }
+                      />
                     </button>
                   )}
                 </div>
