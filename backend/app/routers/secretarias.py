@@ -25,7 +25,7 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     nome: str
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login")
 def login_secretaria(data: LoginRequest, session: Session = Depends(get_session)):
     secretaria = session.exec(select(Secretaria).where(Secretaria.email == data.email)).first()
     if not secretaria or not bcrypt.verify(data.senha, secretaria.senha_hash):
