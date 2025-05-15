@@ -14,8 +14,25 @@ export default function CadastroSecretaria() {
 
   const [secretariaCadastrada, setSecretariaCadastrada] = useState(null)
 
-  const user = JSON.parse(localStorage.getItem('user'))
-  const prescritorId = user?.id
+ const user = JSON.parse(localStorage.getItem('user'))
+const prescritorId = user?.id
+
+useEffect(() => {
+  const buscarSecretaria = async () => {
+    try {
+      const res = await axios.get(`https://nublia-backend.onrender.com/secretarias/prescritor/${prescritorId}`)
+      if (res.data.length > 0) {
+        setSecretariaCadastrada(res.data[0])
+      }
+    } catch (err) {
+      console.error('Erro ao buscar secretária vinculada:', err)
+    }
+  }
+
+  if (prescritorId) {
+    buscarSecretaria()
+  }
+}, [prescritorId])
 
   const cadastrarSecretaria = async () => {
     if (!nome || !email || !senha) {
@@ -69,24 +86,6 @@ export default function CadastroSecretaria() {
       setCarregando(false)
     }
   }
-
-    useEffect(() => {
-  const buscarSecretaria = async () => {
-    try {
-      const res = await axios.get(`https://nublia-backend.onrender.com/secretarias/prescritor/${prescritorId}`)
-      if (res.data.length > 0) {
-        setSecretariaCadastrada(res.data[0]) // atualmente só há uma por prescritor
-      }
-    } catch (err) {
-      console.error('Erro ao buscar secretária vinculada:', err)
-    }
-  }
-
-  if (prescritorId) {
-    buscarSecretaria()
-  }
-}, [prescritorId])
-
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-4">
