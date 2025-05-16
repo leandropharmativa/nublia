@@ -1,3 +1,4 @@
+
 // 📄 components/CalendarioAgenda.jsx
 import { useState, useEffect, useRef } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
@@ -179,7 +180,7 @@ export default function CalendarioAgenda({
   const ehSecretaria = user?.role === 'secretaria'
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
-  const [, set] = useState({ start: null, end: null })
+  const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
   const [modalFinalizado, setModalFinalizado] = useState(null)
   const [filtroStatus, setFiltroStatus] = useState('todos')
   const [filtroTexto, setFiltroTexto] = useState('')
@@ -242,17 +243,23 @@ export default function CalendarioAgenda({
   }
 
 useEffect(() => {
-  if (view === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
+  if (view === 'agenda') {
+    const inicio = new Date(dataAtual)
+    inicio.setHours(0, 0, 0, 0)
+
+    const fim = new Date(inicio)
+    fim.setMonth(fim.getMonth() + 1)
+
     const filtrados = eventos.filter(ev => {
       const data = new Date(ev.start)
-      return data >= rangeVisivel.start && data <= rangeVisivel.end
+      return data >= inicio && data < fim
     })
+
     setEventosFiltrados(filtrados)
   } else {
     setEventosFiltrados(eventos)
   }
-}, [view, eventos, dataAtual, rangeVisivel])
-
+}, [view, eventos, dataAtual])
 
   useEffect(() => {
   if (view === 'month' && !rangeVisivel.start && !rangeVisivel.end) {
@@ -628,4 +635,3 @@ function CustomToolbar({
     </div>
   )
 }
-
