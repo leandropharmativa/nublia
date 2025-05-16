@@ -473,7 +473,7 @@ const eventosParaAgenda = baseEventos
   )
 }
 
-function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
+  function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos, rangeVisivel, setRangeVisivel }) {
   const [mostrarCalendario, setMostrarCalendario] = useState(false)
   const [mostrarIntervalo, setMostrarIntervalo] = useState(false)
   const containerRef = useRef(null)
