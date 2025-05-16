@@ -134,6 +134,7 @@ useEffect(() => {
 }, [abaSelecionada, user])
 
 const carregarAtendimentos = async (id) => {
+  setCarregandoAtendimentos(true) // ✅ ATIVA O LOADING
   try {
     const [resAtend, resPacientes] = await Promise.all([
       fetch('https://nublia-backend.onrender.com/atendimentos/'),
@@ -155,6 +156,8 @@ const carregarAtendimentos = async (id) => {
     setPacientes(todosPacientes.filter(p => p.role === 'paciente'))
   } catch (err) {
     console.error('Erro ao carregar atendimentos:', err)
+  } finally {
+    setCarregandoAtendimentos(false) // ✅ DESATIVA O LOADING
   }
 }
 
