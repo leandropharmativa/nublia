@@ -71,6 +71,8 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         receita: formulario.receita,
       }
 
+      console.log("🔍 Salvando atendimento com dados:", dadosAtendimento)
+
       if (!atendimentoId) {
         const response = await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
         setAtendimentoId(response.data.id)
