@@ -218,3 +218,19 @@
 .rbc-off-range .rbc-day-bg {
   color: #b0b0b0 !important;
 }
+
+/* ===== ANIMAÇÃO DE ENTRADA DO DATEPICKER ===== */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animar-datepicker {
+  animation: fadeInScale 0.2s ease-out;
+}
