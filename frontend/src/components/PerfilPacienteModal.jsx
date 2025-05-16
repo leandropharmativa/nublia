@@ -18,8 +18,8 @@ export default function PerfilPacienteModal({ paciente, pacienteId, onClose }) {
 
   if (!dados) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[999] animate-fadeIn">
-        <div className="bg-white p-6 rounded-2xl w-full max-w-md mx-4">
+      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[999]">
+        <div className="bg-white p-6 rounded-2xl w-full max-w-md mx-4 animate-fadeIn">
           <p className="text-gray-600 text-center">Carregando perfil do paciente...</p>
         </div>
       </div>
@@ -27,8 +27,8 @@ export default function PerfilPacienteModal({ paciente, pacienteId, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[999] animate-fadeIn">
-      <div className="bg-white p-6 rounded-2xl w-full max-w-xl mx-4">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[999]">
+      <div className="bg-white p-6 rounded-2xl w-full max-w-xl mx-4 animate-fadeIn">
         <h2 className="text-xl font-bold text-nublia-accent mb-4">Perfil do Paciente</h2>
 
         <div className="space-y-4 text-sm text-gray-700">
