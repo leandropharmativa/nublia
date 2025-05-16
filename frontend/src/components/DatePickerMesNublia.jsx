@@ -13,31 +13,31 @@ export default function DatePickerMesNublia({ dataAtual, aoSelecionarDia, onClos
     setMesAtual(dataAtual)
   }, [dataAtual])
 
-  return (
-    <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-lg">
-      <DayPicker
-        mode="single"
-        month={mesAtual} // 🔄 força exibir o mês correto
-        selected={dataAtual}
-        onMonthChange={setMesAtual}
-        onDayClick={(date) => {
-          aoSelecionarDia(date)
-          onClose?.()
-        }}
-        captionLayout="dropdown"
-        fromYear={2020}
-        toYear={2030}
-        locale={ptBR}
-        showOutsideDays
-        modifiersClassNames={{
-          selected: 'bg-nublia-accent text-white',
-          today: 'text-nublia-accent font-semibold',
-        }}
-        styles={{
-          head_cell: { fontSize: '0.75rem' },
-          day: { fontSize: '0.75rem' }
-        }}
-      />
-    </div>
-  )
-}
+return (
+  <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-lg">
+    <DayPicker
+      key={dataAtual.getTime()} // 👈 força re-render
+      mode="single"
+      month={mesAtual}
+      selected={dataAtual}
+      onMonthChange={setMesAtual}
+      onDayClick={(date) => {
+        aoSelecionarDia(date)
+        onClose?.()
+      }}
+      captionLayout="dropdown"
+      fromYear={2020}
+      toYear={2030}
+      locale={ptBR}
+      showOutsideDays
+      modifiersClassNames={{
+        selected: 'bg-nublia-accent text-white',
+        today: 'text-nublia-accent font-semibold',
+      }}
+      styles={{
+        head_cell: { fontSize: '0.75rem' },
+        day: { fontSize: '0.75rem' }
+      }}
+    />
+  </div>
+)
