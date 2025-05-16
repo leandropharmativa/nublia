@@ -287,7 +287,7 @@ useEffect(() => {
 {user?.role !== 'secretaria' && (
   <button
     onClick={async () => {
-      console.log('[DEBUG] Disparando evento global para iniciar ficha')
+      console.log('[DEBUG] Chamando onIniciarAtendimento com:', pacienteId, agendamentoId)
       try {
         const res = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
         const paciente = res.data
@@ -297,12 +297,8 @@ useEffect(() => {
           return
         }
 
-window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-  detail: {
-    ...paciente,
-    agendamentoId: agendamentoId // ✅ padronizado em camelCase
-  }
-}))
+        // ✅ Aciona o callback correto
+        onIniciarAtendimento?.(pacienteId, agendamentoId)
         onCancelar()
       } catch (err) {
         console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
@@ -315,6 +311,7 @@ window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
     <PlayCircle size={18} />
   </button>
 )}
+
 
 
 
