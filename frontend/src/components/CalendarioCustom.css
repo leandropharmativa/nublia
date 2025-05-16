@@ -21,7 +21,7 @@
 
 /* ===== ESTILOS FORÇADOS PARA O DAYPICKER ===== */
 
-/* Botão de dia (padrão) */
+/* Estilo base dos dias */
 .rdp-day {
   width: 36px;
   height: 36px;
@@ -30,28 +30,36 @@
   transition: background-color 0.3s ease;
 }
 
-/* Dia atual com borda laranja */
-.rdp-day_today {
-  border: 2px solid #f97316 !important;
+/* Dia atual (não selecionado) */
+.rdp-day_today:not(.rdp-day_selected) {
+  border: 2px solid #f97316 !important;   /* borda laranja */
+  background-color: #FFF7ED !important;   /* fundo bege claro */
+  color: #353A8C !important;              /* azul escuro */
   font-weight: 600;
 }
 
-/* Dia selecionado com fundo azul escuro */
+/* Dia selecionado */
 .rdp-day_selected {
-  background-color: #353A8C !important;
+  background-color: #353A8C !important;   /* azul escuro */
   color: white !important;
   font-weight: 600;
 }
 
-/* Dias fora do mês (esmaecidos) */
+/* Dias fora do mês */
 .rdp-day_outside {
   color: #b0b0b0 !important;
   opacity: 0.4 !important;
 }
 
-/* Botões de navegação */
+/* Botões de navegação (< >) */
 .rdp-nav_button {
   color: #353A8C !important;
+  font-size: 1rem;
+}
+
+.rdp-nav_button:hover {
+  background-color: #EEF3FB !important;
+  border-radius: 6px;
 }
 
 /* Título do mês */
@@ -60,7 +68,8 @@
   color: #353A8C;
 }
 
-/* ===== ESTILOS BIG CALENDAR (rbc-*) A SEGUIR ===== */
+
+/* ===== ESTILOS DO REACT-BIG-CALENDAR (caso esteja no mesmo arquivo) ===== */
 
 .rbc-month-view .rbc-header {
   color: #7CAAE6 !important;
