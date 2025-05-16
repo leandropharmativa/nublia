@@ -79,7 +79,7 @@ export default function AtendimentosRecentes({
                     </button>
                   </span>
                 </div>
-                <div className="text-xs text-gray-400 ml-1 mt-1">{dataHora}</div>
+                <div className="text-xs text-gray-400 mt-1 pl-[2px]">{dataHora}</div>
               </li>
             )
           })}
