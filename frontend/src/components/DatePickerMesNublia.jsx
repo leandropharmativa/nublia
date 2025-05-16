@@ -18,7 +18,7 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
     if (anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect()
       setPosicao({
-        top: rect.bottom + window.scrollY + 6, // 🔼 levantado 2px
+        top: rect.bottom + window.scrollY - 4, // 🔧 ajuste de -4px
         left: rect.left + window.scrollX,
       })
     }
@@ -50,20 +50,22 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
           selected: 'bg-nublia-accent text-white',
           today: 'text-nublia-accent font-semibold',
         }}
-        className="text-sm" // 📝 texto mais compacto geral
+        className="text-sm"
         styles={{
           caption: { fontSize: '0.75rem' },
-          caption_label: { fontSize: '0.75rem' },
-          caption_dropdowns: { fontSize: '0.75rem' },
           head_cell: { fontSize: '0.7rem' },
-          day: { fontSize: '0.75rem' },
+          day: { fontSize: '0.75rem' }
         }}
       />
-      <style>{`
-        .rdp-nav_button {
-          color: #2563eb !important; /* Azul nublia-primary */
-        }
-      `}</style>
+<style>{`
+  .rdp-nav_button {
+    color: #353A8C !important; /* nublia.accent */
+  }
+  .rdp-caption_dropdowns select {
+    font-size: 0.75rem !important;
+    padding: 2px 6px;
+  }
+`}</style>
     </div>,
     portalEl
   )
