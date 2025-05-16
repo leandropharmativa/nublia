@@ -1,5 +1,6 @@
 // 📄 components/DatePickerMesNublia.jsx
 
+import { createPortal } from 'react-dom'
 import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/dist/style.css'
 import { ptBR } from 'date-fns/locale'
@@ -11,12 +12,14 @@ export default function DatePickerMesNublia({ dataAtual, aoSelecionarDia, onClos
   )
 
   useEffect(() => {
-    // Sempre sincroniza mês visível ao abrir o componente
     setMesVisivel(new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1))
   }, [dataAtual])
 
-  return (
-    <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-lg">
+  const portalEl = document.getElementById('datepicker-root')
+  if (!portalEl) return null
+
+  return createPortal(
+    <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[9999] bg-white p-3 rounded-lg border border-gray-200 shadow-xl">
       <DayPicker
         mode="single"
         month={mesVisivel}
@@ -40,6 +43,7 @@ export default function DatePickerMesNublia({ dataAtual, aoSelecionarDia, onClos
           day: { fontSize: '0.75rem' }
         }}
       />
-    </div>
+    </div>,
+    portalEl
   )
 }
