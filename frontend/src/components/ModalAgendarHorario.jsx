@@ -288,17 +288,18 @@ useEffect(() => {
     onClick={async () => {
       console.log('[DEBUG] Disparando evento global para iniciar ficha')
       try {
-        const res = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-        const paciente = res.data.paciente 
+const res = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+const paciente = res.data  // ✅ agora correto
 
-        if (!paciente || !paciente.data_nascimento) {
-          toastErro('Paciente sem data de nascimento.')
-          return
-        }
+if (!paciente || !paciente.data_nascimento) {
+  toastErro('Paciente sem data de nascimento.')
+  return
+}
 
 window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
   detail: { paciente, agendamentoId }
 }))
+
         onCancelar()
       } catch (err) {
         console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
