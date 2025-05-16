@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react'
 import { User, FileText, Search, CalendarCheck2 } from 'lucide-react'
 
+const [carregando, setCarregando] = useState(true)
+
+useEffect(() => {
+  setCarregando(true)
+  const timeout = setTimeout(() => setCarregando(false), 300) // Simula carregamento breve
+  return () => clearTimeout(timeout)
+}, [atendimentos])
+
 // Função utilitária para formatar data e hora em português
 const formatarDataHora = (isoString) => {
   const data = new Date(isoString)
@@ -52,7 +60,7 @@ export default function AtendimentosRecentes({
 
       {/* Lista visível */}
       <div className="px-4 border-r border-gray-200">
-        <ul className="divide-y divide-gray-200">
+        <ul className={`divide-y divide-gray-200 transition-opacity duration-300 ${carregando ? 'opacity-50' : 'opacity-100'}`}>
           {atendimentos.slice(0, quantidadeVisivel).map((a) => {
             const nome = getNomePaciente(a.paciente_id)
             const dataHora = formatarDataHora(a.criado_em)
@@ -83,9 +91,17 @@ export default function AtendimentosRecentes({
             )
           })}
 
-          {atendimentos.length === 0 && (
-            <li className="text-sm text-gray-400 py-4">Nenhum atendimento encontrado.</li>
-          )}
+{carregando ? (
+  Array.from({ length: 4 }).map((_, i) => (
+    <li key={i} className="py-2 animate-pulse">
+      <div className="h-4 bg-gray-200 rounded w-3/4 mb-1"></div>
+      <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+    </li>
+  ))
+) : atendimentos.length === 0 ? (
+  <li className="text-sm text-gray-400 py-4">Nenhum atendimento encontrado.</li>
+) : null}
+
         </ul>
       </div>
 
