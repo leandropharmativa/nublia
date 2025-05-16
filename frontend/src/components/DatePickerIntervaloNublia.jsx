@@ -1,3 +1,4 @@
+// 📄 components/DatePickerIntervaloNublia.jsx
 import { useEffect, useState } from 'react'
 import { DayPicker } from 'react-day-picker'
 import { ptBR } from 'date-fns/locale'
@@ -12,7 +13,10 @@ export default function DatePickerIntervaloNublia({
   onClose
 }) {
   const [posicao, setPosicao] = useState(null)
-  const [range, setRange] = useState(intervaloAtual)
+  const [rangeSelecionado, setRangeSelecionado] = useState({
+    from: intervaloAtual?.start,
+    to: intervaloAtual?.end
+  })
 
   useEffect(() => {
     if (anchorRef?.current) {
@@ -34,20 +38,21 @@ export default function DatePickerIntervaloNublia({
     >
       <DayPicker
         mode="range"
-        selected={range}
+        selected={rangeSelecionado}
         onSelect={(novoRange) => {
-          setRange(novoRange)
+          setRangeSelecionado(novoRange)
+
           if (novoRange?.from && novoRange?.to) {
             setTimeout(() => {
-              onSelecionarIntervalo(novoRange)
+              onSelecionarIntervalo?.({ from: novoRange.from, to: novoRange.to })
               onClose?.()
-            }, 150)
+            }, 100)
           }
         }}
         numberOfMonths={2}
-        locale={ptBR}
         showOutsideDays
-        defaultMonth={range?.from || new Date()}
+        locale={ptBR}
+        defaultMonth={rangeSelecionado?.from || new Date()}
       />
     </div>,
     portalEl
