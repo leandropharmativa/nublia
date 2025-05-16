@@ -1,18 +1,19 @@
-// 📄 src/components/DatePickerIntervaloNublia.jsx
-
-import { createPortal } from 'react-dom'
+import { useEffect, useState } from 'react'
 import { DayPicker } from 'react-day-picker'
 import { ptBR } from 'date-fns/locale'
-import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import 'react-day-picker/dist/style.css'
 import './CalendarioCustom.css'
 
-export default function DatePickerIntervaloNublia({ intervaloAtual, anchorRef, onSelecionarIntervalo, onClose }) {
+export default function DatePickerIntervaloNublia({
+  intervaloAtual,
+  anchorRef,
+  onSelecionarIntervalo,
+  onClose
+}) {
   const [posicao, setPosicao] = useState(null)
-  const pickerRef = useRef(null)
-  const [intervalo, setIntervalo] = useState(intervaloAtual)
+  const [range, setRange] = useState(intervaloAtual)
 
-  // 📍 Calcula posição relativa ao botão de origem
   useEffect(() => {
     if (anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect()
@@ -23,47 +24,30 @@ export default function DatePickerIntervaloNublia({ intervaloAtual, anchorRef, o
     }
   }, [anchorRef])
 
-  // 📍 Fecha ao clicar fora
-  useEffect(() => {
-    function handleClickFora(event) {
-      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
-        onClose?.()
-      }
-    }
-    document.addEventListener('mousedown', handleClickFora)
-    return () => {
-      document.removeEventListener('mousedown', handleClickFora)
-    }
-  }, [onClose])
-
   const portalEl = document.getElementById('datepicker-root')
   if (!portalEl || !posicao) return null
 
   return createPortal(
     <div
-      ref={pickerRef}
-      className="absolute z-[9999] bg-white p-3 rounded-lg border border-gray-300 shadow-md animar-datepicker"
+      className="absolute z-[9999] bg-white p-3 rounded-lg border border-gray-300 shadow-md"
       style={{ top: posicao.top, left: posicao.left }}
     >
       <DayPicker
         mode="range"
-        selected={intervalo}
-onSelect={(range) => {
-  setIntervalo(range)
-  if (range?.from && range?.to) {
-    setTimeout(() => {
-      onSelecionarIntervalo(range)
-      onClose?.()
-    }, 150)
-  }
-}}
-
-        locale={ptBR}
+        selected={range}
+        onSelect={(novoRange) => {
+          setRange(novoRange)
+          if (novoRange?.from && novoRange?.to) {
+            setTimeout(() => {
+              onSelecionarIntervalo(novoRange)
+              onClose?.()
+            }, 150)
+          }
+        }}
         numberOfMonths={2}
-        captionLayout="buttons"
+        locale={ptBR}
         showOutsideDays
-        fromYear={2020}
-        toYear={2030}
+        defaultMonth={range?.from || new Date()}
       />
     </div>,
     portalEl
