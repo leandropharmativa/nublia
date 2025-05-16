@@ -24,6 +24,25 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
     }
   }, [agendamentoId])
 
+  useEffect(() => {
+  const handler = (e) => {
+    const dados = e.detail
+    console.log('📩 Evento recebido: IniciarFichaAtendimento ', dados)
+
+    if (dados?.paciente) {
+      setPaciente(dados.paciente)
+    }
+
+    if (dados?.agendamentoId) {
+      agendamentoIdRef.current = dados.agendamentoId
+      console.log('✅ agendamentoId armazenado:', dados.agendamentoId)
+    }
+  }
+
+  window.addEventListener('IniciarFichaAtendimento', handler)
+  return () => window.removeEventListener('IniciarFichaAtendimento', handler)
+}, [])
+
   const [abaAtiva, setAbaAtiva] = useState('paciente')
   const [formulario, setFormulario] = useState({
     anamnese: '',
