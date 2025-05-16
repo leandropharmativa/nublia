@@ -418,12 +418,41 @@ const eventosParaAgenda = baseEventos
       {view === 'agenda' && (
         <div className="bg-white rounded px-4 pb-4">
 {rangeVisivel.start && rangeVisivel.end && (
-  <div
-    ref={botaoIntervaloRef}
-    onClick={() => setMostrarIntervalo(true)}
-    className="inline-block text-sm font-semibold text-nublia-accent cursor-pointer hover:bg-[#BBD3F2] hover:text-[#353A8C] px-2 py-1 rounded transition mb-2"
-  >
-    {format(rangeVisivel.start, 'dd/MM/yyyy')} – {format(rangeVisivel.end, 'dd/MM/yyyy')}
+  <div className="space-y-2">
+    <div
+      ref={botaoIntervaloRef}
+      onClick={() => setMostrarIntervalo(true)}
+      className="inline-block text-sm font-semibold text-nublia-accent cursor-pointer hover:bg-[#BBD3F2] hover:text-[#353A8C] px-2 py-1 rounded transition"
+    >
+      {format(rangeVisivel.start, 'dd/MM/yyyy')} – {format(rangeVisivel.end, 'dd/MM/yyyy')}
+    </div>
+
+    <ListaAgendamentosAgenda
+      eventos={eventosParaAgenda}
+      aoVerPerfil={onAbrirPerfil}
+      aoVerAgendamento={aoSelecionarEventoOuFinalizado}
+      aoIniciarAtendimento={(pacienteId) => {
+        if (!pacienteId) {
+          toastErro('Paciente não encontrado para este agendamento.')
+          return
+        }
+
+        fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+          .then(res => res.json())
+          .then(paciente => {
+            if (!paciente || !paciente.data_nascimento) {
+              toastErro('Paciente sem data de nascimento.')
+              return
+            }
+
+            window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
+              detail: paciente
+            }))
+          })
+          .catch(() => toastErro('Erro ao buscar paciente.'))
+      }}
+      ocultarIniciar={ehSecretaria}
+    />
   </div>
 )}
 
