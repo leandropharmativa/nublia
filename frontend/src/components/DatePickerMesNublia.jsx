@@ -3,14 +3,23 @@
 import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/dist/style.css'
 import { ptBR } from 'date-fns/locale'
+import { useState, useEffect } from 'react'
 
 export default function DatePickerMesNublia({ dataAtual, aoSelecionarDia, onClose }) {
+  const [mesAtual, setMesAtual] = useState(dataAtual)
+
+  useEffect(() => {
+    // Sempre reseta o mês ao abrir o componente
+    setMesAtual(dataAtual)
+  }, [dataAtual])
+
   return (
     <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-lg">
       <DayPicker
         mode="single"
+        month={mesAtual} // 🔄 força exibir o mês correto
         selected={dataAtual}
-        defaultMonth={dataAtual}
+        onMonthChange={setMesAtual}
         onDayClick={(date) => {
           aoSelecionarDia(date)
           onClose?.()
