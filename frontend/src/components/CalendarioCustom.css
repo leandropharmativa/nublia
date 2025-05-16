@@ -123,5 +123,36 @@
   color: #b0b0b0 !important;
 }
 
+/* 📄 CalendarioCustom.css - datepicker */
+
+.rdp {
+  font-size: 0.75rem;
+}
+
+.rdp-caption_dropdowns select {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  height: auto;
+}
+
+.rdp-nav_button {
+  color: #353A8C;
+}
+
+.rdp-nav_button svg {
+  stroke: #353A8C;
+}
+
+.rdp-day_selected {
+  background-color: #353A8C;
+  color: white;
+}
+
+.rdp-day_today {
+  color: #353A8C;
+  font-weight: bold;
+}
+
+
 
 
