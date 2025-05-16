@@ -3,8 +3,8 @@
 import { createPortal } from 'react-dom'
 import { DayPicker } from 'react-day-picker'
 import { ptBR } from 'date-fns/locale'
-import './CalendarioCustom.css'
 import 'react-day-picker/dist/style.css'
+import './CalendarioCustom.css'
 import { useState, useEffect } from 'react'
 
 export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionarDia, onClose }) {
