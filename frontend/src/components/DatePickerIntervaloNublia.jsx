@@ -33,7 +33,10 @@ export default function DatePickerIntervaloNublia({
 
 useEffect(() => {
   if (intervaloAtual?.start && intervaloAtual?.end) {
-    setRangeSelecionado({ from: intervaloAtual.start, to: intervaloAtual.end })
+    setRangeSelecionado({
+      from: new Date(intervaloAtual.start),
+      to: new Date(intervaloAtual.end)
+    })
   }
 }, [intervaloAtual])
 
