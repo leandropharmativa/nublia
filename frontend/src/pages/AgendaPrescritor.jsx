@@ -101,6 +101,16 @@ function AgendaPrescritor({ mostrarAgenda }) {
     }
   }, [mostrarAgenda])
 
+  useEffect(() => {
+  const atualizar = () => {
+    carregarEventos()
+  }
+
+  window.addEventListener('AtualizarAgendaAposFinalizar', atualizar)
+  return () => window.removeEventListener('AtualizarAgendaAposFinalizar', atualizar)
+}, [])
+
+
   const handleNovoSlot = (slotInfo) => {
     setSlotSelecionado(slotInfo.start)
     setModalAberto(true)
