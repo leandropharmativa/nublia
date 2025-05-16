@@ -53,17 +53,19 @@ export default function ModalAgendarHorario({
     }
   }, [statusAtual, trocandoPaciente])
 
-  useEffect(() => {
-    if (reagendando) {
-      axios
-        .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
-        .then(res => {
-          const disponiveis = res.data.filter(h => h.paciente_id === null)
-          setHorariosDisponiveis(disponiveis)
-        })
-        .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
-    }
-  }, [reagendando, user.id])
+useEffect(() => {
+  if (reagendando) {
+    const idPrescritor = user?.role === 'secretaria' ? user.prescritor_id : user.id
+
+    axios
+      .get(`https://nublia-backend.onrender.com/agenda/prescritor/${idPrescritor}`)
+      .then(res => {
+        const disponiveis = res.data.filter(h => h.paciente_id === null)
+        setHorariosDisponiveis(disponiveis)
+      })
+      .catch(() => toastErro('Erro ao buscar horários disponíveis.'))
+  }
+}, [reagendando, user])
 
   useEffect(() => {
     if (filtro.length < 2) {
@@ -281,32 +283,35 @@ export default function ModalAgendarHorario({
     <CalendarClock size={18} />
   </button>
 
-<button
-  onClick={async () => {
-    console.log('[DEBUG] Disparando evento global para iniciar ficha')
-    try {
-      const res = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-      const paciente = res.data
+{user?.role !== 'secretaria' && (
+  <button
+    onClick={async () => {
+      console.log('[DEBUG] Disparando evento global para iniciar ficha')
+      try {
+        const res = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+        const paciente = res.data
 
-      if (!paciente || !paciente.data_nascimento) {
-        toastErro('Paciente sem data de nascimento.')
-        return
+        if (!paciente || !paciente.data_nascimento) {
+          toastErro('Paciente sem data de nascimento.')
+          return
+        }
+
+        window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+          detail: paciente
+        }))
+        onCancelar()
+      } catch (err) {
+        console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
+        toastErro('Erro ao iniciar atendimento.')
       }
+    }}
+    className="text-nublia-accent hover:text-nublia-orange"
+    title="Iniciar atendimento"
+  >
+    <PlayCircle size={18} />
+  </button>
+)}
 
-      window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-        detail: paciente
-      }))
-      onCancelar()
-    } catch (err) {
-      console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
-      toastErro('Erro ao iniciar atendimento.')
-    }
-  }}
-  className="text-nublia-accent hover:text-nublia-orange"
-  title="Iniciar atendimento"
->
-  <PlayCircle size={18} />
-</button>
 
 
 
