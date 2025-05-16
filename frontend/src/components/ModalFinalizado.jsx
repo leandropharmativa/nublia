@@ -11,6 +11,9 @@ import {
 export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerAtendimento }) {
   if (!evento) return null
 
+  const user = JSON.parse(localStorage.getItem('user'))
+  const ehSecretaria = user?.role === 'secretaria'
+
   const nome = evento.nome || evento.title
   const data = new Date(evento.start).toLocaleDateString('pt-BR')
   const horaAgendada = new Date(evento.start).toLocaleTimeString('pt-BR', {
@@ -57,12 +60,14 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
                 className="text-nublia-accent hover:text-nublia-orange transition"
               />
             </button>
-            <button onClick={onVerAtendimento} title="Ver atendimento">
-              <FileText
-                size={18}
-                className="text-nublia-accent hover:text-nublia-orange transition"
-              />
-            </button>
+{!ehSecretaria && (
+  <button onClick={onVerAtendimento} title="Ver atendimento">
+    <FileText
+      size={18}
+      className="text-nublia-accent hover:text-nublia-orange transition"
+    />
+  </button>
+)}
           </div>
         </div>
 
