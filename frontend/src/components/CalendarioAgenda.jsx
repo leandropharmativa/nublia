@@ -243,6 +243,19 @@ useEffect(() => {
   }
 }, [view, eventos, dataAtual])
 
+  useEffect(() => {
+  if (view === 'month' && !rangeVisivel.start && !rangeVisivel.end) {
+    // Calcula o range baseado na dataAtual
+    const start = startOfWeek(new Date(dataAtual), { weekStartsOn: 1 })
+    const end = new Date(start)
+    end.setDate(end.getDate() + 41) // 6 semanas completas (7 dias * 6 - 1)
+
+    const novoRange = { start, end }
+    setRangeVisivel(novoRange)
+    onRangeChange?.(novoRange)
+  }
+}, [view, dataAtual, rangeVisivel])
+
   const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
   const eventosVisiveis = filtrarEventos(eventosDoDia, filtroStatus)
 
