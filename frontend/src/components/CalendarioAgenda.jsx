@@ -417,15 +417,16 @@ const eventosParaAgenda = baseEventos
 
       {view === 'agenda' && (
         <div className="bg-white rounded px-4 pb-4">
-          <div className="mb-3">
-  <button
+{rangeVisivel.start && rangeVisivel.end && (
+  <div
     ref={botaoIntervaloRef}
-    onClick={() => setMostrarIntervalo(!mostrarIntervalo)}
-    className="text-sm text-nublia-accent font-medium px-3 py-1 border border-gray-300 rounded hover:bg-[#BBD3F2] hover:text-[#353A8C] transition"
+    onClick={() => setMostrarIntervalo(true)}
+    className="inline-block text-sm font-semibold text-nublia-accent cursor-pointer hover:bg-[#BBD3F2] hover:text-[#353A8C] px-2 py-1 rounded transition mb-2"
   >
-    Selecionar intervalo
-  </button>
-</div>
+    {format(rangeVisivel.start, 'dd/MM/yyyy')} – {format(rangeVisivel.end, 'dd/MM/yyyy')}
+  </div>
+)}
+
 
 {mostrarIntervalo && (
   <DatePickerIntervaloNublia
