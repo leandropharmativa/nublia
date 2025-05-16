@@ -9,44 +9,6 @@ import { useState, useEffect } from 'react'
 export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionarDia, onClose }) {
   const [posicao, setPosicao] = useState(null)
 
-  // ✅ injeta estilos customizados no <head>
-  useEffect(() => {
-    const styleTagId = 'nublia-datepicker-overrides'
-    if (!document.getElementById(styleTagId)) {
-      const style = document.createElement('style')
-      style.id = styleTagId
-      style.innerHTML = `
-        .rdp-nav_button {
-          color: #353A8C !important;
-        }
-        .rdp-nav_button svg {
-          stroke: #353A8C !important;
-        }
-        .rdp-caption_dropdowns select {
-          font-size: 12px !important;
-          padding: 2px 6px !important;
-          height: auto !important;
-          line-height: 1.2 !important;
-        }
-        .rdp-head_cell {
-          font-size: 11px !important;
-        }
-        .rdp-day {
-          font-size: 12px !important;
-        }
-        .rdp-day_selected {
-          background-color: #353A8C !important;
-          color: white !important;
-        }
-        .rdp-day_today {
-          color: #353A8C !important;
-          font-weight: bold !important;
-        }
-      `
-      setTimeout(() => document.head.appendChild(style), 0)
-    }
-  }, [])
-
   // ✅ posicionamento relativo ao botão clicado
   useEffect(() => {
     if (anchorRef?.current) {
