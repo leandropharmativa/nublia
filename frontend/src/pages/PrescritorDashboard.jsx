@@ -37,6 +37,9 @@ import CadastroSecretaria from '../components/CadastroSecretaria'
 
 export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
+  const [carregandoAtendimentos, setCarregandoAtendimentos] = useState(true)
+  const [carregandoAgendamentos, setCarregandoAgendamentos] = useState(true)
+
   const [abaSelecionada, setAbaSelecionada] = useState(0)
 
   const [cienteModal, setcienteModal] = useState(false)
@@ -130,29 +133,32 @@ useEffect(() => {
   carregarConteudoPorAba()
 }, [abaSelecionada, user])
 
-  const carregarAtendimentos = async (id) => {
-    try {
-      const res = await fetch('https://nublia-backend.onrender.com/atendimentos/')
-      const data = await res.json()
-      const filtrados = data.filter(a => a.prescritor_id === id)
+const carregarAtendimentos = async (id) => {
+  setCarregandoAtendimentos(true)
+  try {
+    const res = await fetch('https://nublia-backend.onrender.com/atendimentos/')
+    const data = await res.json()
+    const filtrados = data.filter(a => a.prescritor_id === id)
 
-      const comNomes = await Promise.all(
-        filtrados.map(async (a) => {
-          try {
-            const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${a.paciente_id}`)
-            const paciente = await resPaciente.json()
-            return { ...a, nomePaciente: paciente.name }
-          } catch {
-            return { ...a, nomePaciente: 'Paciente não encontrado' }
-          }
-        })
-      )
+    const comNomes = await Promise.all(
+      filtrados.map(async (a) => {
+        try {
+          const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${a.paciente_id}`)
+          const paciente = await resPaciente.json()
+          return { ...a, nomePaciente: paciente.name }
+        } catch {
+          return { ...a, nomePaciente: 'Paciente não encontrado' }
+        }
+      })
+    )
 
-      setAtendimentos(comNomes.reverse())
-    } catch (err) {
-      console.error('Erro ao carregar atendimentos:', err)
-    }
+    setAtendimentos(comNomes.reverse())
+  } catch (err) {
+    console.error('Erro ao carregar atendimentos:', err)
+  } finally {
+    setCarregandoAtendimentos(false)
   }
+}
 
   const carregarPacientes = async () => {
     try {
@@ -164,29 +170,32 @@ useEffect(() => {
     }
   }
 
-  const carregarAgenda = async (id) => {
-    try {
-      const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${id}`)
-      const data = await res.json()
-      const eventos = await Promise.all(
-        data.map(async (e) => {
-          let nome = 'Agendado'
-          if (e.status === 'agendado' && e.paciente_id) {
-            try {
-              const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${e.paciente_id}`)
-              const paciente = await resPaciente.json()
-              nome = paciente.name
-            } catch {}
-          }
-          return { ...e, nome }
-        })
-      )
-      setAgendaEventos(eventos)
-      return eventos
-    } catch (err) {
-      console.error('Erro ao carregar agenda:', err)
-    }
+const carregarAgenda = async (id) => {
+  setCarregandoAgendamentos(true)
+  try {
+    const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${id}`)
+    const data = await res.json()
+    const eventos = await Promise.all(
+      data.map(async (e) => {
+        let nome = 'Agendado'
+        if (e.status === 'agendado' && e.paciente_id) {
+          try {
+            const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${e.paciente_id}`)
+            const paciente = await resPaciente.json()
+            nome = paciente.name
+          } catch {}
+        }
+        return { ...e, nome }
+      })
+    )
+    setAgendaEventos(eventos)
+    return eventos
+  } catch (err) {
+    console.error('Erro ao carregar agenda:', err)
+  } finally {
+    setCarregandoAgendamentos(false)
   }
+}
 
   const handleVerPerfil = async (pacienteId) => {
     try {
@@ -230,17 +239,18 @@ useEffect(() => {
 
           </div>
           <div className="flex-1 overflow-hidden">
-            <AtendimentosRecentes
-              atendimentos={atendimentosFiltrados}
-              pacientes={pacientes}
-              pesquisa={pesquisa}
-              onPesquisar={(texto) => setPesquisa(texto)}
-              onVerPerfil={handleVerPerfil}
-              onVerAtendimento={(atendimento) => {
-                setAtendimentoSelecionado(atendimento)
-                setMostrarVisualizarAtendimentoModal(true)
-              }}
-            />
+<AtendimentosRecentes
+  atendimentos={atendimentosFiltrados}
+  pacientes={pacientes}
+  pesquisa={pesquisa}
+  onPesquisar={(texto) => setPesquisa(texto)}
+  onVerPerfil={handleVerPerfil}
+  onVerAtendimento={(atendimento) => {
+    setAtendimentoSelecionado(atendimento)
+    setMostrarVisualizarAtendimentoModal(true)
+  }}
+  carregando={carregandoAtendimentos}
+/>
           </div>
         </div>
 
@@ -287,10 +297,19 @@ useEffect(() => {
                     <CalendarClock size={20} />
                     <h2 className="text-lg font-semibold">Agendamentos para hoje</h2>
                   </div>
-                  {agendamentosHoje.length === 0 ? (
-                    <p className="text-sm text-nublia-textcont">Nenhum paciente agendado para hoje.</p>
-                  ) : (
-                    <ul className="space-y-[6px] text-sm text-nublia-textcont w-full max-w-xl">
+{carregandoAgendamentos ? (
+  <ul className="space-y-2 w-full max-w-xl">
+    {Array.from({ length: 4 }).map((_, i) => (
+      <li key={i} className="flex gap-4 items-center animate-pulse">
+        <div className="w-4 h-4 bg-gray-200 rounded-full" />
+        <div className="flex-1 h-4 bg-gray-200 rounded" />
+      </li>
+    ))}
+  </ul>
+) : agendamentosHoje.length === 0 ? (
+  <p className="text-sm text-nublia-textcont">Nenhum paciente agendado para hoje.</p>
+) : (
+  <ul className="space-y-[6px] text-sm text-nublia-textcont w-full max-w-xl">
                       {agendamentosHoje.map((a) => (
                         <li key={a.id} className="flex items-center gap-2 border-b border-nublia-textcont pb-1">
                           <button
