@@ -9,7 +9,6 @@ export default function TesteDayPicker() {
   return (
     <div className="p-10 bg-white min-h-screen">
       <h2 className="text-lg font-semibold mb-4">Teste do DayPicker</h2>
-      <div className="rdp-root"> {/* 🔧 necessário para aplicar variáveis */}
         <DayPicker
           animate
           mode="single"
@@ -21,6 +20,5 @@ export default function TesteDayPicker() {
           toYear={2030}
         />
       </div>
-    </div>
   )
 }
