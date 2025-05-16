@@ -476,14 +476,25 @@ const eventosParaAgenda = baseEventos
   )
 }
 
-  function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos, rangeVisivel, setRangeVisivel }) {
+ // 📌 Bloco CustomToolbar dentro de CalendarioAgenda.jsx
+
+function CustomToolbar({
+  label,
+  onNavigate,
+  onView,
+  views,
+  view,
+  date,
+  eventos,
+  rangeVisivel,
+  setRangeVisivel // ✅ necessário para atualizar corretamente o intervalo
+}) {
   const [mostrarCalendario, setMostrarCalendario] = useState(false)
   const [mostrarIntervalo, setMostrarIntervalo] = useState(false)
   const containerRef = useRef(null)
   const intervaloRef = useRef(null)
 
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
-
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
   const renderLabel = () => {
@@ -495,11 +506,8 @@ const eventosParaAgenda = baseEventos
       end.setDate(end.getDate() + 6)
       return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
     }
-    if (view === 'agenda') {
-      const start = startOfWeek(date, { weekStartsOn: 1 })
-      const end = new Date(start)
-      end.setMonth(end.getMonth() + 1)
-      return `${f(start, 'dd/MM/yyyy')} – ${f(end, 'dd/MM/yyyy')}`
+    if (view === 'agenda' && rangeVisivel?.start && rangeVisivel?.end) {
+      return `${f(rangeVisivel.start, 'dd/MM/yyyy')} – ${f(rangeVisivel.end, 'dd/MM/yyyy')}`
     }
     return label
   }
@@ -540,35 +548,34 @@ const eventosParaAgenda = baseEventos
           <ChevronRight size={20} />
         </button>
 
-        {/* 📍 DIA e AGENDA clicáveis */}
-{view === 'month' && (
-     <span className="flex items-center gap-2 text-sm font-bold text-nublia-accent rounded-md px-2 py-1">
-     <CalendarDays size={16} />
-    {renderLabel()}
-  </span>
-)}
+        {view === 'month' && (
+          <span className="flex items-center gap-2 text-sm font-bold text-nublia-accent rounded-md px-2 py-1">
+            <CalendarDays size={16} />
+            {renderLabel()}
+          </span>
+        )}
 
-{view === 'day' && (
-  <span
-    ref={containerRef}
-    className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
-    onClick={() => setMostrarCalendario(true)}
-  >
-    <CalendarDays size={16} />
-    {renderLabel()}
-  </span>
-)}
+        {view === 'day' && (
+          <span
+            ref={containerRef}
+            className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
+            onClick={() => setMostrarCalendario(true)}
+          >
+            <CalendarDays size={16} />
+            {renderLabel()}
+          </span>
+        )}
 
-{view === 'agenda' && (
-  <span
-    ref={intervaloRef}
-    className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
-    onClick={() => setMostrarIntervalo(true)}
-  >
-    <CalendarDays size={16} />
-    {renderLabel()}
-  </span>
-)}
+        {view === 'agenda' && (
+          <span
+            ref={intervaloRef}
+            className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
+            onClick={() => setMostrarIntervalo(true)}
+          >
+            <CalendarDays size={16} />
+            {renderLabel()}
+          </span>
+        )}
 
         {mostrarCalendario && view === 'day' && containerRef.current && (
           <DatePickerMesNublia
@@ -584,23 +591,16 @@ const eventosParaAgenda = baseEventos
 
         {mostrarIntervalo && view === 'agenda' && intervaloRef.current && (
           <DatePickerIntervaloNublia
-            intervaloAtual={{
-              start: startOfWeek(date, { weekStartsOn: 1 }),
-              end: (() => {
-                const end = startOfWeek(date, { weekStartsOn: 1 })
-                end.setMonth(end.getMonth() + 1)
-                return end
-              })()
-            }}
+            intervaloAtual={rangeVisivel}
             anchorRef={intervaloRef}
-onSelecionarIntervalo={({ from, to }) => {
-  if (from && to) {
-    setRangeVisivel({ start: from, end: to }) // ✅ atualiza range
-    setMostrarIntervalo(false)
-    onNavigate(from)
-    onRangeChange?.({ start: from, end: to })
-  }
-}}
+            onSelecionarIntervalo={({ from, to }) => {
+              if (from && to) {
+                setRangeVisivel({ start: from, end: to }) // ✅ atualiza o intervalo
+                setMostrarIntervalo(false)
+                onNavigate(from)
+                onRangeChange?.({ start: from, end: to })
+              }
+            }}
             onClose={() => setMostrarIntervalo(false)}
           />
         )}
@@ -634,3 +634,4 @@ onSelecionarIntervalo={({ from, to }) => {
     </div>
   )
 }
+
