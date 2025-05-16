@@ -284,26 +284,12 @@ useEffect(() => {
     <CalendarClock size={18} />
   </button>
 
-{user?.role !== 'secretaria' && (
+{user?.role !== 'secretaria' && pacienteId && agendamentoId && (
   <button
-    onClick={async () => {
-      console.log('[DEBUG] Chamando onIniciarAtendimento com:', pacienteId, agendamentoId)
-      try {
-        const res = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-        const paciente = res.data
-
-        if (!paciente || !paciente.data_nascimento) {
-          toastErro('Paciente sem data de nascimento.')
-          return
-        }
-
-        // ✅ Aciona o callback correto
-        onIniciarAtendimento?.(pacienteId, agendamentoId)
-        onCancelar()
-      } catch (err) {
-        console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
-        toastErro('Erro ao iniciar atendimento.')
-      }
+    onClick={() => {
+      console.log('[DEBUG] onIniciarAtendimento com:', pacienteId, agendamentoId)
+      onIniciarAtendimento?.(pacienteId, agendamentoId)
+      onCancelar()
     }}
     className="text-nublia-accent hover:text-nublia-orange"
     title="Iniciar atendimento"
@@ -311,6 +297,7 @@ useEffect(() => {
     <PlayCircle size={18} />
   </button>
 )}
+
 
 
 
