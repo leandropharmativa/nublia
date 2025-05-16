@@ -97,7 +97,7 @@ const buscarPrescritor = async (id) => {
   <div>
     <h1 className="text-xl font-semibold text-nublia-accent flex items-center gap-2">
       <CalendarDays size={20} />
-      Agenda do{user?.genero === 'feminino' ? 'a' : user?.genero === 'masculino' ? '' : '(a)'} Dr{user?.genero === 'feminino' ? 'a' : user?.genero === 'masculino' ? '' : '(a)'} {nomePrescritor}
+      Agenda {user?.genero === 'feminino' ? 'Dra' : user?.genero === 'masculino' ? 'Dr' : 'Dr(a)'} {nomePrescritor}
     </h1>
 
     {user?.nome &&
@@ -109,8 +109,6 @@ const buscarPrescritor = async (id) => {
     )}
   </div>
 </div>
-
-
 
       <CalendarioAgenda
         eventos={eventos}
