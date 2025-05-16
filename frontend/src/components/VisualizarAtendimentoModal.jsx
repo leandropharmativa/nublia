@@ -26,7 +26,7 @@ export default function VisualizarAtendimentoModal({ atendimento, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[999]">
-      <div className="bg-white p-6 rounded-2xl w-full max-w-3xl mx-4 overflow-y-auto max-h-[90vh]">
+      <div className="bg-white p-6 rounded-2xl w-full max-w-3xl mx-4 overflow-y-auto max-h-[90vh] animate-fadeIn">
         <h2 className="text-xl font-bold text-nublia-accent mb-4">Visualizar Atendimento</h2>
 
         {erro && <p className="text-orange-600 text-sm mb-4 text-center">{erro}</p>}
