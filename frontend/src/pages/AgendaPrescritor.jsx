@@ -107,14 +107,14 @@ useEffect(() => {
   const listener = (e) => {
     const { agendamento_id, ...paciente } = e.detail
     setPacienteSelecionado(paciente)
-    setAgendamentoParaFicha(agendamento_id || null)
+    setAgendamentoSelecionado(agendamento_id || null)
+    setAgendamentoParaFicha(agendamento_id || null) // ✅ ESSA LINHA GARANTE O ID NA FICHA
     setMostrarFicha(true)
   }
 
   window.addEventListener('IniciarFichaAtendimento', listener)
   return () => window.removeEventListener('IniciarFichaAtendimento', listener)
 }, [])
-
 
   const handleNovoSlot = (slotInfo) => {
     setSlotSelecionado(slotInfo.start)
