@@ -79,7 +79,7 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+      <div className="bg-white rounded-2xl p-6 max-w-md w-full animate-fadeIn transition-all duration-200">
         <h2 className="text-xl font-semibold text-nublia-primary mb-4 flex items-center gap-2">
           <CalendarPlus2 className="w-5 h-5" />
           Cadastrar horário disponível
@@ -131,7 +131,11 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
           <Botao variante="claro" onClick={onCancelar} className="rounded-full">
             Fechar
           </Botao>
-          <Botao className="rounded-full flex items-center gap-2" onClick={handleConfirmar} disabled={!horaDigitada}>
+          <Botao
+            className="rounded-full flex items-center gap-2"
+            onClick={handleConfirmar}
+            disabled={!horaDigitada}
+          >
             Cadastrar Horário
             <ClockPlus className="w-4 h-4" />
           </Botao>
