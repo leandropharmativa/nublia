@@ -194,29 +194,6 @@ function AgendaPrescritor({ mostrarAgenda }) {
     setMostrarPerfil(true)
   }
 
-  const eventosParaAgenda = eventos
-    .filter(ev => {
-      const nomeFiltrado = filtroTexto.trim().length > 1
-        ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-            .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
-        : true
-
-      const statusFiltrado = filtroStatus ? ev.status === filtroStatus : true
-
-      if (filtroTexto.trim().length > 1) {
-        return nomeFiltrado && statusFiltrado
-      }
-
-      if (viewAtual === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
-        const dataEv = new Date(ev.start)
-        const dentroDoRange = dataEv >= rangeVisivel.start && dataEv < addDays(rangeVisivel.end, 1)
-        return nomeFiltrado && statusFiltrado && dentroDoRange
-      }
-
-      return nomeFiltrado && statusFiltrado
-    })
-    .sort((a, b) => new Date(a.start) - new Date(b.start))
-
   return (
     <div className="w-full flex flex-col gap-4 relative">
       <CalendarioAgenda
