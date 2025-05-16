@@ -70,10 +70,11 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
           )}
         </div>
 
-        {/* Agendamento */}
-        <div className="mb-3 text-gray-700">
-          <p className="font-semibold mb-1">Agendamento:</p>
-          <div className="pl-1">
+        {/* Duas colunas: Agendado / Atendido */}
+        <div className="grid grid-cols-2 gap-4 mt-2">
+          {/* Agendamento */}
+          <div>
+            <p className="font-semibold mb-1">Agendado para:</p>
             <div className="flex items-center gap-2 mb-1">
               <Calendar size={14} className="text-gray-500" />
               <span>{data}</span>
@@ -83,26 +84,26 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
               <span>{horaAgendada}h</span>
             </div>
           </div>
-        </div>
 
-        {/* Atendimento */}
-        {evento.criado_em ? (
-          <div className="text-gray-700">
-            <p className="font-semibold mb-1">Atendimento:</p>
-            <div className="pl-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Calendar size={14} className="text-gray-500" />
-                <span>{dataAtend}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock size={14} className="text-gray-500" />
-                <span>{horaAtend}h</span>
-              </div>
-            </div>
+          {/* Atendimento */}
+          <div>
+            <p className="font-semibold mb-1">Atendido em:</p>
+            {evento.criado_em ? (
+              <>
+                <div className="flex items-center gap-2 mb-1">
+                  <Calendar size={14} className="text-gray-500" />
+                  <span>{dataAtend}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock size={14} className="text-gray-500" />
+                  <span>{horaAtend}h</span>
+                </div>
+              </>
+            ) : (
+              <span className="text-gray-500">---</span>
+            )}
           </div>
-        ) : (
-          <div className="text-gray-500 mt-2">Hora do atendimento: ---</div>
-        )}
+        </div>
       </div>
     </div>,
     document.body
