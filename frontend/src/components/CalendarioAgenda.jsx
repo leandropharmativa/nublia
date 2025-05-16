@@ -30,6 +30,10 @@ import ModalFinalizado from './ModalFinalizado'
 import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
 import { toastErro } from '../utils/toastUtils'
 
+
+const [filtroTexto, setFiltroTexto] = useState('')
+const [filtroStatus, setFiltroStatus] = useState(null)
+
 const locales = { 'pt-BR': ptBR }
 
 const localizer = dateFnsLocalizer({
