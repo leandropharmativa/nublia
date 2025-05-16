@@ -1,7 +1,7 @@
 // 📄 src/components/TesteDayPicker.jsx
 
 import { DayPicker } from 'react-day-picker'
-import 'react-day-picker/dist/style.css'
+
 import './CalendarioCustom.css' // no seu App.jsx ou componente pai
 import { ptBR } from 'date-fns/locale'
 
