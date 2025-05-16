@@ -92,23 +92,27 @@ const handleSalvar = async (mostrarToast = true) => {
   }
 }
 
-  const handleFinalizar = async () => {
+ const handleFinalizar = async () => {
+  try {
+    console.log('🟢 Finalizando atendimento...')
     await handleSalvar(false)
 
     if (agendamentoId) {
-      try {
-        await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
-          id: agendamentoId,
-        })
-      } catch (err) {
-        console.error('Erro ao finalizar agendamento:', err)
-        toastErro('Erro ao atualizar agendamento.')
-      }
+      console.log('📤 Enviando finalização do agendamento ID:', agendamentoId)
+      await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
+        id: agendamentoId,
+      })
+    } else {
+      console.warn('⚠️ Nenhum agendamentoId fornecido. Nada será finalizado.')
     }
 
     toastSucesso('Atendimento salvo e finalizado!')
     onFinalizar()
+  } catch (err) {
+    console.error('❌ Erro ao finalizar atendimento/agendamento:', err)
+    toastErro('Erro ao finalizar atendimento.')
   }
+}
 
   const houveAlteracao = Object.values(formulario).some(valor => valor.trim() !== '')
 
