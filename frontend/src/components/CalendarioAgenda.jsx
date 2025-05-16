@@ -1,4 +1,4 @@
-// 📄 components/CalendarioAgenda.jsx
+          // 📄 components/CalendarioAgenda.jsx
 import { useState, useEffect, useRef } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 
@@ -29,6 +29,7 @@ import {
 import ModalFinalizado from './ModalFinalizado'
 import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
 import DatePickerMesNublia from './DatePickerMesNublia'
+import DatePickerIntervaloNublia from './DatePickerIntervaloNublia'
 import { toastErro } from '../utils/toastUtils'
 
 const locales = { 'pt-BR': ptBR }
@@ -474,7 +475,9 @@ const eventosParaAgenda = baseEventos
 
 function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
   const [mostrarCalendario, setMostrarCalendario] = useState(false)
+  const [mostrarIntervalo, setMostrarIntervalo] = useState(false)
   const containerRef = useRef(null)
+  const intervaloRef = useRef(null)
 
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
 
@@ -488,6 +491,12 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
       const end = new Date(start)
       end.setDate(end.getDate() + 6)
       return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
+    }
+    if (view === 'agenda') {
+      const start = startOfWeek(date, { weekStartsOn: 1 })
+      const end = new Date(start)
+      end.setMonth(end.getMonth() + 1)
+      return `${f(start, 'dd/MM/yyyy')} – ${f(end, 'dd/MM/yyyy')}`
     }
     return label
   }
@@ -527,29 +536,63 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
           <ChevronRight size={20} />
         </button>
-<span
-  ref={containerRef}
-  className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
-  onClick={() => {
-    if (view === 'day') setMostrarCalendario(!mostrarCalendario)
-  }}
->
-  <CalendarDays size={16} />
-  {renderLabel()}
-</span>
 
-{mostrarCalendario && view === 'day' && containerRef.current && (
-  <DatePickerMesNublia
-    dataAtual={date}
-    anchorRef={containerRef}
-    aoSelecionarDia={(novaData) => {
-      setMostrarCalendario(false)
-      onNavigate(novaData)
-    }}
-    onClose={() => setMostrarCalendario(false)}
-  />
-)}
+        {/* 📍 DIA e AGENDA clicáveis */}
+        {view === 'day' && (
+          <span
+            ref={containerRef}
+            className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
+            onClick={() => setMostrarCalendario(!mostrarCalendario)}
+          >
+            <CalendarDays size={16} />
+            {renderLabel()}
+          </span>
+        )}
 
+        {view === 'agenda' && (
+          <span
+            ref={intervaloRef}
+            className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
+            onClick={() => setMostrarIntervalo(!mostrarIntervalo)}
+          >
+            <CalendarDays size={16} />
+            {renderLabel()}
+          </span>
+        )}
+
+        {mostrarCalendario && view === 'day' && containerRef.current && (
+          <DatePickerMesNublia
+            dataAtual={date}
+            anchorRef={containerRef}
+            aoSelecionarDia={(novaData) => {
+              setMostrarCalendario(false)
+              onNavigate(novaData)
+            }}
+            onClose={() => setMostrarCalendario(false)}
+          />
+        )}
+
+        {mostrarIntervalo && view === 'agenda' && intervaloRef.current && (
+          <DatePickerIntervaloNublia
+            intervaloAtual={{
+              start: startOfWeek(date, { weekStartsOn: 1 }),
+              end: (() => {
+                const end = startOfWeek(date, { weekStartsOn: 1 })
+                end.setMonth(end.getMonth() + 1)
+                return end
+              })()
+            }}
+            anchorRef={intervaloRef}
+            onSelecionarIntervalo={({ from, to }) => {
+              if (from && to) {
+                setMostrarIntervalo(false)
+                onNavigate(from)
+                onRangeChange?.({ start: from, end: to })
+              }
+            }}
+            onClose={() => setMostrarIntervalo(false)}
+          />
+        )}
       </div>
 
       <div className="flex items-center gap-3">
