@@ -9,7 +9,47 @@ import { useState, useEffect } from 'react'
 export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionarDia, onClose }) {
   const [posicao, setPosicao] = useState(null)
 
-  // ✅ posicionamento relativo ao botão clicado
+  // Força estilos ao head
+  useEffect(() => {
+    const styleTagId = 'nublia-datepicker-overrides'
+    if (!document.getElementById(styleTagId)) {
+      const style = document.createElement('style')
+      style.id = styleTagId
+      style.innerHTML = `
+        .rdp {
+          transition: all 0.3s ease;
+        }
+        .rdp-nav_button {
+          color: #353A8C !important;
+        }
+        .rdp-nav_button svg {
+          stroke: #353A8C !important;
+        }
+        .rdp-caption_dropdowns select {
+          font-size: 12px !important;
+          padding: 2px 6px !important;
+          height: auto !important;
+          line-height: 1.2 !important;
+        }
+        .rdp-head_cell {
+          font-size: 11px !important;
+        }
+        .rdp-day {
+          font-size: 12px !important;
+        }
+        .rdp-day_selected {
+          background-color: #353A8C !important;
+          color: white !important;
+        }
+        .rdp-day_today {
+          color: #353A8C !important;
+          font-weight: bold !important;
+        }
+      `
+      setTimeout(() => document.head.appendChild(style), 0)
+    }
+  }, [])
+
   useEffect(() => {
     if (anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect()
@@ -30,6 +70,7 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
     >
       <DayPicker
         mode="single"
+        defaultMonth={dataAtual}  {/* 🔄 ativa mês inicial + animações */}
         selected={dataAtual}
         onDayClick={(date) => {
           aoSelecionarDia(date)
@@ -44,7 +85,7 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
           selected: 'bg-nublia-accent text-white',
           today: 'text-nublia-accent font-semibold',
         }}
-        className="text-sm"
+        className="rdp text-sm" // 📌 força animação e layout padrão
         styles={{
           caption: { fontSize: '0.75rem' },
           head_cell: { fontSize: '0.7rem' },
