@@ -21,30 +21,37 @@
 
 /* ===== ESTILOS FORÇADOS PARA O DAYPICKER ===== */
 
-/* Botão de dia padrão */
+/* Botão de dia padrão (todos os dias) */
 .rdp-day_button {
   width: 36px;
   height: 36px;
-  border-radius: 50%; /* aplica formato circular para todos */
+  border-radius: 50%;
   font-size: 0.875rem;
-  transition: background-color 0.3s ease;
-  color: #1f2937; /* gray-800 padrão */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  color: #1f2937;
   border: none;
+  background-color: transparent;
 }
 
-/* Dia selecionado — círculo preenchido azul escuro */
+/* Hover em dias ativos (não selecionados nem desabilitados) */
+.rdp-day:not(.rdp-selected):not([aria-disabled="true"]) .rdp-day_button:hover {
+  background-color: #BBD3F2 !important;  /* azul Nublia claro */
+  color: #353A8C !important;             /* azul Nublia escuro */
+}
+
+/* Dia selecionado */
 .rdp-selected .rdp-day_button,
 .rdp-day_button[aria-pressed="true"] {
-  background-color: #353A8C !important; /* azul escuro */
+  background-color: #353A8C !important;
   color: white !important;
   font-weight: 600;
   border-radius: 50% !important;
   border: none !important;
 }
 
-/* Dia atual (não selecionado) — círculo com borda laranja */
+/* Dia atual (não selecionado) */
 .rdp-today .rdp-day_button:not([aria-pressed="true"]) {
-  border: 2px solid #f97316 !important;  /* borda laranja */
+  border: 2px solid #f97316 !important;
   background-color: transparent !important;
   color: #353A8C !important;
   font-weight: 600;
@@ -55,6 +62,7 @@
 .rdp-day[aria-disabled="true"] .rdp-day_button {
   color: #b0b0b0 !important;
   opacity: 0.4 !important;
+  cursor: default;
 }
 
 /* Botões de navegação (< >) */
@@ -69,10 +77,10 @@
 }
 
 .rdp-nav_button:hover {
-  background-color: #BBD3F2 !important; /* azul claro Nublia */
+  background-color: #BBD3F2 !important;
 }
 
-/* Ícones < > em azul escuro */
+/* Ícones < > */
 .rdp-chevron {
   fill: #353A8C !important;
 }
