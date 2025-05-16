@@ -119,6 +119,9 @@
   background-color: #f8f8f8 !important; /* tom mais claro */
   opacity: 0.6; /* levemente esmaecido */
 }
+.rbc-off-range .rbc-day-bg {
+  color: #b0b0b0 !important;
+}
 
 
 
