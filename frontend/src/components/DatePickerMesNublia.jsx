@@ -59,11 +59,15 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
       />
 <style>{`
   .rdp-nav_button {
-    color: #353A8C !important; /* nublia.accent */
+    color: #353A8C !important;
+  }
+  .rdp-nav_button svg {
+    stroke: #353A8C !important;
   }
   .rdp-caption_dropdowns select {
     font-size: 0.75rem !important;
-    padding: 2px 6px;
+    padding: 2px 6px !important;
+    height: auto !important;
   }
 `}</style>
     </div>,
