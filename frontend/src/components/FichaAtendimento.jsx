@@ -37,8 +37,11 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
 
 useEffect(() => {
   console.log("📦 useEffect - agendamentoId recebido:", agendamentoId)
-  setAgendamentoAtual(agendamentoId)
-}, [agendamentoId])
+  if (agendamentoId && !agendamentoAtual) {
+    setAgendamentoAtual(agendamentoId)
+    console.log("✅ agendamentoAtual fixado:", agendamentoId)
+  }
+}, [agendamentoId, agendamentoAtual])
 
   useEffect(() => {
     const carregarAnteriores = async () => {
