@@ -29,6 +29,7 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
       style={{ top: posicao.top, left: posicao.left }}
     >
       <DayPicker
+        animate
         mode="single"
         selected={dataAtual}
         defaultMonth={dataAtual}
@@ -36,7 +37,7 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
           aoSelecionarDia(date)
           onClose?.()
         }}
-        captionLayout="dropdown"
+        captionLayout="buttons"
         locale={ptBR}
         showOutsideDays
         fromYear={2020}
