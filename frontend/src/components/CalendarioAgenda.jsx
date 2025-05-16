@@ -134,7 +134,7 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
 }
 
 // 📌 Customização da view diária
-function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendimento }) {
+function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendimento, ocultarIniciar = false }) {
   return (
     <div className="mt-4">
       <ListaAgendamentosAgenda
@@ -142,6 +142,7 @@ function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendi
         aoVerPerfil={onVerPerfil}
         aoVerAgendamento={onVerAgendamento}
         aoIniciarAtendimento={onIniciarAtendimento}
+        ocultarIniciar={ocultarIniciar} // ✅ Aqui está o repasse correto
       />
     </div>
   )
