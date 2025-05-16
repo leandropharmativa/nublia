@@ -294,7 +294,7 @@ export default function CalendarioAgenda({
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={eventos.map(ev => ({ ...ev, title: ev.nome || ev.title }))}
+        events={eventosFiltrados.map(ev => ({ ...ev, title: ev.nome || ev.title }))}
         startAccessor="start"
         endAccessor="end"
         view={view}
