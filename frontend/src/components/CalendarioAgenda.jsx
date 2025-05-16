@@ -89,22 +89,11 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
                 : `${hora} Disponível`
 
           let icone
-if (ev.status === 'agendado') {
-  icone = (
-    <UserCog
-      size={14}
-      className="text-orange-600 hover:text-nublia-primary transition-colors"
-    />
-  )
-} else if (ev.status === 'finalizado') {
-  icone = (
-    <UserRoundCheck
-      size={14}
-      className="text-nublia-primary hover:text-nublia-primary/80 transition-colors"
-    />
-  )
-}
- else {
+          if (ev.status === 'agendado') {
+            icone = <UserCog size={14} className="text-orange-600" />
+          } else if (ev.status === 'finalizado') {
+            icone = <UserRoundCheck size={14} className="text-nublia-primary" />
+          } else {
             icone = (
               <Clock
                 size={14}
