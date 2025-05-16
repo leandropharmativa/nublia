@@ -1,7 +1,7 @@
 // 📄 components/CalendarioAgenda.jsx
-import { useState, useEffect, useRef } from 'react'
-import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 
+import { useState, useEffect } from 'react'
+import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import {
   format,
   parse,
@@ -28,7 +28,6 @@ import {
 
 import ModalFinalizado from './ModalFinalizado'
 import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
-import DatePickerMesNublia from './DatePickerMesNublia'
 import { toastErro } from '../utils/toastUtils'
 
 const locales = { 'pt-BR': ptBR }
@@ -473,9 +472,6 @@ const eventosParaAgenda = baseEventos
 }
 
 function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
-  const [mostrarCalendario, setMostrarCalendario] = useState(false)
-  const containerRef = useRef(null)
-
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
 
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
@@ -493,19 +489,14 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
   }
 
   const contar = () => {
-    const agora = new Date()
     let eventosFiltrados = eventos
-
     if (view === 'week') {
       eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
     } else if (view === 'day') {
       eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
     }
-
     const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
-    const disponiveis = eventosFiltrados.filter(e =>
-      e.status === 'disponivel' && new Date(e.start) > agora
-    ).length
+    const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
     return { agendados, disponiveis }
   }
 
@@ -519,7 +510,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
   }
 
   return (
-    <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200 relative" ref={containerRef}>
+    <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
       <div className="flex items-center gap-2">
         <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
           <ChevronLeft size={20} />
@@ -527,29 +518,10 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
           <ChevronRight size={20} />
         </button>
-<span
-  ref={containerRef}
-  className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer hover:underline"
-  onClick={() => {
-    if (view === 'day') setMostrarCalendario(!mostrarCalendario)
-  }}
->
-  <CalendarDays size={16} />
-  {renderLabel()}
-</span>
-
-{mostrarCalendario && view === 'day' && containerRef.current && (
-  <DatePickerMesNublia
-    dataAtual={date}
-    anchorRef={containerRef}
-    aoSelecionarDia={(novaData) => {
-      setMostrarCalendario(false)
-      onNavigate(novaData)
-    }}
-    onClose={() => setMostrarCalendario(false)}
-  />
-)}
-
+        <span className="flex items-center gap-2 text-sm font-bold text-nublia-accent">
+          <CalendarDays size={16} />
+          {renderLabel()}
+        </span>
       </div>
 
       <div className="flex items-center gap-3">
