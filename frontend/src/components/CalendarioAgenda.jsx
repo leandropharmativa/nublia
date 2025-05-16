@@ -38,7 +38,6 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
-// 📌 Componente de ícones por dia no mês
 function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdicionarHorario, aoMudarParaDia }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
   const doDia = eventos.filter(ev => isSameDay(ev.start, data))
@@ -131,7 +130,6 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
   )
 }
 
-// 📌 Customização da view diária (day view)
 function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendimento }) {
   return (
     <div className="mt-4">
@@ -162,9 +160,44 @@ export default function CalendarioAgenda({
   const [filtroStatus, setFiltroStatus] = useState('todos')
   const [eventosFiltrados, setEventosFiltrados] = useState([])
 
-  const filtrarEventos = (lista, status) => {
-    if (!status || status === 'todos') return lista
-    return lista.filter(ev => ev.status === status)
+  useEffect(() => {
+    if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
+      const filtrados = eventos.filter(ev => {
+        const data = new Date(ev.start)
+        return data >= rangeVisivel.start && data <= rangeVisivel.end
+      })
+      setEventosFiltrados(filtrados)
+    } else {
+      setEventosFiltrados(eventos)
+    }
+  }, [view, eventos, rangeVisivel])
+
+  const handleNavigate = (action) => {
+    let novaData = new Date(dataAtual)
+
+    if (view === 'day') {
+      if (action === 'PREV') novaData.setDate(novaData.getDate() - 1)
+      else if (action === 'NEXT') novaData.setDate(novaData.getDate() + 1)
+      else if (action === 'TODAY') novaData = new Date()
+      else if (action instanceof Date) novaData = action
+    } else {
+      novaData = action instanceof Date ? action : new Date(dataAtual)
+    }
+
+    setDataAtual(novaData)
+    onDataChange?.(novaData)
+  }
+
+  const handleViewChange = (novaView) => {
+    setView(novaView)
+    onViewChange?.(novaView)
+
+    // 🧠 Sempre que mudar manualmente para 'day', mostra o dia atual
+    if (novaView === 'day') {
+      const hoje = new Date()
+      setDataAtual(hoje)
+      onDataChange?.(hoje)
+    }
   }
 
   const aoSelecionarEventoOuFinalizado = (ev) => {
@@ -191,124 +224,10 @@ export default function CalendarioAgenda({
     return {}
   }
 
-  const handleNavigate = (action) => {
-    let novaData = new Date(dataAtual)
-
-    if (view === 'day') {
-      if (action === 'PREV') novaData.setDate(novaData.getDate() - 1)
-      else if (action === 'NEXT') novaData.setDate(novaData.getDate() + 1)
-      else if (action === 'TODAY') novaData = new Date()
-      else if (action instanceof Date) novaData = action
-    } else {
-      novaData = action instanceof Date ? action : new Date(dataAtual)
-    }
-
-    setDataAtual(novaData)
-    onDataChange?.(novaData)
-  }
-
-const handleViewChange = (novaView) => {
-  setView(novaView)
-  onViewChange?.(novaView)
-
-  // Forçar dia de hoje ao clicar no botão 'Dia'
-  if (novaView === 'day') {
-    const hoje = new Date()
-    setDataAtual(hoje)
-    onDataChange?.(hoje)
-  }
-}
-
-useEffect(() => {
-  if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
-    const filtrados = eventos.filter(ev => {
-      const data = new Date(ev.start)
-      return data >= rangeVisivel.start && data <= rangeVisivel.end
-    })
-    setEventosFiltrados(filtrados)
-  } else {
-    setEventosFiltrados(eventos)
-  }
-}, [view, eventos, rangeVisivel])
-
-  const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
-  const eventosVisiveis = filtrarEventos(eventosDoDia, filtroStatus)
-
-  if (view === 'day') {
-    return (
-      <div className="p-4 bg-white rounded overflow-hidden">
-        <CustomToolbar
-          view={view}
-          views={['month', 'day', 'agenda']}
-          onNavigate={handleNavigate}
-          onView={handleViewChange}
-          label=""
-          date={dataAtual}
-          eventos={eventos}
-        />
-
-        <div className="flex justify-end mt-6 mb-4">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? 'todos' : 'disponivel')}
-              title="Disponíveis"
-              className={`p-2 rounded-full border transition ${
-                filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-              }`}
-            >
-              <Clock size={18} />
-            </button>
-
-            <button
-              onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? 'todos' : 'agendado')}
-              title="Agendados"
-              className={`p-2 rounded-full border transition ${
-                filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-              }`}
-            >
-              <UserRound size={18} />
-            </button>
-
-            <button
-              onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? 'todos' : 'finalizado')}
-              title="Finalizados"
-              className={`p-2 rounded-full border transition ${
-                filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-              }`}
-            >
-              <UserRoundCheck size={18} />
-            </button>
-          </div>
-        </div>
-
-        <CustomDayView
-          eventos={eventosVisiveis}
-          onVerPerfil={onAbrirPerfil}
-          onVerAgendamento={aoSelecionarEventoOuFinalizado}
-          onIniciarAtendimento={(pacienteId) => {
-            if (!pacienteId) {
-              toastErro('Paciente não encontrado para este agendamento.')
-              return
-            }
-
-            fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-              .then(res => res.json())
-              .then(paciente => {
-                if (!paciente || !paciente.data_nascimento) {
-                  toastErro('Paciente sem data de nascimento.')
-                  return
-                }
-
-                window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
-                  detail: paciente
-                }))
-              })
-              .catch(() => toastErro('Erro ao buscar paciente.'))
-          }}
-        />
-      </div>
-    )
-  }
+  const eventosDiaAtual = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
+  const eventosFiltradosStatus = filtroStatus === 'todos'
+    ? eventosDiaAtual
+    : eventosDiaAtual.filter(ev => ev.status === filtroStatus)
 
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
@@ -382,6 +301,68 @@ useEffect(() => {
           }
         }}
       />
+
+      {view === 'agenda' && (
+        <ListaAgendamentosAgenda
+          eventos={eventosFiltrados}
+          aoVerPerfil={onAbrirPerfil}
+          aoVerAgendamento={aoSelecionarEventoOuFinalizado}
+          aoIniciarAtendimento={(pacienteId) => {
+            if (!pacienteId) {
+              toastErro('Paciente não encontrado.')
+              return
+            }
+
+            fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+              .then(res => res.json())
+              .then(paciente => {
+                if (!paciente || !paciente.data_nascimento) {
+                  toastErro('Paciente sem data de nascimento.')
+                  return
+                }
+
+                window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
+                  detail: paciente
+                }))
+              })
+              .catch(() => toastErro('Erro ao buscar paciente.'))
+          }}
+        />
+      )}
+
+      {view === 'day' && (
+        <div className="flex justify-end mt-6 mb-4">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? 'todos' : 'disponivel')}
+              title="Disponíveis"
+              className={`p-2 rounded-full border transition ${
+                filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+              }`}
+            >
+              <Clock size={18} />
+            </button>
+            <button
+              onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? 'todos' : 'agendado')}
+              title="Agendados"
+              className={`p-2 rounded-full border transition ${
+                filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+              }`}
+            >
+              <UserRound size={18} />
+            </button>
+            <button
+              onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? 'todos' : 'finalizado')}
+              title="Finalizados"
+              className={`p-2 rounded-full border transition ${
+                filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
+              }`}
+            >
+              <UserRoundCheck size={18} />
+            </button>
+          </div>
+        </div>
+      )}
 
       <ModalFinalizado
         evento={modalFinalizado}
