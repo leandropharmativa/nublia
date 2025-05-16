@@ -179,7 +179,7 @@ export default function CalendarioAgenda({
   const ehSecretaria = user?.role === 'secretaria'
   const [view, setView] = useState('month')
   const [dataAtual, setDataAtual] = useState(new Date())
-  const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
+  const [, set] = useState({ start: null, end: null })
   const [modalFinalizado, setModalFinalizado] = useState(null)
   const [filtroStatus, setFiltroStatus] = useState('todos')
   const [filtroTexto, setFiltroTexto] = useState('')
@@ -242,23 +242,17 @@ export default function CalendarioAgenda({
   }
 
 useEffect(() => {
-  if (view === 'agenda') {
-    const inicio = new Date(dataAtual)
-    inicio.setHours(0, 0, 0, 0)
-
-    const fim = new Date(inicio)
-    fim.setMonth(fim.getMonth() + 1)
-
+  if (view === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
     const filtrados = eventos.filter(ev => {
       const data = new Date(ev.start)
-      return data >= inicio && data < fim
+      return data >= rangeVisivel.start && data <= rangeVisivel.end
     })
-
     setEventosFiltrados(filtrados)
   } else {
     setEventosFiltrados(eventos)
   }
-}, [view, eventos, dataAtual])
+}, [view, eventos, dataAtual, rangeVisivel])
+
 
   useEffect(() => {
   if (view === 'month' && !rangeVisivel.start && !rangeVisivel.end) {
