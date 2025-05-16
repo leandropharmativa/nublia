@@ -6,20 +6,32 @@ import 'react-day-picker/dist/style.css'
 import { ptBR } from 'date-fns/locale'
 import { useState, useEffect } from 'react'
 
-export default function DatePickerMesNublia({ dataAtual, aoSelecionarDia, onClose }) {
+export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionarDia, onClose }) {
   const [mesVisivel, setMesVisivel] = useState(() =>
     new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1)
   )
+  const [posicao, setPosicao] = useState({ top: 100, left: 100 })
 
   useEffect(() => {
     setMesVisivel(new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1))
-  }, [dataAtual])
+
+    if (anchorRef?.current) {
+      const rect = anchorRef.current.getBoundingClientRect()
+      setPosicao({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+      })
+    }
+  }, [dataAtual, anchorRef])
 
   const portalEl = document.getElementById('datepicker-root')
   if (!portalEl) return null
 
   return createPortal(
-    <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[9999] bg-white p-3 rounded-lg border border-gray-200 shadow-xl">
+    <div
+      className="absolute z-[9999] bg-white p-3 rounded-lg border border-gray-200 shadow-xl"
+      style={{ top: posicao.top, left: posicao.left, position: 'absolute' }}
+    >
       <DayPicker
         mode="single"
         month={mesVisivel}
