@@ -243,7 +243,9 @@ useEffect(() => {
   const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
   const eventosVisiveis = filtrarEventos(eventosDoDia, filtroStatus)
 
-const eventosParaAgenda = eventosFiltrados
+const baseEventos = filtroTexto.trim().length > 1 ? eventos : eventosFiltrados
+
+const eventosParaAgenda = baseEventos
   .filter(ev => {
     const nomeFiltrado = filtroTexto.trim().length > 1
       ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
@@ -257,7 +259,6 @@ const eventosParaAgenda = eventosFiltrados
     return nomeFiltrado && statusFiltrado
   })
   .sort((a, b) => new Date(a.start) - new Date(b.start))
-
 
   if (view === 'day') {
     return (
