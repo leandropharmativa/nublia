@@ -101,6 +101,18 @@ function AgendaPrescritor({ mostrarAgenda }) {
     }
   }, [mostrarAgenda])
 
+  useEffect(() => {
+  const listener = (e) => {
+    const { agendamento_id, ...paciente } = e.detail
+    setPacienteSelecionado(paciente)
+    setAgendamentoSelecionado(agendamento_id || null) // garante ID do agendamento
+    setMostrarFicha(true)
+  }
+
+  window.addEventListener('IniciarFichaAtendimento', listener)
+  return () => window.removeEventListener('IniciarFichaAtendimento', listener)
+}, [])
+
   const handleNovoSlot = (slotInfo) => {
     setSlotSelecionado(slotInfo.start)
     setModalAberto(true)
@@ -250,6 +262,18 @@ function AgendaPrescritor({ mostrarAgenda }) {
           onClose={() => setMostrarFicha(false)}
         />
       )}
+
+      {mostrarFicha && pacienteSelecionado && (
+  <FichaAtendimento
+    paciente={pacienteSelecionado}
+    agendamentoId={agendamentoSelecionado} // <- garante vínculo com agendamento
+    onFinalizar={() => {
+      setMostrarFicha(false)
+      carregarEventos()
+    }}
+  />
+)}
+
 
       {modalFinalizadoAberto && (
         <ModalFinalizado
