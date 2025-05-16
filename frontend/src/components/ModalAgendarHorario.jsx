@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
@@ -284,12 +283,27 @@ useEffect(() => {
     <CalendarClock size={18} />
   </button>
 
-{user?.role !== 'secretaria' && pacienteId && agendamentoId && (
+{user?.role !== 'secretaria' && (
   <button
-    onClick={() => {
-      console.log('[DEBUG] onIniciarAtendimento com:', pacienteId, agendamentoId)
-      onIniciarAtendimento?.(pacienteId, agendamentoId)
-      onCancelar()
+    onClick={async () => {
+      console.log('[DEBUG] Disparando evento global para iniciar ficha')
+      try {
+        const res = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+        const paciente = res.data
+
+        if (!paciente || !paciente.data_nascimento) {
+          toastErro('Paciente sem data de nascimento.')
+          return
+        }
+
+        window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+          detail: paciente
+        }))
+        onCancelar()
+      } catch (err) {
+        console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
+        toastErro('Erro ao iniciar atendimento.')
+      }
     }}
     className="text-nublia-accent hover:text-nublia-orange"
     title="Iniciar atendimento"
@@ -297,8 +311,6 @@ useEffect(() => {
     <PlayCircle size={18} />
   </button>
 )}
-
-
 
 
 
