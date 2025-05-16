@@ -538,22 +538,33 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         </button>
 
         {/* 📍 DIA e AGENDA clicáveis */}
-{(view === 'day' || view === 'agenda' || view === 'month') && (
+{view === 'month' && (
+  <span className="text-sm font-bold text-nublia-accent px-2 py-1">
+    {renderLabel()}
+  </span>
+)}
+
+{view === 'day' && (
   <span
-    ref={view === 'day' ? containerRef : view === 'agenda' ? intervaloRef : null}
-    onClick={() => {
-      if (view === 'day') setMostrarCalendario(true)
-      if (view === 'agenda') setMostrarIntervalo(true)
-    }}
-    className={`flex items-center gap-2 text-sm font-bold ${
-      view === 'month' ? 'text-gray-700' : 'text-nublia-accent cursor-pointer hover:bg-[#BBD3F2] hover:text-[#353A8C]'
-    } rounded-md px-2 py-1 transition-colors`}
+    ref={containerRef}
+    className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
+    onClick={() => setMostrarCalendario(true)}
   >
     <CalendarDays size={16} />
     {renderLabel()}
   </span>
 )}
 
+{view === 'agenda' && (
+  <span
+    ref={intervaloRef}
+    className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
+    onClick={() => setMostrarIntervalo(true)}
+  >
+    <CalendarDays size={16} />
+    {renderLabel()}
+  </span>
+)}
 
         {mostrarCalendario && view === 'day' && containerRef.current && (
           <DatePickerMesNublia
