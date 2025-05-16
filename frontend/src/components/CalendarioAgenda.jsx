@@ -1,4 +1,5 @@
 // 📄 components/CalendarioAgenda.jsx
+
 import { useState, useEffect } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import {
@@ -21,7 +22,8 @@ import {
   CalendarClock,
   Clock,
   UserCog,
-  UserRound
+  UserRound,
+  Search
 } from 'lucide-react'
 
 import ModalFinalizado from './ModalFinalizado'
@@ -131,7 +133,7 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
   )
 }
 
-// 📌 Customização da view diária (day view)
+// 📌 Customização da view diária
 function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendimento }) {
   return (
     <div className="mt-4">
@@ -160,6 +162,7 @@ export default function CalendarioAgenda({
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
   const [modalFinalizado, setModalFinalizado] = useState(null)
   const [filtroStatus, setFiltroStatus] = useState('todos')
+  const [filtroTexto, setFiltroTexto] = useState('')
   const [eventosFiltrados, setEventosFiltrados] = useState([])
 
   const filtrarEventos = (lista, status) => {
@@ -207,32 +210,44 @@ export default function CalendarioAgenda({
     onDataChange?.(novaData)
   }
 
-const handleViewChange = (novaView) => {
-  setView(novaView)
-  onViewChange?.(novaView)
+  const handleViewChange = (novaView) => {
+    setView(novaView)
+    onViewChange?.(novaView)
 
-  // Forçar dia de hoje ao clicar no botão 'Dia'
-  if (novaView === 'day') {
-    const hoje = new Date()
-    setDataAtual(hoje)
-    onDataChange?.(hoje)
+    if (novaView === 'day') {
+      const hoje = new Date()
+      setDataAtual(hoje)
+      onDataChange?.(hoje)
+    }
   }
-}
 
-useEffect(() => {
-  if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
-    const filtrados = eventos.filter(ev => {
-      const data = new Date(ev.start)
-      return data >= rangeVisivel.start && data <= rangeVisivel.end
-    })
-    setEventosFiltrados(filtrados)
-  } else {
-    setEventosFiltrados(eventos)
-  }
-}, [view, eventos, rangeVisivel])
+  useEffect(() => {
+    if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
+      const filtrados = eventos.filter(ev => {
+        const data = new Date(ev.start)
+        return data >= rangeVisivel.start && data <= rangeVisivel.end
+      })
+      setEventosFiltrados(filtrados)
+    } else {
+      setEventosFiltrados(eventos)
+    }
+  }, [view, eventos, rangeVisivel])
 
   const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
   const eventosVisiveis = filtrarEventos(eventosDoDia, filtroStatus)
+
+  const eventosParaAgenda = eventosFiltrados
+    .filter(ev => {
+      const nomeFiltrado = filtroTexto.trim().length > 1
+        ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+            .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
+        : true
+
+      const statusFiltrado = filtroStatus && filtroStatus !== 'todos' ? ev.status === filtroStatus : true
+
+      return nomeFiltrado && statusFiltrado
+    })
+    .sort((a, b) => new Date(a.start) - new Date(b.start))
 
   if (view === 'day') {
     return (
@@ -249,35 +264,9 @@ useEffect(() => {
 
         <div className="flex justify-end mt-6 mb-4">
           <div className="flex gap-2">
-            <button
-              onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? 'todos' : 'disponivel')}
-              title="Disponíveis"
-              className={`p-2 rounded-full border transition ${
-                filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-              }`}
-            >
-              <Clock size={18} />
-            </button>
-
-            <button
-              onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? 'todos' : 'agendado')}
-              title="Agendados"
-              className={`p-2 rounded-full border transition ${
-                filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-              }`}
-            >
-              <UserRound size={18} />
-            </button>
-
-            <button
-              onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? 'todos' : 'finalizado')}
-              title="Finalizados"
-              className={`p-2 rounded-full border transition ${
-                filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-              }`}
-            >
-              <UserRoundCheck size={18} />
-            </button>
+            <button onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? 'todos' : 'disponivel')} title="Disponíveis" className={`p-2 rounded-full border transition ${filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><Clock size={18} /></button>
+            <button onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? 'todos' : 'agendado')} title="Agendados" className={`p-2 rounded-full border transition ${filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><UserRound size={18} /></button>
+            <button onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? 'todos' : 'finalizado')} title="Finalizados" className={`p-2 rounded-full border transition ${filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><UserRoundCheck size={18} /></button>
           </div>
         </div>
 
@@ -331,21 +320,14 @@ useEffect(() => {
         min={new Date(0)}
         max={new Date(2100, 11, 31)}
         onSelectSlot={({ start }) => {
-          if (view !== 'month' && view !== 'agenda') {
-            aoSelecionarSlot({ start })
-          }
+          if (view !== 'month' && view !== 'agenda') aoSelecionarSlot({ start })
         }}
         onSelectEvent={(event, e) => {
-          if (!e.target.closest('button')) {
-            aoSelecionarEventoOuFinalizado(event)
-          }
+          if (!e.target.closest('button')) aoSelecionarEventoOuFinalizado(event)
         }}
         onRangeChange={(range) => {
           if (range?.start && range?.end) {
-            const novoRange = {
-              start: new Date(range.start),
-              end: new Date(range.end)
-            }
+            const novoRange = { start: new Date(range.start), end: new Date(range.end) }
             setRangeVisivel(novoRange)
             onRangeChange(novoRange)
           }
@@ -382,6 +364,45 @@ useEffect(() => {
           }
         }}
       />
+
+      {view === 'agenda' && (
+        <div className="bg-white rounded px-4 pb-4">
+          <div className="flex justify-between items-start mb-3">
+            <div className="relative w-full max-w-sm">
+              <input
+                type="text"
+                placeholder="Filtrar por nome..."
+                value={filtroTexto}
+                onChange={(e) => setFiltroTexto(e.target.value)}
+                className="pl-10 pr-4 py-[6px] w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary shadow-sm"
+              />
+              <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? 'todos' : 'disponivel')} title="Disponíveis" className={`p-2 rounded-full border transition ${filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><Clock size={18} /></button>
+              <button onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? 'todos' : 'agendado')} title="Agendados" className={`p-2 rounded-full border transition ${filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><UserRound size={18} /></button>
+              <button onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? 'todos' : 'finalizado')} title="Finalizados" className={`p-2 rounded-full border transition ${filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><UserRoundCheck size={18} /></button>
+            </div>
+          </div>
+
+          <ListaAgendamentosAgenda
+            eventos={eventosParaAgenda}
+            aoVerPerfil={onAbrirPerfil}
+            aoVerAgendamento={aoSelecionarEventoOuFinalizado}
+            aoIniciarAtendimento={(id) => {
+              const paciente = eventos.find(p => p.paciente_id === id)
+              if (paciente) {
+                setTimeout(() => {
+                  const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
+                  window.dispatchEvent(evt)
+                }, 0)
+              } else {
+                toastErro('Paciente não encontrado.')
+              }
+            }}
+          />
+        </div>
+      )}
 
       <ModalFinalizado
         evento={modalFinalizado}
