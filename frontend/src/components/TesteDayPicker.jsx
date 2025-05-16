@@ -3,7 +3,7 @@
 import { DayPicker } from 'react-day-picker'
 import { ptBR } from 'date-fns/locale'
 import 'react-day-picker/dist/style.css'
-import '../CalendarioCustom.css' // ou ajuste o caminho conforme necessário
+import './CalendarioCustom.css' // ou ajuste o caminho conforme necessário
 
 export default function TesteDayPicker() {
   return (
