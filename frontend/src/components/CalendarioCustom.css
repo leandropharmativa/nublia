@@ -1,3 +1,4 @@
+/* ===== VARIÁVEIS GLOBAIS PARA DAYPICKER ===== */
 :root {
   --rdp-accent-color: #353A8C;
   --rdp-background-color: white;
@@ -18,27 +19,51 @@
   --rdp-nav-height: 40px;
 }
 
-/* Dia de hoje com borda */
+/* ===== ESTILOS FORÇADOS PARA O DAYPICKER ===== */
+
+/* Botão de dia (padrão) */
+.rdp-day {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: background-color 0.3s ease;
+}
+
+/* Dia atual com borda laranja */
 .rdp-day_today {
   border: 2px solid #f97316 !important;
+  font-weight: 600;
 }
 
-/* Dia selecionado */
+/* Dia selecionado com fundo azul escuro */
 .rdp-day_selected {
-  background-color: var(--rdp-accent-color) !important;
+  background-color: #353A8C !important;
   color: white !important;
-  font-weight: bold;
+  font-weight: 600;
 }
 
-/* Dias fora do mês */
+/* Dias fora do mês (esmaecidos) */
 .rdp-day_outside {
   color: #b0b0b0 !important;
-  opacity: 0.3 !important;
+  opacity: 0.4 !important;
 }
 
-/* ===== Cabeçalhos dos dias da semana ===== */
+/* Botões de navegação */
+.rdp-nav_button {
+  color: #353A8C !important;
+}
+
+/* Título do mês */
+.rdp-caption_label {
+  font-weight: bold;
+  color: #353A8C;
+}
+
+/* ===== ESTILOS BIG CALENDAR (rbc-*) A SEGUIR ===== */
+
 .rbc-month-view .rbc-header {
-  color: #7CAAE6 !important;           /* azul (Tailwind blue-500) */
+  color: #7CAAE6 !important;
   font-weight: 600;
   font-size: 0.875rem;
   text-align: center;
@@ -46,15 +71,13 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  text-transform: none !important;    /* remove MAIÚSCULAS */
+  text-transform: none !important;
 }
 
-/* Domingo: primeiro da semana */
 .rbc-month-view .rbc-header:last-child {
-  color: #f97316 !important; /* laranja (tailwind orange-500) */
+  color: #f97316 !important;
 }
 
-/* ===== Remoção de bordas externas do calendário ===== */
 .rbc-time-view,
 .rbc-time-content,
 .rbc-timeslot-group,
@@ -65,19 +88,16 @@
   border: none !important;
 }
 
-/* ===== Tamanho mínimo das linhas no modo mês ===== */
 .rbc-month-row {
   min-height: 85px;
 }
 
-/* ===== Estilo geral de eventos ===== */
 .rbc-event {
   padding: 1px 2px !important;
   font-size: 0.5rem !important;
   line-height: 0.3rem;
 }
 
-/* ===== Estilo dos eventos no modo mês para ícones ===== */
 .rbc-month-view .rbc-row-segment {
   display: inline-flex !important;
   flex-wrap: wrap;
@@ -86,7 +106,6 @@
   align-items: flex-start;
 }
 
-/* Ícones como bolinhas inline (sem barras visuais) */
 .rbc-month-view .rbc-event {
   display: none !important;
   justify-content: center;
@@ -102,7 +121,6 @@
   white-space: normal !important;
 }
 
-/* Força layout flexível por célula de dia no modo mês */
 .rbc-month-row .rbc-row-segment {
   display: flex !important;
   flex-wrap: wrap !important;
@@ -111,30 +129,29 @@
   padding: 2px;
 }
 
-/* Altura mínima do cabeçalho dos dias */
 .rbc-month-view .rbc-row.rbc-month-header {
   min-height: 30px;
 }
-/* Esconde o texto "+x more" */
+
 .rbc-show-more {
   display: none !important;
 }
-/* Estiliza o cabeçalho da tabela de agenda */
+
 .rbc-agenda-view th {
   text-align: left;
   padding: 6px 12px;
   font-size: 0.75rem;
-  color: #6b7280; /* gray-500 */
+  color: #6b7280;
   text-transform: uppercase;
 }
 
-/* Estiliza a célula de data/hora */
 .rbc-agenda-date-cell,
 .rbc-agenda-time-cell {
   font-size: 0.875rem;
-  color: #374151; /* gray-700 */
+  color: #374151;
   white-space: nowrap;
 }
+
 .rbc-agenda-view table thead th:first-child,
 .rbc-agenda-view table tbody td:first-child {
   display: none;
@@ -144,20 +161,21 @@
 .rbc-agenda-view table tbody td:nth-child(2) {
   display: none;
 }
+
 .rbc-day-bg.rbc-today {
   background-color: transparent !important;
 }
 
 .borda-dia-hoje {
-  box-shadow: inset 0 0 0 2px #f97316; /* borda laranja por dentro */
+  box-shadow: inset 0 0 0 2px #f97316;
   border-radius: 8px;
 }
-/* Destacar dias fora do mês atual */
+
 .rbc-off-range-bg {
-  background-color: #dadada !important; /* tom mais claro */
-  opacity: 0.6; /* levemente esmaecido */
+  background-color: #dadada !important;
+  opacity: 0.6;
 }
+
 .rbc-off-range .rbc-day-bg {
   color: #b0b0b0 !important;
 }
-
