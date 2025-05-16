@@ -31,7 +31,7 @@ export default function DatePickerIntervaloNublia({
     }
   }, [anchorRef])
 
-  useEffect(() => {
+useEffect(() => {
   if (intervaloAtual?.start && intervaloAtual?.end) {
     setRangeSelecionado({ from: intervaloAtual.start, to: intervaloAtual.end })
   }
