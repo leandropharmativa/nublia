@@ -500,11 +500,6 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
       eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
     } else if (view === 'day') {
       eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
-    } else if (view === 'month') {
-      eventosFiltrados = eventos.filter(e =>
-        new Date(e.start).getMonth() === date.getMonth() &&
-        new Date(e.start).getFullYear() === date.getFullYear()
-      )
     }
 
     const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
@@ -534,16 +529,18 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         </button>
         <span
           className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer hover:underline"
-          onClick={() => setMostrarCalendario(!mostrarCalendario)}
+          onClick={() => {
+            if (view === 'day') setMostrarCalendario(!mostrarCalendario)
+          }}
         >
           <CalendarDays size={16} />
           {renderLabel()}
         </span>
-        {mostrarCalendario && view === 'month' && (
+        {mostrarCalendario && view === 'day' && (
           <div className="absolute top-10 left-32 z-50">
             <DatePickerMesNublia
               dataAtual={date}
-              aoSelecionarMes={(novaData) => {
+              aoSelecionarDia={(novaData) => {
                 setMostrarCalendario(false)
                 onNavigate(novaData)
               }}
