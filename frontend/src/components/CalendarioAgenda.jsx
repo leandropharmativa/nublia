@@ -29,6 +29,7 @@ import {
 import ModalFinalizado from './ModalFinalizado'
 import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
 import DatePickerMesNublia from './DatePickerMesNublia'
+import DatePickerIntervaloNublia from './DatePickerIntervaloNublia'
 import { toastErro } from '../utils/toastUtils'
 
 const locales = { 'pt-BR': ptBR }
@@ -183,6 +184,10 @@ export default function CalendarioAgenda({
   const [filtroStatus, setFiltroStatus] = useState('todos')
   const [filtroTexto, setFiltroTexto] = useState('')
   const [eventosFiltrados, setEventosFiltrados] = useState([])
+
+  const botaoIntervaloRef = useRef(null)
+  const [mostrarIntervalo, setMostrarIntervalo] = useState(false)
+
 
   const filtrarEventos = (lista, status) => {
     if (!status || status === 'todos') return lista
@@ -412,6 +417,30 @@ const eventosParaAgenda = baseEventos
 
       {view === 'agenda' && (
         <div className="bg-white rounded px-4 pb-4">
+          <div className="mb-3">
+  <button
+    ref={botaoIntervaloRef}
+    onClick={() => setMostrarIntervalo(!mostrarIntervalo)}
+    className="text-sm text-nublia-accent font-medium px-3 py-1 border border-gray-300 rounded hover:bg-[#BBD3F2] hover:text-[#353A8C] transition"
+  >
+    Selecionar intervalo
+  </button>
+</div>
+
+{mostrarIntervalo && (
+  <DatePickerIntervaloNublia
+    intervaloAtual={rangeVisivel}
+    anchorRef={botaoIntervaloRef}
+    onSelecionarIntervalo={({ from, to }) => {
+      const novoRange = { start: from, end: to }
+      setRangeVisivel(novoRange)
+      setMostrarIntervalo(false)
+      onRangeChange?.(novoRange)
+    }}
+    onClose={() => setMostrarIntervalo(false)}
+  />
+)}
+
           <div className="mt-6 flex justify-between items-start mb-3">
             <div className="relative w-full max-w-sm">
               <input
