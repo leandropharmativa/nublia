@@ -123,34 +123,34 @@
   color: #b0b0b0 !important;
 }
 
-/* 📄 CalendarioCustom.css - datepicker */
+/* 📄 CalendarioCustom.css - ajustes para react-day-picker */
 
 .rdp {
-  font-size: 0.75rem;
+  font-size: 0.75rem !important;
 }
 
 .rdp-caption_dropdowns select {
-  font-size: 0.75rem;
-  padding: 2px 6px;
-  height: auto;
+  font-size: 0.75rem !important;
+  padding: 2px 6px !important;
+  height: auto !important;
 }
 
 .rdp-nav_button {
-  color: #353A8C;
+  color: #353A8C !important;
 }
 
 .rdp-nav_button svg {
-  stroke: #353A8C;
+  stroke: #353A8C !important;
 }
 
 .rdp-day_selected {
-  background-color: #353A8C;
-  color: white;
+  background-color: #353A8C !important;
+  color: white !important;
 }
 
 .rdp-day_today {
-  color: #353A8C;
-  font-weight: bold;
+  color: #353A8C !important;
+  font-weight: bold !important;
 }
 
 
