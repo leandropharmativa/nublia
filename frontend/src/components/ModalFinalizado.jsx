@@ -34,7 +34,7 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
 
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
-      <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-sm relative">
+      <div className="bg-white p-5 rounded-xl shadow-lg w-[90%] max-w-xs text-sm relative transition-all duration-200 transform animate-fadeIn">
         {/* Botão X no canto */}
         <button
           onClick={onClose}
@@ -51,7 +51,7 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
           </h2>
         </div>
 
-        {/* Nome do paciente com ícone de perfil */}
+        {/* Nome com ícone de perfil à esquerda */}
         <div className="flex items-center gap-2 text-gray-800 mb-4">
           <button onClick={onAbrirPerfil} title="Ver perfil">
             <UserRound
@@ -70,31 +70,39 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
           )}
         </div>
 
-        <div className="mb-2 text-gray-700">
-          <div className="mb-3">
-            <p className="font-semibold mb-1">Agendamento:</p>
-            <div className="flex items-center gap-2 flex-wrap">
+        {/* Agendamento */}
+        <div className="mb-3 text-gray-700">
+          <p className="font-semibold mb-1">Agendamento:</p>
+          <div className="pl-1">
+            <div className="flex items-center gap-2 mb-1">
               <Calendar size={14} className="text-gray-500" />
               <span>{data}</span>
-              <Clock size={14} className="text-gray-500 ml-3" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock size={14} className="text-gray-500" />
               <span>{horaAgendada}h</span>
             </div>
           </div>
+        </div>
 
-          {evento.criado_em ? (
-            <div>
-              <p className="font-semibold mb-1">Atendimento:</p>
-              <div className="flex items-center gap-2 flex-wrap">
+        {/* Atendimento */}
+        {evento.criado_em ? (
+          <div className="text-gray-700">
+            <p className="font-semibold mb-1">Atendimento:</p>
+            <div className="pl-1">
+              <div className="flex items-center gap-2 mb-1">
                 <Calendar size={14} className="text-gray-500" />
                 <span>{dataAtend}</span>
-                <Clock size={14} className="text-gray-500 ml-3" />
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock size={14} className="text-gray-500" />
                 <span>{horaAtend}h</span>
               </div>
             </div>
-          ) : (
-            <div className="text-gray-500 mt-2">Hora do atendimento: ---</div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="text-gray-500 mt-2">Hora do atendimento: ---</div>
+        )}
       </div>
     </div>,
     document.body
