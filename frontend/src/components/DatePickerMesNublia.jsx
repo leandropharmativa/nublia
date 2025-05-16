@@ -4,7 +4,6 @@ import { createPortal } from 'react-dom'
 import { DayPicker } from 'react-day-picker'
 import { ptBR } from 'date-fns/locale'
 import 'react-day-picker/dist/style.css'
-import './CalendarioCustom.css'
 import { useState, useEffect } from 'react'
 
 export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionarDia, onClose }) {
@@ -13,42 +12,46 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
   )
   const [posicao, setPosicao] = useState(null)
 
+  // ✅ injeta <style> no <head> após montagem
   useEffect(() => {
-  const styleTagId = 'nublia-datepicker-overrides'
-  if (!document.getElementById(styleTagId)) {
-    const style = document.createElement('style')
-    style.id = styleTagId
-    style.innerHTML = `
-      .rdp-nav_button {
-        color: #353A8C !important;
-      }
-      .rdp-nav_button svg {
-        stroke: #353A8C !important;
-      }
-      .rdp-caption_dropdowns select {
-        font-size: 0.75rem !important;
-        padding: 2px 6px !important;
-        height: auto !important;
-        line-height: 1.2 !important;
-      }
-      .rdp-head_cell {
-        font-size: 0.7rem !important;
-      }
-      .rdp-day {
-        font-size: 0.75rem !important;
-      }
-      .rdp-day_selected {
-        background-color: #353A8C !important;
-        color: white !important;
-      }
-      .rdp-day_today {
-        color: #353A8C !important;
-        font-weight: bold !important;
-      }
-    `
-    document.head.appendChild(style)
-  }
-}, [])
+    const styleTagId = 'nublia-datepicker-overrides'
+    if (!document.getElementById(styleTagId)) {
+      const style = document.createElement('style')
+      style.id = styleTagId
+      style.innerHTML = `
+        .rdp-nav_button {
+          color: #353A8C !important;
+        }
+        .rdp-nav_button svg {
+          stroke: #353A8C !important;
+        }
+        .rdp-caption_dropdowns select {
+          font-size: 12px !important;
+          padding: 2px 6px !important;
+          height: auto !important;
+          line-height: 1.2 !important;
+        }
+        .rdp-head_cell {
+          font-size: 11px !important;
+        }
+        .rdp-day {
+          font-size: 12px !important;
+        }
+        .rdp-day_selected {
+          background-color: #353A8C !important;
+          color: white !important;
+        }
+        .rdp-day_today {
+          color: #353A8C !important;
+          font-weight: bold !important;
+        }
+      `
+      // ✅ força aplicar após todos os outros estilos carregarem
+      setTimeout(() => {
+        document.head.appendChild(style)
+      }, 0)
+    }
+  }, [])
 
   useEffect(() => {
     setMesVisivel(new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1))
@@ -56,7 +59,7 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
     if (anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect()
       setPosicao({
-        top: rect.bottom + window.scrollY - 4, // 🔧 ajuste de -4px
+        top: rect.bottom + window.scrollY - 4,
         left: rect.left + window.scrollX,
       })
     }
