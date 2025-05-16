@@ -35,10 +35,12 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
 
   const abas = ['paciente', 'anamnese', 'antropometria', 'dieta', 'receita']
 
-  useEffect(() => {
-  if (agendamentoAtual) {
+useEffect(() => {
+  if (agendamentoId !== null) {
     setAgendamentoAtual(agendamentoId)
     console.log("✅ useEffect detectou novo agendamentoId:", agendamentoId)
+  } else {
+    console.warn("⚠️ agendamentoId recebido é null.")
   }
 }, [agendamentoId])
 
@@ -74,7 +76,7 @@ const handleSalvar = async (mostrarToast = true) => {
     const dadosAtendimento = {
       paciente_id: paciente.id,
       prescritor_id: user?.id,
-      agendamento_id: agendamentoId, // use diretamente a prop aqui
+      agendamento_id: agendamentoAtual, // use diretamente a prop aqui
       anamnese: formulario.anamnese,
       antropometria: formulario.antropometria,
       dieta: formulario.dieta,
@@ -104,10 +106,10 @@ const handleSalvar = async (mostrarToast = true) => {
     console.log('🟢 Finalizando atendimento...')
     await handleSalvar(false)
 
-    if (agendamentoId) {
-      console.log('📤 Enviando finalização do agendamento ID:', agendamentoId)
+    if (agendamentoAtual) {
+      console.log('📤 Enviando finalização do agendamento ID:', agendamentoAtual)
       await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
-        id: agendamentoId,
+        id: agendamentoAtual,
       })
     } else {
       console.warn('⚠️ Nenhum agendamentoId fornecido. Nada será finalizado.')
