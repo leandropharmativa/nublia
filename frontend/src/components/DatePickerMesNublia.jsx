@@ -7,12 +7,9 @@ import 'react-day-picker/dist/style.css'
 import { useState, useEffect } from 'react'
 
 export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionarDia, onClose }) {
-  const [mesVisivel, setMesVisivel] = useState(() =>
-    new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1)
-  )
   const [posicao, setPosicao] = useState(null)
 
-  // ✅ injeta <style> no <head> após montagem
+  // ✅ injeta estilos customizados no <head>
   useEffect(() => {
     const styleTagId = 'nublia-datepicker-overrides'
     if (!document.getElementById(styleTagId)) {
@@ -46,16 +43,12 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
           font-weight: bold !important;
         }
       `
-      // ✅ força aplicar após todos os outros estilos carregarem
-      setTimeout(() => {
-        document.head.appendChild(style)
-      }, 0)
+      setTimeout(() => document.head.appendChild(style), 0)
     }
   }, [])
 
+  // ✅ posicionamento relativo ao botão clicado
   useEffect(() => {
-    setMesVisivel(new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1))
-
     if (anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect()
       setPosicao({
@@ -63,7 +56,7 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
         left: rect.left + window.scrollX,
       })
     }
-  }, [dataAtual, anchorRef])
+  }, [anchorRef])
 
   const portalEl = document.getElementById('datepicker-root')
   if (!portalEl || !posicao) return null
@@ -75,9 +68,7 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
     >
       <DayPicker
         mode="single"
-        month={mesVisivel}
         selected={dataAtual}
-        onMonthChange={setMesVisivel}
         onDayClick={(date) => {
           aoSelecionarDia(date)
           onClose?.()
