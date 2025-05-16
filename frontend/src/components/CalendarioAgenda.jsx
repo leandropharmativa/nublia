@@ -296,15 +296,18 @@ const eventosParaAgenda = baseEventos
   if (view === 'day') {
     return (
       <div className="p-4 bg-white rounded overflow-hidden">
-        <CustomToolbar
-          view={view}
-          views={['month', 'day', 'agenda']}
-          onNavigate={handleNavigate}
-          onView={handleViewChange}
-          label=""
-          date={dataAtual}
-          eventos={eventos}
-        />
+<CustomToolbar
+  view={view}
+  views={['month', 'day', 'agenda']}
+  onNavigate={handleNavigate}
+  onView={handleViewChange}
+  label=""
+  date={dataAtual}
+  eventos={eventos}
+  rangeVisivel={rangeVisivel}
+  setRangeVisivel={setRangeVisivel}
+/>
+
 
         <div className="flex justify-end mt-6 mb-4">
           <div className="flex gap-2">
