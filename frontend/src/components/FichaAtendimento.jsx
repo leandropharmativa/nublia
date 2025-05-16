@@ -18,14 +18,6 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
 
   const [agendamentoAtual, setAgendamentoAtual] = useState(null)
 
-useEffect(() => {
-  if (agendamentoId) {
-    setAgendamentoAtual(agendamentoId)
-    console.log("✅ Agendamento ID detectado:", agendamentoId)
-  }
-}, [agendamentoId])
-
-  
   const [abaAtiva, setAbaAtiva] = useState('paciente')
   const [formulario, setFormulario] = useState({
     anamnese: '',
@@ -68,38 +60,37 @@ useEffect(() => {
     setSalvoUltimaVersao(false)
   }
 
-  const handleSalvar = async (mostrarToast = true) => {
-    try {
-      const user = JSON.parse(localStorage.getItem('user'))
-      
-const dadosAtendimento = {
-  paciente_id: paciente.id,
-  prescritor_id: user?.id,
-  agendamento_id: agendamentoAtual,
-  anamnese: formulario.anamnese,
-  antropometria: formulario.antropometria,
-  dieta: formulario.dieta,
-  receita: formulario.receita,
-}
+const handleSalvar = async (mostrarToast = true) => {
+  try {
+    const user = JSON.parse(localStorage.getItem('user'))
 
-
-      console.log("🔍 Salvando atendimento com dados:", dadosAtendimento)
-
-      if (!atendimentoId) {
-        const response = await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
-        setAtendimentoId(response.data.id)
-      } else {
-        await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
-      }
-
-      setSalvoUltimaVersao(true)
-      if (mostrarToast) toastSucesso('Atendimento salvo com sucesso!')
-      if (onAtendimentoSalvo) onAtendimentoSalvo()
-    } catch (error) {
-      console.error('Erro ao salvar atendimento:', error.response?.data || error.message)
-      toastErro('Erro ao salvar atendimento. Verifique os dados.')
+    const dadosAtendimento = {
+      paciente_id: paciente.id,
+      prescritor_id: user?.id,
+      agendamento_id: agendamentoId, // use diretamente a prop aqui
+      anamnese: formulario.anamnese,
+      antropometria: formulario.antropometria,
+      dieta: formulario.dieta,
+      receita: formulario.receita,
     }
+
+    console.log("🔍 Salvando atendimento com dados:", dadosAtendimento)
+
+    if (!atendimentoId) {
+      const response = await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
+      setAtendimentoId(response.data.id)
+    } else {
+      await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
+    }
+
+    setSalvoUltimaVersao(true)
+    if (mostrarToast) toastSucesso('Atendimento salvo com sucesso!')
+    if (onAtendimentoSalvo) onAtendimentoSalvo()
+  } catch (error) {
+    console.error('Erro ao salvar atendimento:', error.response?.data || error.message)
+    toastErro('Erro ao salvar atendimento. Verifique os dados.')
   }
+}
 
   const handleFinalizar = async () => {
     await handleSalvar(false)
