@@ -529,7 +529,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         </button>
 <span
   ref={containerRef}
-  className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer hover:underline"
+  className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
   onClick={() => {
     if (view === 'day') setMostrarCalendario(!mostrarCalendario)
   }}
