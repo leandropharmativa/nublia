@@ -5,6 +5,8 @@ import { DayPicker } from 'react-day-picker'
 import { ptBR } from 'date-fns/locale'
 import { useState, useEffect } from 'react'
 import 'react-day-picker/dist/style.css'
+import './CalendarioCustom.css'
+
 
 export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionarDia, onClose }) {
   const [posicao, setPosicao] = useState(null)
