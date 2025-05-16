@@ -489,7 +489,8 @@ function CustomToolbar({
   date,
   eventos,
   rangeVisivel,
-  setRangeVisivel // ✅ necessário para atualizar corretamente o intervalo
+  setRangeVisivel,
+  onRangeChange
 }) {
   const [mostrarCalendario, setMostrarCalendario] = useState(false)
   const [mostrarIntervalo, setMostrarIntervalo] = useState(false)
