@@ -447,6 +447,7 @@ components={{
 
 {rangeVisivel.start && rangeVisivel.end && (
 <ListaAgendamentosAgenda
+  key={rangeVisivel?.start?.toISOString() + rangeVisivel?.end?.toISOString()}
   eventos={eventosParaAgenda}
   aoVerPerfil={onAbrirPerfil}
   aoVerAgendamento={aoSelecionarEventoOuFinalizado}
@@ -602,19 +603,19 @@ function CustomToolbar({
         )}
 
         {mostrarIntervalo && view === 'agenda' && intervaloRef.current && (
-          <DatePickerIntervaloNublia
-            intervaloAtual={rangeVisivel}
-            anchorRef={intervaloRef}
-            onSelecionarIntervalo={({ from, to }) => {
-              if (from && to) {
-                setRangeVisivel({ start: from, end: to }) // ✅ atualiza o intervalo
-                setMostrarIntervalo(false)
-                onNavigate(from)
-                onRangeChange?.({ start: from, end: to })
-              }
-            }}
-            onClose={() => setMostrarIntervalo(false)}
-          />
+<DatePickerIntervaloNublia
+  intervaloAtual={rangeVisivel}
+  anchorRef={intervaloRef}
+  onSelecionarIntervalo={({ from, to }) => {
+    if (from && to) {
+      setRangeVisivel({ start: from, end: to })         // atualiza range
+      onNavigate(from)                                  // atualiza dataAtual
+      onRangeChange?.({ start: from, end: to })         // dispara filtro
+      setMostrarIntervalo(false)
+    }
+  }}
+  onClose={() => setMostrarIntervalo(false)}
+/>
         )}
       </div>
 
