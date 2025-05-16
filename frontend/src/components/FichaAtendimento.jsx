@@ -1,5 +1,5 @@
-
-import { useEffect, useState } from 'react'
+// 📄 components/FichaAtendimento.jsx
+import { useEffect, useState, useRef } from 'react'
 import {
   Save,
   CheckCircle,
@@ -15,6 +15,14 @@ import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
 
 export default function FichaAtendimento({ paciente, agendamentoId = null, onFinalizar, onAtendimentoSalvo }) {
+  // 🧠 Memoriza o agendamentoId inicial
+  const agendamentoIdRef = useRef(null)
+  useEffect(() => {
+    if (agendamentoId && !agendamentoIdRef.current) {
+      agendamentoIdRef.current = agendamentoId
+      console.log('✅ agendamentoId armazenado:', agendamentoId)
+    }
+  }, [agendamentoId])
 
   const [abaAtiva, setAbaAtiva] = useState('paciente')
   const [formulario, setFormulario] = useState({
@@ -58,59 +66,59 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
     setSalvoUltimaVersao(false)
   }
 
-const handleSalvar = async (mostrarToast = true) => {
-  try {
-    const user = JSON.parse(localStorage.getItem('user'))
+  const handleSalvar = async (mostrarToast = true) => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'))
 
-    const dadosAtendimento = {
-      paciente_id: paciente.id,
-      prescritor_id: user?.id,
-      agendamento_id: agendamentoId, // use diretamente a prop aqui
-      anamnese: formulario.anamnese,
-      antropometria: formulario.antropometria,
-      dieta: formulario.dieta,
-      receita: formulario.receita,
+      const dadosAtendimento = {
+        paciente_id: paciente.id,
+        prescritor_id: user?.id,
+        agendamento_id: agendamentoIdRef.current, // ✅ usa valor preservado
+        anamnese: formulario.anamnese,
+        antropometria: formulario.antropometria,
+        dieta: formulario.dieta,
+        receita: formulario.receita,
+      }
+
+      console.log("🔍 Salvando atendimento com dados:", dadosAtendimento)
+
+      if (!atendimentoId) {
+        const response = await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
+        setAtendimentoId(response.data.id)
+      } else {
+        await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
+      }
+
+      setSalvoUltimaVersao(true)
+      if (mostrarToast) toastSucesso('Atendimento salvo com sucesso!')
+      if (onAtendimentoSalvo) onAtendimentoSalvo()
+    } catch (error) {
+      console.error('Erro ao salvar atendimento:', error.response?.data || error.message)
+      toastErro('Erro ao salvar atendimento. Verifique os dados.')
     }
-
-    console.log("🔍 Salvando atendimento com dados:", dadosAtendimento)
-
-    if (!atendimentoId) {
-      const response = await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
-      setAtendimentoId(response.data.id)
-    } else {
-      await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
-    }
-
-    setSalvoUltimaVersao(true)
-    if (mostrarToast) toastSucesso('Atendimento salvo com sucesso!')
-    if (onAtendimentoSalvo) onAtendimentoSalvo()
-  } catch (error) {
-    console.error('Erro ao salvar atendimento:', error.response?.data || error.message)
-    toastErro('Erro ao salvar atendimento. Verifique os dados.')
   }
-}
 
- const handleFinalizar = async () => {
-  try {
-    console.log('🟢 Finalizando atendimento...')
-    await handleSalvar(false)
+  const handleFinalizar = async () => {
+    try {
+      console.log('🟢 Finalizando atendimento...')
+      await handleSalvar(false)
 
-    if (agendamentoId) {
-      console.log('📤 Enviando finalização do agendamento ID:', agendamentoId)
-      await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
-        id: agendamentoId,
-      })
-    } else {
-      console.warn('⚠️ Nenhum agendamentoId fornecido. Nada será finalizado.')
+      if (agendamentoIdRef.current) {
+        console.log('📤 Enviando finalização do agendamento ID:', agendamentoIdRef.current)
+        await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
+          id: agendamentoIdRef.current,
+        })
+      } else {
+        console.warn('⚠️ Nenhum agendamentoId fornecido. Nada será finalizado.')
+      }
+
+      toastSucesso('Atendimento salvo e finalizado!')
+      onFinalizar()
+    } catch (err) {
+      console.error('❌ Erro ao finalizar atendimento/agendamento:', err)
+      toastErro('Erro ao finalizar atendimento.')
     }
-
-    toastSucesso('Atendimento salvo e finalizado!')
-    onFinalizar()
-  } catch (err) {
-    console.error('❌ Erro ao finalizar atendimento/agendamento:', err)
-    toastErro('Erro ao finalizar atendimento.')
   }
-}
 
   const houveAlteracao = Object.values(formulario).some(valor => valor.trim() !== '')
 
