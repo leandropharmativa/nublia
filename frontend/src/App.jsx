@@ -9,7 +9,7 @@ import PrescritorDashboard from './pages/PrescritorDashboard'
 import SecretariaDashboard from './pages/SecretariaDashboard'
 import PrivateRoute from './routes/PrivateRoute'
 import TesteDayPicker from './components/TesteDayPicker' 
-import './CalendarioCustom.css'
+import './components/CalendarioCustom.css'
 
 function AcessoNegado() {
   return (
