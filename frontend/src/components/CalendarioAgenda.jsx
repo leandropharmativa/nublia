@@ -160,6 +160,7 @@ export default function CalendarioAgenda({
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
   const [modalFinalizado, setModalFinalizado] = useState(null)
   const [filtroStatus, setFiltroStatus] = useState('todos')
+  const [eventosFiltrados, setEventosFiltrados] = useState([])
 
   const filtrarEventos = (lista, status) => {
     if (!status || status === 'todos') return lista
@@ -210,6 +211,18 @@ export default function CalendarioAgenda({
     setView(novaView)
     onViewChange?.(novaView)
   }
+
+  useEffect(() => {
+    if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
+      const filtrados = eventos.filter(ev => {
+        const data = new Date(ev.start)
+        return data >= rangeVisivel.start && data <= rangeVisivel.end
+      })
+      setEventosFiltrados(filtrados)
+    } else {
+      setEventosFiltrados(eventos)
+    }
+  }, [view, eventos, rangeVisivel])
 
   const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
   const eventosVisiveis = filtrarEventos(eventosDoDia, filtroStatus)
@@ -343,55 +356,24 @@ export default function CalendarioAgenda({
           time: 'Horário',
           event: 'Agendamento'
         }}
-components={{
-  toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
-  month: {
-    dateHeader: (props) => (
-      <HeaderComEventos
-        data={props.date}
-        label={props.label}
-        eventos={eventos}
-        aoSelecionarEvento={aoSelecionarEventoOuFinalizado}
-        aoAdicionarHorario={aoSelecionarSlot}
-        aoMudarParaDia={(dia) => {
-          setDataAtual(dia)
-          setView('day')
-        }}
-      />
-    )
-  },
-  agenda: {
-    event: ({ event }) => (
-      <ListaAgendamentosAgenda
-        eventos={[event]}
-        aoVerPerfil={onAbrirPerfil}
-        aoVerAgendamento={aoSelecionarEventoOuFinalizado}
-        aoIniciarAtendimento={(pacienteId) => {
-          if (!pacienteId) {
-            toastErro('Paciente não encontrado.')
-            return
+        components={{
+          toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
+          month: {
+            dateHeader: (props) => (
+              <HeaderComEventos
+                data={props.date}
+                label={props.label}
+                eventos={eventos}
+                aoSelecionarEvento={aoSelecionarEventoOuFinalizado}
+                aoAdicionarHorario={aoSelecionarSlot}
+                aoMudarParaDia={(dia) => {
+                  setDataAtual(dia)
+                  setView('day')
+                }}
+              />
+            )
           }
-
-          fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-            .then(res => res.json())
-            .then(paciente => {
-              if (!paciente || !paciente.data_nascimento) {
-                toastErro('Paciente sem data de nascimento.')
-                return
-              }
-
-              window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
-                detail: paciente
-              }))
-            })
-            .catch(() => toastErro('Erro ao buscar paciente.'))
         }}
-      />
-    ),
-    date: () => null,
-    time: () => null
-  }
-}}
       />
 
       <ModalFinalizado
