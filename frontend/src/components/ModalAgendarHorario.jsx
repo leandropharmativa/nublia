@@ -289,7 +289,7 @@ useEffect(() => {
       console.log('[DEBUG] Disparando evento global para iniciar ficha')
       try {
         const res = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-        const paciente = res.data
+        const paciente = res.data.paciente 
 
         if (!paciente || !paciente.data_nascimento) {
           toastErro('Paciente sem data de nascimento.')
