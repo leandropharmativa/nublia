@@ -297,7 +297,8 @@ useEffect(() => {
         }
 
         window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-          detail: paciente
+          detail: paciente,
+          agendamento_id: agendamentoId
         }))
         onCancelar()
       } catch (err) {
