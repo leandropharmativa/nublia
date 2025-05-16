@@ -106,9 +106,10 @@ function AgendaPrescritor({ mostrarAgenda }) {
 useEffect(() => {
   const listener = (e) => {
     const { agendamento_id, ...paciente } = e.detail
+    const agId = agendamento_id ?? e.detail.agendamentoId ?? null // cobre diferentes casos
     setPacienteSelecionado(paciente)
-    setAgendamentoSelecionado(agendamento_id || null)
-    setAgendamentoParaFicha(agendamento_id || null) // ✅ ESSA LINHA GARANTE O ID NA FICHA
+    setAgendamentoSelecionado(agId)
+    setAgendamentoParaFicha(agId)
     setMostrarFicha(true)
   }
 
