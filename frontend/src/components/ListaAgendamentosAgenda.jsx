@@ -66,7 +66,7 @@ export default function ListaAgendamentosAgenda({
 {!ocultarIniciar && (
   <button
     title="Iniciar atendimento"
-    onClick={() => aoIniciarAtendimento(ev.paciente_id)}
+    onClick={() => aoIniciarAtendimento(ev)}
     className="text-nublia-accent hover:text-nublia-primary transition"
   >
     <PlayCircle size={20} />
