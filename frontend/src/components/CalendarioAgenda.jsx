@@ -1,6 +1,4 @@
-
 // 📄 components/CalendarioAgenda.jsx
-
 import { useState, useEffect } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import {
@@ -489,17 +487,25 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
     return label
   }
 
-  const contar = () => {
-    let eventosFiltrados = eventos
-    if (view === 'week') {
-      eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
-    } else if (view === 'day') {
-      eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
-    }
-    const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
-    const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
-    return { agendados, disponiveis }
+const contar = () => {
+  let eventosFiltrados = eventos
+  const agora = new Date()
+
+  if (view === 'week') {
+    eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
+  } else if (view === 'day') {
+    eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
   }
+
+  const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
+
+  // Disponíveis = status 'disponivel' e com horário futuro
+  const disponiveis = eventosFiltrados.filter(
+    e => e.status === 'disponivel' && new Date(e.start) >= agora
+  ).length
+
+  return { agendados, disponiveis }
+}
 
   const { agendados, disponiveis } = contar()
 
