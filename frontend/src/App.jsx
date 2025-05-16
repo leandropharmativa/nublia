@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, Router } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Admin from './pages/Admin'
@@ -15,6 +15,24 @@ function AcessoNegado() {
     </div>
   )
 }
+
+// 📄 src/App.jsx (ou onde renderiza as páginas principais)
+
+import TesteDayPicker from './components/TesteDayPicker'
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<div>Home</div>} />
+        <Route path="/teste" element={<TesteDayPicker />} />
+      </Routes>
+    </Router>
+  )
+}
+
+export default App
+
 
 
 // Página 404
@@ -62,6 +80,8 @@ export default function App() {
 
       {/* Fallback para páginas inexistentes */}
       <Route path="*" element={<NotFound />} />
+
+      
     </Routes>
   )
 }
