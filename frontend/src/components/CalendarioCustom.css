@@ -31,9 +31,10 @@
   color: #1f2937; /* gray-800 */
 }
 
-/* Dia selecionado (círculo azul escuro com texto branco) */
+/* Dia selecionado — cobre todos os casos */
+.rdp-selected .rdp-day_button,
 .rdp-day_button[aria-pressed="true"] {
-  background-color: #353A8C !important;  /* azul escuro */
+  background-color: #353A8C !important;
   color: white !important;
   font-weight: 600 !important;
   border-radius: 50% !important;
@@ -42,9 +43,9 @@
 
 /* Dia atual (não selecionado) — borda laranja */
 .rdp-today .rdp-day_button:not([aria-pressed="true"]) {
-  border: 2px solid #f97316 !important;  /* borda laranja */
-  background-color: #FFF7ED !important;  /* fundo bege claro */
-  color: #353A8C !important;             /* azul escuro */
+  border: 2px solid #f97316 !important;
+  background-color: #FFF7ED !important;
+  color: #353A8C !important;
   font-weight: 600;
   border-radius: 8px !important;
 }
