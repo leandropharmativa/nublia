@@ -80,9 +80,16 @@
   background-color: #BBD3F2 !important;
 }
 
-/* Ícones < > */
+/* Cor padrão dos ícones < > */
 .rdp-chevron {
-  fill: #353A8C !important;
+  fill: #353A8C !important; /* azul escuro Nublia accent */
+  transition: fill 0.2s ease;
+}
+
+/* Hover: azul claro Nublia primary */
+.rdp-button_previous:hover .rdp-chevron,
+.rdp-button_next:hover .rdp-chevron {
+  fill: #BBD3F2 !important;
 }
 
 /* Título do mês */
