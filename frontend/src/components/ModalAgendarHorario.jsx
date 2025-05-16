@@ -217,7 +217,7 @@ useEffect(() => {
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative animate-fadeIn">
+        <div className="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 flex flex-col gap-4 max-h-[90vh] overflow-hidden relative">
           <button
             onClick={onCancelar}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -296,12 +296,9 @@ useEffect(() => {
           return
         }
 
-window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-  detail: {
-    ...paciente,
-    agendamento_id: agendamentoId
-  }
-}))
+        window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+          detail: paciente
+        }))
         onCancelar()
       } catch (err) {
         console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
