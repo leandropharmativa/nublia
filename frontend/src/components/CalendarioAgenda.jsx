@@ -1,7 +1,7 @@
 // 📄 components/CalendarioAgenda.jsx
-import { useState, useEffect, useRef } from 'react'
-import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 
+import { useState, useEffect } from 'react'
+import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import {
   format,
   parse,
@@ -28,8 +28,6 @@ import {
 
 import ModalFinalizado from './ModalFinalizado'
 import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
-import DatePickerMesNublia from './DatePickerMesNublia'
-import DatePickerIntervaloNublia from './DatePickerIntervaloNublia'
 import { toastErro } from '../utils/toastUtils'
 
 const locales = { 'pt-BR': ptBR }
@@ -184,10 +182,6 @@ export default function CalendarioAgenda({
   const [filtroStatus, setFiltroStatus] = useState('todos')
   const [filtroTexto, setFiltroTexto] = useState('')
   const [eventosFiltrados, setEventosFiltrados] = useState([])
-
-  const botaoIntervaloRef = useRef(null)
-  const [mostrarIntervalo, setMostrarIntervalo] = useState(false)
-
 
   const filtrarEventos = (lista, status) => {
     if (!status || status === 'todos') return lista
@@ -415,85 +409,54 @@ const eventosParaAgenda = baseEventos
         }}
       />
 
-{view === 'agenda' && (
-  <div className="bg-white rounded px-4 pb-4">
+      {view === 'agenda' && (
+        <div className="bg-white rounded px-4 pb-4">
+          <div className="mt-6 flex justify-between items-start mb-3">
+            <div className="relative w-full max-w-sm">
+              <input
+                type="text"
+                placeholder="Filtrar por nome..."
+                value={filtroTexto}
+                onChange={(e) => setFiltroTexto(e.target.value)}
+                className="pl-10 pr-4 py-[6px] w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary shadow-sm"
+              />
+              <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? 'todos' : 'disponivel')} title="Disponíveis" className={`p-2 rounded-full border transition ${filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><Clock size={18} /></button>
+              <button onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? 'todos' : 'agendado')} title="Agendados" className={`p-2 rounded-full border transition ${filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><UserRound size={18} /></button>
+              <button onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? 'todos' : 'finalizado')} title="Finalizados" className={`p-2 rounded-full border transition ${filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><UserRoundCheck size={18} /></button>
+            </div>
+          </div>
 
-    {mostrarIntervalo && (
-      <DatePickerIntervaloNublia
-        intervaloAtual={rangeVisivel}
-        anchorRef={botaoIntervaloRef}
-        onSelecionarIntervalo={({ from, to }) => {
-          const novoRange = { start: from, end: to }
-          setRangeVisivel(novoRange)
-          setMostrarIntervalo(false)
-          onRangeChange?.(novoRange)
-        }}
-        onClose={() => setMostrarIntervalo(false)}
-      />
-    )}
+{rangeVisivel.start && rangeVisivel.end && (
+<ListaAgendamentosAgenda
+  eventos={eventosParaAgenda}
+  aoVerPerfil={onAbrirPerfil}
+  aoVerAgendamento={aoSelecionarEventoOuFinalizado}
+  aoIniciarAtendimento={(pacienteId) => {
+    if (!pacienteId) {
+      toastErro('Paciente não encontrado para este agendamento.')
+      return
+    }
 
-    <div className="mt-6 mb-3 space-y-2">
-      {rangeVisivel.start && rangeVisivel.end && (
-        <div
-          ref={botaoIntervaloRef}
-          onClick={() => setMostrarIntervalo(true)}
-          className="inline-block text-sm font-semibold text-nublia-accent cursor-pointer hover:bg-[#BBD3F2] hover:text-[#353A8C] px-2 py-1 rounded transition"
-        >
-          {format(rangeVisivel.start, 'dd/MM/yyyy')} – {format(rangeVisivel.end, 'dd/MM/yyyy')}
-        </div>
-      )}
+    fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+      .then(res => res.json())
+      .then(paciente => {
+        if (!paciente || !paciente.data_nascimento) {
+          toastErro('Paciente sem data de nascimento.')
+          return
+        }
 
-      <div className="flex justify-between items-start">
-        <div className="relative w-full max-w-sm">
-          <input
-            type="text"
-            placeholder="Filtrar por nome..."
-            value={filtroTexto}
-            onChange={(e) => setFiltroTexto(e.target.value)}
-            className="pl-10 pr-4 py-[6px] w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary shadow-sm"
-          />
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? 'todos' : 'disponivel')} title="Disponíveis" className={`p-2 rounded-full border transition ${filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><Clock size={18} /></button>
-          <button onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? 'todos' : 'agendado')} title="Agendados" className={`p-2 rounded-full border transition ${filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><UserRound size={18} /></button>
-          <button onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? 'todos' : 'finalizado')} title="Finalizados" className={`p-2 rounded-full border transition ${filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'}`}><UserRoundCheck size={18} /></button>
-        </div>
-      </div>
-    </div>
-
-    {rangeVisivel.start && rangeVisivel.end && (
-      <ListaAgendamentosAgenda
-        eventos={eventosParaAgenda}
-        aoVerPerfil={onAbrirPerfil}
-        aoVerAgendamento={aoSelecionarEventoOuFinalizado}
-        aoIniciarAtendimento={(pacienteId) => {
-          if (!pacienteId) {
-            toastErro('Paciente não encontrado para este agendamento.')
-            return
-          }
-
-          fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-            .then(res => res.json())
-            .then(paciente => {
-              if (!paciente || !paciente.data_nascimento) {
-                toastErro('Paciente sem data de nascimento.')
-                return
-              }
-
-              window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
-                detail: paciente
-              }))
-            })
-            .catch(() => toastErro('Erro ao buscar paciente.'))
-        }}
-        ocultarIniciar={ehSecretaria}
-      />
-    )}
-  </div>
+        window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
+          detail: paciente
+        }))
+      })
+      .catch(() => toastErro('Erro ao buscar paciente.'))
+  }}
+  ocultarIniciar={ehSecretaria}
+/>
 )}
-
-
 
         </div>
       )}
@@ -509,9 +472,6 @@ const eventosParaAgenda = baseEventos
 }
 
 function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
-  const [mostrarCalendario, setMostrarCalendario] = useState(false)
-  const containerRef = useRef(null)
-
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
 
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
@@ -529,19 +489,14 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
   }
 
   const contar = () => {
-    const agora = new Date()
     let eventosFiltrados = eventos
-
     if (view === 'week') {
       eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
     } else if (view === 'day') {
       eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
     }
-
     const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
-    const disponiveis = eventosFiltrados.filter(e =>
-      e.status === 'disponivel' && new Date(e.start) > agora
-    ).length
+    const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
     return { agendados, disponiveis }
   }
 
@@ -555,7 +510,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
   }
 
   return (
-    <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200 relative" ref={containerRef}>
+    <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
       <div className="flex items-center gap-2">
         <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
           <ChevronLeft size={20} />
@@ -563,29 +518,10 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
           <ChevronRight size={20} />
         </button>
-<span
-  ref={containerRef}
-  className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
-  onClick={() => {
-    if (view === 'day') setMostrarCalendario(!mostrarCalendario)
-  }}
->
-  <CalendarDays size={16} />
-  {renderLabel()}
-</span>
-
-{mostrarCalendario && view === 'day' && containerRef.current && (
-  <DatePickerMesNublia
-    dataAtual={date}
-    anchorRef={containerRef}
-    aoSelecionarDia={(novaData) => {
-      setMostrarCalendario(false)
-      onNavigate(novaData)
-    }}
-    onClose={() => setMostrarCalendario(false)}
-  />
-)}
-
+        <span className="flex items-center gap-2 text-sm font-bold text-nublia-accent">
+          <CalendarDays size={16} />
+          {renderLabel()}
+        </span>
       </div>
 
       <div className="flex items-center gap-3">
