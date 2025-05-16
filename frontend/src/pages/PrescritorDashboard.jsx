@@ -134,29 +134,27 @@ useEffect(() => {
 }, [abaSelecionada, user])
 
 const carregarAtendimentos = async (id) => {
-  setCarregandoAtendimentos(true)
   try {
-    const res = await fetch('https://nublia-backend.onrender.com/atendimentos/')
-    const data = await res.json()
+    const [resAtend, resPacientes] = await Promise.all([
+      fetch('https://nublia-backend.onrender.com/atendimentos/'),
+      fetch('https://nublia-backend.onrender.com/users/all'),
+    ])
+
+    const data = await resAtend.json()
+    const todosPacientes = await resPacientes.json()
+    const mapaPacientes = new Map(todosPacientes.map(p => [p.id, p.name]))
+
     const filtrados = data.filter(a => a.prescritor_id === id)
 
-    const comNomes = await Promise.all(
-      filtrados.map(async (a) => {
-        try {
-          const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${a.paciente_id}`)
-          const paciente = await resPaciente.json()
-          return { ...a, nomePaciente: paciente.name }
-        } catch {
-          return { ...a, nomePaciente: 'Paciente não encontrado' }
-        }
-      })
-    )
+    const comNomes = filtrados.map((a) => ({
+      ...a,
+      nomePaciente: mapaPacientes.get(a.paciente_id) || 'Paciente não encontrado',
+    }))
 
     setAtendimentos(comNomes.reverse())
+    setPacientes(todosPacientes.filter(p => p.role === 'paciente'))
   } catch (err) {
     console.error('Erro ao carregar atendimentos:', err)
-  } finally {
-    setCarregandoAtendimentos(false)
   }
 }
 
