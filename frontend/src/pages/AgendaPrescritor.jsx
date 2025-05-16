@@ -34,9 +34,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [viewAtual, setViewAtual] = useState('month')
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
   const [modalFinalizadoAberto, setModalFinalizadoAberto] = useState(null)
-  const [filtroTexto, setFiltroTexto] = useState('')
-  const [filtroStatus, setFiltroStatus] = useState(null)
-
+  
   const user = JSON.parse(localStorage.getItem('user'))
 
   const handleAbrirPerfil = (pacienteId) => {
@@ -232,75 +230,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
         onVerAtendimento={handleVerAtendimento}
       />
 
-      {viewAtual === 'agenda' && (
-        <div className="bg-white rounded px-4 pb-4">
-          <div className="flex justify-between items-start mb-3">
-            <div className="relative w-full max-w-sm">
-              <input
-                type="text"
-                placeholder="Filtrar por nome..."
-                value={filtroTexto}
-                onChange={(e) => setFiltroTexto(e.target.value)}
-                className="pl-10 pr-4 py-[6px] w-full rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary shadow-sm"
-              />
-              <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? null : 'disponivel')}
-                title="Disponíveis"
-                className={`p-2 rounded-full border transition ${
-                  filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-                }`}
-              >
-                <Clock size={18} />
-              </button>
-              <button
-                onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? null : 'agendado')}
-                title="Agendados"
-                className={`p-2 rounded-full border transition ${
-                  filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-                }`}
-              >
-                <UserRound size={18} />
-              </button>
-              <button
-                onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? null : 'finalizado')}
-                title="Finalizados"
-                className={`p-2 rounded-full border transition ${
-                  filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-                }`}
-              >
-                <UserRoundCheck size={18} />
-              </button>
-            </div>
-          </div>
-
-          <ListaAgendamentosAgenda
-            eventos={eventosParaAgenda}
-            aoVerPerfil={abrirPerfilPaciente}
-            aoVerAgendamento={(evento) => {
-              if (evento.status === 'finalizado') {
-                setModalFinalizadoAberto(evento)
-              } else {
-                handleEventoClick(evento)
-              }
-            }}
-            aoIniciarAtendimento={(id) => {
-              const paciente = pacientes.find(p => p.id === id)
-              if (paciente) {
-                setPacienteSelecionado(paciente)
-                setTimeout(() => {
-                  const evt = new CustomEvent('AbrirFichaPaciente', { detail: paciente })
-                  window.dispatchEvent(evt)
-                }, 0)
-              }
-            }}
-          />
-        </div>
-      )}
-
-      {modalAberto && (
+     {modalAberto && (
         <ModalNovoHorario
           horario={slotSelecionado}
           onConfirmar={confirmarHorario}
