@@ -123,39 +123,3 @@
   color: #b0b0b0 !important;
 }
 
-/* ==== Força cor das setas ==== */
-:where(.rdp) .rdp-nav_button {
-  color: #353A8C !important;
-}
-:where(.rdp) .rdp-nav_button svg {
-  stroke: #353A8C !important;
-}
-
-/* ==== Seletores de mês e ano menores ==== */
-:where(.rdp) .rdp-caption_dropdowns select {
-  font-size: 0.75rem !important;
-  padding: 2px 6px !important;
-  height: auto !important;
-  line-height: 1.2 !important;
-}
-
-/* ==== Dias do mês menores ==== */
-:where(.rdp) .rdp-head_cell {
-  font-size: 0.7rem !important;
-}
-:where(.rdp) .rdp-day {
-  font-size: 0.75rem !important;
-}
-
-/* ==== Estilo de seleção e hoje ==== */
-:where(.rdp) .rdp-day_selected {
-  background-color: #353A8C !important;
-  color: white !important;
-}
-:where(.rdp) .rdp-day_today {
-  color: #353A8C !important;
-  font-weight: bold !important;
-}
-
-
-
