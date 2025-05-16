@@ -68,30 +68,31 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
       className="absolute z-[9999] bg-white p-3 rounded-lg border border-gray-200 shadow-xl"
       style={{ top: posicao.top, left: posicao.left }}
     >
-      <DayPicker
-        mode="single"
-        defaultMonth={dataAtual}  {/* 🔄 ativa mês inicial + animações */}
-        selected={dataAtual}
-        onDayClick={(date) => {
-          aoSelecionarDia(date)
-          onClose?.()
-        }}
-        captionLayout="dropdown"
-        fromYear={2020}
-        toYear={2030}
-        locale={ptBR}
-        showOutsideDays
-        modifiersClassNames={{
-          selected: 'bg-nublia-accent text-white',
-          today: 'text-nublia-accent font-semibold',
-        }}
-        className="rdp text-sm" // 📌 força animação e layout padrão
-        styles={{
-          caption: { fontSize: '0.75rem' },
-          head_cell: { fontSize: '0.7rem' },
-          day: { fontSize: '0.75rem' }
-        }}
-      />
+<DayPicker
+  mode="single"
+  defaultMonth={dataAtual} // define mês inicial com animação
+  selected={dataAtual}
+  onDayClick={(date) => {
+    aoSelecionarDia(date)
+    onClose?.()
+  }}
+  captionLayout="dropdown"
+  fromYear={2020}
+  toYear={2030}
+  locale={ptBR}
+  showOutsideDays
+  modifiersClassNames={{
+    selected: 'bg-nublia-accent text-white',
+    today: 'text-nublia-accent font-semibold',
+  }}
+  className="rdp text-sm"
+  styles={{
+    caption: { fontSize: '0.75rem' },
+    head_cell: { fontSize: '0.7rem' },
+    day: { fontSize: '0.75rem' }
+  }}
+/>
+
     </div>,
     portalEl
   )
