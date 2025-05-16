@@ -244,18 +244,36 @@ useEffect(() => {
   const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
   const eventosVisiveis = filtrarEventos(eventosDoDia, filtroStatus)
 
-  const eventosParaAgenda = eventosFiltrados
-    .filter(ev => {
-      const nomeFiltrado = filtroTexto.trim().length > 1
-        ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-            .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
-        : true
+const eventosParaAgenda = eventos
+  .filter(ev => {
+    const nomeFiltrado = filtroTexto.trim().length > 1
+      ? ev.title?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+          .includes(filtroTexto.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
+      : true
 
-      const statusFiltrado = filtroStatus && filtroStatus !== 'todos' ? ev.status === filtroStatus : true
+    const statusFiltrado = filtroStatus && filtroStatus !== 'todos'
+      ? ev.status === filtroStatus
+      : true
 
+    if (filtroTexto.trim().length > 1) {
       return nomeFiltrado && statusFiltrado
-    })
-    .sort((a, b) => new Date(a.start) - new Date(b.start))
+    }
+
+    // Se NÃO estiver buscando por nome, filtra pelo intervalo atual
+    if (view === 'agenda' && rangeVisivel.start && rangeVisivel.end) {
+      const inicio = new Date(rangeVisivel.start)
+      inicio.setHours(0, 0, 0, 0)
+      const fim = new Date(rangeVisivel.end)
+      fim.setHours(0, 0, 0, 0)
+      fim.setDate(fim.getDate() + 1)
+
+      const dataEv = new Date(ev.start)
+      return dataEv >= inicio && dataEv < fim && statusFiltrado
+    }
+
+    return statusFiltrado
+  })
+  .sort((a, b) => new Date(a.start) - new Date(b.start))
 
   if (view === 'day') {
     return (
