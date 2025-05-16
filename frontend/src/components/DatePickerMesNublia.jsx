@@ -2,7 +2,6 @@
 
 import { createPortal } from 'react-dom'
 import { DayPicker } from 'react-day-picker'
-import 'react-day-picker/dist/style.css'
 import { ptBR } from 'date-fns/locale'
 import { useState, useEffect } from 'react'
 
