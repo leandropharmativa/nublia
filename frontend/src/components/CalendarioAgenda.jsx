@@ -540,7 +540,7 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
 
         {/* 📍 DIA e AGENDA clicáveis */}
 {view === 'month' && (
-  <span className="text-sm font-bold text-nublia-accent px-2 py-1">
+     <span className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1">
      <CalendarDays size={16} />
     {renderLabel()}
   </span>
