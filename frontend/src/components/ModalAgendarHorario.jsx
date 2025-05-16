@@ -300,7 +300,7 @@ useEffect(() => {
 window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
   detail: {
     ...paciente,
-    agendamento_id: agendamentoId
+    agendamentoId: agendamentoId // ✅ padronizado em camelCase
   }
 }))
         onCancelar()
