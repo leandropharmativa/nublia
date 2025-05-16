@@ -124,11 +124,10 @@
 }
 /* 📄 src/CalendarioCustom.css */
 
-.rdp-root {
-  --rdp-accent-color: #353A8C; /* azul escuro Nublia */
-  --rdp-accent-background-color: #BBD3F2; /* azul claro Nublia */
-
-  --rdp-today-color: #353A8C; /* azul escuro para hoje */
+.rdp {
+  --rdp-accent-color: #353A8C;
+  --rdp-accent-background-color: #BBD3F2;
+  --rdp-today-color: #353A8C;
   --rdp-selected-border: none;
 
   --rdp-day-height: 36px;
@@ -146,4 +145,5 @@
   --rdp-nav_button-height: 28px;
   --rdp-nav-height: 40px;
 }
+
 
