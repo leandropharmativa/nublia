@@ -16,8 +16,6 @@ import ModalConfirmacao from './ModalConfirmacao'
 
 export default function FichaAtendimento({ paciente, agendamentoId = null, onFinalizar, onAtendimentoSalvo }) {
 
-  const [agendamentoAtual, setAgendamentoAtual] = useState(null)
-
   const [abaAtiva, setAbaAtiva] = useState('paciente')
   const [formulario, setFormulario] = useState({
     anamnese: '',
@@ -34,14 +32,6 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   const [salvoUltimaVersao, setSalvoUltimaVersao] = useState(true)
 
   const abas = ['paciente', 'anamnese', 'antropometria', 'dieta', 'receita']
-
-useEffect(() => {
-  console.log("📦 useEffect - agendamentoId recebido:", agendamentoId)
-  if (agendamentoId && !agendamentoAtual) {
-    setAgendamentoAtual(agendamentoId)
-    console.log("✅ agendamentoAtual fixado:", agendamentoId)
-  }
-}, [agendamentoId, agendamentoAtual])
 
   useEffect(() => {
     const carregarAnteriores = async () => {
@@ -75,7 +65,7 @@ const handleSalvar = async (mostrarToast = true) => {
     const dadosAtendimento = {
       paciente_id: paciente.id,
       prescritor_id: user?.id,
-      agendamento_id: agendamentoAtual, // use diretamente a prop aqui
+      agendamento_id: agendamentoId, // use diretamente a prop aqui
       anamnese: formulario.anamnese,
       antropometria: formulario.antropometria,
       dieta: formulario.dieta,
@@ -105,10 +95,10 @@ const handleSalvar = async (mostrarToast = true) => {
     console.log('🟢 Finalizando atendimento...')
     await handleSalvar(false)
 
-    if (agendamentoAtual) {
-      console.log('📤 Enviando finalização do agendamento ID:', agendamentoAtual)
+    if (agendamentoId) {
+      console.log('📤 Enviando finalização do agendamento ID:', agendamentoId)
       await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
-        id: agendamentoAtual,
+        id: agendamentoId,
       })
     } else {
       console.warn('⚠️ Nenhum agendamentoId fornecido. Nada será finalizado.')
