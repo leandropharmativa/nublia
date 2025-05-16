@@ -291,6 +291,17 @@ useEffect(() => {
   }
 }, [view, dataAtual, rangeVisivel])
 
+  useEffect(() => {
+  const atualizarAgenda = () => {
+    // Força atualização de eventos ao recarregar agendamentos
+    onRangeChange?.(rangeVisivel)
+  }
+
+  window.addEventListener('AtualizarAgendaAposFinalizar', atualizarAgenda)
+  return () => window.removeEventListener('AtualizarAgendaAposFinalizar', atualizarAgenda)
+}, [rangeVisivel])
+
+
   const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
   const eventosVisiveis = filtrarEventos(eventosDoDia, filtroStatus)
 
