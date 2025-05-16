@@ -8,7 +8,7 @@ import FarmaciaDashboard from './pages/FarmaciaDashboard'
 import PrescritorDashboard from './pages/PrescritorDashboard'
 import SecretariaDashboard from './pages/SecretariaDashboard'
 import PrivateRoute from './routes/PrivateRoute'
-import TesteDayPicker from './components/TesteDayPicker' // ✅ import do teste
+import TesteDayPicker from './components/TesteDayPicker' 
 
 function AcessoNegado() {
   return (
