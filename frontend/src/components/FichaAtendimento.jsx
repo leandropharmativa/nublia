@@ -86,23 +86,28 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
     }
   }
 
-  const handleFinalizar = async () => {
-    await handleSalvar(false)
+const handleFinalizar = async () => {
+  await handleSalvar(false)
 
-    if (agendamentoId) {
-      try {
-        await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
-          id: agendamentoId,
-        })
-      } catch (err) {
-        console.error('Erro ao finalizar agendamento:', err)
-        toastErro('Erro ao atualizar agendamento.')
-      }
+  if (agendamentoId) {
+    try {
+      await axios.post(`https://nublia-backend.onrender.com/agenda/finalizar`, {
+        id: agendamentoId,
+      })
+
+      // ✅ Disparar evento global para forçar recarregamento
+      window.dispatchEvent(new CustomEvent('AtualizarAgendaAposFinalizar'))
+
+    } catch (err) {
+      console.error('Erro ao finalizar agendamento:', err)
+      toastErro('Erro ao atualizar agendamento.')
     }
-
-    toastSucesso('Atendimento salvo e finalizado!')
-    onFinalizar()
   }
+
+  toastSucesso('Atendimento salvo e finalizado!')
+  onFinalizar()
+}
+}
 
   const houveAlteracao = Object.values(formulario).some(valor => valor.trim() !== '')
 
