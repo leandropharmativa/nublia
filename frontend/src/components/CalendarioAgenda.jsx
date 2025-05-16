@@ -221,17 +221,17 @@ export default function CalendarioAgenda({
     }
   }
 
-  useEffect(() => {
-    if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
-      const filtrados = eventos.filter(ev => {
-        const data = new Date(ev.start)
-        return data >= rangeVisivel.start && data <= rangeVisivel.end
-      })
-      setEventosFiltrados(filtrados)
-    } else {
-      setEventosFiltrados(eventos)
-    }
-  }, [view, eventos, rangeVisivel])
+useEffect(() => {
+  if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
+    const filtrados = eventos.filter(ev => {
+      const data = new Date(ev.start)
+      return data >= rangeVisivel.start && data < new Date(rangeVisivel.end.getTime() + 86400000)
+    })
+    setEventosFiltrados(filtrados)
+  } else {
+    setEventosFiltrados(eventos)
+  }
+}, [view, eventos, rangeVisivel])
 
   const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
   const eventosVisiveis = filtrarEventos(eventosDoDia, filtroStatus)
@@ -367,7 +367,7 @@ export default function CalendarioAgenda({
 
       {view === 'agenda' && (
         <div className="bg-white rounded px-4 pb-4">
-          <div className="flex justify-between items-start mb-3">
+          <div className="mt-6 flex justify-between items-start mb-3">
             <div className="relative w-full max-w-sm">
               <input
                 type="text"
