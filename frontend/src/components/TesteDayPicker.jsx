@@ -9,9 +9,10 @@ export default function TesteDayPicker() {
     <div className="p-10 bg-white min-h-screen">
       <h2 className="text-lg font-semibold mb-4">Teste do DayPicker</h2>
       <DayPicker
+        animate
         mode="single"
         defaultMonth={new Date()}
-        captionLayout="dropdown"
+        captionLayout="buttons"
         locale={ptBR}
         showOutsideDays
         fromYear={2020}
