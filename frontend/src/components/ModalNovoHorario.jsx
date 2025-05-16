@@ -8,11 +8,14 @@ import Botao from './Botao'
 export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onAtualizar }) {
   const [horaDigitada, setHoraDigitada] = useState('00:00')
   const [horariosExistentes, setHorariosExistentes] = useState([])
+
   const user = JSON.parse(localStorage.getItem('user'))
+  const ehSecretaria = user?.role === 'secretaria'
+  const idPrescritor = ehSecretaria ? user.prescritor_id : user.id
 
   const carregarHorariosDoDia = async () => {
     try {
-      const res = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+      const res = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${idPrescritor}`)
       const lista = res.data
         .filter((item) =>
           isSameDay(new Date(`${item.data}T${item.hora}`), horario)
@@ -35,6 +38,19 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
   }, [horario])
 
   const handleConfirmar = async () => {
+    const [h, m] = horaDigitada.split(':')
+    const horarioCompleto = new Date(horario)
+    horarioCompleto.setHours(h)
+    horarioCompleto.setMinutes(m)
+    horarioCompleto.setSeconds(0)
+    horarioCompleto.setMilliseconds(0)
+
+    const agora = new Date()
+    if (horarioCompleto < agora) {
+      toastErro('Não é possível cadastrar um horário no passado.')
+      return
+    }
+
     if (horariosExistentes.some((h) => h.hora === horaDigitada)) {
       toastErro(`Horário ${horaDigitada} já está cadastrado.`)
       return
@@ -67,8 +83,7 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
         <h2 className="text-xl font-semibold text-nublia-primary mb-4 flex items-center gap-2">
           <CalendarPlus2 className="w-5 h-5" />
           Cadastrar horário disponível
-          </h2>
-
+        </h2>
 
         <p className="mb-4 text-sm text-gray-600">
           Data selecionada: <strong>{format(horario, 'dd/MM/yyyy')}</strong>
@@ -101,7 +116,7 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
                     <button
                       onClick={() => removerHorario(item.id)}
                       title="Remover horário"
-                      className="text-gray-400 hover:text-red-500" className="rounded-full"
+                      className="text-gray-400 hover:text-red-500 rounded-full"
                     >
                       <Trash size={14} />
                     </button>
