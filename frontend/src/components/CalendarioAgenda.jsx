@@ -590,13 +590,15 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
               })()
             }}
             anchorRef={intervaloRef}
-            onSelecionarIntervalo={({ from, to }) => {
-              if (from && to) {
-                setMostrarIntervalo(false)
-                onNavigate(from)
-                onRangeChange?.({ start: from, end: to })
-              }
-            }}
+onSelecionarIntervalo={({ from, to }) => {
+  if (from && to) {
+    setRangeVisivel({ start: from, end: to }) // ✅ atualiza range
+    setMostrarIntervalo(false)
+    onNavigate(from)
+    onRangeChange?.({ start: from, end: to })
+  }
+}}
+}
             onClose={() => setMostrarIntervalo(false)}
           />
         )}
