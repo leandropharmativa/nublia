@@ -53,6 +53,13 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
 
   const hideTooltip = () => setTooltip({ visible: false, text: '', x: 0, y: 0 })
 
+  const hoje = new Date()
+  hoje.setHours(0, 0, 0, 0)
+  const dataAtual = new Date(data)
+  dataAtual.setHours(0, 0, 0, 0)
+
+  const diaPassado = dataAtual < hoje
+
   return (
     <div className="relative flex flex-col justify-start px-1 h-full min-h-[75px] overflow-visible">
       <div className="flex justify-between items-center text-[10px] mt-1">
@@ -62,16 +69,24 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
         >
           {label}
         </span>
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            aoAdicionarHorario?.({ start: data })
-          }}
-          className="text-gray-400 hover:text-nublia-primary"
-          title="Adicionar horário"
-        >
-          <CalendarClock size={14} />
-        </button>
+{diaPassado ? (
+  <CalendarClock
+    size={14}
+    className="text-nublia-primary opacity-50 cursor-not-allowed"
+    title="Data passada - indisponível"
+  />
+) : (
+  <button
+    onClick={(e) => {
+      e.stopPropagation()
+      aoAdicionarHorario?.({ start: data })
+    }}
+    className="text-gray-400 hover:text-nublia-primary"
+    title="Adicionar horário"
+  >
+    <CalendarClock size={14} />
+  </button>
+)}
       </div>
 
       <div className="flex flex-wrap gap-[4px] mt-2 overflow-visible">
