@@ -13,6 +13,7 @@ import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import ListaAgendamentosAgenda from '../components/ListaAgendamentosAgenda'
 import VisualizarAtendimentoModal from '../components/VisualizarAtendimentoModal'
+import FichaAtendimento from '../components/FichaAtendimento'
 
 function AgendaPrescritor({ mostrarAgenda }) {
   const [eventos, setEventos] = useState([])
