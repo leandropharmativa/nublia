@@ -31,6 +31,12 @@ export default function DatePickerIntervaloNublia({
     }
   }, [anchorRef])
 
+  useEffect(() => {
+  if (intervaloAtual?.start && intervaloAtual?.end) {
+    setRangeSelecionado({ from: intervaloAtual.start, to: intervaloAtual.end })
+  }
+}, [intervaloAtual])
+
   const portalEl = document.getElementById('datepicker-root')
   if (!portalEl || !posicao) return null
 
