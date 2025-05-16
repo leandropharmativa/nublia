@@ -404,6 +404,9 @@ const eventosParaAgenda = baseEventos
                 data={props.date}
                 label={props.label}
                 eventos={eventos}
+                 rangeVisivel={rangeVisivel}
+                setRangeVisivel={setRangeVisivel}
+                onRangeChange={onRangeChange}
                 aoSelecionarEvento={aoSelecionarEventoOuFinalizado}
                 aoAdicionarHorario={aoSelecionarSlot}
                 aoMudarParaDia={(dia) => {
