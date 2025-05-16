@@ -1,6 +1,7 @@
 // 📄 components/CalendarioAgenda.jsx
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
+
 import {
   format,
   parse,
@@ -27,6 +28,7 @@ import {
 
 import ModalFinalizado from './ModalFinalizado'
 import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
+import DatePickerMesNublia from './DatePickerMesNublia'
 import { toastErro } from '../utils/toastUtils'
 
 const locales = { 'pt-BR': ptBR }
@@ -471,6 +473,9 @@ const eventosParaAgenda = baseEventos
 }
 
 function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
+  const [mostrarCalendario, setMostrarCalendario] = useState(false)
+  const containerRef = useRef(null)
+
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
 
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
@@ -487,25 +492,27 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
     return label
   }
 
-const contar = () => {
-  let eventosFiltrados = eventos
-  const agora = new Date()
+  const contar = () => {
+    const agora = new Date()
+    let eventosFiltrados = eventos
 
-  if (view === 'week') {
-    eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
-  } else if (view === 'day') {
-    eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
+    if (view === 'week') {
+      eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
+    } else if (view === 'day') {
+      eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
+    } else if (view === 'month') {
+      eventosFiltrados = eventos.filter(e =>
+        new Date(e.start).getMonth() === date.getMonth() &&
+        new Date(e.start).getFullYear() === date.getFullYear()
+      )
+    }
+
+    const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
+    const disponiveis = eventosFiltrados.filter(e =>
+      e.status === 'disponivel' && new Date(e.start) > agora
+    ).length
+    return { agendados, disponiveis }
   }
-
-  const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
-
-  // Disponíveis = status 'disponivel' e com horário futuro
-  const disponiveis = eventosFiltrados.filter(
-    e => e.status === 'disponivel' && new Date(e.start) >= agora
-  ).length
-
-  return { agendados, disponiveis }
-}
 
   const { agendados, disponiveis } = contar()
 
@@ -517,7 +524,7 @@ const contar = () => {
   }
 
   return (
-    <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
+    <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200 relative" ref={containerRef}>
       <div className="flex items-center gap-2">
         <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
           <ChevronLeft size={20} />
@@ -525,10 +532,25 @@ const contar = () => {
         <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
           <ChevronRight size={20} />
         </button>
-        <span className="flex items-center gap-2 text-sm font-bold text-nublia-accent">
+        <span
+          className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer hover:underline"
+          onClick={() => setMostrarCalendario(!mostrarCalendario)}
+        >
           <CalendarDays size={16} />
           {renderLabel()}
         </span>
+        {mostrarCalendario && view === 'month' && (
+          <div className="absolute top-10 left-32 z-50">
+            <DatePickerMesNublia
+              dataAtual={date}
+              aoSelecionarMes={(novaData) => {
+                setMostrarCalendario(false)
+                onNavigate(novaData)
+              }}
+              onClose={() => setMostrarCalendario(false)}
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-3">
