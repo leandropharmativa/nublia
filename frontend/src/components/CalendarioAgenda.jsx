@@ -337,7 +337,7 @@ const eventosParaAgenda = baseEventos
 
         window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
           detail: paciente,
-          agendamento_id: evento.id
+          agendamento_id: ev.id
         }))
       })
       .catch(() => toastErro('Erro ao buscar paciente.'))
