@@ -116,7 +116,7 @@
 }
 /* Destacar dias fora do mês atual */
 .rbc-off-range-bg {
-  background-color: #f8f8f8 !important; /* tom mais claro */
+  background-color: #dadada !important; /* tom mais claro */
   opacity: 0.6; /* levemente esmaecido */
 }
 .rbc-off-range .rbc-day-bg {
