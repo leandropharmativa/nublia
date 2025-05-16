@@ -93,19 +93,24 @@ const buscarPrescritor = async (id) => {
 
   return (
     <Layout>
-      <div className="flex justify-between items-center mb-6 border-b pb-3">
-        <div>
-          <h1 className="text-xl font-semibold text-nublia-accent flex items-center gap-2">
-            <CalendarDays size={20} />
-            Agenda da {nomePrescritor}
-          </h1>
-          {user && (
-            <p className="text-sm text-gray-500 mt-1">
-              Secretária: {user.nome}
-            </p>
-          )}
-        </div>
-      </div>
+<div className="flex justify-between items-center mb-6 border-b pb-3">
+  <div>
+    <h1 className="text-xl font-semibold text-nublia-accent flex items-center gap-2">
+      <CalendarDays size={20} />
+      Agenda do{user?.genero === 'feminino' ? 'a' : user?.genero === 'masculino' ? '' : '(a)'} Dr{user?.genero === 'feminino' ? 'a' : user?.genero === 'masculino' ? '' : '(a)'} {nomePrescritor}
+    </h1>
+
+    {user?.nome &&
+      user.nome.toLowerCase() !== 'secretaria' &&
+      user.nome.toLowerCase() !== user.role?.toLowerCase() && (
+        <p className="text-sm text-gray-500 mt-1">
+          Secretária: {user.nome}
+        </p>
+    )}
+  </div>
+</div>
+
+
 
       <CalendarioAgenda
         eventos={eventos}
