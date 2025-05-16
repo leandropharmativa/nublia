@@ -114,5 +114,11 @@
   box-shadow: inset 0 0 0 2px #f97316; /* borda laranja por dentro */
   border-radius: 8px;
 }
+/* Destacar dias fora do mês atual */
+.rbc-off-range-bg {
+  background-color: #f8f8f8 !important; /* tom mais claro */
+  opacity: 0.6; /* levemente esmaecido */
+}
+
 
 
