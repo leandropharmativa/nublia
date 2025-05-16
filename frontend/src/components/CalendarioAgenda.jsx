@@ -343,24 +343,55 @@ export default function CalendarioAgenda({
           time: 'Horário',
           event: 'Agendamento'
         }}
-        components={{
-          toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
-          month: {
-            dateHeader: (props) => (
-              <HeaderComEventos
-                data={props.date}
-                label={props.label}
-                eventos={eventos}
-                aoSelecionarEvento={aoSelecionarEventoOuFinalizado}
-                aoAdicionarHorario={aoSelecionarSlot}
-                aoMudarParaDia={(dia) => {
-                  setDataAtual(dia)
-                  setView('day')
-                }}
-              />
-            )
-          }
+components={{
+  toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
+  month: {
+    dateHeader: (props) => (
+      <HeaderComEventos
+        data={props.date}
+        label={props.label}
+        eventos={eventos}
+        aoSelecionarEvento={aoSelecionarEventoOuFinalizado}
+        aoAdicionarHorario={aoSelecionarSlot}
+        aoMudarParaDia={(dia) => {
+          setDataAtual(dia)
+          setView('day')
         }}
+      />
+    )
+  },
+  agenda: {
+    event: ({ event }) => (
+      <ListaAgendamentosAgenda
+        eventos={[event]}
+        aoVerPerfil={onAbrirPerfil}
+        aoVerAgendamento={aoSelecionarEventoOuFinalizado}
+        aoIniciarAtendimento={(pacienteId) => {
+          if (!pacienteId) {
+            toastErro('Paciente não encontrado.')
+            return
+          }
+
+          fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+            .then(res => res.json())
+            .then(paciente => {
+              if (!paciente || !paciente.data_nascimento) {
+                toastErro('Paciente sem data de nascimento.')
+                return
+              }
+
+              window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
+                detail: paciente
+              }))
+            })
+            .catch(() => toastErro('Erro ao buscar paciente.'))
+        }}
+      />
+    ),
+    date: () => null,
+    time: () => null
+  }
+}}
       />
 
       <ModalFinalizado
