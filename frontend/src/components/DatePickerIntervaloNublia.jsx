@@ -48,13 +48,16 @@ export default function DatePickerIntervaloNublia({ intervaloAtual, anchorRef, o
       <DayPicker
         mode="range"
         selected={intervalo}
-        onSelect={(range) => {
-          setIntervalo(range)
-          if (range?.from && range?.to) {
-            onSelecionarIntervalo(range)
-            onClose?.()
-          }
-        }}
+onSelect={(range) => {
+  setIntervalo(range)
+  if (range?.from && range?.to) {
+    setTimeout(() => {
+      onSelecionarIntervalo(range)
+      onClose?.()
+    }, 150)
+  }
+}}
+
         locale={ptBR}
         numberOfMonths={2}
         captionLayout="buttons"
