@@ -142,7 +142,7 @@ function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendi
         aoVerPerfil={onVerPerfil}
         aoVerAgendamento={onVerAgendamento}
         aoIniciarAtendimento={onIniciarAtendimento}
-        ocultarIniciar={ocultarIniciar} // ✅ Aqui está o repasse correto
+        ocultarIniciar={ocultarIniciar}
       />
     </div>
   )
