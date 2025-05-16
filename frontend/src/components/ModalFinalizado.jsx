@@ -51,42 +51,45 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
           </h2>
         </div>
 
-        <div className="flex items-center justify-between gap-3 mb-3">
-          <strong className="text-base text-gray-800">{nome}</strong>
-          <div className="flex gap-2">
-            <button onClick={onAbrirPerfil} title="Ver perfil">
-              <UserRound
+        {/* Nome do paciente com ícone de perfil */}
+        <div className="flex items-center gap-2 text-gray-800 mb-4">
+          <button onClick={onAbrirPerfil} title="Ver perfil">
+            <UserRound
+              size={18}
+              className="text-nublia-accent hover:text-nublia-orange transition"
+            />
+          </button>
+          <strong className="text-base">{nome}</strong>
+          {!ehSecretaria && (
+            <button onClick={onVerAtendimento} title="Ver atendimento">
+              <FileText
                 size={18}
                 className="text-nublia-accent hover:text-nublia-orange transition"
               />
             </button>
-{!ehSecretaria && (
-  <button onClick={onVerAtendimento} title="Ver atendimento">
-    <FileText
-      size={18}
-      className="text-nublia-accent hover:text-nublia-orange transition"
-    />
-  </button>
-)}
-          </div>
+          )}
         </div>
 
         <div className="mb-2 text-gray-700">
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <span className="font-semibold">Agendamento:</span>
-            <Calendar size={14} className="text-gray-500" />
-            <span>{data}</span>
-            <Clock size={14} className="text-gray-500 ml-3" />
-            <span>{horaAgendada}h</span>
+          <div className="mb-3">
+            <p className="font-semibold mb-1">Agendamento:</p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Calendar size={14} className="text-gray-500" />
+              <span>{data}</span>
+              <Clock size={14} className="text-gray-500 ml-3" />
+              <span>{horaAgendada}h</span>
+            </div>
           </div>
 
           {evento.criado_em ? (
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold">Atendimento:</span>
-              <Calendar size={14} className="text-gray-500" />
-              <span>{dataAtend}</span>
-              <Clock size={14} className="text-gray-500 ml-3" />
-              <span>{horaAtend}h</span>
+            <div>
+              <p className="font-semibold mb-1">Atendimento:</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Calendar size={14} className="text-gray-500" />
+                <span>{dataAtend}</span>
+                <Clock size={14} className="text-gray-500 ml-3" />
+                <span>{horaAtend}h</span>
+              </div>
             </div>
           ) : (
             <div className="text-gray-500 mt-2">Hora do atendimento: ---</div>
