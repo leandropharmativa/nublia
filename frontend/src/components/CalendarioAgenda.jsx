@@ -527,27 +527,29 @@ function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }
         <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
           <ChevronRight size={20} />
         </button>
-        <span
-          className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer hover:underline"
-          onClick={() => {
-            if (view === 'day') setMostrarCalendario(!mostrarCalendario)
-          }}
-        >
-          <CalendarDays size={16} />
-          {renderLabel()}
-        </span>
-        {mostrarCalendario && view === 'day' && (
-          <div className="absolute top-10 left-32 z-50">
-            <DatePickerMesNublia
-              dataAtual={date}
-              aoSelecionarDia={(novaData) => {
-                setMostrarCalendario(false)
-                onNavigate(novaData)
-              }}
-              onClose={() => setMostrarCalendario(false)}
-            />
-          </div>
-        )}
+<span
+  ref={containerRef}
+  className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer hover:underline"
+  onClick={() => {
+    if (view === 'day') setMostrarCalendario(!mostrarCalendario)
+  }}
+>
+  <CalendarDays size={16} />
+  {renderLabel()}
+</span>
+
+{mostrarCalendario && view === 'day' && containerRef.current && (
+  <DatePickerMesNublia
+    dataAtual={date}
+    anchorRef={containerRef}
+    aoSelecionarDia={(novaData) => {
+      setMostrarCalendario(false)
+      onNavigate(novaData)
+    }}
+    onClose={() => setMostrarCalendario(false)}
+  />
+)}
+
       </div>
 
       <div className="flex items-center gap-3">
