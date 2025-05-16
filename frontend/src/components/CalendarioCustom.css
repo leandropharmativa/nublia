@@ -124,25 +124,32 @@
 }
 /* 📄 src/CalendarioCustom.css */
 
-.rdp {
-  --rdp-accent-color: #353A8C;
-  --rdp-accent-background-color: #BBD3F2;
+.rdp-root {
+  /* 🎨 Cores e comportamento */
+  --rdp-accent-color: #353A8C; /* azul escuro personalizado */
+  --rdp-background-color: white;
+  --rdp-accent-color-dark: #1d1e3d;
   --rdp-today-color: #353A8C;
-  --rdp-selected-border: none;
+  --rdp-selected-color: white;
+  --rdp-selected-background-color: #7CAAE6;
 
+  /* 📦 Layout */
   --rdp-day-height: 36px;
   --rdp-day-width: 36px;
-  --rdp-day_button-border-radius: 8px;
+  --rdp-day-radius: 8px;
 
-  --rdp-animation_duration: 0.3s;
-  --rdp-animation_timing: ease-in-out;
+  /* 🕒 Comportamento */
+  --rdp-animation-duration: 0.3s;
+  --rdp-animation-timing: ease-in-out;
 
+  /* Opacidades */
   --rdp-outside-opacity: 0.4;
   --rdp-disabled-opacity: 0.3;
   --rdp-chevron-disabled-opacity: 0.3;
 
-  --rdp-nav_button-width: 28px;
-  --rdp-nav_button-height: 28px;
+  /* Navegação */
+  --rdp-nav-button-width: 28px;
+  --rdp-nav-button-height: 28px;
   --rdp-nav-height: 40px;
 }
 
