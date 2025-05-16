@@ -1,3 +1,41 @@
+:root {
+  --rdp-accent-color: #353A8C;
+  --rdp-background-color: white;
+  --rdp-today-color: #353A8C;
+  --rdp-selected-color: white;
+  --rdp-selected-background-color: #7CAAE6;
+  --rdp-selected-border: none;
+  --rdp-day-height: 36px;
+  --rdp-day-width: 36px;
+  --rdp-day-radius: 8px;
+  --rdp-animation-duration: 0.3s;
+  --rdp-animation-timing: ease-in-out;
+  --rdp-outside-opacity: 0.4;
+  --rdp-disabled-opacity: 0.3;
+  --rdp-chevron-disabled-opacity: 0.3;
+  --rdp-nav-button-width: 28px;
+  --rdp-nav-button-height: 28px;
+  --rdp-nav-height: 40px;
+}
+
+/* Dia de hoje com borda */
+.rdp-day_today {
+  border: 2px solid #f97316 !important;
+}
+
+/* Dia selecionado */
+.rdp-day_selected {
+  background-color: var(--rdp-accent-color) !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+/* Dias fora do mês */
+.rdp-day_outside {
+  color: #b0b0b0 !important;
+  opacity: 0.3 !important;
+}
+
 /* ===== Cabeçalhos dos dias da semana ===== */
 .rbc-month-view .rbc-header {
   color: #7CAAE6 !important;           /* azul (Tailwind blue-500) */
@@ -122,35 +160,4 @@
 .rbc-off-range .rbc-day-bg {
   color: #b0b0b0 !important;
 }
-/* 📄 src/CalendarioCustom.css */
-
-.rdp-root {
-  /* 🎨 Cores e comportamento */
-  --rdp-accent-color: #353A8C; /* azul escuro personalizado */
-  --rdp-background-color: white;
-  --rdp-accent-color-dark: #1d1e3d;
-  --rdp-today-color: #353A8C;
-  --rdp-selected-color: white;
-  --rdp-selected-background-color: #7CAAE6;
-
-  /* 📦 Layout */
-  --rdp-day-height: 36px;
-  --rdp-day-width: 36px;
-  --rdp-day-radius: 8px;
-
-  /* 🕒 Comportamento */
-  --rdp-animation-duration: 0.3s;
-  --rdp-animation-timing: ease-in-out;
-
-  /* Opacidades */
-  --rdp-outside-opacity: 0.4;
-  --rdp-disabled-opacity: 0.3;
-  --rdp-chevron-disabled-opacity: 0.3;
-
-  /* Navegação */
-  --rdp-nav-button-width: 28px;
-  --rdp-nav-button-height: 28px;
-  --rdp-nav-height: 40px;
-}
-
 
