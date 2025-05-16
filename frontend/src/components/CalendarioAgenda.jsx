@@ -351,32 +351,33 @@ const eventosParaAgenda = baseEventos
   eventos={eventosVisiveis}
   onVerPerfil={onAbrirPerfil}
   onVerAgendamento={aoSelecionarEventoOuFinalizado}
-onIniciarAtendimento={(ev) => {
-  if (!ev?.paciente_id) {
-    toastErro('Paciente não encontrado para este agendamento.')
-    return
-  }
+  onIniciarAtendimento={(ev) => {
+    if (!ev?.paciente_id) {
+      toastErro('Paciente não encontrado para este agendamento.')
+      return
+    }
 
-  fetch(`https://nublia-backend.onrender.com/users/${ev.paciente_id}`)
-    .then(res => res.json())
-    .then(paciente => {
-      if (!paciente || !paciente.data_nascimento) {
-        toastErro('Paciente sem data de nascimento.')
-        return
-      }
-
-      window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-        detail: {
-          ...paciente,
-          agendamento_id: ev.id
+    fetch(`https://nublia-backend.onrender.com/users/${ev.paciente_id}`)
+      .then(res => res.json())
+      .then(paciente => {
+        if (!paciente || !paciente.data_nascimento) {
+          toastErro('Paciente sem data de nascimento.')
+          return
         }
-      }))
-    })
-    .catch(() => toastErro('Erro ao buscar paciente.'))
-}}
 
+        // ✅ Usa a função passada pelo pai
+        if (typeof aoSelecionarEvento === 'function') {
+          aoSelecionarEvento({
+            paciente,
+            agendamentoId: ev.id,
+          })
+        }
+      })
+      .catch(() => toastErro('Erro ao buscar paciente.'))
+  }}
   ocultarIniciar={ehSecretaria}
 />
+
 
       </div>
     )
