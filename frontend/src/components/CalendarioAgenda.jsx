@@ -223,10 +223,18 @@ export default function CalendarioAgenda({
 
 useEffect(() => {
   if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
+    const inicio = new Date(rangeVisivel.start)
+    inicio.setHours(0, 0, 0, 0)
+
+    const fim = new Date(rangeVisivel.end)
+    fim.setHours(0, 0, 0, 0)
+    fim.setDate(fim.getDate() + 1)
+
     const filtrados = eventos.filter(ev => {
       const data = new Date(ev.start)
-      return data >= rangeVisivel.start && data < new Date(rangeVisivel.end.getTime() + 86400000)
+      return data >= inicio && data < fim
     })
+
     setEventosFiltrados(filtrados)
   } else {
     setEventosFiltrados(eventos)
