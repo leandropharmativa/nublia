@@ -65,7 +65,7 @@ useEffect(() => {
       <div className="mt-3 flex justify-end gap-2">
         <button
           onClick={onClose}
-          className="text-sm px-3 py-1 rounded hover:bg-gray-100 text-gray-600"
+          className="text-sm px-3 py-1 rounded-full hover:bg-gray-100 text-gray-600"
         >
           Cancelar
         </button>
@@ -79,7 +79,7 @@ useEffect(() => {
               })
             }
           }}
-          className="text-sm px-3 py-1 rounded bg-nublia-accent text-white hover:bg-nublia-primary disabled:opacity-40 disabled:cursor-not-allowed"
+          className="text-sm px-3 py-1 rounded-full bg-nublia-accent text-white hover:bg-nublia-primary disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Aplicar intervalo
         </button>
