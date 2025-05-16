@@ -307,7 +307,6 @@ window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
   }
 }))
 
-
         onCancelar()
       } catch (err) {
         console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
