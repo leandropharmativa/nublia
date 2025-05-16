@@ -52,13 +52,19 @@ export default function ListaAgendamentosAgenda({
                   {ev.status === 'agendado' ? (
                     <>
                       <button onClick={() => aoVerPerfil?.(ev.paciente_id)} title="Ver perfil">
-                        <UserRound size={18} />
+                        <UserRound 
+                          className="text-nublia-accent hover:text-nublia-primary transition-colors"
+                          size={18} />
                       </button>
                       <button onClick={() => aoVerAgendamento?.(ev)} title="Ver agendamento">
-                        <Eye size={18} />
+                        <Eye 
+                          className="text-nublia-accent hover:text-nublia-primary transition-colors"
+                          size={18} />
                       </button>
                       <button onClick={() => aoIniciarAtendimento?.(ev.paciente_id)} title="Iniciar atendimento">
-                        <PlayCircle size={18} />
+                        <PlayCircle 
+                          className="text-nublia-accent hover:text-nublia-primary transition-colors"
+                          size={18} />
                       </button>
                     </>
                   ) : ev.status === 'finalizado' ? (
