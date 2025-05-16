@@ -244,22 +244,23 @@ export default function CalendarioAgenda({
 
 useEffect(() => {
   if (view === 'agenda') {
-    const inicio = new Date(dataAtual)
+    const inicio = rangeVisivel?.start ? new Date(rangeVisivel.start) : new Date(dataAtual)
     inicio.setHours(0, 0, 0, 0)
 
-    const fim = new Date(inicio)
-    fim.setMonth(fim.getMonth() + 1)
+    const fim = rangeVisivel?.end ? new Date(rangeVisivel.end) : new Date(inicio)
+    if (!rangeVisivel?.end) fim.setMonth(fim.getMonth() + 1)
 
     const filtrados = eventos.filter(ev => {
       const data = new Date(ev.start)
-      return data >= inicio && data < fim
+      return data >= inicio && data <= fim
     })
 
     setEventosFiltrados(filtrados)
   } else {
     setEventosFiltrados(eventos)
   }
-}, [view, eventos, dataAtual])
+}, [view, eventos, dataAtual, rangeVisivel])
+
 
   useEffect(() => {
   if (view === 'month' && !rangeVisivel.start && !rangeVisivel.end) {
