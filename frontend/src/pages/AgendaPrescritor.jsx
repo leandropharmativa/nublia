@@ -35,6 +35,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
   const [viewAtual, setViewAtual] = useState('month')
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
   const [modalFinalizadoAberto, setModalFinalizadoAberto] = useState(null)
+  const [agendamentoParaFicha, setAgendamentoParaFicha] = useState(null)
   
   const user = JSON.parse(localStorage.getItem('user'))
 
@@ -102,17 +103,18 @@ function AgendaPrescritor({ mostrarAgenda }) {
     }
   }, [mostrarAgenda])
 
-  useEffect(() => {
+useEffect(() => {
   const listener = (e) => {
     const { agendamento_id, ...paciente } = e.detail
     setPacienteSelecionado(paciente)
-    setAgendamentoSelecionado(agendamento_id || null) // garante ID do agendamento
+    setAgendamentoParaFicha(agendamento_id || null)
     setMostrarFicha(true)
   }
 
   window.addEventListener('IniciarFichaAtendimento', listener)
   return () => window.removeEventListener('IniciarFichaAtendimento', listener)
 }, [])
+
 
   const handleNovoSlot = (slotInfo) => {
     setSlotSelecionado(slotInfo.start)
@@ -264,12 +266,13 @@ function AgendaPrescritor({ mostrarAgenda }) {
         />
       )}
 
-      {mostrarFicha && pacienteSelecionado && (
+{mostrarFicha && pacienteSelecionado && (
   <FichaAtendimento
     paciente={pacienteSelecionado}
-    agendamentoId={agendamentoSelecionado} // <- garante vínculo com agendamento
+    agendamentoId={agendamentoParaFicha} // <- agora é seguro!
     onFinalizar={() => {
       setMostrarFicha(false)
+      setAgendamentoParaFicha(null)
       carregarEventos()
     }}
   />
