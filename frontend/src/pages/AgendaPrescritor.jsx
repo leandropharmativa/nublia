@@ -103,19 +103,16 @@ function AgendaPrescritor({ mostrarAgenda }) {
     }
   }, [mostrarAgenda])
 
-// 📌 Correção no listener do evento 'IniciarFichaAtendimento'
 useEffect(() => {
   const listener = (e) => {
-    // Captura agendamentoId independente de camelCase ou snake_case
-    const agendamentoId = e.detail.agendamentoId ?? e.detail.agendamento_id ?? null
-
-    // Remove o campo agendamentoId do objeto paciente
+    const agendamentoId = e.detail.agendamento_id ?? e.detail.agendamentoId ?? null
     const paciente = { ...e.detail }
-    delete paciente.agendamentoId
     delete paciente.agendamento_id
+    delete paciente.agendamentoId
+
+    console.log('📩 Evento recebido: IniciarFichaAtendimento', { agendamentoId, paciente })
 
     setPacienteSelecionado(paciente)
-    setAgendamentoSelecionado(agendamentoId)
     setAgendamentoParaFicha(agendamentoId)
     setMostrarFicha(true)
   }
@@ -123,7 +120,6 @@ useEffect(() => {
   window.addEventListener('IniciarFichaAtendimento', listener)
   return () => window.removeEventListener('IniciarFichaAtendimento', listener)
 }, [])
-
 
   const handleNovoSlot = (slotInfo) => {
     setSlotSelecionado(slotInfo.start)
