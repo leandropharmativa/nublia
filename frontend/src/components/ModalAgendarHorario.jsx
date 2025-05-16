@@ -296,9 +296,12 @@ useEffect(() => {
           return
         }
 
-        window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-          detail: paciente
-        }))
+window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+  detail: {
+    ...paciente,
+    agendamento_id: agendamentoId
+  }
+}))
         onCancelar()
       } catch (err) {
         console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
