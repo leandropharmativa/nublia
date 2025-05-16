@@ -298,10 +298,15 @@ useEffect(() => {
 
 window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
   detail: {
-    paciente,
+    paciente: {
+      id: pacienteId,
+      name: pacienteAtual,
+      ...paciente
+    },
     agendamentoId
   }
 }))
+
 
         onCancelar()
       } catch (err) {
