@@ -396,27 +396,33 @@ const eventosParaAgenda = baseEventos
           time: 'Horário',
           event: 'Agendamento'
         }}
-        components={{
-          toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
-          month: {
-            dateHeader: (props) => (
-              <HeaderComEventos
-                data={props.date}
-                label={props.label}
-                eventos={eventos}
-                 rangeVisivel={rangeVisivel}
-                setRangeVisivel={setRangeVisivel}
-                onRangeChange={onRangeChange}
-                aoSelecionarEvento={aoSelecionarEventoOuFinalizado}
-                aoAdicionarHorario={aoSelecionarSlot}
-                aoMudarParaDia={(dia) => {
-                  setDataAtual(dia)
-                  setView('day')
-                }}
-              />
-            )
-          }
+components={{
+  toolbar: (props) => (
+    <CustomToolbar
+      {...props}
+      eventos={eventos}
+      rangeVisivel={rangeVisivel}
+      setRangeVisivel={setRangeVisivel}
+      onRangeChange={onRangeChange}
+    />
+  ),
+  month: {
+    dateHeader: (props) => (
+      <HeaderComEventos
+        data={props.date}
+        label={props.label}
+        eventos={eventos}
+        aoSelecionarEvento={aoSelecionarEventoOuFinalizado}
+        aoAdicionarHorario={aoSelecionarSlot}
+        aoMudarParaDia={(dia) => {
+          setDataAtual(dia)
+          setView('day')
         }}
+      />
+    )
+  }
+}}
+
       />
 
       {view === 'agenda' && (
