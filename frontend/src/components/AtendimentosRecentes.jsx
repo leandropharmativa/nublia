@@ -20,10 +20,10 @@ export default function AtendimentosRecentes({
   pesquisa,
   onPesquisar,
   onVerPerfil,
-  onVerAtendimento
+  onVerAtendimento,
+  carregando = false // NOVO: agora vem como prop
 }) {
   const [quantidadeVisivel, setQuantidadeVisivel] = useState(6)
-  const [carregando, setCarregando] = useState(true)
 
   useEffect(() => {
     const calcularQuantidade = () => {
@@ -37,12 +37,6 @@ export default function AtendimentosRecentes({
     window.addEventListener('resize', calcularQuantidade)
     return () => window.removeEventListener('resize', calcularQuantidade)
   }, [])
-
-  useEffect(() => {
-    setCarregando(true)
-    const timeout = setTimeout(() => setCarregando(false), 300)
-    return () => clearTimeout(timeout)
-  }, [atendimentos])
 
   const getNomePaciente = (id) => {
     const paciente = pacientes.find((p) => p.id === id)
