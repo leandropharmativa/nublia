@@ -38,6 +38,7 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
+// 📌 Header dos dias no modo mês
 function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdicionarHorario, aoMudarParaDia }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
   const doDia = eventos.filter(ev => isSameDay(ev.start, data))
@@ -130,7 +131,22 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
   )
 }
 
+// 📌 Custom Day View
 function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendimento }) {
+  return (
+    <div className="mt-4">
+      <ListaAgendamentosAgenda
+        eventos={eventos}
+        aoVerPerfil={onVerPerfil}
+        aoVerAgendamento={onVerAgendamento}
+        aoIniciarAtendimento={onIniciarAtendimento}
+      />
+    </div>
+  )
+}
+
+// 📌 Custom Agenda View
+function CustomAgendaView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendimento }) {
   return (
     <div className="mt-4">
       <ListaAgendamentosAgenda
@@ -158,47 +174,6 @@ export default function CalendarioAgenda({
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
   const [modalFinalizado, setModalFinalizado] = useState(null)
   const [filtroStatus, setFiltroStatus] = useState('todos')
-  const [eventosFiltrados, setEventosFiltrados] = useState([])
-
-  useEffect(() => {
-    if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
-      const filtrados = eventos.filter(ev => {
-        const data = new Date(ev.start)
-        return data >= rangeVisivel.start && data <= rangeVisivel.end
-      })
-      setEventosFiltrados(filtrados)
-    } else {
-      setEventosFiltrados(eventos)
-    }
-  }, [view, eventos, rangeVisivel])
-
-  const handleNavigate = (action) => {
-    let novaData = new Date(dataAtual)
-
-    if (view === 'day') {
-      if (action === 'PREV') novaData.setDate(novaData.getDate() - 1)
-      else if (action === 'NEXT') novaData.setDate(novaData.getDate() + 1)
-      else if (action === 'TODAY') novaData = new Date()
-      else if (action instanceof Date) novaData = action
-    } else {
-      novaData = action instanceof Date ? action : new Date(dataAtual)
-    }
-
-    setDataAtual(novaData)
-    onDataChange?.(novaData)
-  }
-
-  const handleViewChange = (novaView) => {
-    setView(novaView)
-    onViewChange?.(novaView)
-
-    // 🧠 Sempre que mudar manualmente para 'day', mostra o dia atual
-    if (novaView === 'day') {
-      const hoje = new Date()
-      setDataAtual(hoje)
-      onDataChange?.(hoje)
-    }
-  }
 
   const aoSelecionarEventoOuFinalizado = (ev) => {
     if (ev.status === 'finalizado') {
@@ -208,32 +183,144 @@ export default function CalendarioAgenda({
     }
   }
 
+  const handleViewChange = (novaView) => {
+    setView(novaView)
+    onViewChange(novaView)
+    if (novaView === 'day') {
+      const hoje = new Date()
+      setDataAtual(hoje)
+      onDataChange(hoje)
+    }
+  }
+
+  const handleNavigate = (action) => {
+    let novaData = new Date(dataAtual)
+    if (view === 'day') {
+      if (action === 'PREV') novaData.setDate(novaData.getDate() - 1)
+      else if (action === 'NEXT') novaData.setDate(novaData.getDate() + 1)
+      else if (action === 'TODAY') novaData = new Date()
+      else if (action instanceof Date) novaData = action
+    } else {
+      novaData = action instanceof Date ? action : new Date(dataAtual)
+    }
+    setDataAtual(novaData)
+    onDataChange(novaData)
+  }
+
   const estiloDoDia = (date) => {
     const hoje = new Date()
-    const isToday =
+    if (
       date.getDate() === hoje.getDate() &&
       date.getMonth() === hoje.getMonth() &&
       date.getFullYear() === hoje.getFullYear()
-
-    if (isToday) {
-      return {
-        className: 'borda-dia-hoje'
-      }
+    ) {
+      return { className: 'borda-dia-hoje' }
     }
-
     return {}
   }
 
-  const eventosDiaAtual = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
-  const eventosFiltradosStatus = filtroStatus === 'todos'
-    ? eventosDiaAtual
-    : eventosDiaAtual.filter(ev => ev.status === filtroStatus)
+  const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
+  const eventosDaAgenda = eventos.filter(ev =>
+    rangeVisivel.start &&
+    rangeVisivel.end &&
+    new Date(ev.start) >= new Date(rangeVisivel.start) &&
+    new Date(ev.start) <= new Date(rangeVisivel.end)
+  )
+
+  const aplicarFiltroStatus = (lista) => {
+    if (filtroStatus === 'todos') return lista
+    return lista.filter(ev => ev.status === filtroStatus)
+  }
+
+  if (view === 'day') {
+    return (
+      <div className="p-4 bg-white rounded overflow-hidden">
+        <CustomToolbar
+          view={view}
+          views={['month', 'day', 'agenda']}
+          onNavigate={handleNavigate}
+          onView={handleViewChange}
+          label=""
+          date={dataAtual}
+          eventos={eventos}
+        />
+        <div className="flex justify-end mt-6 mb-4">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? 'todos' : 'disponivel')}
+              className={`p-2 rounded-full border ${filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500'}`}
+            >
+              <Clock size={18} />
+            </button>
+            <button
+              onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? 'todos' : 'agendado')}
+              className={`p-2 rounded-full border ${filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500'}`}
+            >
+              <UserRound size={18} />
+            </button>
+            <button
+              onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? 'todos' : 'finalizado')}
+              className={`p-2 rounded-full border ${filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500'}`}
+            >
+              <UserRoundCheck size={18} />
+            </button>
+          </div>
+        </div>
+        <CustomDayView
+          eventos={aplicarFiltroStatus(eventosDoDia)}
+          onVerPerfil={onAbrirPerfil}
+          onVerAgendamento={aoSelecionarEventoOuFinalizado}
+          onIniciarAtendimento={(pacienteId) => {
+            if (!pacienteId) return toastErro('Paciente não encontrado')
+            fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+              .then(res => res.json())
+              .then(paciente => {
+                if (!paciente?.data_nascimento) return toastErro('Paciente sem data de nascimento')
+                window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', { detail: paciente }))
+              })
+              .catch(() => toastErro('Erro ao buscar paciente.'))
+          }}
+        />
+      </div>
+    )
+  }
+
+  if (view === 'agenda') {
+    return (
+      <div className="p-4 bg-white rounded overflow-hidden">
+        <CustomToolbar
+          view={view}
+          views={['month', 'day', 'agenda']}
+          onNavigate={handleNavigate}
+          onView={handleViewChange}
+          label=""
+          date={dataAtual}
+          eventos={eventos}
+        />
+        <CustomAgendaView
+          eventos={aplicarFiltroStatus(eventosDaAgenda)}
+          onVerPerfil={onAbrirPerfil}
+          onVerAgendamento={aoSelecionarEventoOuFinalizado}
+          onIniciarAtendimento={(pacienteId) => {
+            if (!pacienteId) return toastErro('Paciente não encontrado')
+            fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+              .then(res => res.json())
+              .then(paciente => {
+                if (!paciente?.data_nascimento) return toastErro('Paciente sem data de nascimento')
+                window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', { detail: paciente }))
+              })
+              .catch(() => toastErro('Erro ao buscar paciente.'))
+          }}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="p-4 bg-white rounded overflow-hidden">
       <BigCalendar
         localizer={localizer}
-        events={eventosFiltrados.map(ev => ({ ...ev, title: ev.nome || ev.title }))}
+        events={eventos.map(ev => ({ ...ev, title: ev.nome || ev.title }))}
         startAccessor="start"
         endAccessor="end"
         view={view}
@@ -243,22 +330,9 @@ export default function CalendarioAgenda({
         defaultView="month"
         views={['month', 'day', 'agenda']}
         selectable={view !== 'month' && view !== 'agenda'}
-        step={15}
-        timeslots={1}
         dayPropGetter={estiloDoDia}
-        culture="pt-BR"
-        min={new Date(0)}
-        max={new Date(2100, 11, 31)}
-        onSelectSlot={({ start }) => {
-          if (view !== 'month' && view !== 'agenda') {
-            aoSelecionarSlot({ start })
-          }
-        }}
-        onSelectEvent={(event, e) => {
-          if (!e.target.closest('button')) {
-            aoSelecionarEventoOuFinalizado(event)
-          }
-        }}
+        onSelectSlot={({ start }) => view !== 'agenda' && aoSelecionarSlot?.({ start })}
+        onSelectEvent={(event, e) => !e.target.closest('button') && aoSelecionarEventoOuFinalizado(event)}
         onRangeChange={(range) => {
           if (range?.start && range?.end) {
             const novoRange = {
@@ -278,9 +352,6 @@ export default function CalendarioAgenda({
           day: 'Dia',
           agenda: 'Agenda',
           noEventsInRange: 'Sem eventos neste período.',
-          date: 'Data',
-          time: 'Horário',
-          event: 'Agendamento'
         }}
         components={{
           toolbar: (props) => <CustomToolbar {...props} eventos={eventos} />,
@@ -301,157 +372,12 @@ export default function CalendarioAgenda({
           }
         }}
       />
-
-      {view === 'agenda' && (
-        <ListaAgendamentosAgenda
-          eventos={eventosFiltrados}
-          aoVerPerfil={onAbrirPerfil}
-          aoVerAgendamento={aoSelecionarEventoOuFinalizado}
-          aoIniciarAtendimento={(pacienteId) => {
-            if (!pacienteId) {
-              toastErro('Paciente não encontrado.')
-              return
-            }
-
-            fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-              .then(res => res.json())
-              .then(paciente => {
-                if (!paciente || !paciente.data_nascimento) {
-                  toastErro('Paciente sem data de nascimento.')
-                  return
-                }
-
-                window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
-                  detail: paciente
-                }))
-              })
-              .catch(() => toastErro('Erro ao buscar paciente.'))
-          }}
-        />
-      )}
-
-      {view === 'day' && (
-        <div className="flex justify-end mt-6 mb-4">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setFiltroStatus(filtroStatus === 'disponivel' ? 'todos' : 'disponivel')}
-              title="Disponíveis"
-              className={`p-2 rounded-full border transition ${
-                filtroStatus === 'disponivel' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-              }`}
-            >
-              <Clock size={18} />
-            </button>
-            <button
-              onClick={() => setFiltroStatus(filtroStatus === 'agendado' ? 'todos' : 'agendado')}
-              title="Agendados"
-              className={`p-2 rounded-full border transition ${
-                filtroStatus === 'agendado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-              }`}
-            >
-              <UserRound size={18} />
-            </button>
-            <button
-              onClick={() => setFiltroStatus(filtroStatus === 'finalizado' ? 'todos' : 'finalizado')}
-              title="Finalizados"
-              className={`p-2 rounded-full border transition ${
-                filtroStatus === 'finalizado' ? 'bg-nublia-accent text-white' : 'text-gray-500 hover:text-nublia-accent'
-              }`}
-            >
-              <UserRoundCheck size={18} />
-            </button>
-          </div>
-        </div>
-      )}
-
       <ModalFinalizado
         evento={modalFinalizado}
         onClose={() => setModalFinalizado(null)}
         onAbrirPerfil={() => onAbrirPerfil(modalFinalizado?.paciente_id)}
         onVerAtendimento={() => onVerAtendimento(modalFinalizado?.id)}
       />
-    </div>
-  )
-}
-
-function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
-  const f = (d, fmt) => format(d, fmt, { locale: ptBR })
-
-  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
-
-  const renderLabel = () => {
-    if (view === 'month') return capitalize(f(date, 'MMMM yyyy'))
-    if (view === 'day') return f(date, "dd 'de' MMMM yyyy")
-    if (view === 'week') {
-      const start = startOfWeek(date, { weekStartsOn: 1 })
-      const end = new Date(start)
-      end.setDate(end.getDate() + 6)
-      return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
-    }
-    return label
-  }
-
-  const contar = () => {
-    let eventosFiltrados = eventos
-    if (view === 'week') {
-      eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
-    } else if (view === 'day') {
-      eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
-    }
-    const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
-    const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
-    return { agendados, disponiveis }
-  }
-
-  const { agendados, disponiveis } = contar()
-
-  const labels = {
-    month: 'Mês',
-    agenda: 'Agenda',
-    week: 'Semana',
-    day: 'Dia'
-  }
-
-  return (
-    <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
-      <div className="flex items-center gap-2">
-        <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
-          <ChevronLeft size={20} />
-        </button>
-        <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
-          <ChevronRight size={20} />
-        </button>
-        <span className="flex items-center gap-2 text-sm font-bold text-nublia-accent">
-          <CalendarDays size={16} />
-          {renderLabel()}
-        </span>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <div className="text-xs text-gray-600 flex items-center gap-3">
-          <span className="flex items-center gap-1">
-            <UserRoundCheck size={12} className="text-orange-500" /> {agendados}
-          </span>
-          <span className="flex items-center gap-1">
-            <Clock size={12} className="text-nublia-accent" /> {disponiveis} horários disponíveis
-          </span>
-        </div>
-        <div className="flex gap-1">
-          {views.map((v) => (
-            <button
-              key={v}
-              onClick={() => onView(v)}
-              className={`text-sm px-2 py-1 rounded-full transition ${
-                view === v
-                  ? 'bg-nublia-accent text-white'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              {labels[v] || v}
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   )
 }
