@@ -4,8 +4,10 @@ export default function ListaAgendamentosAgenda({
   eventos = [],
   aoVerPerfil,
   aoVerAgendamento,
-  aoIniciarAtendimento
+  aoIniciarAtendimento,
+  ocultarIniciar = false
 }) {
+
   const eventosOrdenados = eventos.sort((a, b) => new Date(a.start) - new Date(b.start))
   const agora = new Date()
 
@@ -61,11 +63,16 @@ export default function ListaAgendamentosAgenda({
                           className="text-nublia-accent hover:text-nublia-primary transition-colors"
                           size={18} />
                       </button>
-                      <button onClick={() => aoIniciarAtendimento?.(ev.paciente_id)} title="Iniciar atendimento">
-                        <PlayCircle 
-                          className="text-nublia-accent hover:text-nublia-primary transition-colors"
-                          size={18} />
-                      </button>
+{!ocultarIniciar && (
+  <button
+    title="Iniciar atendimento"
+    onClick={() => aoIniciarAtendimento(ev.paciente_id)}
+    className="text-nublia-accent hover:text-nublia-primary transition"
+  >
+    <PlayCircle size={20} />
+  </button>
+)}
+
                     </>
                   ) : ev.status === 'finalizado' ? (
                     <button onClick={() => aoVerAgendamento?.(ev)} title="Ver atendimento finalizado" className="text-nublia-primary">
