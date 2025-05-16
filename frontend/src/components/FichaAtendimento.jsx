@@ -107,7 +107,6 @@ const handleFinalizar = async () => {
   toastSucesso('Atendimento salvo e finalizado!')
   onFinalizar()
 }
-}
 
   const houveAlteracao = Object.values(formulario).some(valor => valor.trim() !== '')
 
