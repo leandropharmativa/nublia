@@ -1,4 +1,3 @@
-
 // 📄 components/CalendarioAgenda.jsx
 import { useState, useEffect, useRef } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
@@ -549,14 +548,17 @@ function CustomToolbar({
           <ChevronRight size={20} />
         </button>
 
-        <span
-          ref={view === 'agenda' ? intervaloRef : containerRef}
-          className="flex items-center gap-2 text-sm font-bold text-nublia-accent cursor-pointer rounded-md px-2 py-1 transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]"
-          onClick={() => {
-            if (view === 'day') setMostrarCalendario(true)
-            if (view === 'agenda') setMostrarIntervalo(true)
-          }}
-        >
+<span
+  ref={view === 'agenda' ? intervaloRef : containerRef}
+  className={`flex items-center gap-2 text-sm font-bold text-nublia-accent rounded-md px-2 py-1 ${
+    view === 'day' || view === 'agenda' ? 'cursor-pointer transition-colors hover:bg-[#BBD3F2] hover:text-[#353A8C]' : ''
+  }`}
+  onClick={() => {
+    if (view === 'day') setMostrarCalendario(true)
+    if (view === 'agenda') setMostrarIntervalo(true)
+  }}
+>
+
           <CalendarDays size={16} />
           {renderLabel()}
         </span>
