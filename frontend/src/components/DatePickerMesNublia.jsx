@@ -10,7 +10,7 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
   const [mesVisivel, setMesVisivel] = useState(() =>
     new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1)
   )
-  const [posicao, setPosicao] = useState({ top: 100, left: 100 })
+  const [posicao, setPosicao] = useState(null)
 
   useEffect(() => {
     setMesVisivel(new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1))
@@ -25,7 +25,7 @@ export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionar
   }, [dataAtual, anchorRef])
 
   const portalEl = document.getElementById('datepicker-root')
-  if (!portalEl) return null
+  if (!portalEl || !posicao) return null // ❗ só renderiza depois de calcular a posição
 
   return createPortal(
     <div
