@@ -7,7 +7,13 @@ import 'react-day-picker/dist/style.css'
 import './CalendarioCustom.css'
 import { useState, useEffect } from 'react'
 
-useEffect(() => {
+export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionarDia, onClose }) {
+  const [mesVisivel, setMesVisivel] = useState(() =>
+    new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1)
+  )
+  const [posicao, setPosicao] = useState(null)
+
+  useEffect(() => {
   const styleTagId = 'nublia-datepicker-overrides'
   if (!document.getElementById(styleTagId)) {
     const style = document.createElement('style')
@@ -43,12 +49,6 @@ useEffect(() => {
     document.head.appendChild(style)
   }
 }, [])
-
-export default function DatePickerMesNublia({ dataAtual, anchorRef, aoSelecionarDia, onClose }) {
-  const [mesVisivel, setMesVisivel] = useState(() =>
-    new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1)
-  )
-  const [posicao, setPosicao] = useState(null)
 
   useEffect(() => {
     setMesVisivel(new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1))
