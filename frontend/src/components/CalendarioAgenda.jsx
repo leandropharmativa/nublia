@@ -207,22 +207,29 @@ export default function CalendarioAgenda({
     onDataChange?.(novaData)
   }
 
-  const handleViewChange = (novaView) => {
-    setView(novaView)
-    onViewChange?.(novaView)
-  }
+const handleViewChange = (novaView) => {
+  setView(novaView)
+  onViewChange?.(novaView)
 
-  useEffect(() => {
-    if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
-      const filtrados = eventos.filter(ev => {
-        const data = new Date(ev.start)
-        return data >= rangeVisivel.start && data <= rangeVisivel.end
-      })
-      setEventosFiltrados(filtrados)
-    } else {
-      setEventosFiltrados(eventos)
-    }
-  }, [view, eventos, rangeVisivel])
+  // Forçar dia de hoje ao clicar no botão 'Dia'
+  if (novaView === 'day') {
+    const hoje = new Date()
+    setDataAtual(hoje)
+    onDataChange?.(hoje)
+  }
+}
+
+useEffect(() => {
+  if (view === 'agenda' && eventos.length > 0 && rangeVisivel.start && rangeVisivel.end) {
+    const filtrados = eventos.filter(ev => {
+      const data = new Date(ev.start)
+      return data >= rangeVisivel.start && data <= rangeVisivel.end
+    })
+    setEventosFiltrados(filtrados)
+  } else {
+    setEventosFiltrados(eventos)
+  }
+}, [view, eventos, rangeVisivel])
 
   const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
   const eventosVisiveis = filtrarEventos(eventosDoDia, filtroStatus)
