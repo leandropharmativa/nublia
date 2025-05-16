@@ -598,7 +598,6 @@ onSelecionarIntervalo={({ from, to }) => {
     onRangeChange?.({ start: from, end: to })
   }
 }}
-}
             onClose={() => setMostrarIntervalo(false)}
           />
         )}
