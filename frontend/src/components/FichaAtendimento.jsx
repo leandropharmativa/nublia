@@ -36,6 +36,13 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   const abas = ['paciente', 'anamnese', 'antropometria', 'dieta', 'receita']
 
   useEffect(() => {
+  if (agendamentoId) {
+    setAgendamentoAtual(agendamentoId)
+    console.log("✅ useEffect detectou novo agendamentoId:", agendamentoId)
+  }
+}, [agendamentoId])
+
+  useEffect(() => {
     const carregarAnteriores = async () => {
       const user = JSON.parse(localStorage.getItem('user'))
       if (!user || !paciente?.id) return
