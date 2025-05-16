@@ -402,7 +402,8 @@ components={{
       eventos={eventos}
       rangeVisivel={rangeVisivel}
       setRangeVisivel={setRangeVisivel}
-      onRangeChange={onRangeChange}
+      setDataAtual={setDataAtual}             // ✅ necessário para atualizar a data no intervalo
+      onRangeChange={onRangeChange}           // ✅ garante que não seja undefined
     />
   ),
   month: {
