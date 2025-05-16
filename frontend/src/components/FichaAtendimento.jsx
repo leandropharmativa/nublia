@@ -15,6 +15,17 @@ import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
 
 export default function FichaAtendimento({ paciente, agendamentoId = null, onFinalizar, onAtendimentoSalvo }) {
+
+  const [agendamentoAtual, setAgendamentoAtual] = useState(null)
+
+useEffect(() => {
+  if (agendamentoId) {
+    setAgendamentoAtual(agendamentoId)
+    console.log("✅ Agendamento ID detectado:", agendamentoId)
+  }
+}, [agendamentoId])
+
+  
   const [abaAtiva, setAbaAtiva] = useState('paciente')
   const [formulario, setFormulario] = useState({
     anamnese: '',
@@ -60,16 +71,17 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   const handleSalvar = async (mostrarToast = true) => {
     try {
       const user = JSON.parse(localStorage.getItem('user'))
+      
+const dadosAtendimento = {
+  paciente_id: paciente.id,
+  prescritor_id: user?.id,
+  agendamento_id: agendamentoAtual,
+  anamnese: formulario.anamnese,
+  antropometria: formulario.antropometria,
+  dieta: formulario.dieta,
+  receita: formulario.receita,
+}
 
-      const dadosAtendimento = {
-        paciente_id: paciente.id,
-        prescritor_id: user?.id,
-        agendamento_id: agendamentoId,
-        anamnese: formulario.anamnese,
-        antropometria: formulario.antropometria,
-        dieta: formulario.dieta,
-        receita: formulario.receita,
-      }
 
       console.log("🔍 Salvando atendimento com dados:", dadosAtendimento)
 
