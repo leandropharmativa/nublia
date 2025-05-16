@@ -21,13 +21,38 @@
 
 /* ===== ESTILOS FORÇADOS PARA O DAYPICKER ===== */
 
-/* Dia selecionado com fundo azul escuro e círculo */
+/* Botão de dia padrão */
+.rdp-day_button {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: background-color 0.3s ease;
+  color: #1f2937; /* gray-800 */
+}
+
+/* Dia selecionado (círculo azul escuro com texto branco) */
 .rdp-day_button[aria-pressed="true"] {
-  background-color: #353A8C !important;
+  background-color: #353A8C !important;  /* azul escuro */
   color: white !important;
-  font-weight: 600;
+  font-weight: 600 !important;
   border-radius: 50% !important;
   border: none !important;
+}
+
+/* Dia atual (não selecionado) — borda laranja */
+.rdp-today .rdp-day_button:not([aria-pressed="true"]) {
+  border: 2px solid #f97316 !important;  /* borda laranja */
+  background-color: #FFF7ED !important;  /* fundo bege claro */
+  color: #353A8C !important;             /* azul escuro */
+  font-weight: 600;
+  border-radius: 8px !important;
+}
+
+/* Dias fora do mês */
+.rdp-day[aria-disabled="true"] .rdp-day_button {
+  color: #b0b0b0 !important;
+  opacity: 0.4 !important;
 }
 
 /* Botões de navegação (< >) */
@@ -36,12 +61,19 @@
   font-size: 1rem;
   padding: 4px;
   border-radius: 6px;
+  transition: background-color 0.2s ease;
 }
 
 .rdp-nav_button:hover {
   background-color: #EEF3FB !important;
 }
 
+/* Título do mês */
+.rdp-caption_label {
+  font-weight: bold !important;
+  color: #353A8C !important;
+  font-size: 1rem;
+}
 
 /* ===== ESTILOS DO REACT-BIG-CALENDAR (caso esteja no mesmo arquivo) ===== */
 
