@@ -338,19 +338,20 @@ const carregarAgenda = async (id) => {
                           >
                             <Eye size={16} />
                           </button>
-                          <button
-                            className="text-nublia-accent hover:text-nublia-orange ml-1"
-                            title="Iniciar atendimento"
-                            onClick={() => {
-                              const paciente = pacientes.find(p => p.id === a.paciente_id)
-                              if (paciente) {
-                                setPacienteSelecionado(paciente)
-                                setTimeout(() => setAbaSelecionada(0), 0)
-                              }
-                            }}
-                          >
-                            <PlayCircle size={15} />
-                          </button>
+       <button
+  className="text-nublia-accent hover:text-nublia-orange ml-1"
+  title="Iniciar atendimento"
+  onClick={() => {
+    const paciente = pacientes.find(p => p.id === a.paciente_id)
+    if (paciente) {
+      setPacienteSelecionado(paciente)
+      setAgendamentoSelecionado({ id: a.id }) // ✅ corrige aqui
+      setTimeout(() => setAbaSelecionada(0), 0)
+    }
+  }}
+>
+  <PlayCircle size={15} />
+</button>
                         </li>
                       ))}
                     </ul>
