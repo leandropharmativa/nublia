@@ -52,7 +52,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl mx-4">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl mx-4 animate-fadeIn">
         <h2 className="text-nublia-accent text-2xl font-bold mb-4">Cadastrar Paciente</h2>
 
         {erro && <p className="text-red-500 text-sm text-center mb-4">{erro}</p>}
