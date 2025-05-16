@@ -424,3 +424,85 @@ export default function CalendarioAgenda({
     </div>
   )
 }
+
+function CustomToolbar({ label, onNavigate, onView, views, view, date, eventos }) {
+  const f = (d, fmt) => format(d, fmt, { locale: ptBR })
+
+  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
+
+  const renderLabel = () => {
+    if (view === 'month') return capitalize(f(date, 'MMMM yyyy'))
+    if (view === 'day') return f(date, "dd 'de' MMMM yyyy")
+    if (view === 'week') {
+      const start = startOfWeek(date, { weekStartsOn: 1 })
+      const end = new Date(start)
+      end.setDate(end.getDate() + 6)
+      return `Semana de ${f(start, 'd MMM')} a ${f(end, 'd MMM')}`
+    }
+    return label
+  }
+
+  const contar = () => {
+    let eventosFiltrados = eventos
+    if (view === 'week') {
+      eventosFiltrados = eventos.filter(e => isSameWeek(e.start, date, { weekStartsOn: 1 }))
+    } else if (view === 'day') {
+      eventosFiltrados = eventos.filter(e => isSameDay(e.start, date))
+    }
+    const agendados = eventosFiltrados.filter(e => e.status === 'agendado').length
+    const disponiveis = eventosFiltrados.filter(e => e.status === 'disponivel').length
+    return { agendados, disponiveis }
+  }
+
+  const { agendados, disponiveis } = contar()
+
+  const labels = {
+    month: 'Mês',
+    agenda: 'Agenda',
+    week: 'Semana',
+    day: 'Dia'
+  }
+
+  return (
+    <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200">
+      <div className="flex items-center gap-2">
+        <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
+          <ChevronLeft size={20} />
+        </button>
+        <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
+          <ChevronRight size={20} />
+        </button>
+        <span className="flex items-center gap-2 text-sm font-bold text-nublia-accent">
+          <CalendarDays size={16} />
+          {renderLabel()}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <div className="text-xs text-gray-600 flex items-center gap-3">
+          <span className="flex items-center gap-1">
+            <UserRoundCheck size={12} className="text-orange-500" /> {agendados}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock size={12} className="text-nublia-accent" /> {disponiveis} horários disponíveis
+          </span>
+        </div>
+        <div className="flex gap-1">
+          {views.map((v) => (
+            <button
+              key={v}
+              onClick={() => onView(v)}
+              className={`text-sm px-2 py-1 rounded-full transition ${
+                view === v
+                  ? 'bg-nublia-accent text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {labels[v] || v}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
