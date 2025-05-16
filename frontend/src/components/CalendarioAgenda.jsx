@@ -259,6 +259,24 @@ useEffect(() => {
   }
 }, [view, eventos, dataAtual, rangeVisivel])
 
+  useEffect(() => {
+  const atualizar = () => {
+    if (typeof onRangeChange === 'function') {
+      if (rangeVisivel?.start && rangeVisivel?.end) {
+        onRangeChange({ start: rangeVisivel.start, end: rangeVisivel.end })
+      } else {
+        onRangeChange({ start: dataAtual, end: dataAtual })
+      }
+    }
+  }
+
+  window.addEventListener('AtualizarAgendaAposFinalizar', atualizar)
+
+  return () => {
+    window.removeEventListener('AtualizarAgendaAposFinalizar', atualizar)
+  }
+}, [rangeVisivel, dataAtual, onRangeChange])
+
 
   useEffect(() => {
   if (view === 'month' && !rangeVisivel.start && !rangeVisivel.end) {
