@@ -44,8 +44,8 @@ const handler = (e) => {
 
   if (dados?.paciente?.id) {
     setPacienteId(dados.paciente.id)
-  } else if (dados?.paciente_id) {
-    setPacienteId(dados.paciente_id)
+  } else if (dados?.pacienteId) {
+    setPacienteId(dados.pacienteId)
   }
 
   if (dados?.agendamentoId) {
