@@ -105,19 +105,21 @@ function AgendaPrescritor({ mostrarAgenda }) {
 
 useEffect(() => {
   const listener = (e) => {
-    const agendamentoId = e.detail.agendamento_id ?? e.detail.agendamentoId ?? null
-    const paciente = e.detail.paciente
+    const agendamentoId = e.detail.agendamentoId ?? null
+    const pacienteId = e.detail.pacienteId ?? null
 
-    console.log('📩 Evento recebido: IniciarFichaAtendimento', { agendamentoId, paciente })
+    console.log('📩 Evento recebido: IniciarFichaAtendimento', { agendamentoId, pacienteId })
 
-    setPacienteSelecionado(paciente)
+    setPacienteSelecionado(null) // será carregado dentro da ficha
     setAgendamentoParaFicha(agendamentoId)
     setMostrarFicha(true)
+    setPacienteId(pacienteId) // usado para carregar dentro da ficha
   }
 
   window.addEventListener('IniciarFichaAtendimento', listener)
   return () => window.removeEventListener('IniciarFichaAtendimento', listener)
 }, [])
+
 
   const handleNovoSlot = (slotInfo) => {
     setSlotSelecionado(slotInfo.start)
