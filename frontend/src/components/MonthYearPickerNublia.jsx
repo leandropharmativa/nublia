@@ -11,7 +11,6 @@ export default function MonthYearPickerNublia({ dataAtual, anchorRef, aoSelecion
   const [posicao, setPosicao] = useState(null)
   const pickerRef = useRef(null)
 
-  // 📍 Calcula posição do botão que acionou o picker
   useEffect(() => {
     if (anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect()
@@ -22,7 +21,6 @@ export default function MonthYearPickerNublia({ dataAtual, anchorRef, aoSelecion
     }
   }, [anchorRef])
 
-  // 📍 Fecha ao clicar fora
   useEffect(() => {
     function handleClickFora(event) {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
@@ -48,19 +46,15 @@ export default function MonthYearPickerNublia({ dataAtual, anchorRef, aoSelecion
         mode="single"
         selected={dataAtual}
         defaultMonth={dataAtual}
-        onMonthChange={(date) => {
-          aoSelecionarMes(date)
+        onMonthChange={(data) => {
+          aoSelecionarMes(data)
           onClose?.()
         }}
         captionLayout="dropdown"
         fromYear={2020}
         toYear={2035}
         locale={ptBR}
-        // ⛔️ Oculta cabeçalho e tabela de dias
-        styles={{
-          head: { display: 'none' },
-          table: { display: 'none' },
-        }}
+        className="rdp-only-dropdown" // <- usado para aplicar estilo customizado
       />
     </div>,
     portalEl
