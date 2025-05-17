@@ -176,10 +176,5 @@ export default function CadastroSecretaria() {
     </div>
   </div>
 </div>
-
-      )}
-  </div>
-</div>
-
   )
 }
