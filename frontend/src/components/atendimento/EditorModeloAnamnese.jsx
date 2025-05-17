@@ -162,13 +162,17 @@ export default function EditorModeloAnamnese() {
           {/* ✏️ Formulário editável (após duplicar) */}
           {blocos.length > 0 && (
             <>
-              <input
-                type="text"
-                placeholder="Nome do modelo"
-                className="border rounded p-2 w-full"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
+<div className="flex items-center gap-3 border border-nublia-primary rounded-full px-4 py-2 bg-gray-50">
+  <FileText size={18} className="text-nublia-primary" />
+  <input
+    type="text"
+    placeholder="Nome do modelo"
+    className="bg-transparent focus:outline-none flex-1 text-sm font-medium text-gray-800"
+    value={nome}
+    onChange={(e) => setNome(e.target.value)}
+  />
+</div>
+
 
               {blocos.map((bloco, blocoIndex) => (
                 <div key={blocoIndex} className="border p-3 rounded space-y-2 bg-gray-50">
