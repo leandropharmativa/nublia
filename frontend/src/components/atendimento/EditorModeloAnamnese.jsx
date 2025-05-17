@@ -10,6 +10,7 @@ import {
   PlusCircle,
   FolderPlus,
   FileText,
+  FilePlus,
   ChevronDown,
   ChevronRight,
   Copy
