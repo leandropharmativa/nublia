@@ -44,7 +44,7 @@ export default function EditorModeloAnamnese() {
   useEffect(() => {
     const carregarModelos = async () => {
       try {
-        const res = await axios.get(`https://nublia-backend.onrender.com/anamnese/modelos/0`)
+        const res = await axios.get(`https://nublia-backend.onrender.com/anamnese/modelos/${user.id}`)
         const modelos = res.data
         const padrao = modelos.find(m => m.nome === 'Anamnese Padrão')
         const doUsuario = modelos.filter(m => m.prescritor_id === user.id)
