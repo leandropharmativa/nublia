@@ -1,3 +1,4 @@
+//frontend/src/components/ListaAgendamentosAgenda.jsx
 import { UserRound, Eye, PlayCircle, Clock, UserRoundCheck } from 'lucide-react'
 
 export default function ListaAgendamentosAgenda({
