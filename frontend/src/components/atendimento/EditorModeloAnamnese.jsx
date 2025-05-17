@@ -33,35 +33,36 @@ export default function EditorModeloAnamnese() {
 
   const user = JSON.parse(localStorage.getItem('user'))
 
-useEffect(() => {
-  if (expandido && conteudoRef.current) {
-    setAlturaMax(`${conteudoRef.current.scrollHeight}px`)
-  } else {
-    setAlturaMax('0px')
+  const carregarModelos = async () => {
+    try {
+      const res = await axios.get(`https://nublia-backend.onrender.com/anamnese/modelos/${user.id}`)
+      const modelos = res.data
+      const padrao = modelos.find(m => m.nome === 'Anamnese Padrão')
+      const doUsuario = modelos.filter(m => m.prescritor_id === user.id)
+      if (padrao && typeof padrao.blocos === 'string') {
+        padrao.blocos = JSON.parse(padrao.blocos)
+      }
+      doUsuario.forEach((m) => {
+        if (typeof m.blocos === 'string') m.blocos = JSON.parse(m.blocos)
+      })
+      setModeloPadrao(padrao)
+      setModelosUsuario(doUsuario)
+    } catch {
+      toastErro('Erro ao carregar modelos de anamnese.')
+    }
   }
-}, [expandido, blocos, nome, modeloDuplicado, modelosUsuario, modeloExpandido])
 
   useEffect(() => {
-    const carregarModelos = async () => {
-      try {
-        const res = await axios.get(`https://nublia-backend.onrender.com/anamnese/modelos/${user.id}`)
-        const modelos = res.data
-        const padrao = modelos.find(m => m.nome === 'Anamnese Padrão')
-        const doUsuario = modelos.filter(m => m.prescritor_id === user.id)
-        if (padrao && typeof padrao.blocos === 'string') {
-          padrao.blocos = JSON.parse(padrao.blocos)
-        }
-        doUsuario.forEach((m) => {
-          if (typeof m.blocos === 'string') m.blocos = JSON.parse(m.blocos)
-        })
-        setModeloPadrao(padrao)
-        setModelosUsuario(doUsuario)
-      } catch {
-        toastErro('Erro ao carregar modelos de anamnese.')
-      }
-    }
     carregarModelos()
   }, [])
+
+  useEffect(() => {
+    if (expandido && conteudoRef.current) {
+      setAlturaMax(`${conteudoRef.current.scrollHeight}px`)
+    } else {
+      setAlturaMax('0px')
+    }
+  }, [expandido, blocos, nome, modeloDuplicado, modelosUsuario, modeloExpandido])
 
   const duplicarModelo = () => {
     if (!modeloPadrao) return
@@ -79,6 +80,17 @@ useEffect(() => {
     setExpandido(true)
     setModeloDuplicado(true)
     toastSucesso(`Editando modelo: ${modelo.nome}`)
+  }
+
+  const excluirModelo = async (id) => {
+    if (!window.confirm('Deseja realmente excluir este modelo?')) return
+    try {
+      await axios.delete(`https://nublia-backend.onrender.com/anamnese/modelos/${id}`)
+      toastSucesso('Modelo excluído com sucesso!')
+      await carregarModelos()
+    } catch {
+      toastErro('Erro ao excluir modelo.')
+    }
   }
 
   const adicionarBloco = () => {
@@ -107,38 +119,37 @@ useEffect(() => {
     }
   }
 
-const salvarModelo = async () => {
-  if (!nome.trim() || blocos.length === 0) {
-    toastErro('Preencha o nome e adicione pelo menos um bloco.')
-    return
-  }
-
-  try {
-    const payload = {
-      nome,
-      prescritor_id: user.id,
-      blocos,
+  const salvarModelo = async () => {
+    if (!nome.trim() || blocos.length === 0) {
+      toastErro('Preencha o nome e adicione pelo menos um bloco.')
+      return
     }
 
-    if (modeloSelecionadoId) {
-      // ✅ Editando modelo existente
-      await axios.put(`https://nublia-backend.onrender.com/anamnese/modelos/${modeloSelecionadoId}`, payload)
-      toastSucesso('Modelo atualizado com sucesso!')
-    } else {
-      // ✅ Criando novo modelo
-      await axios.post('https://nublia-backend.onrender.com/anamnese/modelos', payload)
-      toastSucesso('Modelo salvo com sucesso!')
-    }
+    try {
+      const payload = {
+        nome,
+        prescritor_id: user.id,
+        blocos,
+      }
 
-    setNome('')
-    setBlocos([])
-    setModeloDuplicado(false)
-    setModeloSelecionadoId(null)
-  } catch (err) {
-    toastErro('Erro ao salvar modelo.')
-    console.error(err)
+      if (modeloSelecionadoId) {
+        await axios.put(`https://nublia-backend.onrender.com/anamnese/modelos/${modeloSelecionadoId}`, payload)
+        toastSucesso('Modelo atualizado com sucesso!')
+      } else {
+        await axios.post('https://nublia-backend.onrender.com/anamnese/modelos', payload)
+        toastSucesso('Modelo salvo com sucesso!')
+      }
+
+      setNome('')
+      setBlocos([])
+      setModeloDuplicado(false)
+      setModeloSelecionadoId(null)
+      await carregarModelos()
+    } catch (err) {
+      toastErro('Erro ao salvar modelo.')
+      console.error(err)
+    }
   }
-}
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
@@ -159,32 +170,49 @@ const salvarModelo = async () => {
       >
         <div ref={conteudoRef} className="border-t px-4 py-4 space-y-4">
 
+          {/* 🔽 Modelo padrão inicialmente fechado */}
           {!modeloDuplicado && modeloPadrao && (
-            <div className="border border-gray-300 bg-gray-50 rounded p-3">
-              <h3 className="font-semibold mb-2 text-gray-700 flex items-center gap-2">
-                Modelo Padrão (somente leitura)
-              </h3>
-              {modeloPadrao.blocos.map((bloco, i) => (
-                <div key={i} className="mb-3">
-                  <p className="flex items-center gap-2 text-sm font-semibold text-nublia-accent">
-                    <FileText size={16} />
-                    {bloco.titulo}
-                  </p>
-                  <ul className="ml-6 list-disc text-xs text-gray-600 mt-1">
-                    {bloco.perguntas.map((p, j) => (
-                      <li key={j}>{p.rotulo}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-              <Botao
-                onClick={duplicarModelo}
-                variante="primario"
-                className="rounded-full px-5 mt-3 flex items-center gap-2"
+            <div className="border rounded-md bg-gray-50">
+              <button
+                onClick={() =>
+                  setModeloExpandido(modeloExpandido === 'padrao' ? null : 'padrao')
+                }
+                className="w-full text-left px-4 py-2 font-semibold text-nublia-accent flex justify-between items-center hover:bg-gray-100"
               >
-                <FilePlus size={16} />
-                Duplicar modelo
-              </Botao>
+                {modeloPadrao.nome}
+                {modeloExpandido === 'padrao' ? (
+                  <ChevronDown size={16} />
+                ) : (
+                  <ChevronRight size={16} />
+                )}
+              </button>
+              {modeloExpandido === 'padrao' && (
+                <div className="px-4 pb-3">
+                  {modeloPadrao.blocos.map((bloco, i) => (
+                    <div key={i} className="mb-2">
+                      <p className="flex items-center gap-2 text-xs font-semibold text-gray-700">
+                        <FileText size={14} />
+                        {bloco.titulo}
+                      </p>
+                      <ul className="ml-6 list-disc text-xs text-gray-500 mt-1">
+                        {bloco.perguntas.map((p, j) => (
+                          <li key={j}>{p.rotulo}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                  <div className="text-right mt-2">
+                    <Botao
+                      onClick={duplicarModelo}
+                      variante="primario"
+                      className="rounded-full px-5 mt-3 flex items-center gap-2"
+                    >
+                      <FilePlus size={16} />
+                      Duplicar modelo
+                    </Botao>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -221,13 +249,21 @@ const salvarModelo = async () => {
                           </ul>
                         </div>
                       ))}
-                      <div className="text-right mt-2">
+                      <div className="text-right mt-2 flex justify-end gap-2">
                         <Botao
                           onClick={() => editarModelo(modelo)}
                           className="rounded-full px-4 py-1 text-xs flex items-center gap-1"
                         >
                           <Pencil size={14} />
                           Editar
+                        </Botao>
+                        <Botao
+                          onClick={() => excluirModelo(modelo.id)}
+                          variante="danger"
+                          className="rounded-full px-4 py-1 text-xs flex items-center gap-1"
+                        >
+                          <Trash size={14} />
+                          Excluir
                         </Botao>
                       </div>
                     </div>
