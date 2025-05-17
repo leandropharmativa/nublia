@@ -272,19 +272,6 @@ useEffect(() => {
         />
       )}
 
-{mostrarFicha && pacienteSelecionado && (
-  <FichaAtendimento
-    paciente={pacienteSelecionado}
-    agendamentoId={agendamentoParaFicha} // <- agora é seguro!
-    onFinalizar={() => {
-      setMostrarFicha(false)
-      setAgendamentoParaFicha(null)
-      carregarEventos()
-    }}
-  />
-)}
-
-
       {modalFinalizadoAberto && (
         <ModalFinalizado
           evento={modalFinalizadoAberto}
