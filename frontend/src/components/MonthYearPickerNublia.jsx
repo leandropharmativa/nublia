@@ -54,7 +54,7 @@ export default function MonthYearPickerNublia({ dataAtual, anchorRef, aoSelecion
         fromYear={2020}
         toYear={2035}
         locale={ptBR}
-        className="rdp-only-dropdown" // <- usado para aplicar estilo customizado
+        className="only-dropdowns" // ✅ aplica o estilo restrito a este componente
       />
     </div>,
     portalEl
