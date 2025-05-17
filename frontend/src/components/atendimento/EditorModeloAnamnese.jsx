@@ -12,7 +12,7 @@ import {
   Copy
 } from 'lucide-react'
 import Botao from '../Botao'
-import { toastErro, toastSucesso } from '../utils/toastUtils'
+import { toastErro, toastSucesso } from '../../utils/toastUtils'
 
 export default function EditorModeloAnamnese() {
   const [nome, setNome] = useState('')
