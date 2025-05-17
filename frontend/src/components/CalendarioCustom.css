@@ -235,9 +235,8 @@
   animation: fadeInScale 0.2s ease-out;
 }
 
-/* 📄 CalendarioCustom.css */
+/* 📁 frontend/src/components/CalendarioCustom.css */
 
-.only-dropdowns .rdp-months,
 .only-dropdowns .rdp-head,
 .only-dropdowns .rdp-table,
 .only-dropdowns .rdp-tbody {
