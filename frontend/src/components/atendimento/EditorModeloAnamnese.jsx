@@ -12,7 +12,8 @@ import {
   FileText,
   FilePlus,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Pencil
 } from 'lucide-react'
 import Botao from '../Botao'
 import { toastErro, toastSucesso } from '../../utils/toastUtils'
@@ -22,7 +23,10 @@ export default function EditorModeloAnamnese() {
   const [blocos, setBlocos] = useState([])
   const [expandido, setExpandido] = useState(false)
   const [modeloPadrao, setModeloPadrao] = useState(null)
+  const [modelosUsuario, setModelosUsuario] = useState([])
   const [modeloDuplicado, setModeloDuplicado] = useState(false)
+  const [modeloSelecionadoId, setModeloSelecionadoId] = useState(null)
+  const [modeloExpandido, setModeloExpandido] = useState(null)
 
   const conteudoRef = useRef(null)
   const [alturaMax, setAlturaMax] = useState('0px')
@@ -35,24 +39,28 @@ export default function EditorModeloAnamnese() {
     } else {
       setAlturaMax('0px')
     }
-  }, [expandido, blocos, nome, modeloDuplicado])
+  }, [expandido, blocos, nome, modeloDuplicado, modelosUsuario])
 
   useEffect(() => {
-    const carregarModeloPadrao = async () => {
+    const carregarModelos = async () => {
       try {
         const res = await axios.get(`https://nublia-backend.onrender.com/anamnese/modelos/0`)
-        if (res.data.length > 0) {
-          const modelo = res.data.find(m => m.nome === 'Anamnese Padrão')
-          if (typeof modelo?.blocos === 'string') {
-            modelo.blocos = JSON.parse(modelo.blocos)
-          }
-          setModeloPadrao(modelo)
+        const modelos = res.data
+        const padrao = modelos.find(m => m.nome === 'Anamnese Padrão')
+        const doUsuario = modelos.filter(m => m.prescritor_id === user.id)
+        if (padrao && typeof padrao.blocos === 'string') {
+          padrao.blocos = JSON.parse(padrao.blocos)
         }
-      } catch (err) {
-        toastErro('Erro ao carregar modelo padrão.')
+        doUsuario.forEach((m) => {
+          if (typeof m.blocos === 'string') m.blocos = JSON.parse(m.blocos)
+        })
+        setModeloPadrao(padrao)
+        setModelosUsuario(doUsuario)
+      } catch {
+        toastErro('Erro ao carregar modelos de anamnese.')
       }
     }
-    carregarModeloPadrao()
+    carregarModelos()
   }, [])
 
   const duplicarModelo = () => {
@@ -62,6 +70,15 @@ export default function EditorModeloAnamnese() {
     setExpandido(true)
     setModeloDuplicado(true)
     toastSucesso('Modelo duplicado. Agora você pode editar.')
+  }
+
+  const editarModelo = (modelo) => {
+    setNome(modelo.nome)
+    setBlocos(JSON.parse(JSON.stringify(modelo.blocos)))
+    setModeloSelecionadoId(modelo.id)
+    setExpandido(true)
+    setModeloDuplicado(true)
+    toastSucesso(`Editando modelo: ${modelo.nome}`)
   }
 
   const adicionarBloco = () => {
@@ -95,6 +112,7 @@ export default function EditorModeloAnamnese() {
       toastErro('Preencha o nome e adicione pelo menos um bloco.')
       return
     }
+
     try {
       await axios.post('https://nublia-backend.onrender.com/anamnese/modelos', {
         nome,
@@ -105,9 +123,9 @@ export default function EditorModeloAnamnese() {
       setNome('')
       setBlocos([])
       setModeloDuplicado(false)
+      setModeloSelecionadoId(null)
     } catch (err) {
       toastErro('Erro ao salvar modelo.')
-      console.error(err)
     }
   }
 
@@ -130,7 +148,6 @@ export default function EditorModeloAnamnese() {
       >
         <div ref={conteudoRef} className="border-t px-4 py-4 space-y-4">
 
-          {/* 🔷 Exibe modelo padrão (oculto se já duplicado) */}
           {!modeloDuplicado && modeloPadrao && (
             <div className="border border-gray-300 bg-gray-50 rounded p-3">
               <h3 className="font-semibold mb-2 text-gray-700 flex items-center gap-2">
@@ -160,7 +177,56 @@ export default function EditorModeloAnamnese() {
             </div>
           )}
 
-          {/* ✏️ Formulário editável */}
+          {/* 📃 Modelos do usuário */}
+          {modelosUsuario.length > 0 && (
+            <div className="space-y-2">
+              {modelosUsuario.map((modelo) => (
+                <div key={modelo.id} className="border rounded-md bg-gray-50">
+                  <button
+                    onClick={() =>
+                      setModeloExpandido(modeloExpandido === modelo.id ? null : modelo.id)
+                    }
+                    className="w-full text-left px-4 py-2 font-semibold text-nublia-accent flex justify-between items-center hover:bg-gray-100"
+                  >
+                    {modelo.nome}
+                    {modeloExpandido === modelo.id ? (
+                      <ChevronDown size={16} />
+                    ) : (
+                      <ChevronRight size={16} />
+                    )}
+                  </button>
+                  {modeloExpandido === modelo.id && (
+                    <div className="px-4 pb-3">
+                      {modelo.blocos.map((bloco, i) => (
+                        <div key={i} className="mb-2">
+                          <p className="flex items-center gap-2 text-xs font-semibold text-gray-700">
+                            <FileText size={14} />
+                            {bloco.titulo}
+                          </p>
+                          <ul className="ml-6 list-disc text-xs text-gray-500 mt-1">
+                            {bloco.perguntas.map((p, j) => (
+                              <li key={j}>{p.rotulo}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                      <div className="text-right mt-2">
+                        <Botao
+                          onClick={() => editarModelo(modelo)}
+                          className="rounded-full px-4 py-1 text-xs flex items-center gap-1"
+                        >
+                          <Pencil size={14} />
+                          Editar
+                        </Botao>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ✏️ Formulário de edição */}
           {blocos.length > 0 && (
             <>
               <div className="flex items-center gap-3 border border-nublia-primary rounded-full px-4 py-2 bg-gray-50">
@@ -269,6 +335,7 @@ export default function EditorModeloAnamnese() {
                     setNome('')
                     setBlocos([])
                     setModeloDuplicado(false)
+                    setModeloSelecionadoId(null)
                     toastErro('Edição de modelo cancelada.')
                   }}
                   variante="claro"
