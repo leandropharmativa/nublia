@@ -15,12 +15,13 @@ import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
 
 export default function FichaAtendimento({ paciente, agendamentoId = null, onFinalizar, onAtendimentoSalvo }) {
+  // 🧠 Armazena o paciente selecionado (permite atualização dinâmica)
+  const [pacienteSelecionado, setPacienteSelecionado] = useState(paciente)
 
-  const [pacienteSelecionado, setPaciente] = useState(paciente)
-
-useEffect(() => {
-  setPaciente(paciente)
-}, [paciente])
+  // Atualiza paciente selecionado quando `paciente` muda via props
+  useEffect(() => {
+    setPacienteSelecionado(paciente)
+  }, [paciente])
 
   // 🧠 Memoriza o agendamentoId inicial
   const agendamentoIdRef = useRef(null)
@@ -31,24 +32,25 @@ useEffect(() => {
     }
   }, [agendamentoId])
 
+  // 📩 Escuta eventos de atendimento iniciado via agenda
   useEffect(() => {
-  const handler = (e) => {
-    const dados = e.detail
-    console.log('📩 Evento recebido: IniciarFichaAtendimento ', dados)
+    const handler = (e) => {
+      const dados = e.detail
+      console.log('📩 Evento recebido: IniciarFichaAtendimento ', dados)
 
-    if (dados?.paciente) {
-      setPaciente(dados.paciente)
+      if (dados?.paciente) {
+        setPacienteSelecionado(dados.paciente)
+      }
+
+      if (dados?.agendamentoId) {
+        agendamentoIdRef.current = dados.agendamentoId
+        console.log('✅ agendamentoId armazenado:', dados.agendamentoId)
+      }
     }
 
-    if (dados?.agendamentoId) {
-      agendamentoIdRef.current = dados.agendamentoId
-      console.log('✅ agendamentoId armazenado:', dados.agendamentoId)
-    }
-  }
-
-  window.addEventListener('IniciarFichaAtendimento', handler)
-  return () => window.removeEventListener('IniciarFichaAtendimento', handler)
-}, [])
+    window.addEventListener('IniciarFichaAtendimento', handler)
+    return () => window.removeEventListener('IniciarFichaAtendimento', handler)
+  }, [])
 
   const [abaAtiva, setAbaAtiva] = useState('paciente')
   const [formulario, setFormulario] = useState({
@@ -75,7 +77,7 @@ useEffect(() => {
       try {
         const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
         const anteriores = response.data
-          .filter(a => a.paciente_id === paciente.id && a.prescritor_id === user.id)
+          .filter(a => a.paciente_id === pacienteSelecionado.id && a.prescritor_id === user.id)
           .sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em))
 
         setAtendimentosAnteriores(anteriores)
@@ -85,7 +87,7 @@ useEffect(() => {
     }
 
     carregarAnteriores()
-  }, [paciente])
+  }, [pacienteSelecionado])
 
   const handleChange = (e) => {
     setFormulario({ ...formulario, [abaAtiva]: e.target.value })
@@ -99,7 +101,7 @@ useEffect(() => {
       const dadosAtendimento = {
         paciente_id: pacienteSelecionado.id,
         prescritor_id: user?.id,
-        agendamento_id: agendamentoIdRef.current, // ✅ usa valor preservado
+        agendamento_id: agendamentoIdRef.current,
         anamnese: formulario.anamnese,
         antropometria: formulario.antropometria,
         dieta: formulario.dieta,
@@ -226,10 +228,10 @@ useEffect(() => {
           <>
             <div className="space-y-2 text-sm text-gray-700">
               <div><strong>Email:</strong> {pacienteSelecionado?.email || 'Não informado'}</div>
-              <div><strong>Telefone:</strong> {paciente.telefone || 'Não informado'}</div>
-              <div><strong>Sexo:</strong> {paciente.sexo || 'Não informado'}</div>
-              <div><strong>Data de Nascimento:</strong> {paciente.data_nascimento || 'Não informada'}</div>
-              <div><strong>Observações:</strong> {paciente.observacoes || 'Nenhuma observação registrada.'}</div>
+              <div><strong>Telefone:</strong> {pacienteSelecionado?.telefone || 'Não informado'}</div>
+              <div><strong>Sexo:</strong> {pacienteSelecionado?.sexo || 'Não informado'}</div>
+              <div><strong>Data de Nascimento:</strong> {pacienteSelecionado?.data_nascimento || 'Não informada'}</div>
+              <div><strong>Observações:</strong> {pacienteSelecionado?.observacoes || 'Nenhuma observação registrada.'}</div>
             </div>
 
             {atendimentosAnteriores.length > 0 && (
