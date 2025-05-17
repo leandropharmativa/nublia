@@ -167,6 +167,7 @@ function CustomDayView({ eventos, pacientes, onVerPerfil, onVerAgendamento, onIn
 
 export default function CalendarioAgenda({
   eventos = [],
+  pacientes = [],
   aoSelecionarSlot,
   aoSelecionarEvento,
   onDataChange,
