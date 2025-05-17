@@ -353,7 +353,7 @@ const eventosParaAgenda = baseEventos
   pacientes={pacientes}
   onVerPerfil={onAbrirPerfil}
   onVerAgendamento={aoSelecionarEventoOuFinalizado}
-onIniciarAtendimento={(ev) => {
+  onIniciarAtendimento={(ev) => {
   const paciente = pacientes.find(p => p.id === ev.paciente_id)
 
   if (!paciente || !paciente.data_nascimento) {
