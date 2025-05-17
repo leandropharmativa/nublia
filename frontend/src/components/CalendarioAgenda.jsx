@@ -400,6 +400,16 @@ const eventosParaAgenda = baseEventos
   }}
   ocultarIniciar={ehSecretaria}
 />
+
+            <ModalFinalizado
+      key={modalFinalizado?.id + '-' + modalFinalizado?.hora_atendimento}
+      evento={modalFinalizado}
+      onClose={() => setModalFinalizado(null)}
+      onAbrirPerfil={() => onAbrirPerfil(modalFinalizado?.paciente_id)}
+      onVerAtendimento={() => onVerAtendimento(modalFinalizado?.id)}
+    />
+        
+        
       </div>
     )
   }
