@@ -271,7 +271,7 @@ export default function EditorModeloAnamnese() {
                     setModeloDuplicado(false)
                     toastErro('Edição de modelo cancelada.')
                   }}
-                  variante="inativo"
+                  variante="claro"
                   className="rounded-full px-5 flex items-center gap-2"
                 >
                   <XCircle size={16} />
