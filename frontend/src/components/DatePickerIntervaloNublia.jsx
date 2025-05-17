@@ -1,6 +1,6 @@
 // 📄 components/DatePickerIntervaloNublia.jsx
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { DayPicker } from 'react-day-picker'
 import { ptBR } from 'date-fns/locale'
 import { createPortal } from 'react-dom'
@@ -14,41 +14,57 @@ export default function DatePickerIntervaloNublia({
   onClose
 }) {
   const [posicao, setPosicao] = useState(null)
+  const containerRef = useRef(null)
 
-  // 📌 Range selecionado localmente (usado até clicar em aplicar)
   const [rangeSelecionado, setRangeSelecionado] = useState({
     from: intervaloAtual?.start,
     to: intervaloAtual?.end
   })
 
+  // 📍 Detecta clique fora para fechar
+  useEffect(() => {
+    const handleClickFora = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        onClose?.()
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickFora)
+    return () => {
+      document.removeEventListener('mousedown', handleClickFora)
+    }
+  }, [])
+
+  // 📍 Calcula posição abaixo do anchor
   useEffect(() => {
     if (anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect()
       setPosicao({
-        top: rect.bottom + window.scrollY - 4,
+        top: rect.bottom + window.scrollY + 8,
         left: rect.left + window.scrollX,
       })
     }
   }, [anchorRef])
 
-useEffect(() => {
-  if (intervaloAtual?.start && intervaloAtual?.end) {
-    setRangeSelecionado({
-      from: new Date(intervaloAtual.start),
-      to: new Date(intervaloAtual.end)
-    })
-  }
-}, [intervaloAtual])
+  useEffect(() => {
+    if (intervaloAtual?.start && intervaloAtual?.end) {
+      setRangeSelecionado({
+        from: new Date(intervaloAtual.start),
+        to: new Date(intervaloAtual.end)
+      })
+    }
+  }, [intervaloAtual])
 
   const portalEl = document.getElementById('datepicker-root')
   if (!portalEl || !posicao) return null
 
   return createPortal(
     <div
-      className="absolute z-[9999] bg-white p-4 rounded-lg border border-gray-300 shadow-md"
+      ref={containerRef}
+      className="absolute z-[9999] bg-white p-4 rounded-xl border border-gray-300 shadow-xl w-[300px]"
       style={{ top: posicao.top, left: posicao.left }}
     >
-      {/* 📆 Calendário com seleção de intervalo */}
+      {/* 📆 Calendário de intervalo */}
       <DayPicker
         mode="range"
         selected={rangeSelecionado}
@@ -61,7 +77,7 @@ useEffect(() => {
         defaultMonth={rangeSelecionado?.from || new Date()}
       />
 
-      {/* 🎯 Botões de ação */}
+      {/* 🎯 Ações */}
       <div className="mt-3 flex justify-end gap-2">
         <button
           onClick={onClose}
