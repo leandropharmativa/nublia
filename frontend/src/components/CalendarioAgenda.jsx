@@ -173,6 +173,7 @@ function CustomDayView({
         eventos={eventos}
         pacientes={pacientes}
         aoVerPerfil={onVerPerfil}
+        aoVerAgendamento={onVerAgendamento} 
         aoVerAgendamento={handleVerAgendamento}
         aoIniciarAtendimento={onIniciarAtendimento}
         ocultarIniciar={ocultarIniciar}
@@ -376,7 +377,13 @@ const eventosParaAgenda = baseEventos
   eventos={eventosVisiveis}
   pacientes={pacientes}
   onVerPerfil={onAbrirPerfil}
-  onVerAgendamento={aoSelecionarEventoOuFinalizado} 
+  onVerAgendamento={(ev) => {
+    if (ev.status === 'finalizado') {
+      setModalFinalizado({ ...ev }) // 🔄 direto, sem evento
+    } else {
+      aoSelecionarEvento(ev)
+    }
+  }}
   onIniciarAtendimento={(ev) => {
     const paciente = pacientes.find(p => p.id === ev.paciente_id)
     if (!paciente || !paciente.data_nascimento) {
@@ -393,9 +400,6 @@ const eventosParaAgenda = baseEventos
   }}
   ocultarIniciar={ehSecretaria}
 />
-
-
-
       </div>
     )
   }
