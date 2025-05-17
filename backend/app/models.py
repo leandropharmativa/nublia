@@ -126,7 +126,7 @@ class ModeloAnamnese(SQLModel, table=True):
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     nome: str
     prescritor_id: int
-    blocos: List[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
+    blocos: dict = Field(default_factory=dict, sa_column=Column(JSON))
 
 # 🔵 Novo modelo: Respostas preenchidas da Anamnese
 class RespostaAnamnese(SQLModel, table=True):
