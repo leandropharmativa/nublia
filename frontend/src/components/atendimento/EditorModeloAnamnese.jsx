@@ -131,6 +131,7 @@ useEffect(() => {
   }
 
   return (
+  <>
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
       <button
         onClick={() => setExpandido(!expandido)}
@@ -178,7 +179,6 @@ useEffect(() => {
             </div>
           )}
 
-          {/* 📃 Modelos do usuário */}
           {modelosUsuario.length > 0 && (
             <div className="space-y-2">
               {modelosUsuario.map((modelo) => (
@@ -216,17 +216,16 @@ useEffect(() => {
                           onClick={() => editarModelo(modelo)}
                           className="rounded-full px-4 py-1 text-xs flex items-center gap-1"
                         >
-                        <Pencil size={14} />
-                        Editar
+                          <Pencil size={14} />
+                          Editar
                         </Botao>
-
                         <Botao
                           onClick={() => setModeloParaExcluir(modelo)}
                           variante="danger"
                           className="rounded-full px-4 py-1 text-xs flex items-center gap-1"
                         >
-                        <Trash size={14} />
-                        Excluir
+                          <Trash size={14} />
+                          Excluir
                         </Botao>
                       </div>
                     </div>
@@ -236,7 +235,6 @@ useEffect(() => {
             </div>
           )}
 
-          {/* ✏️ Formulário de edição */}
           {blocos.length > 0 && (
             <>
               <div className="flex items-center gap-3 border border-nublia-primary rounded-full px-4 py-2 bg-gray-50">
@@ -360,40 +358,43 @@ useEffect(() => {
         </div>
       </div>
     </div>
+
     {modeloParaExcluir && (
-  <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
-    <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-lg relative">
-      <h3 className="text-lg font-semibold text-gray-800 mb-2">Confirmar exclusão</h3>
-      <p className="text-sm text-gray-600 mb-4">
-        Deseja realmente excluir o modelo <strong>{modeloParaExcluir.nome}</strong>?
-      </p>
-      <div className="flex justify-end gap-3">
-        <Botao
-          onClick={() => setModeloParaExcluir(null)}
-          variante="claro"
-          className="rounded-full px-4 py-1"
-        >
-          Cancelar
-        </Botao>
-        <Botao
-          onClick={async () => {
-            try {
-              await axios.delete(`https://nublia-backend.onrender.com/anamnese/modelos/${modeloParaExcluir.id}`)
-              toastSucesso('Modelo excluído com sucesso!')
-              setModelosUsuario(modelosUsuario.filter(m => m.id !== modeloParaExcluir.id))
-              setModeloParaExcluir(null)
-              if (modeloExpandido === modeloParaExcluir.id) setModeloExpandido(null)
-            } catch {
-              toastErro('Erro ao excluir modelo.')
-            }
-          }}
-          variante="danger"
-          className="rounded-full px-4 py-1"
-        >
-          Confirmar
-        </Botao>
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+        <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-lg relative">
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">Confirmar exclusão</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Deseja realmente excluir o modelo <strong>{modeloParaExcluir.nome}</strong>?
+          </p>
+          <div className="flex justify-end gap-3">
+            <Botao
+              onClick={() => setModeloParaExcluir(null)}
+              variante="claro"
+              className="rounded-full px-4 py-1"
+            >
+              Cancelar
+            </Botao>
+            <Botao
+              onClick={async () => {
+                try {
+                  await axios.delete(`https://nublia-backend.onrender.com/anamnese/modelos/${modeloParaExcluir.id}`)
+                  toastSucesso('Modelo excluído com sucesso!')
+                  setModelosUsuario(modelosUsuario.filter(m => m.id !== modeloParaExcluir.id))
+                  setModeloParaExcluir(null)
+                  if (modeloExpandido === modeloParaExcluir.id) setModeloExpandido(null)
+                } catch {
+                  toastErro('Erro ao excluir modelo.')
+                }
+              }}
+              variante="danger"
+              className="rounded-full px-4 py-1"
+            >
+              Confirmar
+            </Botao>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-)}
-  
+    )}
+  </>
+)
+
