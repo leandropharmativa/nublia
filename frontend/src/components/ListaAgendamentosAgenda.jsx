@@ -2,6 +2,7 @@ import { UserRound, Eye, PlayCircle, Clock, UserRoundCheck } from 'lucide-react'
 
 export default function ListaAgendamentosAgenda({
   eventos = [],
+  pacientes = [],
   aoVerPerfil,
   aoVerAgendamento,
   aoIniciarAtendimento,
@@ -64,28 +65,23 @@ export default function ListaAgendamentosAgenda({
                           size={18} />
                       </button>
 {!ocultarIniciar && (
+// ✅ Botão de iniciar atendimento com uso de pacientes locais
 <button
   title="Iniciar atendimento"
-  onClick={async () => {
-    try {
-      const res = await fetch(`https://nublia-backend.onrender.com/users/${ev.paciente_id}`)
-      const paciente = await res.json()
+  onClick={() => {
+    const paciente = pacientes.find(p => p.id === ev.paciente_id)
 
-      if (!paciente || !paciente.id) {
-        toastErro('Paciente não encontrado.')
-        return
-      }
-
-      window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-        detail: {
-          paciente,
-          agendamentoId: ev.id
-        }
-      }))
-    } catch (err) {
-      console.error('Erro ao iniciar atendimento:', err)
-      toastErro('Erro ao iniciar atendimento.')
+    if (!paciente || !paciente.data_nascimento) {
+      toastErro('Paciente não encontrado ou sem data de nascimento.')
+      return
     }
+
+    window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+      detail: {
+        paciente,
+        agendamentoId: ev.id
+      }
+    }))
   }}
   className="text-nublia-accent hover:text-nublia-primary transition"
 >
