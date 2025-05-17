@@ -21,21 +21,18 @@ export default function DatePickerIntervaloNublia({
     to: intervaloAtual?.end
   })
 
-  // 📍 Detecta clique fora para fechar
+  // 📍 Fecha ao clicar fora
   useEffect(() => {
     const handleClickFora = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
         onClose?.()
       }
     }
-
     document.addEventListener('mousedown', handleClickFora)
-    return () => {
-      document.removeEventListener('mousedown', handleClickFora)
-    }
+    return () => document.removeEventListener('mousedown', handleClickFora)
   }, [])
 
-  // 📍 Calcula posição abaixo do anchor
+  // 📍 Posição baseada no anchor
   useEffect(() => {
     if (anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect()
@@ -44,8 +41,9 @@ export default function DatePickerIntervaloNublia({
         left: rect.left + window.scrollX,
       })
     }
-  }, [anchorRef])
+  }, [anchorRef?.current])
 
+  // Atualiza estado ao receber novo intervalo
   useEffect(() => {
     if (intervaloAtual?.start && intervaloAtual?.end) {
       setRangeSelecionado({
@@ -61,23 +59,25 @@ export default function DatePickerIntervaloNublia({
   return createPortal(
     <div
       ref={containerRef}
-      className="absolute z-[9999] bg-white p-4 rounded-xl border border-gray-300 shadow-xl w-[300px]"
-      style={{ top: posicao.top, left: posicao.left }}
+      className="absolute z-[9999] bg-white p-4 rounded-xl border border-gray-300 shadow-xl"
+      style={{
+        position: 'absolute',
+        top: `${posicao.top}px`,
+        left: `${posicao.left}px`,
+      }}
     >
-      {/* 📆 Calendário de intervalo */}
       <DayPicker
         mode="range"
         selected={rangeSelecionado}
-        onSelect={(novoRange) => {
-          setRangeSelecionado(novoRange)
-        }}
+        onSelect={(novoRange) => setRangeSelecionado(novoRange)}
         numberOfMonths={2}
-        showOutsideDays
+        pagedNavigation
+        layout="horizontal"
         locale={ptBR}
+        showOutsideDays
         defaultMonth={rangeSelecionado?.from || new Date()}
       />
 
-      {/* 🎯 Ações */}
       <div className="mt-3 flex justify-end gap-2">
         <button
           onClick={onClose}
