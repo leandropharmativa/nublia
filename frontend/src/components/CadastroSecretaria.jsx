@@ -108,112 +108,75 @@ export default function CadastroSecretaria() {
   }`}
 >
   <div className="border-t px-4 py-4">
-
-          {secretarias.map((s) => (
-            <div key={s.id} className="mt-4 border border-gray-200 rounded-xl p-4 bg-gray-50 flex flex-col gap-3">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="font-medium text-gray-800">{s.nome}</p>
-                  <p className="text-sm text-gray-500">{s.email}</p>
-                </div>
-                <div className="flex gap-3 items-center">
-                  <button
-                    className="text-nublia-accent hover:text-nublia-orange"
-                    onClick={() => setModalSenhaId(s.id)}
-                    title="Alterar senha"
-                  >
-                    <KeyRound size={18} />
-                  </button>
-                  <button
-                    className="text-red-500 hover:text-red-700"
-                    title="Revogar acesso"
-                    onClick={() => excluirSecretaria(s.id)}
-                  >
-                    <Trash size={18} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )
-
-          <div className="mt-8 border-t pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <input
-                type="text"
-                placeholder="Nome da secretária"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-              />
-              <input
-                type="email"
-                placeholder="E-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-              />
-              <input
-                type="password"
-                placeholder="Senha de acesso"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-              />
-            </div>
-
-            <div className="mt-4 text-right">
-              <Botao
-                onClick={cadastrarSecretaria}
-                disabled={carregando}
-                className="rounded-full px-6"
-              >
-                {carregando ? (
-                  <Loader2 className="animate-spin w-5 h-5 mx-auto" />
-                ) : (
-                  'Cadastrar secretária'
-                )}
-              </Botao>
-            </div>
+    {secretarias.map((s) => (
+      <div key={s.id} className="mt-4 border border-gray-200 rounded-xl p-4 bg-gray-50 flex flex-col gap-3">
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="font-medium text-gray-800">{s.nome}</p>
+            <p className="text-sm text-gray-500">{s.email}</p>
           </div>
-        </div>
-      )}
-
-      {/* Modal de alteração de senha */}
-      {modalSenhaId && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
+          <div className="flex gap-3 items-center">
             <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-              onClick={() => setModalSenhaId(null)}
+              className="text-nublia-accent hover:text-nublia-orange"
+              onClick={() => setModalSenhaId(s.id)}
+              title="Alterar senha"
             >
-              <X size={18} />
-            </button>
-            <h3 className="text-lg font-semibold mb-3 text-nublia-accent flex items-center gap-2">
               <KeyRound size={18} />
-              Alterar senha
-            </h3>
-            <input
-              type="password"
-              placeholder="Nova senha"
-              value={novaSenha}
-              onChange={(e) => setNovaSenha(e.target.value)}
-              className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-            />
-            <div className="flex justify-end mt-4">
-              <Botao
-                onClick={alterarSenha}
-                disabled={!novaSenha || carregandoSenha}
-                className="rounded-full px-6"
-              >
-                {carregandoSenha ? (
-                  <Loader2 className="animate-spin w-5 h-5 mx-auto" />
-                ) : (
-                  'Salvar nova senha'
-                )}
-              </Botao>
-            </div>
+            </button>
+            <button
+              className="text-red-500 hover:text-red-700"
+              title="Revogar acesso"
+              onClick={() => excluirSecretaria(s.id)}
+            >
+              <Trash size={18} />
+            </button>
           </div>
         </div>
+      </div>
+    ))}
+
+    <div className="mt-8 border-t pt-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input
+          type="text"
+          placeholder="Nome da secretária"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+        />
+        <input
+          type="email"
+          placeholder="E-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+        />
+        <input
+          type="password"
+          placeholder="Senha de acesso"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+        />
+      </div>
+
+      <div className="mt-4 text-right">
+        <Botao
+          onClick={cadastrarSecretaria}
+          disabled={carregando}
+          className="rounded-full px-6"
+        >
+          {carregando ? (
+            <Loader2 className="animate-spin w-5 h-5 mx-auto" />
+          ) : (
+            'Cadastrar secretária'
+          )}
+        </Botao>
+      </div>
+    </div>
+  </div>
+</div>
+
       )}
   </div>
 </div>
