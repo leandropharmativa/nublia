@@ -1,9 +1,12 @@
+# 📄 backend/app/models.py
+
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, Literal
 from datetime import date, time, datetime
 from pydantic import BaseModel
+from sqlalchemy import Column, JSON  # necessário para campos JSON
 
-# 🔵 Modelo da tabela de usuários (prescritor, paciente, farmácia, academia, clínica, secretária)
+# 🔵 Modelo da tabela de usuários
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     role: str
@@ -109,6 +112,7 @@ class AgendamentoComNome(BaseModel):
     class Config:
         orm_mode = True
 
+# 🔵 Modelo da tabela de Secretária
 class Secretaria(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nome: str
@@ -116,3 +120,16 @@ class Secretaria(SQLModel, table=True):
     senha_hash: str
     prescritor_id: int = Field(foreign_key="user.id")
 
+# 🔵 Novo modelo: Modelos de Anamnese personalizados
+class ModeloAnamnese(SQLModel, table=True):
+    id: Optional[str] = Field(default=None, primary_key=True)
+    nome: str
+    prescritor_id: int
+    blocos: dict = Field(sa_column=Column(JSON))
+
+# 🔵 Novo modelo: Respostas preenchidas da Anamnese
+class RespostaAnamnese(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    atendimento_id: int
+    modelo_id: str
+    respostas: dict = Field(sa_column=Column(JSON))
