@@ -21,8 +21,8 @@ export default function MonthYearPickerNublia({ dataAtual, anchorRef, aoSelecion
     if (anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect()
       setPosicao({
-        top: rect.bottom + window.scrollY - 4,
-        left: rect.left + window.scrollX,
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX - 63,
       })
     }
   }, [anchorRef])
