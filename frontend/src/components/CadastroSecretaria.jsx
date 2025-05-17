@@ -134,7 +134,7 @@ export default function CadastroSecretaria() {
                 </div>
               </div>
             </div>
-          ))}
+          )
 
           <div className="mt-8 border-t pt-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
