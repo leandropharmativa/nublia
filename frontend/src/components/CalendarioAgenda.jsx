@@ -364,7 +364,6 @@ const eventosParaAgenda = baseEventos
   rangeVisivel={rangeVisivel}
   setRangeVisivel={setRangeVisivel}
   onRangeChange={onRangeChange}
-  onDataChange={onDataChange}
 />
 
         <div className="flex justify-end mt-6 mb-4">
@@ -470,7 +469,8 @@ components={{
       rangeVisivel={rangeVisivel}
       setRangeVisivel={setRangeVisivel}
       setDataAtual={setDataAtual}             // ✅ necessário para atualizar a data no intervalo
-      onRangeChange={onRangeChange}           // ✅ garante que não seja undefined
+      onRangeChange={onRangeChange}
+      onDataChange={onDataChange}
     />
   ),
   month: {
