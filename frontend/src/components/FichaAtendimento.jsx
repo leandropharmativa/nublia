@@ -18,7 +18,6 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   // 🧠 Armazena o paciente selecionado (permite atualização dinâmica)
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
   const [pacienteId, setPacienteId] = useState(paciente?.id || null)
-  const [pacienteId, setPacienteId] = useState(paciente?.id || null)
 
   // Atualiza paciente selecionado quando `paciente` muda via props
 useEffect(() => {
