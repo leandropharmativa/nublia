@@ -16,7 +16,7 @@ export default function MonthYearPickerNublia({ dataAtual, anchorRef, aoSelecion
     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
   ]
 
-  // 📍 Posição relativa ao botão clicado
+  // 📍 Posição com alinhamento igual ao Intervalo
   useEffect(() => {
     if (anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect()
@@ -50,7 +50,7 @@ export default function MonthYearPickerNublia({ dataAtual, anchorRef, aoSelecion
   return createPortal(
     <div
       ref={pickerRef}
-      className="absolute z-[9999] bg-white p-4 rounded-lg border border-gray-300 shadow-md w-60 animar-datepicker"
+      className="absolute z-[9999] bg-white p-3 rounded-lg border border-gray-300 shadow-md animar-datepicker w-60"
       style={{ top: posicao.top, left: posicao.left }}
     >
       <div className="flex flex-col gap-3">
@@ -74,16 +74,16 @@ export default function MonthYearPickerNublia({ dataAtual, anchorRef, aoSelecion
           ))}
         </select>
 
-        <div className="flex justify-end gap-2">
+        <div className="mt-1 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="text-sm text-gray-600 hover:text-gray-900"
+            className="text-sm px-3 py-1 rounded-full hover:bg-gray-100 text-gray-600"
           >
             Cancelar
           </button>
           <button
             onClick={confirmar}
-            className="text-sm bg-nublia-accent text-white rounded px-3 py-1 hover:bg-nublia-primary"
+            className="text-sm px-3 py-1 rounded-full bg-nublia-accent text-white hover:bg-nublia-primary"
           >
             Aplicar
           </button>
