@@ -1,5 +1,6 @@
 //frontend/src/components/ListaAgendamentosAgenda.jsx
 import { UserRound, Eye, PlayCircle, Clock, UserRoundCheck } from 'lucide-react'
+import { toastErro } from '../utils/toastUtils'
 
 export default function ListaAgendamentosAgenda({
   eventos = [],
