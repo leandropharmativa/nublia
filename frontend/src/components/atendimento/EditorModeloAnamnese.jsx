@@ -149,11 +149,12 @@ export default function EditorModeloAnamnese() {
 <Botao
   onClick={duplicarModelo}
   variante="primario"
-  icone={<FilePlus size={16} />}
-  className="rounded-full px-5 mt-3"
+  className="rounded-full px-5 mt-3 flex items-center gap-2"
 >
+  <FilePlus size={16} />
   Duplicar modelo
 </Botao>
+
 
             </div>
           )}
@@ -253,10 +254,9 @@ export default function EditorModeloAnamnese() {
   <Botao
     onClick={salvarModelo}
     variante="primario"
-    
+    icone={<Save size={16} />}
     className="rounded-full px-5"
   >
-    <Save size={16}>
     Salvar Modelo
   </Botao>
 
@@ -273,6 +273,7 @@ export default function EditorModeloAnamnese() {
     Cancelar
   </Botao>
 </div>
+
 
             </>
           )}
