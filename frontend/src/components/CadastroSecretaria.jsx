@@ -1,8 +1,10 @@
+// 📄 frontend/src/components/CadastroSecretaria.jsx
+
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { toastErro, toastSucesso } from '../utils/toastUtils'
 import Botao from './Botao'
-import { UserPlus, Trash, KeyRound, X, Loader2 } from 'lucide-react'
+import { UserPlus, Trash, KeyRound, X, Loader2, ChevronRight, ChevronDown } from 'lucide-react'
 
 export default function CadastroSecretaria() {
   const [nome, setNome] = useState('')
@@ -14,6 +16,8 @@ export default function CadastroSecretaria() {
   const [modalSenhaId, setModalSenhaId] = useState(null)
   const [novaSenha, setNovaSenha] = useState('')
   const [carregandoSenha, setCarregandoSenha] = useState(false)
+
+  const [expandido, setExpandido] = useState(false)
 
   const user = JSON.parse(localStorage.getItem('user'))
   const prescritorId = user?.id
@@ -85,78 +89,89 @@ export default function CadastroSecretaria() {
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-4">
-      <h3 className="text-lg font-semibold text-nublia-primary flex items-center gap-2 mb-2">
-        <UserPlus size={20} />
-        Secretárias vinculadas
-      </h3>
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+      {/* 🔽 Título clicável */}
+      <button
+        onClick={() => setExpandido(!expandido)}
+        className="w-full flex items-center justify-between px-4 py-3 text-left text-nublia-primary font-semibold hover:bg-gray-50 transition-all"
+      >
+        <div className="flex items-center gap-2">
+          <UserPlus size={18} />
+          Secretárias vinculadas
+        </div>
+        {expandido ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+      </button>
 
-      {secretarias.map((s) => (
-        <div key={s.id} className="mt-4 border border-gray-200 rounded-xl p-4 bg-gray-50 flex flex-col gap-3">
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="font-medium text-gray-800">{s.nome}</p>
-              <p className="text-sm text-gray-500">{s.email}</p>
+      {expandido && (
+        <div className="border-t px-4 py-4">
+          {secretarias.map((s) => (
+            <div key={s.id} className="mt-4 border border-gray-200 rounded-xl p-4 bg-gray-50 flex flex-col gap-3">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-medium text-gray-800">{s.nome}</p>
+                  <p className="text-sm text-gray-500">{s.email}</p>
+                </div>
+                <div className="flex gap-3 items-center">
+                  <button
+                    className="text-nublia-accent hover:text-nublia-orange"
+                    onClick={() => setModalSenhaId(s.id)}
+                    title="Alterar senha"
+                  >
+                    <KeyRound size={18} />
+                  </button>
+                  <button
+                    className="text-red-500 hover:text-red-700"
+                    title="Revogar acesso"
+                    onClick={() => excluirSecretaria(s.id)}
+                  >
+                    <Trash size={18} />
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="flex gap-3 items-center">
-              <button
-                className="text-nublia-accent hover:text-nublia-orange"
-                onClick={() => setModalSenhaId(s.id)}
-                title="Alterar senha"
+          ))}
+
+          <div className="mt-8 border-t pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <input
+                type="text"
+                placeholder="Nome da secretária"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+              />
+              <input
+                type="email"
+                placeholder="E-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+              />
+              <input
+                type="password"
+                placeholder="Senha de acesso"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
+              />
+            </div>
+
+            <div className="mt-4 text-right">
+              <Botao
+                onClick={cadastrarSecretaria}
+                disabled={carregando}
+                className="rounded-full px-6"
               >
-                <KeyRound size={18} />
-              </button>
-              <button
-                className="text-red-500 hover:text-red-700"
-                title="Revogar acesso"
-                onClick={() => excluirSecretaria(s.id)}
-              >
-                <Trash size={18} />
-              </button>
+                {carregando ? (
+                  <Loader2 className="animate-spin w-5 h-5 mx-auto" />
+                ) : (
+                  'Cadastrar secretária'
+                )}
+              </Botao>
             </div>
           </div>
         </div>
-      ))}
-
-      <div className="mt-8 border-t pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input
-            type="text"
-            placeholder="Nome da secretária"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-          />
-          <input
-            type="email"
-            placeholder="E-mail"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-          />
-          <input
-            type="password"
-            placeholder="Senha de acesso"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            className="block w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
-          />
-        </div>
-
-        <div className="mt-4 text-right">
-          <Botao
-            onClick={cadastrarSecretaria}
-            disabled={carregando}
-            className="rounded-full px-6"
-          >
-            {carregando ? (
-              <Loader2 className="animate-spin w-5 h-5 mx-auto" />
-            ) : (
-              'Cadastrar secretária'
-            )}
-          </Botao>
-        </div>
-      </div>
+      )}
 
       {/* Modal de alteração de senha */}
       {modalSenhaId && (
