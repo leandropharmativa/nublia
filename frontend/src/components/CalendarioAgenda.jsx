@@ -29,6 +29,7 @@ import ModalFinalizado from './ModalFinalizado'
 import ListaAgendamentosAgenda from './ListaAgendamentosAgenda'
 import DatePickerMesNublia from './DatePickerMesNublia'
 import DatePickerIntervaloNublia from './DatePickerIntervaloNublia'
+import MonthYearPickerNublia from './MonthYearPickerNublia'
 import { toastErro } from '../utils/toastUtils'
 
 const locales = { 'pt-BR': ptBR }
@@ -568,6 +569,9 @@ function CustomToolbar({
   const containerRef = useRef(null)
   const intervaloRef = useRef(null)
 
+  const mesRef = useRef(null) // para month view
+  const [mostrarSeletorMes, setMostrarSeletorMes] = useState(false)
+
   const f = (d, fmt) => format(d, fmt, { locale: ptBR })
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
@@ -600,60 +604,73 @@ function CustomToolbar({
 
   return (
     <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200 relative" ref={containerRef}>
-      <div className="flex items-center gap-2">
-        <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
-          <ChevronLeft size={20} />
-        </button>
-        <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
-          <ChevronRight size={20} />
-        </button>
 
-<span
-  ref={view === 'agenda' ? intervaloRef : containerRef}
-  className={`flex items-center gap-2 text-sm font-bold ${
-    view === 'day' || view === 'agenda'
-      ? 'cursor-pointer text-nublia-accent hover:text-[#8FB3E7] transition-colors'
-      : 'text-nublia-accent'
-  }`}
-  onClick={() => {
-    if (view === 'day') setMostrarCalendario(true)
-    if (view === 'agenda') setMostrarIntervalo(true)
-  }}
->
+<div className="flex items-center gap-2">
+  <button onClick={() => onNavigate('PREV')} className="text-gray-600 hover:text-gray-800">
+    <ChevronLeft size={20} />
+  </button>
+  <button onClick={() => onNavigate('NEXT')} className="text-gray-600 hover:text-gray-800">
+    <ChevronRight size={20} />
+  </button>
 
+  {/* Título com ícone + clique abre DatePicker conforme view */}
+  <span
+    ref={view === 'month' ? mesRef : view === 'agenda' ? intervaloRef : containerRef}
+    className="flex items-center gap-2 text-sm font-bold cursor-pointer text-nublia-accent hover:text-[#8FB3E7] transition-colors"
+    onClick={() => {
+      if (view === 'month') setMostrarSeletorMes(true)
+      if (view === 'day') setMostrarCalendario(true)
+      if (view === 'agenda') setMostrarIntervalo(true)
+    }}
+  >
+    <CalendarDays size={16} />
+    {renderLabel()}
+  </span>
 
-          <CalendarDays size={16} />
-          {renderLabel()}
-        </span>
+  {/* Date picker de dia (para dayView) */}
+  {mostrarCalendario && view === 'day' && containerRef.current && (
+    <DatePickerMesNublia
+      dataAtual={date}
+      anchorRef={containerRef}
+      aoSelecionarDia={(novaData) => {
+        setMostrarCalendario(false)
+        onNavigate(novaData)
+      }}
+      onClose={() => setMostrarCalendario(false)}
+    />
+  )}
 
-        {mostrarCalendario && view === 'day' && containerRef.current && (
-          <DatePickerMesNublia
-            dataAtual={date}
-            anchorRef={containerRef}
-            aoSelecionarDia={(novaData) => {
-              setMostrarCalendario(false)
-              onNavigate(novaData)
-            }}
-            onClose={() => setMostrarCalendario(false)}
-          />
-        )}
+  {/* Date picker de intervalo (para agendaView) */}
+  {mostrarIntervalo && view === 'agenda' && intervaloRef.current && (
+    <DatePickerIntervaloNublia
+      intervaloAtual={rangeVisivel}
+      anchorRef={intervaloRef}
+      onSelecionarIntervalo={({ from, to }) => {
+        if (from && to) {
+          setRangeVisivel({ start: from, end: to })
+          setDataAtual(from)
+          onRangeChange?.({ start: from, end: to })
+          setMostrarIntervalo(false)
+        }
+      }}
+      onClose={() => setMostrarIntervalo(false)}
+    />
+  )}
 
-        {mostrarIntervalo && view === 'agenda' && intervaloRef.current && (
-          <DatePickerIntervaloNublia
-            intervaloAtual={rangeVisivel}
-            anchorRef={intervaloRef}
-            onSelecionarIntervalo={({ from, to }) => {
-              if (from && to) {
-                setRangeVisivel({ start: from, end: to })
-                setDataAtual(from)
-                onRangeChange?.({ start: from, end: to })
-                setMostrarIntervalo(false)
-              }
-            }}
-            onClose={() => setMostrarIntervalo(false)}
-          />
-        )}
-      </div>
+  {/* Date picker só de mês/ano (para monthView) */}
+  {mostrarSeletorMes && view === 'month' && mesRef.current && (
+    <MonthYearPickerNublia
+      dataAtual={date}
+      anchorRef={mesRef}
+      aoSelecionarMes={(novaData) => {
+        setMostrarSeletorMes(false)
+        onNavigate(novaData)
+      }}
+      onClose={() => setMostrarSeletorMes(false)}
+    />
+  )}
+</div>
+
 
       <div className="flex items-center gap-3">
         <div className="text-xs text-gray-600 flex items-center gap-3">
