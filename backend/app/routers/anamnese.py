@@ -93,11 +93,12 @@ def atualizar_modelo(modelo_id: str, modelo: ModeloAnamneseCreate):
             raise HTTPException(status_code=404, detail="Modelo não encontrado")
         existente.nome = modelo.nome
         existente.prescritor_id = modelo.prescritor_id
-        existente.blocos = json.dumps(modelo.blocos)  # ✅ necessário para campos tipo TEXT/JSON
+        existente.blocos = modelo.blocos  # ✅ Corrigido
         session.add(existente)
         session.commit()
         session.refresh(existente)
         return existente
+
 
 
 
