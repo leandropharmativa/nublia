@@ -198,13 +198,13 @@ export default function CalendarioAgenda({
     return lista.filter(ev => ev.status === status)
   }
 
-  const aoSelecionarEventoOuFinalizado = (ev) => {
-    if (ev.status === 'finalizado') {
-      setModalFinalizado(ev)
-    } else {
-      aoSelecionarEvento(ev)
-    }
+const aoSelecionarEventoOuFinalizado = (ev) => {
+  if (ev.status === 'finalizado') {
+    setModalFinalizado({ ...ev })
+  } else {
+    aoSelecionarEvento(ev)
   }
+}
 
   const estiloDoDia = (date) => {
     const hoje = new Date()
