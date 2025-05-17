@@ -7,6 +7,7 @@ import {
   Trash,
   Save,
   FolderPlus,
+  FileText,
   ChevronDown,
   ChevronRight,
   Copy
