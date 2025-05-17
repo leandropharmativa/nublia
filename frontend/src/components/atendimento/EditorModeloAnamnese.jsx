@@ -128,20 +128,20 @@ export default function EditorModeloAnamnese() {
               <h3 className="font-semibold mb-2 text-gray-700 flex items-center gap-2">
                 Modelo Padrão (somente leitura)
               </h3>
-              {modeloPadrao.blocos.map((bloco, i) => (
-                <div key={i} className="mb-2">
-                  <p className="font-medium flex items-center gap-2 text-nublia-accent">
-  <FolderPlus size={16} />
-  {bloco.titulo}
-</p>
+{modeloPadrao.blocos.map((bloco, i) => (
+  <div key={i} className="mb-3">
+    <p className="flex items-center gap-2 text-sm font-semibold text-nublia-accent">
+      <FileText size={16} />
+      {bloco.titulo}
+    </p>
+    <ul className="ml-6 list-disc text-xs text-gray-600 mt-1">
+      {bloco.perguntas.map((p, j) => (
+        <li key={j}>{p.rotulo}</li>
+      ))}
+    </ul>
+  </div>
+))}
 
-                  <ul className="ml-4 list-disc text-sm text-gray-600">
-                    {bloco.perguntas.map((p, j) => (
-                      <li key={j}>{p.rotulo} ({p.tipo})</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
 <Botao
   onClick={duplicarModelo}
   variante="primario"
