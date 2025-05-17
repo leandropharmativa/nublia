@@ -361,12 +361,13 @@ onIniciarAtendimento={(ev) => {
     return
   }
 
-  window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-    detail: {
-      paciente,
-      agendamentoId: ev.id,
-    }
-  }))
+window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+  detail: {
+    pacienteId: ev.paciente_id,
+    agendamentoId: ev.id
+  }
+}))
+
 }}
  ocultarIniciar={ehSecretaria}
 />
