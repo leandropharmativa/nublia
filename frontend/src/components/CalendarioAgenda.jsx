@@ -164,13 +164,7 @@ function CustomDayView({
         eventos={eventos}
         pacientes={pacientes}
         aoVerPerfil={onVerPerfil}
-        aoVerAgendamento={(ev) => {
-          if (ev.status === 'finalizado') {
-            window.dispatchEvent(new CustomEvent('AbrirModalFinalizado', { detail: ev }))
-          } else {
-            onVerAgendamento(ev)
-          }
-        }}
+        aoVerAgendamento={onVerAgendamento}
         aoIniciarAtendimento={onIniciarAtendimento}
         ocultarIniciar={ocultarIniciar}
       />
@@ -195,16 +189,6 @@ export default function CalendarioAgenda({
   const [dataAtual, setDataAtual] = useState(new Date())
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
   const [modalFinalizado, setModalFinalizado] = useState(null)
-
-  useEffect(() => {
-  const handleAbrirModal = (e) => {
-    setModalFinalizado(e.detail)
-  }
-
-  window.addEventListener('AbrirModalFinalizado', handleAbrirModal)
-  return () => window.removeEventListener('AbrirModalFinalizado', handleAbrirModal)
-}, [])
-
   const [filtroStatus, setFiltroStatus] = useState('todos')
   const [filtroTexto, setFiltroTexto] = useState('')
   const [eventosFiltrados, setEventosFiltrados] = useState([])
@@ -375,25 +359,24 @@ const eventosParaAgenda = baseEventos
   eventos={eventosVisiveis}
   pacientes={pacientes}
   onVerPerfil={onAbrirPerfil}
-  onVerAgendamento={aoSelecionarEventoOuFinalizado}
+  onVerAgendamento={aoSelecionarEventoOuFinalizado} 
   onIniciarAtendimento={(ev) => {
-  const paciente = pacientes.find(p => p.id === ev.paciente_id)
+    const paciente = pacientes.find(p => p.id === ev.paciente_id)
+    if (!paciente || !paciente.data_nascimento) {
+      toastErro('Paciente não encontrado ou sem data de nascimento.')
+      return
+    }
 
-  if (!paciente || !paciente.data_nascimento) {
-    toastErro('Paciente não encontrado ou sem data de nascimento.')
-    return
-  }
-
-window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-  detail: {
-    pacienteId: ev.paciente_id,
-    agendamentoId: ev.id
-  }
-}))
-
-}}
- ocultarIniciar={ehSecretaria}
+    window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+      detail: {
+        pacienteId: ev.paciente_id,
+        agendamentoId: ev.id
+      }
+    }))
+  }}
+  ocultarIniciar={ehSecretaria}
 />
+
 
 
       </div>
