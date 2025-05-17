@@ -156,6 +156,7 @@ function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendi
     <div className="mt-4">
       <ListaAgendamentosAgenda
         eventos={eventos}
+        pacientes={pacientes}
         aoVerPerfil={onVerPerfil}
         aoVerAgendamento={onVerAgendamento}
         aoIniciarAtendimento={onIniciarAtendimento}
