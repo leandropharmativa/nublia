@@ -173,7 +173,6 @@ function CustomDayView({
         eventos={eventos}
         pacientes={pacientes}
         aoVerPerfil={onVerPerfil}
-        aoVerAgendamento={onVerAgendamento} 
         aoVerAgendamento={handleVerAgendamento}
         aoIniciarAtendimento={onIniciarAtendimento}
         ocultarIniciar={ocultarIniciar}
