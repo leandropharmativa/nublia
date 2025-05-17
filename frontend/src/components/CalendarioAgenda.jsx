@@ -150,7 +150,7 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
 }
 
 // 📌 Customização da view diária
-function CustomDayView({ eventos, onVerPerfil, onVerAgendamento, onIniciarAtendimento, ocultarIniciar = false }) {
+function CustomDayView({ eventos, pacientes, onVerPerfil, onVerAgendamento, onIniciarAtendimento, ocultarIniciar = false }) {
   return (
     <div className="mt-4">
       <ListaAgendamentosAgenda
@@ -349,6 +349,7 @@ const eventosParaAgenda = baseEventos
 
 <CustomDayView
   eventos={eventosVisiveis}
+  pacientes={pacientes}
   onVerPerfil={onAbrirPerfil}
   onVerAgendamento={aoSelecionarEventoOuFinalizado}
   onIniciarAtendimento={(ev) => {
