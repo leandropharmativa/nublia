@@ -36,6 +36,8 @@ import Botao from '../components/Botao'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import CadastroSecretaria from '../components/CadastroSecretaria'
 
+import EditorModeloAnamnese from '../components/atendimento/EditorModeloAnamnese'
+
 export default function PrescritorDashboard() {
   const [user, setUser] = useState(null)
   const [carregandoAtendimentos, setCarregandoAtendimentos] = useState(true)
@@ -403,6 +405,7 @@ const carregarAgenda = async (id) => {
                 <div className="py-8 px-4 sm:px-0">
                   <h2 className="text-lg font-semibold text-nublia-accent mb-4">Configurações da conta</h2>
                   <CadastroSecretaria />
+                  <EditorModeloAnamnese />
                 </div>
               </Tab.Panel>
             </Tab.Panels>
