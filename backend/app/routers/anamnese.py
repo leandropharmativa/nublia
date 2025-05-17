@@ -83,3 +83,19 @@ def excluir_modelo(modelo_id: str):
         session.commit()
         return {"ok": True}
 
+# ✅ Atualizar modelo existente
+@router.put("/anamnese/modelos/{modelo_id}")
+def atualizar_modelo(modelo_id: str, modelo: ModeloAnamneseCreate):
+    with Session(engine) as session:
+        existente = session.get(ModeloAnamnese, modelo_id)
+        if not existente:
+            raise HTTPException(status_code=404, detail="Modelo não encontrado")
+        existente.nome = modelo.nome
+        existente.prescritor_id = modelo.prescritor_id
+        existente.blocos = modelo.blocos
+        session.add(existente)
+        session.commit()
+        session.refresh(existente)
+        return existente
+
+
