@@ -130,7 +130,11 @@ export default function EditorModeloAnamnese() {
               </h3>
               {modeloPadrao.blocos.map((bloco, i) => (
                 <div key={i} className="mb-2">
-                  <p className="font-medium">{bloco.titulo}</p>
+                  <p className="font-medium flex items-center gap-2 text-nublia-accent">
+  <FolderPlus size={16} />
+  {bloco.titulo}
+</p>
+
                   <ul className="ml-4 list-disc text-sm text-gray-600">
                     {bloco.perguntas.map((p, j) => (
                       <li key={j}>{p.rotulo} ({p.tipo})</li>
@@ -138,9 +142,15 @@ export default function EditorModeloAnamnese() {
                   </ul>
                 </div>
               ))}
-              <Botao onClick={duplicarModelo} variante="primario" icone={<Copy size={16} />}>
-                Duplicar modelo
-              </Botao>
+<Botao
+  onClick={duplicarModelo}
+  variante="primario"
+  icone={<Copy size={16} />}
+  className="rounded-full px-5 mt-3"
+>
+  Duplicar modelo
+</Botao>
+
             </div>
           )}
 
