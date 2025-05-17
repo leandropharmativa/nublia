@@ -235,23 +235,24 @@
   animation: fadeInScale 0.2s ease-out;
 }
 
-/* 📁 frontend/src/components/CalendarioCustom.css */
+/* 📄 CalendarioCustom.css */
 
-.rdp-months,
-.rdp-table,
-.rdp-caption_dropdowns + .rdp-months {
+.only-dropdowns .rdp-months,
+.only-dropdowns .rdp-head,
+.only-dropdowns .rdp-table,
+.only-dropdowns .rdp-tbody {
   display: none !important;
 }
 
-.rdp-caption_dropdowns {
+.only-dropdowns .rdp-caption_dropdowns {
   justify-content: center;
   gap: 8px;
 }
 
-.rdp-dropdown_month,
-.rdp-dropdown_year {
+.only-dropdowns select {
   padding: 6px;
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 14px;
 }
+
