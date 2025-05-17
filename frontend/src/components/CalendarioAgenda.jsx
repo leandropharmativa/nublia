@@ -150,14 +150,27 @@ function HeaderComEventos({ data, label, eventos, aoSelecionarEvento, aoAdiciona
 }
 
 // 📌 Customização da view diária
-function CustomDayView({ eventos, pacientes, onVerPerfil, onVerAgendamento, onIniciarAtendimento, ocultarIniciar = false }) {
+function CustomDayView({
+  eventos,
+  pacientes,
+  onVerPerfil,
+  onVerAgendamento,
+  onIniciarAtendimento,
+  ocultarIniciar = false
+}) {
   return (
     <div className="mt-4">
       <ListaAgendamentosAgenda
         eventos={eventos}
         pacientes={pacientes}
         aoVerPerfil={onVerPerfil}
-        aoVerAgendamento={onVerAgendamento}
+        aoVerAgendamento={(ev) => {
+          if (ev.status === 'finalizado') {
+            window.dispatchEvent(new CustomEvent('AbrirModalFinalizado', { detail: ev }))
+          } else {
+            onVerAgendamento(ev)
+          }
+        }}
         aoIniciarAtendimento={onIniciarAtendimento}
         ocultarIniciar={ocultarIniciar}
       />
@@ -182,6 +195,16 @@ export default function CalendarioAgenda({
   const [dataAtual, setDataAtual] = useState(new Date())
   const [rangeVisivel, setRangeVisivel] = useState({ start: null, end: null })
   const [modalFinalizado, setModalFinalizado] = useState(null)
+
+  useEffect(() => {
+  const handleAbrirModal = (e) => {
+    setModalFinalizado(e.detail)
+  }
+
+  window.addEventListener('AbrirModalFinalizado', handleAbrirModal)
+  return () => window.removeEventListener('AbrirModalFinalizado', handleAbrirModal)
+}, [])
+
   const [filtroStatus, setFiltroStatus] = useState('todos')
   const [filtroTexto, setFiltroTexto] = useState('')
   const [eventosFiltrados, setEventosFiltrados] = useState([])
