@@ -94,7 +94,7 @@ def atualizar_modelo(modelo_id: str, modelo: ModeloAnamneseCreate):
         
         existente.nome = modelo.nome
         existente.prescritor_id = modelo.prescritor_id
-        existente.blocos = modelo.blocos  # ← Agora garantido como dict
+        existente.blocos = json.loads(json.dumps(modelo.blocos))  # ← Agora garantido como dict
 
         session.add(existente)
         session.commit()
