@@ -70,7 +70,7 @@ useEffect(() => {
   useEffect(() => {
     const carregarAnteriores = async () => {
       const user = JSON.parse(localStorage.getItem('user'))
-      if (!user || !paciente?.id) return
+      if (!user || !pacienteSelecionado?.id) return
 
       try {
         const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
@@ -97,7 +97,7 @@ useEffect(() => {
       const user = JSON.parse(localStorage.getItem('user'))
 
       const dadosAtendimento = {
-        paciente_id: paciente.id,
+        paciente_id: pacienteSelecionado.id,
         prescritor_id: user?.id,
         agendamento_id: agendamentoIdRef.current, // ✅ usa valor preservado
         anamnese: formulario.anamnese,
@@ -200,7 +200,7 @@ useEffect(() => {
             )}
           </div>
           <p className="text-sm text-gray-700 font-semibold mt-1">
-            {paciente.name} {calcularIdade(paciente.data_nascimento) ? `• ${calcularIdade(paciente.data_nascimento)} anos` : ''}
+            {pacienteSelecionado?.name} {calcularIdade(pacienteSelecionado?.data_nascimento) ? `• ${calcularIdade(pacienteSelecionado.data_nascimento)} anos` : ''}
           </p>
         </div>
       </div>
@@ -225,7 +225,7 @@ useEffect(() => {
         {abaAtiva === 'paciente' ? (
           <>
             <div className="space-y-2 text-sm text-gray-700">
-              <div><strong>Email:</strong> {paciente.email || 'Não informado'}</div>
+              <div><strong>Email:</strong> {pacienteSelecionado?.email || 'Não informado'}</div>
               <div><strong>Telefone:</strong> {paciente.telefone || 'Não informado'}</div>
               <div><strong>Sexo:</strong> {paciente.sexo || 'Não informado'}</div>
               <div><strong>Data de Nascimento:</strong> {paciente.data_nascimento || 'Não informada'}</div>
