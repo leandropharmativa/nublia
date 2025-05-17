@@ -158,13 +158,22 @@ function CustomDayView({
   onIniciarAtendimento,
   ocultarIniciar = false
 }) {
+  const handleVerAgendamento = (ev) => {
+    if (ev.status === 'finalizado') {
+      // Dispara a abertura do modal finalizado diretamente no CalendarioAgenda
+      window.dispatchEvent(new CustomEvent('AbrirModalFinalizado', { detail: ev }))
+    } else {
+      onVerAgendamento?.(ev)
+    }
+  }
+
   return (
     <div className="mt-4">
       <ListaAgendamentosAgenda
         eventos={eventos}
         pacientes={pacientes}
         aoVerPerfil={onVerPerfil}
-        aoVerAgendamento={onVerAgendamento}
+        aoVerAgendamento={handleVerAgendamento}
         aoIniciarAtendimento={onIniciarAtendimento}
         ocultarIniciar={ocultarIniciar}
       />
@@ -310,6 +319,14 @@ useEffect(() => {
   return () => window.removeEventListener('AtualizarAgendaAposFinalizar', atualizarAgenda)
 }, [rangeVisivel])
 
+  useEffect(() => {
+  const handleAbrirModal = (e) => {
+    setModalFinalizado(e.detail)
+  }
+
+  window.addEventListener('AbrirModalFinalizado', handleAbrirModal)
+  return () => window.removeEventListener('AbrirModalFinalizado', handleAbrirModal)
+}, [])
 
   const eventosDoDia = eventos.filter(ev => isSameDay(new Date(ev.start), dataAtual))
   const eventosVisiveis = filtrarEventos(eventosDoDia, filtroStatus)
