@@ -1,10 +1,10 @@
 # 📄 backend/app/models.py
 
 from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional, Literal
+from typing import Optional, Literal, List, Dict, Any
 from datetime import date, time, datetime
 from pydantic import BaseModel
-from sqlalchemy import Column, JSON  # necessário para campos JSON
+from sqlalchemy import Column, JSON  
 
 # 🔵 Modelo da tabela de usuários
 class User(SQLModel, table=True):
@@ -122,10 +122,10 @@ class Secretaria(SQLModel, table=True):
 
 # 🔵 Novo modelo: Modelos de Anamnese personalizados
 class ModeloAnamnese(SQLModel, table=True):
-    id: Optional[str] = Field(default=None, primary_key=True)
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     nome: str
     prescritor_id: int
-    blocos: dict = Field(sa_column=Column(JSON))
+    blocos: List[Dict[str, Any]] = Field(sa_column=Field(default=None, sa_column_kwargs={"type_": JSON}))
 
 # 🔵 Novo modelo: Respostas preenchidas da Anamnese
 class RespostaAnamnese(SQLModel, table=True):
