@@ -14,7 +14,7 @@ import { toastSucesso, toastErro } from '../utils/toastUtils'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
 
-export default function FichaAtendimento({ paciente, agendamentoId = null, onFinalizar, onAtendimentoSalvo }) {
+export default function FichaAtendimento({ paciente, pacienteId = null, agendamentoId = null, onFinalizar, onAtendimentoSalvo }) {
   // 🧠 Armazena o paciente selecionado (permite atualização dinâmica)
   const [pacienteSelecionado, setPacienteSelecionado] = useState(paciente)
 
