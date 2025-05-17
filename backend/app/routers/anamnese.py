@@ -91,13 +91,16 @@ def atualizar_modelo(modelo_id: str, modelo: ModeloAnamneseCreate):
         existente = session.get(ModeloAnamnese, modelo_id)
         if not existente:
             raise HTTPException(status_code=404, detail="Modelo não encontrado")
+        
         existente.nome = modelo.nome
         existente.prescritor_id = modelo.prescritor_id
-        existente.blocos = modelo.blocos  # ✅ Corrigido
+        existente.blocos = modelo.blocos  # ← Agora garantido como dict
+
         session.add(existente)
         session.commit()
         session.refresh(existente)
         return existente
+
 
 
 
