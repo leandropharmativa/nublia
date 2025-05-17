@@ -1,4 +1,4 @@
-// 📄 pages/AgendaPrescritor.jsx
+// 📄 frontend/src/pages/AgendaPrescritor.jsx
 import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
 import { addHours, addDays } from 'date-fns'
