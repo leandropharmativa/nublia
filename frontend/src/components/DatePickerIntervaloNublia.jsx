@@ -59,7 +59,7 @@ export default function DatePickerIntervaloNublia({
   return createPortal(
     <div
       ref={containerRef}
-      className="absolute z-[9999] bg-white p-4 rounded-xl border border-gray-300 shadow-xl"
+      className="absolute z-[9999] bg-white p-3 rounded-lg border border-gray-300 shadow-md animar-datepicker"
       style={{ top: posicao.top, left: posicao.left }}
     >
       <DayPicker
