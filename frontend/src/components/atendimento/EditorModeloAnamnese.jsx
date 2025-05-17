@@ -178,7 +178,7 @@ export default function EditorModeloAnamnese() {
           )}
 
           {/* 📃 Modelos do usuário */}
-         {modelosUsuario.length > 0 && !modeloDuplicado && (
+          {modelosUsuario.length > 0 && (
             <div className="space-y-2">
               {modelosUsuario.map((modelo) => (
                 <div key={modelo.id} className="border rounded-md bg-gray-50">
