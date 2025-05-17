@@ -146,7 +146,7 @@ export default function EditorModeloAnamnese() {
 <Botao
   onClick={duplicarModelo}
   variante="primario"
-  icone={<Copy size={16} />}
+  icone={<FilePlus size={16} />}
   className="rounded-full px-5 mt-3"
 >
   Duplicar modelo
@@ -237,15 +237,39 @@ export default function EditorModeloAnamnese() {
                 </div>
               ))}
 
-              <div className="flex gap-2">
-                <Botao onClick={adicionarBloco} variante="secundario" icone={<Plus size={16} />}>
-                  Adicionar Bloco
-                </Botao>
+<div className="flex gap-2 flex-wrap">
+  <Botao
+    onClick={adicionarBloco}
+    variante="secundario"
+    icone={<PlusCircle size={16} />}
+    className="rounded-full px-5"
+  >
+    Adicionar Bloco
+  </Botao>
 
-                <Botao onClick={salvarModelo} variante="primario" icone={<Save size={16} />}>
-                  Salvar Modelo
-                </Botao>
-              </div>
+  <Botao
+    onClick={salvarModelo}
+    variante="primario"
+    icone={<Save size={16} />}
+    className="rounded-full px-5"
+  >
+    Salvar Modelo
+  </Botao>
+
+  <Botao
+    onClick={() => {
+      setNome('')
+      setBlocos([])
+      toastErro('Edição de modelo cancelada.')
+    }}
+    variante="inativo"
+    icone={<XCircle size={16} />}
+    className="rounded-full px-5"
+  >
+    Cancelar
+  </Botao>
+</div>
+
             </>
           )}
         </div>
