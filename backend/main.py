@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import create_db_and_tables
-from app.routers import root, users, agenda, codigos, atendimentos, formulas, secretarias
+from app.routers import root, users, agenda, codigos, atendimentos, formulas, secretarias, anamnese
 from fastapi.openapi.utils import get_openapi
 
 app = FastAPI(title="Nublia Backend")
@@ -20,7 +20,8 @@ app.include_router(agenda.router)
 app.include_router(codigos.router)
 app.include_router(atendimentos.router)
 app.include_router(formulas.router)
-app.include_router(secretarias.router)  
+app.include_router(secretarias.router)
+app.include_router(anamnese.router)
 
 @app.on_event("startup")
 def on_startup():
