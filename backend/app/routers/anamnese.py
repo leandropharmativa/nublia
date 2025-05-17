@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Optional
 from app.models import ModeloAnamnese, RespostaAnamnese as RespostaAnamneseDB
 from uuid import uuid4
+import json
 
 router = APIRouter()
 
@@ -92,10 +93,11 @@ def atualizar_modelo(modelo_id: str, modelo: ModeloAnamneseCreate):
             raise HTTPException(status_code=404, detail="Modelo não encontrado")
         existente.nome = modelo.nome
         existente.prescritor_id = modelo.prescritor_id
-        existente.blocos = modelo.blocos
+        existente.blocos = json.dumps(modelo.blocos)  # ✅ conversão necessária
         session.add(existente)
         session.commit()
         session.refresh(existente)
         return existente
+
 
 
