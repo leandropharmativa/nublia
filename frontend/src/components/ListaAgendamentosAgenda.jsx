@@ -112,13 +112,21 @@ export default function ListaAgendamentosAgenda({
                     </>
                   ) : ev.status === 'finalizado' ? (
                     // ✅ Visualizar atendimento finalizado
-                    <button
-                      onClick={() => aoVerAgendamento?.(ev)}
-                      title="Ver atendimento finalizado"
-                      className="text-nublia-primary"
-                    >
-                      <UserRoundCheck size={18} />
-                    </button>
+<button
+  onClick={() => {
+    if (!ev || !ev.id) {
+      console.warn('Evento inválido ao abrir atendimento finalizado:', ev)
+      return
+    }
+    console.log('🟢 Clique no atendimento finalizado:', ev)
+    aoVerAgendamento?.(ev)
+  }}
+  title="Ver atendimento finalizado"
+  className="text-nublia-primary"
+>
+  <UserRoundCheck size={18} />
+</button>
+
                   ) : (
                     // 🕒 Agendar horário se disponível
                     <button
