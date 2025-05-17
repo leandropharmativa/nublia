@@ -245,18 +245,18 @@ export default function EditorModeloAnamnese() {
   <Botao
     onClick={adicionarBloco}
     variante="secundario"
-    icone={<PlusCircle size={16} />}
-    className="rounded-full px-5"
+    className="rounded-full px-5 flex items-center gap-2"
   >
+    <PlusCircle size={16} />
     Adicionar Bloco
   </Botao>
 
   <Botao
     onClick={salvarModelo}
     variante="primario"
-    icone={<Save size={16} />}
-    className="rounded-full px-5"
+    className="rounded-full px-5 flex items-center gap-2"
   >
+    <Save size={16} />
     Salvar Modelo
   </Botao>
 
@@ -267,9 +267,9 @@ export default function EditorModeloAnamnese() {
       toastErro('Edição de modelo cancelada.')
     }}
     variante="inativo"
-    icone={<XCircle size={16} />}
-    className="rounded-full px-5"
+    className="rounded-full px-5 flex items-center gap-2"
   >
+    <XCircle size={16} />
     Cancelar
   </Botao>
 </div>
