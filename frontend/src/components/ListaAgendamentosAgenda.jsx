@@ -64,13 +64,33 @@ export default function ListaAgendamentosAgenda({
                           size={18} />
                       </button>
 {!ocultarIniciar && (
-  <button
-    title="Iniciar atendimento"
-    onClick={() => aoIniciarAtendimento(ev)}
-    className="text-nublia-accent hover:text-nublia-primary transition"
-  >
-    <PlayCircle size={20} />
-  </button>
+<button
+  title="Iniciar atendimento"
+  onClick={async () => {
+    try {
+      const res = await fetch(`https://nublia-backend.onrender.com/users/${ev.paciente_id}`)
+      const paciente = await res.json()
+
+      if (!paciente || !paciente.id) {
+        toastErro('Paciente não encontrado.')
+        return
+      }
+
+      window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+        detail: {
+          paciente,
+          agendamentoId: ev.id
+        }
+      }))
+    } catch (err) {
+      console.error('Erro ao iniciar atendimento:', err)
+      toastErro('Erro ao iniciar atendimento.')
+    }
+  }}
+  className="text-nublia-accent hover:text-nublia-primary transition"
+>
+  <PlayCircle size={20} />
+</button>
 )}
 
                     </>
