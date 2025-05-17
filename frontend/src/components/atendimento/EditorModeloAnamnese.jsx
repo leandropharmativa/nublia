@@ -253,9 +253,10 @@ export default function EditorModeloAnamnese() {
   <Botao
     onClick={salvarModelo}
     variante="primario"
-    icone={<Save size={16} />}
+    
     className="rounded-full px-5"
   >
+    <Save size={16}>
     Salvar Modelo
   </Botao>
 
