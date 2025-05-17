@@ -12,8 +12,7 @@ import {
   FileText,
   FilePlus,
   ChevronDown,
-  ChevronRight,
-  Copy
+  ChevronRight
 } from 'lucide-react'
 import Botao from '../Botao'
 import { toastErro, toastSucesso } from '../../utils/toastUtils'
@@ -23,28 +22,31 @@ export default function EditorModeloAnamnese() {
   const [blocos, setBlocos] = useState([])
   const [expandido, setExpandido] = useState(false)
   const [modeloPadrao, setModeloPadrao] = useState(null)
+  const [modeloDuplicado, setModeloDuplicado] = useState(false)
 
   const conteudoRef = useRef(null)
   const [alturaMax, setAlturaMax] = useState('0px')
 
   const user = JSON.parse(localStorage.getItem('user'))
 
-  // animação de expansão
   useEffect(() => {
     if (expandido && conteudoRef.current) {
       setAlturaMax(`${conteudoRef.current.scrollHeight}px`)
     } else {
       setAlturaMax('0px')
     }
-  }, [expandido, blocos, nome])
+  }, [expandido, blocos, nome, modeloDuplicado])
 
-  // ao carregar, buscar modelo padrão
   useEffect(() => {
     const carregarModeloPadrao = async () => {
       try {
         const res = await axios.get(`https://nublia-backend.onrender.com/anamnese/modelos/0`)
         if (res.data.length > 0) {
-          setModeloPadrao(res.data.find(m => m.nome === 'Anamnese Padrão'))
+          const modelo = res.data.find(m => m.nome === 'Anamnese Padrão')
+          if (typeof modelo?.blocos === 'string') {
+            modelo.blocos = JSON.parse(modelo.blocos)
+          }
+          setModeloPadrao(modelo)
         }
       } catch (err) {
         toastErro('Erro ao carregar modelo padrão.')
@@ -58,6 +60,7 @@ export default function EditorModeloAnamnese() {
     setNome(`${modeloPadrao.nome} (cópia)`)
     setBlocos(JSON.parse(JSON.stringify(modeloPadrao.blocos)))
     setExpandido(true)
+    setModeloDuplicado(true)
     toastSucesso('Modelo duplicado. Agora você pode editar.')
   }
 
@@ -101,6 +104,7 @@ export default function EditorModeloAnamnese() {
       toastSucesso('Modelo salvo com sucesso!')
       setNome('')
       setBlocos([])
+      setModeloDuplicado(false)
     } catch (err) {
       toastErro('Erro ao salvar modelo.')
       console.error(err)
@@ -109,7 +113,6 @@ export default function EditorModeloAnamnese() {
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
-      {/* 🔽 Título clicável */}
       <button
         onClick={() => setExpandido(!expandido)}
         className="w-full flex items-center justify-between px-4 py-3 text-left text-nublia-primary font-semibold hover:bg-gray-50 transition-all"
@@ -126,61 +129,58 @@ export default function EditorModeloAnamnese() {
         style={{ maxHeight: alturaMax }}
       >
         <div ref={conteudoRef} className="border-t px-4 py-4 space-y-4">
-          {/* ⚙️ Exibe modelo padrão se presente */}
-          {modeloPadrao && (
+
+          {/* 🔷 Exibe modelo padrão (oculto se já duplicado) */}
+          {!modeloDuplicado && modeloPadrao && (
             <div className="border border-gray-300 bg-gray-50 rounded p-3">
               <h3 className="font-semibold mb-2 text-gray-700 flex items-center gap-2">
                 Modelo Padrão (somente leitura)
               </h3>
-{modeloPadrao.blocos.map((bloco, i) => (
-  <div key={i} className="mb-3">
-    <p className="flex items-center gap-2 text-sm font-semibold text-nublia-accent">
-      <FileText size={16} />
-      {bloco.titulo}
-    </p>
-    <ul className="ml-6 list-disc text-xs text-gray-600 mt-1">
-      {bloco.perguntas.map((p, j) => (
-        <li key={j}>{p.rotulo}</li>
-      ))}
-    </ul>
-  </div>
-))}
-
-<Botao
-  onClick={duplicarModelo}
-  variante="primario"
-  className="rounded-full px-5 mt-3 flex items-center gap-2"
->
-  <FilePlus size={16} />
-  Duplicar modelo
-</Botao>
-
-
+              {modeloPadrao.blocos.map((bloco, i) => (
+                <div key={i} className="mb-3">
+                  <p className="flex items-center gap-2 text-sm font-semibold text-nublia-accent">
+                    <FileText size={16} />
+                    {bloco.titulo}
+                  </p>
+                  <ul className="ml-6 list-disc text-xs text-gray-600 mt-1">
+                    {bloco.perguntas.map((p, j) => (
+                      <li key={j}>{p.rotulo}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              <Botao
+                onClick={duplicarModelo}
+                variante="primario"
+                className="rounded-full px-5 mt-3 flex items-center gap-2"
+              >
+                <FilePlus size={16} />
+                Duplicar modelo
+              </Botao>
             </div>
           )}
 
-          {/* ✏️ Formulário editável (após duplicar) */}
+          {/* ✏️ Formulário editável */}
           {blocos.length > 0 && (
             <>
-<div className="flex items-center gap-3 border border-nublia-primary rounded-full px-4 py-2 bg-gray-50">
-  <FileText size={18} className="text-nublia-primary" />
-  <input
-    type="text"
-    placeholder="Nome do modelo"
-    className="bg-transparent focus:outline-none flex-1 text-sm font-medium text-gray-800"
-    value={nome}
-    onChange={(e) => setNome(e.target.value)}
-  />
-</div>
-
+              <div className="flex items-center gap-3 border border-nublia-primary rounded-full px-4 py-2 bg-gray-50">
+                <FileText size={20} className="text-nublia-primary" />
+                <input
+                  type="text"
+                  placeholder="Nome do modelo"
+                  className="bg-transparent focus:outline-none flex-1 text-base font-semibold text-gray-800"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                />
+              </div>
 
               {blocos.map((bloco, blocoIndex) => (
-                <div key={blocoIndex} className="border p-3 rounded space-y-2 bg-gray-50">
+                <div key={blocoIndex} className="border p-3 rounded space-y-2 bg-gray-50 text-sm">
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
                       placeholder="Título do bloco"
-                      className="border rounded p-1 flex-grow"
+                      className="border rounded p-1 flex-grow text-sm"
                       value={bloco.titulo}
                       onChange={(e) => {
                         const novosBlocos = [...blocos]
@@ -194,7 +194,7 @@ export default function EditorModeloAnamnese() {
                   </div>
 
                   {bloco.perguntas.map((pergunta, perguntaIndex) => (
-                    <div key={perguntaIndex} className="flex gap-2 items-center">
+                    <div key={perguntaIndex} className="flex gap-2 items-center text-xs">
                       <input
                         type="text"
                         placeholder="Campo"
@@ -238,47 +238,46 @@ export default function EditorModeloAnamnese() {
 
                   <button
                     onClick={() => adicionarPergunta(blocoIndex)}
-                    className="text-sm text-blue-600 hover:underline mt-1"
+                    className="text-xs text-blue-600 hover:underline mt-1"
                   >
                     + Adicionar pergunta
                   </button>
                 </div>
               ))}
 
-<div className="flex gap-2 flex-wrap">
-  <Botao
-    onClick={adicionarBloco}
-    variante="secundario"
-    className="rounded-full px-5 flex items-center gap-2"
-  >
-    <PlusCircle size={16} />
-    Adicionar Bloco
-  </Botao>
+              <div className="flex gap-2 flex-wrap">
+                <Botao
+                  onClick={adicionarBloco}
+                  variante="secundario"
+                  className="rounded-full px-5 flex items-center gap-2"
+                >
+                  <PlusCircle size={16} />
+                  Adicionar Bloco
+                </Botao>
 
-  <Botao
-    onClick={salvarModelo}
-    variante="primario"
-    className="rounded-full px-5 flex items-center gap-2"
-  >
-    <Save size={16} />
-    Salvar Modelo
-  </Botao>
+                <Botao
+                  onClick={salvarModelo}
+                  variante="primario"
+                  className="rounded-full px-5 flex items-center gap-2"
+                >
+                  <Save size={16} />
+                  Salvar Modelo
+                </Botao>
 
-  <Botao
-    onClick={() => {
-      setNome('')
-      setBlocos([])
-      toastErro('Edição de modelo cancelada.')
-    }}
-    variante="claro"
-    className="rounded-full px-5 flex items-center gap-2"
-  >
-    <XCircle size={16} />
-    Cancelar
-  </Botao>
-</div>
-
-
+                <Botao
+                  onClick={() => {
+                    setNome('')
+                    setBlocos([])
+                    setModeloDuplicado(false)
+                    toastErro('Edição de modelo cancelada.')
+                  }}
+                  variante="claro"
+                  className="rounded-full px-5 flex items-center gap-2"
+                >
+                  <XCircle size={16} />
+                  Cancelar
+                </Botao>
+              </div>
             </>
           )}
         </div>
