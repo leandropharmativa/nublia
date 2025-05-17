@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import Botao from '../Botao'
 import { toastErro, toastSucesso } from '../../utils/toastUtils'
-import './EditorModeloAnamnese.css'
+import './EditorModeloAnamnese.css' // 🔧 deve conter animações .animar-exclusao
 
 export default function EditorModeloAnamnese() {
   const [nome, setNome] = useState('')
@@ -76,6 +76,11 @@ export default function EditorModeloAnamnese() {
     toastSucesso(`Editando modelo: ${modelo.nome}`)
   }
 
+  const excluirModelo = (id) => {
+    const modelo = modelosUsuario.find(m => m.id === id)
+    if (modelo) setModeloParaExcluir(modelo)
+  }
+
   const adicionarBloco = () => {
     setBlocos([...blocos, { titulo: '', perguntas: [] }])
   }
@@ -113,11 +118,7 @@ export default function EditorModeloAnamnese() {
     }
 
     try {
-      const payload = {
-        nome,
-        prescritor_id: user.id,
-        blocos,
-      }
+      const payload = { nome, prescritor_id: user.id, blocos }
 
       if (modeloSelecionadoId) {
         await axios.put(`https://nublia-backend.onrender.com/anamnese/modelos/${modeloSelecionadoId}`, payload)
@@ -157,6 +158,7 @@ export default function EditorModeloAnamnese() {
           style={{ maxHeight: alturaMax }}
         >
           <div ref={conteudoRef} className="border-t px-4 py-4 space-y-4">
+
             {/* 🔽 Modelo padrão inicialmente fechado */}
             {modeloPadrao && !modeloDuplicado && (
               <div className="border border-gray-300 bg-gray-50 rounded">
@@ -195,184 +197,194 @@ export default function EditorModeloAnamnese() {
               </div>
             )}
 
-          {/* 📃 Modelos do usuário */}
-          {modelosUsuario.length > 0 && (
-            <div className="space-y-2">
-              {modelosUsuario.map((modelo) => (
-                <div key={modelo.id} className="border rounded-md bg-gray-50">
-                  <button
-                    onClick={() =>
-                      setModeloExpandido(modeloExpandido === modelo.id ? null : modelo.id)
-                    }
-                    className="w-full text-left px-4 py-2 font-semibold text-nublia-accent flex justify-between items-center hover:bg-gray-100"
-                  >
-                    {modelo.nome}
-                    {modeloExpandido === modelo.id ? (
-                      <ChevronDown size={16} />
-                    ) : (
-                      <ChevronRight size={16} />
-                    )}
-                  </button>
-                  {modeloExpandido === modelo.id && (
-                    <div className="px-4 pb-3">
-                      {modelo.blocos.map((bloco, i) => (
-                        <div key={i} className="mb-2">
-                          <p className="flex items-center gap-2 text-xs font-semibold text-gray-700">
-                            <FileText size={14} />
-                            {bloco.titulo}
-                          </p>
-                          <ul className="ml-6 list-disc text-xs text-gray-500 mt-1">
-                            {bloco.perguntas.map((p, j) => (
-                              <li key={j}>{p.rotulo}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                      <div className="text-right mt-2 flex justify-end gap-2">
-                        <Botao
-                          onClick={() => editarModelo(modelo)}
-                          className="rounded-full px-4 py-1 text-xs flex items-center gap-1"
-                        >
-                          <Pencil size={14} />
-                          Editar
-                        </Botao>
-                        <Botao
-                          onClick={() => excluirModelo(modelo.id)}
-                          variante="danger"
-                          className="rounded-full px-4 py-1 text-xs flex items-center gap-1"
-                        >
-                          <Trash size={14} />
-                          Excluir
-                        </Botao>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* ✏️ Formulário de edição */}
-          {blocos.length > 0 && (
-            <>
-              <div className="flex items-center gap-3 border border-nublia-primary rounded-full px-4 py-2 bg-gray-50">
-                <FileText size={20} className="text-nublia-primary" />
-                <input
-                  type="text"
-                  placeholder="Nome do modelo"
-                  className="bg-transparent focus:outline-none flex-1 text-base font-semibold text-gray-800"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                />
-              </div>
-
-              {blocos.map((bloco, blocoIndex) => (
-                <div key={blocoIndex} className="border p-3 rounded space-y-2 bg-gray-50 text-sm">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      placeholder="Título do bloco"
-                      className="border rounded p-1 flex-grow text-sm"
-                      value={bloco.titulo}
-                      onChange={(e) => {
-                        const novosBlocos = [...blocos]
-                        novosBlocos[blocoIndex].titulo = e.target.value
-                        setBlocos(novosBlocos)
-                      }}
-                    />
-                    <button onClick={() => removerBloco(blocoIndex)}>
-                      <Trash size={16} className="text-red-500" />
+            {/* 📃 Modelos do usuário */}
+            {modelosUsuario.length > 0 && (
+              <div className="space-y-2">
+                {modelosUsuario.map((modelo) => (
+                  <div key={modelo.id} className="border rounded-md bg-gray-50">
+                    <button
+                      onClick={() =>
+                        setModeloExpandido(modeloExpandido === modelo.id ? null : modelo.id)
+                      }
+                      className="w-full text-left px-4 py-2 font-semibold text-nublia-accent flex justify-between items-center hover:bg-gray-100"
+                    >
+                      {modelo.nome}
+                      {modeloExpandido === modelo.id ? (
+                        <ChevronDown size={16} />
+                      ) : (
+                        <ChevronRight size={16} />
+                      )}
                     </button>
+                    {modeloExpandido === modelo.id && (
+                      <div className="px-4 pb-3">
+                        {modelo.blocos.map((bloco, i) => (
+                          <div key={i} className="mb-2">
+                            <p className="flex items-center gap-2 text-xs font-semibold text-gray-700">
+                              <FileText size={14} />
+                              {bloco.titulo}
+                            </p>
+                            <ul className="ml-6 list-disc text-xs text-gray-500 mt-1">
+                              {bloco.perguntas.map((p, j) => (
+                                <li key={j}>{p.rotulo}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                        <div className="text-right mt-2 flex justify-end gap-2">
+                          <Botao
+                            onClick={() => editarModelo(modelo)}
+                            className="rounded-full px-4 py-1 text-xs flex items-center gap-1"
+                          >
+                            <Pencil size={14} />
+                            Editar
+                          </Botao>
+                          <Botao
+                            onClick={() => excluirModelo(modelo.id)}
+                            variante="danger"
+                            className="rounded-full px-4 py-1 text-xs flex items-center gap-1"
+                          >
+                            <Trash size={14} />
+                            Excluir
+                          </Botao>
+                        </div>
+                      </div>
+                    )}
                   </div>
+                ))}
+              </div>
+            )}
 
-                  {bloco.perguntas.map((pergunta, perguntaIndex) => (
-                    <div key={perguntaIndex} className="flex gap-2 items-center text-xs">
+            {/* ✏️ Formulário de edição */}
+            {blocos.length > 0 && (
+              <>
+                <div className="flex items-center gap-3 border border-nublia-primary rounded-full px-4 py-2 bg-gray-50">
+                  <FileText size={20} className="text-nublia-primary" />
+                  <input
+                    type="text"
+                    placeholder="Nome do modelo"
+                    className="bg-transparent focus:outline-none flex-1 text-base font-semibold text-gray-800"
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                  />
+                </div>
+
+                {blocos.map((bloco, blocoIndex) => (
+                  <div
+                    key={blocoIndex}
+                    className={`border p-3 rounded space-y-2 bg-gray-50 text-sm ${
+                      animarExclusao === `bloco-${blocoIndex}` ? 'animar-exclusao' : ''
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
                       <input
                         type="text"
-                        placeholder="Campo"
-                        className="border rounded p-1 w-1/3"
-                        value={pergunta.campo}
+                        placeholder="Título do bloco"
+                        className="border rounded p-1 flex-grow text-sm"
+                        value={bloco.titulo}
                         onChange={(e) => {
                           const novosBlocos = [...blocos]
-                          novosBlocos[blocoIndex].perguntas[perguntaIndex].campo = e.target.value
+                          novosBlocos[blocoIndex].titulo = e.target.value
                           setBlocos(novosBlocos)
                         }}
                       />
-                      <input
-                        type="text"
-                        placeholder="Rótulo"
-                        className="border rounded p-1 w-1/3"
-                        value={pergunta.rotulo}
-                        onChange={(e) => {
-                          const novosBlocos = [...blocos]
-                          novosBlocos[blocoIndex].perguntas[perguntaIndex].rotulo = e.target.value
-                          setBlocos(novosBlocos)
-                        }}
-                      />
-                      <select
-                        className="border rounded p-1 w-1/4"
-                        value={pergunta.tipo}
-                        onChange={(e) => {
-                          const novosBlocos = [...blocos]
-                          novosBlocos[blocoIndex].perguntas[perguntaIndex].tipo = e.target.value
-                          setBlocos(novosBlocos)
-                        }}
-                      >
-                        <option value="texto">Texto</option>
-                        <option value="numero">Número</option>
-                        <option value="checkbox">Checkbox</option>
-                      </select>
-                      <button onClick={() => removerPergunta(blocoIndex, perguntaIndex)}>
+                      <button onClick={() => removerBloco(blocoIndex)}>
                         <Trash size={16} className="text-red-500" />
                       </button>
                     </div>
-                  ))}
 
-                  <button
-                    onClick={() => adicionarPergunta(blocoIndex)}
-                    className="text-xs text-blue-600 hover:underline mt-1"
+                    {bloco.perguntas.map((pergunta, perguntaIndex) => (
+                      <div
+                        key={perguntaIndex}
+                        className={`flex gap-2 items-center text-xs ${
+                          animarExclusao === `bloco-${blocoIndex}-pergunta-${perguntaIndex}` ? 'animar-exclusao' : ''
+                        }`}
+                      >
+                        <input
+                          type="text"
+                          placeholder="Campo"
+                          className="border rounded p-1 w-1/3"
+                          value={pergunta.campo}
+                          onChange={(e) => {
+                            const novosBlocos = [...blocos]
+                            novosBlocos[blocoIndex].perguntas[perguntaIndex].campo = e.target.value
+                            setBlocos(novosBlocos)
+                          }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Rótulo"
+                          className="border rounded p-1 w-1/3"
+                          value={pergunta.rotulo}
+                          onChange={(e) => {
+                            const novosBlocos = [...blocos]
+                            novosBlocos[blocoIndex].perguntas[perguntaIndex].rotulo = e.target.value
+                            setBlocos(novosBlocos)
+                          }}
+                        />
+                        <select
+                          className="border rounded p-1 w-1/4"
+                          value={pergunta.tipo}
+                          onChange={(e) => {
+                            const novosBlocos = [...blocos]
+                            novosBlocos[blocoIndex].perguntas[perguntaIndex].tipo = e.target.value
+                            setBlocos(novosBlocos)
+                          }}
+                        >
+                          <option value="texto">Texto</option>
+                          <option value="numero">Número</option>
+                          <option value="checkbox">Checkbox</option>
+                        </select>
+                        <button onClick={() => removerPergunta(blocoIndex, perguntaIndex)}>
+                          <Trash size={16} className="text-red-500" />
+                        </button>
+                      </div>
+                    ))}
+
+                    <button
+                      onClick={() => adicionarPergunta(blocoIndex)}
+                      className="text-xs text-blue-600 hover:underline mt-1"
+                    >
+                      + Adicionar pergunta
+                    </button>
+                  </div>
+                ))}
+
+                <div className="flex gap-2 flex-wrap">
+                  <Botao
+                    onClick={adicionarBloco}
+                    variante="secundario"
+                    className="rounded-full px-5 flex items-center gap-2"
                   >
-                    + Adicionar pergunta
-                  </button>
+                    <PlusCircle size={16} />
+                    Adicionar Bloco
+                  </Botao>
+
+                  <Botao
+                    onClick={salvarModelo}
+                    variante="primario"
+                    className="rounded-full px-5 flex items-center gap-2"
+                  >
+                    <Save size={16} />
+                    Salvar Modelo
+                  </Botao>
+
+                  <Botao
+                    onClick={() => {
+                      setNome('')
+                      setBlocos([])
+                      setModeloDuplicado(false)
+                      setModeloSelecionadoId(null)
+                      toastErro('Edição de modelo cancelada.')
+                    }}
+                    variante="claro"
+                    className="rounded-full px-5 flex items-center gap-2"
+                  >
+                    <XCircle size={16} />
+                    Cancelar
+                  </Botao>
                 </div>
-              ))}
-
-              <div className="flex gap-2 flex-wrap">
-                <Botao
-                  onClick={adicionarBloco}
-                  variante="secundario"
-                  className="rounded-full px-5 flex items-center gap-2"
-                >
-                  <PlusCircle size={16} />
-                  Adicionar Bloco
-                </Botao>
-
-                <Botao
-                  onClick={salvarModelo}
-                  variante="primario"
-                  className="rounded-full px-5 flex items-center gap-2"
-                >
-                  <Save size={16} />
-                  Salvar Modelo
-                </Botao>
-
-                <Botao
-                  onClick={() => {
-                    setNome('')
-                    setBlocos([])
-                    setModeloDuplicado(false)
-                    setModeloSelecionadoId(null)
-                    toastErro('Edição de modelo cancelada.')
-                  }}
-                  variante="claro"
-                  className="rounded-full px-5 flex items-center gap-2"
-                >
-                  <XCircle size={16} />
-                  Cancelar
-                </Botao>
-              </div>
-            </>
-          )}
+              </>
+            )}
           </div>
         </div>
       </div>
