@@ -58,22 +58,17 @@ const handler = (e) => {
     return () => window.removeEventListener('IniciarFichaAtendimento', handler)
   }, [])
 
-  useEffect(() => {
+useEffect(() => {
   if (pacienteId && !pacienteSelecionado) {
     axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-      .then((res) => setPacienteSelecionado(res.data))
+      .then((res) => {
+        console.log('👤 Paciente carregado da API:', res.data)
+        setPacienteSelecionado(res.data)
+      })
       .catch(() => toastErro('Erro ao buscar dados do paciente.'))
   }
-}, [pacienteId, pacienteSelecionado])
+}, [pacienteId])
 
-  // 🔄 Carrega paciente do banco se necessário
-  useEffect(() => {
-    if (!pacienteSelecionado && pacienteId) {
-      axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-        .then((res) => setPacienteSelecionado(res.data))
-        .catch(() => toastErro('Erro ao carregar dados do paciente'))
-    }
-  }, [pacienteSelecionado, pacienteId])
 
   const [abaAtiva, setAbaAtiva] = useState('paciente')
   const [formulario, setFormulario] = useState({
