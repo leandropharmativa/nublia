@@ -1,5 +1,4 @@
-
-// 📄 components/CalendarioAgenda.jsx
+// 📄 frontend/src/components/CalendarioAgenda.jsx
 import { useState, useEffect, useRef } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import {
