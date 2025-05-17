@@ -5,6 +5,7 @@ from sqlmodel import Session, select
 from app.database import engine
 from pydantic import BaseModel
 from typing import List, Dict, Optional
+from app.models import ModeloAnamnese
 from uuid import uuid4
 
 router = APIRouter()
@@ -49,7 +50,10 @@ def criar_modelo(modelo: ModeloAnamneseCreate):
 # ✅ Listar modelos de um prescritor
 @router.get("/anamnese/modelos/{prescritor_id}")
 def listar_modelos(prescritor_id: int):
-    return [m for m in modelos_db if m.prescritor_id == prescritor_id]
+    with Session(engine) as session:
+        modelos = session.exec(select(ModeloAnamnese).where(ModeloAnamnese.prescritor_id == prescritor_id)).all()
+        return modelos
+
 
 # ✅ Salvar resposta
 @router.post("/anamnese/respostas")
