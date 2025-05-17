@@ -402,7 +402,7 @@ const carregarAgenda = async (id) => {
               </Tab.Panel>
               <Tab.Panel><div className="flex flex-col justify-center items-center py-16 text-nublia-textcont italic">Área de dietas (em breve)</div></Tab.Panel>
               <Tab.Panel>
-                <div className="max-w-4xl mx-auto mt-6 space-y-6">
+                <div className="py-8 px-4 sm:px-0 space-y-6">
                   <h2 className="text-lg font-semibold text-nublia-accent mb-4">Configurações da conta</h2>
                   <CadastroSecretaria />
                   <EditorModeloAnamnese />
