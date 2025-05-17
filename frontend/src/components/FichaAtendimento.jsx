@@ -16,14 +16,17 @@ import ModalConfirmacao from './ModalConfirmacao'
 
 export default function FichaAtendimento({ paciente, agendamentoId = null, onFinalizar, onAtendimentoSalvo }) {
   // 🧠 Armazena o paciente selecionado (permite atualização dinâmica)
-  const [pacienteSelecionado, setPacienteSelecionado] = useState(paciente)
+  const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
+  const [pacienteId, setPacienteId] = useState(paciente?.id || null)
   const [pacienteId, setPacienteId] = useState(paciente?.id || null)
 
   // Atualiza paciente selecionado quando `paciente` muda via props
-  useEffect(() => {
+useEffect(() => {
+  if (paciente?.id) {
     setPacienteSelecionado(paciente)
-    setPacienteId(paciente?.id || null)
-  }, [paciente])
+    setPacienteId(paciente.id)
+  }
+}, [paciente])
 
   // 🧠 Memoriza o agendamentoId inicial
   const agendamentoIdRef = useRef(null)
@@ -36,24 +39,33 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
 
   // 📩 Escuta eventos de atendimento iniciado via agenda
   useEffect(() => {
-    const handler = (e) => {
-      const dados = e.detail
-      console.log('📩 Evento recebido: IniciarFichaAtendimento', dados)
+const handler = (e) => {
+  const dados = e.detail
+  console.log('📩 Evento recebido: IniciarFichaAtendimento ', dados)
 
-      if (dados?.paciente) {
-        setPacienteSelecionado(dados.paciente)
-        setPacienteId(dados.paciente.id)
-      }
+  if (dados?.paciente?.id) {
+    setPacienteId(dados.paciente.id)
+  } else if (dados?.paciente_id) {
+    setPacienteId(dados.paciente_id)
+  }
 
-      if (dados?.agendamentoId) {
-        agendamentoIdRef.current = dados.agendamentoId
-        console.log('✅ agendamentoId armazenado:', dados.agendamentoId)
-      }
-    }
+  if (dados?.agendamentoId) {
+    agendamentoIdRef.current = dados.agendamentoId
+    console.log('✅ agendamentoId armazenado:', dados.agendamentoId)
+  }
+}
 
     window.addEventListener('IniciarFichaAtendimento', handler)
     return () => window.removeEventListener('IniciarFichaAtendimento', handler)
   }, [])
+
+  useEffect(() => {
+  if (pacienteId && !pacienteSelecionado) {
+    axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+      .then((res) => setPacienteSelecionado(res.data))
+      .catch(() => toastErro('Erro ao buscar dados do paciente.'))
+  }
+}, [pacienteId, pacienteSelecionado])
 
   // 🔄 Carrega paciente do banco se necessário
   useEffect(() => {
