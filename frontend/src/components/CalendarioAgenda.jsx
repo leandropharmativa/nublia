@@ -659,15 +659,17 @@ function CustomToolbar({
 
   {/* Date picker só de mês/ano (para monthView) */}
   {mostrarSeletorMes && view === 'month' && mesRef.current && (
-    <MonthYearPickerNublia
-      dataAtual={date}
-      anchorRef={mesRef}
-      aoSelecionarMes={(novaData) => {
-        setMostrarSeletorMes(false)
-        onNavigate(novaData)
-      }}
-      onClose={() => setMostrarSeletorMes(false)}
-    />
+<MonthYearPickerNublia
+  dataAtual={date}
+  anchorRef={mesRef}
+  aoSelecionarMes={(novaData) => {
+    setMostrarSeletorMes(false)
+    onNavigate(novaData)          // ✅ atualiza o BigCalendar
+    setDataAtual(novaData)        // ✅ atualiza o estado local (dataAtual)
+    onDataChange?.(novaData)      // ✅ garante sincronização com componentes pai, se aplicável
+  }}
+  onClose={() => setMostrarSeletorMes(false)}
+/>
   )}
 </div>
 
