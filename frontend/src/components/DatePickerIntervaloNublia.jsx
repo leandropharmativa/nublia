@@ -37,8 +37,8 @@ export default function DatePickerIntervaloNublia({
     if (anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect()
       setPosicao({
-        top: rect.bottom + window.scrollY - 4,
-        left: rect.left + window.scrollX,
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX - 160,
       })
     }
   }, [anchorRef?.current])
