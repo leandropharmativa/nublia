@@ -528,6 +528,7 @@ components={{
       )}
 
       <ModalFinalizado
+        key={modalFinalizado?.id + '-' + modalFinalizado?.hora_atendimento}
         evento={modalFinalizado}
         onClose={() => setModalFinalizado(null)}
         onAbrirPerfil={() => onAbrirPerfil(modalFinalizado?.paciente_id)}
