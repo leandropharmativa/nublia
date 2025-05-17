@@ -72,3 +72,14 @@ def buscar_resposta(atendimento_id: int):
         if not resultado:
             raise HTTPException(status_code=404, detail="Resposta não encontrada")
         return resultado
+
+@router.delete("/anamnese/modelos/{modelo_id}")
+def excluir_modelo(modelo_id: str):
+    with Session(engine) as session:
+        modelo = session.get(ModeloAnamnese, modelo_id)
+        if not modelo:
+            raise HTTPException(status_code=404, detail="Modelo não encontrado")
+        session.delete(modelo)
+        session.commit()
+        return {"ok": True}
+
