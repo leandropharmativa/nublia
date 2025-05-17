@@ -79,10 +79,10 @@ export default function ListaAgendamentosAgenda({
     }
 
 window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-  detail: {
-    paciente_id: ev.paciente_id,
-    agendamentoId: ev.id
-  }
+detail: {
+  pacienteId: ev.paciente_id,
+  agendamentoId: ev.id
+}
 }))
 
   }}
