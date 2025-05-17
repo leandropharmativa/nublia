@@ -363,7 +363,8 @@ const eventosParaAgenda = baseEventos
   eventos={eventos}
   rangeVisivel={rangeVisivel}
   setRangeVisivel={setRangeVisivel}
-  onRangeChange={onRangeChange} // ✅ necessário para funcionar o botão "Aplicar intervalo"
+  onRangeChange={onRangeChange}
+  onDataChange={onDataChange}
 />
 
         <div className="flex justify-end mt-6 mb-4">
