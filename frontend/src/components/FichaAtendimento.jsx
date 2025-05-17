@@ -15,6 +15,13 @@ import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
 
 export default function FichaAtendimento({ paciente, agendamentoId = null, onFinalizar, onAtendimentoSalvo }) {
+
+  const [pacienteSelecionado, setPaciente] = useState(paciente)
+
+useEffect(() => {
+  setPaciente(paciente)
+}, [paciente])
+
   // 🧠 Memoriza o agendamentoId inicial
   const agendamentoIdRef = useRef(null)
   useEffect(() => {
