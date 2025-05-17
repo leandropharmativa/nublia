@@ -60,11 +60,7 @@ export default function DatePickerIntervaloNublia({
     <div
       ref={containerRef}
       className="absolute z-[9999] bg-white p-4 rounded-xl border border-gray-300 shadow-xl"
-      style={{
-        position: 'absolute',
-        top: `${posicao.top}px`,
-        left: `${posicao.left}px`,
-      }}
+      style={{ top: posicao.top, left: posicao.left }}
     >
       <DayPicker
         mode="range"
