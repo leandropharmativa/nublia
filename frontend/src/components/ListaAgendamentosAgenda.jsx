@@ -80,7 +80,7 @@ export default function ListaAgendamentosAgenda({
 
 window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
   detail: {
-    pacienteId: ev.paciente_id,
+    paciente_id: ev.paciente_id,
     agendamentoId: ev.id
   }
 }))
