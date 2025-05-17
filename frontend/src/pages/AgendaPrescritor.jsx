@@ -218,6 +218,7 @@ useEffect(() => {
     <div className="w-full flex flex-col gap-4 relative">
       <CalendarioAgenda
         eventos={eventos}
+        pacientes={pacientes}
         aoSelecionarSlot={handleNovoSlot}
         aoSelecionarEvento={handleEventoClick}
         onDataChange={setDataAtual}
