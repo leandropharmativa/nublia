@@ -478,26 +478,21 @@ components={{
   eventos={eventosParaAgenda}
   aoVerPerfil={onAbrirPerfil}
   aoVerAgendamento={aoSelecionarEventoOuFinalizado}
-  aoIniciarAtendimento={(pacienteId) => {
-    if (!pacienteId) {
-      toastErro('Paciente não encontrado para este agendamento.')
-      return
+aoIniciarAtendimento={(pacienteId) => {
+  const paciente = pacientes.find(p => p.id === pacienteId)
+
+  if (!paciente || !paciente.data_nascimento) {
+    toastErro('Paciente não encontrado ou sem data de nascimento.')
+    return
+  }
+
+  window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+    detail: {
+      paciente,
+      agendamentoId: pacienteId // ou ev.id, se preferir passar diretamente do evento
     }
-
-    fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-      .then(res => res.json())
-      .then(paciente => {
-        if (!paciente || !paciente.data_nascimento) {
-          toastErro('Paciente sem data de nascimento.')
-          return
-        }
-
-        window.dispatchEvent(new CustomEvent('AbrirFichaPaciente', {
-          detail: paciente
-        }))
-      })
-      .catch(() => toastErro('Erro ao buscar paciente.'))
-  }}
+  }))
+}}
   ocultarIniciar={ehSecretaria}
 />
 )}
