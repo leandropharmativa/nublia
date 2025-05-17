@@ -266,7 +266,7 @@ export default function EditorModeloAnamnese() {
       setBlocos([])
       toastErro('Edição de modelo cancelada.')
     }}
-    variante="inativo"
+    variante="cancelar"
     className="rounded-full px-5 flex items-center gap-2"
   >
     <XCircle size={16} />
