@@ -208,11 +208,12 @@ export default function CalendarioAgenda({
   }
 
 const aoSelecionarEventoOuFinalizado = (ev) => {
-  if (ev.status === 'finalizado') {
-    setModalFinalizado({ ...ev })
-  } else {
-    aoSelecionarEvento(ev)
-  }
+if (ev.status === 'finalizado') {
+  setModalFinalizado(null)
+  setTimeout(() => setModalFinalizado({ ...ev }), 0)
+} else {
+  aoSelecionarEvento(ev)
+}
 }
 
   const estiloDoDia = (date) => {
