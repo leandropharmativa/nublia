@@ -168,6 +168,15 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
     return idade
   }
 
+  // Antes do return
+useEffect(() => {
+  if (!pacienteSelecionado && pacienteId) {
+    axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+      .then((res) => setPacienteSelecionado(res.data))
+      .catch(() => toastErro('Erro ao carregar dados do paciente'))
+  }
+}, [pacienteSelecionado, pacienteId])
+
   return (
     <div className="bg-white p-6 rounded-2xl w-full">
       <div className="flex items-center justify-between mb-4">
