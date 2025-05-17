@@ -6,6 +6,8 @@ import {
   Plus,
   Trash,
   Save,
+  XCircle,
+  PlusCircle,
   FolderPlus,
   FileText,
   ChevronDown,
