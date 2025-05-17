@@ -191,19 +191,26 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadast
               className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
             >
               <option value="">Selecione um horário disponível</option>
-              {horarios
-                .filter(h => h.data && h.hora)
-                .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
-                .map((h) => {
-                  const [ano, mes, dia] = h.data.split('-').map(Number)
-                  const [hora, minuto] = h.hora.split(':').map(Number)
-                  const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
-                  return (
-                    <option key={h.id} value={h.id}>
-                      {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
-                    </option>
-                  )
-                })}
+{horarios
+  .filter(h => {
+    if (!h.data || !h.hora) return false
+    const [ano, mes, dia] = h.data.split('-').map(Number)
+    const [hora, minuto] = h.hora.split(':').map(Number)
+    const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
+    return dataHora > new Date() // ⏳ apenas horários futuros
+  })
+  .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
+  .map((h) => {
+    const [ano, mes, dia] = h.data.split('-').map(Number)
+    const [hora, minuto] = h.hora.split(':').map(Number)
+    const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
+    return (
+      <option key={h.id} value={h.id}>
+        {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+      </option>
+    )
+  })}
+
             </select>
 
             <div className="flex justify-between gap-4 pt-6">
