@@ -51,24 +51,28 @@ export default function ModalFinalizado({ evento, onClose, onAbrirPerfil, onVerA
           </h2>
         </div>
 
-        {/* Nome com ícone de perfil à esquerda */}
-        <div className="flex items-center gap-2 text-gray-800 mb-4">
-          <button onClick={onAbrirPerfil} title="Ver perfil">
-            <UserRound
-              size={18}
-              className="text-nublia-accent hover:text-nublia-orange transition"
-            />
-          </button>
-          <strong className="text-base">{nome}</strong>
-          {!ehSecretaria && (
-            <button onClick={onVerAtendimento} title="Ver atendimento">
-              <FileText
-                size={18}
-                className="text-nublia-accent hover:text-nublia-orange transition"
-              />
-            </button>
-          )}
-        </div>
+<div className="flex items-center gap-2 text-gray-800 mb-4">
+  {/* 👤 Ver perfil do paciente */}
+  <button onClick={onAbrirPerfil} title="Ver perfil">
+    <UserRound
+      size={18}
+      className="text-nublia-accent hover:text-nublia-orange transition"
+    />
+  </button>
+
+  {/* 📄 Ver ficha (oculto para secretária) */}
+  {!ehSecretaria && (
+    <button onClick={onVerAtendimento} title="Ver atendimento">
+      <FileText
+        size={18}
+        className="text-nublia-accent hover:text-nublia-orange transition"
+      />
+    </button>
+  )}
+
+  {/* 🧾 Nome do paciente */}
+  <strong className="text-base">{nome}</strong>
+</div>
 
         {/* Duas colunas: Agendado / Atendido */}
         <div className="grid grid-cols-2 gap-4 mt-2">
