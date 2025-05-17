@@ -92,18 +92,22 @@ def atualizar_modelo(modelo_id: str, modelo: ModeloAnamneseCreate):
             existente = session.get(ModeloAnamnese, modelo_id)
             if not existente:
                 raise HTTPException(status_code=404, detail="Modelo não encontrado")
-            
+
             existente.nome = modelo.nome
             existente.prescritor_id = modelo.prescritor_id
-            existente.blocos = modelo.blocos
+
+            # ✅ Converte BlocoModel e PerguntaModel para dict
+            blocos_dict = [bloco.dict() for bloco in modelo.blocos]
+            existente.blocos = blocos_dict
 
             session.add(existente)
             session.commit()
             session.refresh(existente)
             return existente
     except Exception as e:
-        print(f"❌ Erro ao atualizar modelo: {e}")
+        print(f"❌ Erro ao atualizar modelo:", e)
         raise HTTPException(status_code=500, detail="Erro interno ao atualizar modelo")
+
 
 
 
