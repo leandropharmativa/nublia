@@ -87,19 +87,23 @@ def excluir_modelo(modelo_id: str):
 # ✅ Atualizar modelo existente
 @router.put("/anamnese/modelos/{modelo_id}")
 def atualizar_modelo(modelo_id: str, modelo: ModeloAnamneseCreate):
-    with Session(engine) as session:
-        existente = session.get(ModeloAnamnese, modelo_id)
-        if not existente:
-            raise HTTPException(status_code=404, detail="Modelo não encontrado")
-        
-        existente.nome = modelo.nome
-        existente.prescritor_id = modelo.prescritor_id
-        existente.blocos = json.loads(json.dumps(modelo.blocos))  # ← Agora garantido como dict
+    try:
+        with Session(engine) as session:
+            existente = session.get(ModeloAnamnese, modelo_id)
+            if not existente:
+                raise HTTPException(status_code=404, detail="Modelo não encontrado")
+            
+            existente.nome = modelo.nome
+            existente.prescritor_id = modelo.prescritor_id
+            existente.blocos = modelo.blocos
 
-        session.add(existente)
-        session.commit()
-        session.refresh(existente)
-        return existente
+            session.add(existente)
+            session.commit()
+            session.refresh(existente)
+            return existente
+    except Exception as e:
+        print(f"❌ Erro ao atualizar modelo: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno ao atualizar modelo")
 
 
 
