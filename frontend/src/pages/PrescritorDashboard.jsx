@@ -101,15 +101,33 @@ const agendamentosHoje = useMemo(() => {
   return () => window.removeEventListener('AbrirFichaPaciente', handleAbrirFicha)
 }, [])
 
-  useEffect(() => {
-  const listener = (e) => {
-    setPacienteSelecionado(e.detail)
+useEffect(() => {
+  const listener = async (e) => {
+    const agendamentoId = e.detail.agendamentoId ?? null
+    const pacienteId = e.detail.pacienteId ?? null
+
+    console.log('📩 Evento recebido: IniciarFichaAtendimento', { agendamentoId, pacienteId })
+
+    if (pacienteId) {
+      try {
+        const res = await fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+        const paciente = await res.json()
+        setPacienteSelecionado(paciente)
+      } catch (err) {
+        console.error('❌ Erro ao buscar paciente:', err)
+        toastErro('Erro ao carregar paciente.')
+        return
+      }
+    }
+
+    setAgendamentoSelecionado(agendamentoId ? { id: agendamentoId } : null)
     setTimeout(() => setAbaSelecionada(0), 0)
   }
 
   window.addEventListener('IniciarFichaAtendimento', listener)
   return () => window.removeEventListener('IniciarFichaAtendimento', listener)
 }, [])
+
 
 useEffect(() => {
   const carregarConteudoPorAba = async () => {
