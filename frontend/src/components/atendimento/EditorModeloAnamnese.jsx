@@ -107,27 +107,38 @@ useEffect(() => {
     }
   }
 
-  const salvarModelo = async () => {
-    if (!nome.trim() || blocos.length === 0) {
-      toastErro('Preencha o nome e adicione pelo menos um bloco.')
-      return
+const salvarModelo = async () => {
+  if (!nome.trim() || blocos.length === 0) {
+    toastErro('Preencha o nome e adicione pelo menos um bloco.')
+    return
+  }
+
+  try {
+    const payload = {
+      nome,
+      prescritor_id: user.id,
+      blocos,
     }
 
-    try {
-      await axios.post('https://nublia-backend.onrender.com/anamnese/modelos', {
-        nome,
-        prescritor_id: user.id,
-        blocos,
-      })
+    if (modeloSelecionadoId) {
+      // ✅ Editando modelo existente
+      await axios.put(`https://nublia-backend.onrender.com/anamnese/modelos/${modeloSelecionadoId}`, payload)
+      toastSucesso('Modelo atualizado com sucesso!')
+    } else {
+      // ✅ Criando novo modelo
+      await axios.post('https://nublia-backend.onrender.com/anamnese/modelos', payload)
       toastSucesso('Modelo salvo com sucesso!')
-      setNome('')
-      setBlocos([])
-      setModeloDuplicado(false)
-      setModeloSelecionadoId(null)
-    } catch (err) {
-      toastErro('Erro ao salvar modelo.')
     }
+
+    setNome('')
+    setBlocos([])
+    setModeloDuplicado(false)
+    setModeloSelecionadoId(null)
+  } catch (err) {
+    toastErro('Erro ao salvar modelo.')
+    console.error(err)
   }
+}
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
