@@ -476,27 +476,27 @@ components={{
 <ListaAgendamentosAgenda
   key={rangeVisivel?.start?.toISOString() + rangeVisivel?.end?.toISOString()}
   eventos={eventosParaAgenda}
+  pacientes={pacientes} // ✅ garantir que está sendo passado
   aoVerPerfil={onAbrirPerfil}
   aoVerAgendamento={aoSelecionarEventoOuFinalizado}
-aoIniciarAtendimento={(pacienteId) => {
-  const paciente = pacientes.find(p => p.id === pacienteId)
+  aoIniciarAtendimento={(ev) => {
+    const paciente = pacientes.find(p => p.id === ev.paciente_id)
 
-  if (!paciente || !paciente.data_nascimento) {
-    toastErro('Paciente não encontrado ou sem data de nascimento.')
-    return
-  }
-
-  window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-    detail: {
-      paciente,
-      agendamentoId: pacienteId // ou ev.id, se preferir passar diretamente do evento
+    if (!paciente || !paciente.data_nascimento) {
+      toastErro('Paciente não encontrado ou sem data de nascimento.')
+      return
     }
-  }))
-}}
+
+    window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+      detail: {
+        paciente,
+        agendamentoId: ev.id
+      }
+    }))
+  }}
   ocultarIniciar={ehSecretaria}
 />
 )}
-
         </div>
       )}
 
