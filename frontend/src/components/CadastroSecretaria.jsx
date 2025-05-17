@@ -102,8 +102,13 @@ export default function CadastroSecretaria() {
         {expandido ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
       </button>
 
-      {expandido && (
-        <div className="border-t px-4 py-4">
+<div
+  className={`transition-all duration-300 ease-in-out overflow-hidden ${
+    expandido ? 'max-h-[2000px] opacity-100 scale-100' : 'max-h-0 opacity-0 scale-95'
+  }`}
+>
+  <div className="border-t px-4 py-4">
+
           {secretarias.map((s) => (
             <div key={s.id} className="mt-4 border border-gray-200 rounded-xl p-4 bg-gray-50 flex flex-col gap-3">
               <div className="flex justify-between items-center">
@@ -210,6 +215,8 @@ export default function CadastroSecretaria() {
           </div>
         </div>
       )}
-    </div>
+  </div>
+</div>
+
   )
 }
