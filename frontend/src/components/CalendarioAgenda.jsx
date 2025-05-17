@@ -524,9 +524,7 @@ components={{
   )
 }
 
- // 📌 Bloco CustomToolbar dentro de CalendarioAgenda.jsx
-
-// 📌 Custom toolbar (com suporte ao interval picker apenas no agenda view)
+ // 📌 Custom toolbar (com suporte ao interval picker apenas no agenda view)
 function CustomToolbar({
   label,
   onNavigate,
