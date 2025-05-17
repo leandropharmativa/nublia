@@ -106,9 +106,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
 useEffect(() => {
   const listener = (e) => {
     const agendamentoId = e.detail.agendamento_id ?? e.detail.agendamentoId ?? null
-    const paciente = { ...e.detail }
-    delete paciente.agendamento_id
-    delete paciente.agendamentoId
+    const paciente = e.detail.paciente
 
     console.log('📩 Evento recebido: IniciarFichaAtendimento', { agendamentoId, paciente })
 
