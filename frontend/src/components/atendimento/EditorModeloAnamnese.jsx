@@ -1,49 +1,51 @@
 // 📄 frontend/src/components/atendimento/EditorModeloAnamnese.jsx
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
 import { Plus, Trash, Save, FolderPlus, ChevronDown, ChevronRight } from 'lucide-react'
 import Botao from '../Botao'
 
 export default function EditorModeloAnamnese() {
-  // 🔹 Estado para nome do modelo e lista de blocos
   const [nome, setNome] = useState('')
   const [blocos, setBlocos] = useState([])
   const [expandido, setExpandido] = useState(false)
 
+  const conteudoRef = useRef(null)
+  const [alturaMax, setAlturaMax] = useState('0px')
+
   const user = JSON.parse(localStorage.getItem('user'))
 
-  // ➕ Adiciona novo bloco
+  // animação de expansão suave
+  useEffect(() => {
+    if (expandido && conteudoRef.current) {
+      setAlturaMax(`${conteudoRef.current.scrollHeight}px`)
+    } else {
+      setAlturaMax('0px')
+    }
+  }, [expandido, blocos, nome])
+
   const adicionarBloco = () => {
     setBlocos([...blocos, { titulo: '', perguntas: [] }])
   }
 
-  // ➕ Adiciona nova pergunta a um bloco
   const adicionarPergunta = (blocoIndex) => {
     const novosBlocos = [...blocos]
-    novosBlocos[blocoIndex].perguntas.push({
-      campo: '',
-      tipo: 'texto',
-      rotulo: '',
-    })
+    novosBlocos[blocoIndex].perguntas.push({ campo: '', tipo: 'texto', rotulo: '' })
     setBlocos(novosBlocos)
   }
 
-  // 🗑️ Remove uma pergunta
   const removerPergunta = (blocoIndex, perguntaIndex) => {
     const novosBlocos = [...blocos]
     novosBlocos[blocoIndex].perguntas.splice(perguntaIndex, 1)
     setBlocos(novosBlocos)
   }
 
-  // 🗑️ Remove um bloco
   const removerBloco = (blocoIndex) => {
     const novosBlocos = [...blocos]
     novosBlocos.splice(blocoIndex, 1)
     setBlocos(novosBlocos)
   }
 
-  // ✅ Salvar modelo no backend
   const salvarModelo = async () => {
     try {
       await axios.post('https://nublia-backend.onrender.com/anamnese/modelos', {
@@ -74,9 +76,12 @@ export default function EditorModeloAnamnese() {
         {expandido ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
       </button>
 
-      {/* Conteúdo visível apenas se expandido */}
-      {expandido && (
-        <div className="border-t px-4 py-4 space-y-4">
+      {/* 🧩 Conteúdo com animação */}
+      <div
+        className="transition-all duration-300 ease-in-out overflow-hidden"
+        style={{ maxHeight: alturaMax }}
+      >
+        <div ref={conteudoRef} className="border-t px-4 py-4 space-y-4">
           <input
             type="text"
             placeholder="Nome do modelo"
@@ -166,7 +171,7 @@ export default function EditorModeloAnamnese() {
             </Botao>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
