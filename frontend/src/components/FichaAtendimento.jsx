@@ -23,6 +23,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   const [modeloSelecionado, setModeloSelecionado] = useState(null)
   const [respostasAnamnese, setRespostasAnamnese] = useState({})
 
+  const [animarTrocaModelo, setAnimarTrocaModelo] = useState(false)
 
   // Atualiza paciente selecionado quando `paciente` muda via props
 useEffect(() => {
@@ -329,15 +330,17 @@ useEffect(() => {
     const modelo = modelos.find(m => String(m.id) === e.target.value)
     setModeloSelecionado(modelo)
     setRespostasAnamnese({})
-  }}
->
+    setAnimarTrocaModelo(true)
+    setTimeout(() => setAnimarTrocaModelo(false), 400) // duração do efeito
+    }}
+  >
   {modelos.map((m) => (
     <option key={m.id} value={String(m.id)}>{m.nome}</option>
   ))}
 </select>
 
       </div>
-
+      <div className={`${animarTrocaModelo ? 'animate-fadeIn' : ''}`}>
       {modeloSelecionado?.blocos.map((bloco, i) => (
         <div key={i} className="mb-4">
           <h4 className="text-nublia-accent font-semibold mb-2">{bloco.titulo}</h4>
@@ -370,6 +373,7 @@ useEffect(() => {
           })}
         </div>
       ))}
+      </div>
     </>
   ) : (
     <textarea
