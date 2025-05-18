@@ -18,24 +18,22 @@
   transition: background-color 0.3s ease, border 0.3s ease;
 }
 .animar-exclusao {
-  animation: desaparecer 0.3s ease forwards;
+  animation: fadeOutRetrair 0.3s ease forwards;
 }
 
-@keyframes desaparecer {
-  0% {
+@keyframes fadeOutRetrair {
+  from {
     opacity: 1;
-    transform: scale(1);
     height: auto;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
   }
-  100% {
+  to {
     opacity: 0;
-    transform: scale(0.95);
     height: 0;
-    margin-top: 0;
-    margin-bottom: 0;
     padding-top: 0;
     padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    overflow: hidden;
   }
 }
+
