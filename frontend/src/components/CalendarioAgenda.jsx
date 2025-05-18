@@ -600,7 +600,12 @@ function CustomToolbar({
     )
     return {
       agendados: filtrados.filter(e => e.status === 'agendado').length,
-      disponiveis: filtrados.filter(e => e.status === 'disponivel' && new Date(e.start) > agora).length
+      const agora = new Date()
+      agora.setSeconds(0, 0)
+
+      disponiveis: filtrados.filter(e =>
+      e.status === 'disponivel' && new Date(e.start) > agora
+      ).length
     }
   })()
 
