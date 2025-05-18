@@ -13,6 +13,7 @@ import axios from 'axios'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
+import './FichaAtendimento.css'
 
 export default function FichaAtendimento({ paciente, agendamentoId = null, onFinalizar, onAtendimentoSalvo }) {
   // 🧠 Armazena o paciente selecionado (permite atualização dinâmica)
