@@ -1,3 +1,4 @@
+
 // 📄 frontend/src/components/atendimento/EditorModeloAnamnese.jsx
 
 import { useState, useRef, useEffect } from 'react'
@@ -164,14 +165,7 @@ const confirmarRemocaoElemento = () => {
 
   return (
     <>
-      <div
-<div
-  className={`transition-all duration-300 ease-in-out overflow-hidden ${
-    expandido ? 'max-h-[2000px] opacity-100 scale-100' : 'max-h-0 opacity-0 scale-95'
-  }`}
->
-  <div className="border-t px-4 py-4 space-y-4">
-
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
         <button
           onClick={() => setExpandido(!expandido)}
           className="w-full flex items-center justify-between px-4 py-3 text-left text-nublia-primary font-semibold hover:bg-gray-50 transition-all"
@@ -183,11 +177,13 @@ const confirmarRemocaoElemento = () => {
           {expandido ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
         </button>
 
-        <div
-          className="transition-all duration-300 ease-in-out overflow-hidden"
-          style={{ maxHeight: alturaMax }}
-        >
-          <div ref={conteudoRef} className="border-t px-4 py-4 space-y-4">
+<div
+  className={`transition-all duration-300 ease-in-out overflow-hidden ${
+    expandido ? 'max-h-[2000px] opacity-100 scale-100' : 'max-h-0 opacity-0 scale-95'
+  }`}
+>
+  <div className="border-t px-4 py-4 space-y-4">
+
 
             {/* 🔽 Modelo padrão inicialmente fechado */}
             {modeloPadrao && !modeloDuplicado && (
@@ -486,7 +482,6 @@ const confirmarRemocaoElemento = () => {
         </Botao>
       </div>
     </div>
-  </div>
   </div>
 )}
 
