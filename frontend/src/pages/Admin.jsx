@@ -192,7 +192,6 @@ const carregarModeloPadrao = async () => {
 
   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
     <div>
-      <label className="text-sm font-medium text-gray-700 mb-1 block">Tipo de usuário</label>
       <select
         value={tipoUsuario}
         onChange={(e) => setTipoUsuario(e.target.value)}
