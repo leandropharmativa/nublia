@@ -5,7 +5,14 @@ import Layout from '../components/Layout'
 import CampoTexto from '../components/CampoTexto'
 import Botao from '../components/Botao'
 import { Tab } from '@headlessui/react'
-import { toastSucesso, toastErro } from '../utils/toastUtils'
+import {
+  PlusCircle,
+  Save,
+  XCircle,
+  Trash,
+  FileText,
+} from 'lucide-react'
+import { toastErro, toastSucesso } from '../utils/toastUtils'
 
 export default function AdminDashboard() {
   const [tipoUsuario, setTipoUsuario] = useState('prescritor')
@@ -16,80 +23,74 @@ export default function AdminDashboard() {
   const [carregando, setCarregando] = useState(false)
 
   const [modeloPadrao, setModeloPadrao] = useState(null)
-  const [editandoModelo, setEditandoModelo] = useState(false)
-  const [modeloEditado, setModeloEditado] = useState(null)
-
-  const gerarCodigo = async () => {
-    setErro('')
-    setSucesso('')
-    setCarregando(true)
-    try {
-      const token = localStorage.getItem('token')
-      if (!token) throw new Error("Token não encontrado.")
-
-      const payload = {
-        tipo_usuario: tipoUsuario,
-        email_usuario: emailUsuario
-      }
-
-      const response = await fetch('https://nublia-backend.onrender.com/generate_code', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
-
-      const data = await response.json()
-      if (response.ok) {
-        setCodigo(data.codigo)
-        setSucesso("Código gerado com sucesso!")
-      } else {
-        throw new Error(data.detail || "Erro ao gerar código")
-      }
-    } catch (err) {
-      setErro("Erro ao gerar código. Verifique os dados.")
-      setCodigo('')
-    } finally {
-      setCarregando(false)
-    }
-  }
+  const [nome, setNome] = useState('')
+  const [blocos, setBlocos] = useState([])
 
   const carregarModeloPadrao = async () => {
     try {
       const res = await fetch(`https://nublia-backend.onrender.com/anamnese/modelo_padrao`)
       const data = await res.json()
-      setModeloPadrao(data)
-      setModeloEditado(JSON.parse(JSON.stringify(data))) // clone para edição
-    } catch (error) {
-      toastErro('Erro ao carregar modelo padrão.')
-    }
-  }
-
-  const salvarModeloPadrao = async () => {
-    try {
-      const res = await fetch('https://nublia-backend.onrender.com/anamnese/atualizar_padrao', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(modeloEditado)
-      })
-
-      if (res.ok) {
-        setModeloPadrao(modeloEditado)
-        setEditandoModelo(false)
-        toastSucesso('Modelo atualizado com sucesso!')
-      } else {
-        throw new Error()
+      if (typeof data.blocos === 'string') {
+        data.blocos = JSON.parse(data.blocos)
       }
+      setModeloPadrao(data)
+      setNome(data.nome)
+      setBlocos(data.blocos)
     } catch {
-      toastErro('Erro ao salvar modelo.')
+      toastErro('Erro ao carregar modelo padrão.')
     }
   }
 
   useEffect(() => {
     carregarModeloPadrao()
   }, [])
+
+  const adicionarBloco = () => {
+    setBlocos([...blocos, { titulo: '', perguntas: [] }])
+  }
+
+  const adicionarPergunta = (blocoIndex) => {
+    const novos = [...blocos]
+    novos[blocoIndex].perguntas.push({ campo: '', tipo: 'texto', rotulo: '' })
+    setBlocos(novos)
+  }
+
+  const removerBloco = (index) => {
+    const novos = [...blocos]
+    novos.splice(index, 1)
+    setBlocos(novos)
+  }
+
+  const removerPergunta = (blocoIndex, perguntaIndex) => {
+    const novos = [...blocos]
+    novos[blocoIndex].perguntas.splice(perguntaIndex, 1)
+    setBlocos(novos)
+  }
+
+  const salvarModelo = async () => {
+    if (!nome.trim() || blocos.length === 0) {
+      toastErro('Preencha o nome e adicione pelo menos um bloco.')
+      return
+    }
+
+    try {
+      const payload = {
+        id: modeloPadrao?.id,
+        nome,
+        blocos
+      }
+
+      await fetch(`https://nublia-backend.onrender.com/anamnese/atualizar_padrao`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+
+      toastSucesso('Modelo padrão salvo com sucesso!')
+    } catch {
+      toastErro('Erro ao salvar modelo padrão.')
+    }
+  }
 
   return (
     <Layout>
@@ -107,8 +108,8 @@ export default function AdminDashboard() {
         </Tab.List>
 
         <Tab.Panels>
+          {/* Visão Geral */}
           <Tab.Panel>
-            {/* Visão Geral */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div className="bg-white p-4 rounded shadow-sm">
                 <p className="text-sm text-gray-500">Prescritores</p>
@@ -129,8 +130,8 @@ export default function AdminDashboard() {
             </div>
           </Tab.Panel>
 
+          {/* Códigos de Acesso */}
           <Tab.Panel>
-            {/* Códigos de Acesso */}
             <div className="max-w-xl bg-white rounded shadow-md p-6 mb-12">
               <h2 className="text-title mb-4">Gerar Código de Acesso</h2>
               {erro && <div className="alert-warning mb-2">{erro}</div>}
@@ -160,7 +161,7 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              <Botao onClick={gerarCodigo} disabled={carregando} className="mb-3">
+              <Botao onClick={() => {}} disabled={carregando} className="mb-3">
                 {carregando && <span className="animate-spin h-5 w-5 mr-2">🔄</span>}
                 <span>Gerar Código</span>
               </Botao>
@@ -174,8 +175,8 @@ export default function AdminDashboard() {
             </div>
           </Tab.Panel>
 
+          {/* Usuários */}
           <Tab.Panel>
-            {/* Usuários */}
             <div className="bg-white p-6 rounded shadow-sm">
               <h3 className="text-lg font-semibold mb-4">Usuários cadastrados (em breve)</h3>
               <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
@@ -187,8 +188,8 @@ export default function AdminDashboard() {
             </div>
           </Tab.Panel>
 
+          {/* Relatórios */}
           <Tab.Panel>
-            {/* Relatórios */}
             <div className="bg-white p-6 rounded shadow-sm">
               <h3 className="text-lg font-semibold mb-4">Relatórios e registros (em breve)</h3>
               <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
@@ -200,42 +201,104 @@ export default function AdminDashboard() {
             </div>
           </Tab.Panel>
 
+          {/* Anamnese Padrão */}
           <Tab.Panel>
-            {/* Anamnese Padrão */}
-            <div className="bg-white p-6 rounded shadow-sm max-w-3xl">
-              <h3 className="text-lg font-semibold mb-4">Modelo de Anamnese Padrão</h3>
-              {modeloPadrao ? (
-                <div className="space-y-4">
-                  <CampoTexto
-                    label="Nome do modelo"
-                    value={modeloEditado?.nome || ''}
-                    onChange={(e) => setModeloEditado({ ...modeloEditado, nome: e.target.value })}
-                    disabled={!editandoModelo}
-                  />
-                  {modeloEditado?.blocos?.map((bloco, i) => (
-                    <div key={i} className="border rounded p-3 bg-gray-50">
-                      <h4 className="font-medium mb-2">{bloco.titulo}</h4>
-                      <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
-                        {bloco.perguntas.map((p, j) => (
-                          <li key={j}><strong>{p.rotulo}:</strong> ({p.tipo})</li>
-                        ))}
-                      </ul>
+            <div className="bg-white p-6 rounded shadow-sm max-w-4xl space-y-6">
+              <h3 className="text-lg font-semibold text-nublia-primary">Editar Anamnese Padrão</h3>
+
+              <input
+                type="text"
+                className="input-base text-lg font-semibold"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                placeholder="Nome do modelo"
+              />
+
+              {blocos.map((bloco, blocoIndex) => (
+                <div key={blocoIndex} className="bg-gray-50 border rounded p-4 space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={bloco.titulo}
+                      onChange={(e) => {
+                        const novos = [...blocos]
+                        novos[blocoIndex].titulo = e.target.value
+                        setBlocos(novos)
+                      }}
+                      className="input-base flex-1"
+                      placeholder="Título do bloco"
+                    />
+                    <button onClick={() => removerBloco(blocoIndex)}>
+                      <Trash size={18} className="text-red-500" />
+                    </button>
+                  </div>
+
+                  {bloco.perguntas.map((pergunta, perguntaIndex) => (
+                    <div key={perguntaIndex} className="flex gap-2 text-sm">
+                      <input
+                        type="text"
+                        className="input-base w-1/3"
+                        value={pergunta.campo}
+                        onChange={(e) => {
+                          const novos = [...blocos]
+                          novos[blocoIndex].perguntas[perguntaIndex].campo = e.target.value
+                          setBlocos(novos)
+                        }}
+                        placeholder="Campo"
+                      />
+                      <input
+                        type="text"
+                        className="input-base w-1/2"
+                        value={pergunta.rotulo}
+                        onChange={(e) => {
+                          const novos = [...blocos]
+                          novos[blocoIndex].perguntas[perguntaIndex].rotulo = e.target.value
+                          setBlocos(novos)
+                        }}
+                        placeholder="Rótulo"
+                      />
+                      <select
+                        value={pergunta.tipo}
+                        onChange={(e) => {
+                          const novos = [...blocos]
+                          novos[blocoIndex].perguntas[perguntaIndex].tipo = e.target.value
+                          setBlocos(novos)
+                        }}
+                        className="input-base w-1/4"
+                      >
+                        <option value="texto">Texto</option>
+                        <option value="numero">Número</option>
+                        <option value="checkbox">Checkbox</option>
+                      </select>
+                      <button onClick={() => removerPergunta(blocoIndex, perguntaIndex)}>
+                        <Trash size={16} className="text-red-500" />
+                      </button>
                     </div>
                   ))}
-                  <div className="mt-4 flex gap-3">
-                    {editandoModelo ? (
-                      <>
-                        <Botao onClick={salvarModeloPadrao}>Salvar alterações</Botao>
-                        <Botao onClick={() => setEditandoModelo(false)} variante="claro">Cancelar</Botao>
-                      </>
-                    ) : (
-                      <Botao onClick={() => setEditandoModelo(true)}>Editar modelo</Botao>
-                    )}
-                  </div>
+
+                  <button
+                    onClick={() => adicionarPergunta(blocoIndex)}
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    + Adicionar pergunta
+                  </button>
                 </div>
-              ) : (
-                <p className="text-sm text-gray-500">Carregando modelo...</p>
-              )}
+              ))}
+
+              <div className="flex flex-wrap gap-3">
+                <Botao onClick={adicionarBloco} className="flex gap-2">
+                  <PlusCircle size={16} />
+                  Adicionar Bloco
+                </Botao>
+                <Botao onClick={salvarModelo} variante="primario" className="flex gap-2">
+                  <Save size={16} />
+                  Salvar Modelo
+                </Botao>
+                <Botao onClick={carregarModeloPadrao} variante="claro" className="flex gap-2">
+                  <XCircle size={16} />
+                  Cancelar alterações
+                </Botao>
+              </div>
             </div>
           </Tab.Panel>
         </Tab.Panels>
