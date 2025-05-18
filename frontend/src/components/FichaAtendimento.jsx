@@ -350,25 +350,32 @@ useEffect(() => {
             return (
               <div key={j} className="mb-2">
                 <label className="block text-sm text-gray-700 mb-1">{pergunta.rotulo}</label>
-                {pergunta.tipo === 'checkbox' ? (
-                  <input
-                    type="checkbox"
-                    checked={!!respostasAnamnese[key]}
-                    onChange={(e) =>
-                      setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.checked })
-                    }
-                    className="mr-2"
-                  />
-                ) : (
-                  <input
-                    type={pergunta.tipo === 'numero' ? 'number' : 'text'}
-                    value={respostasAnamnese[key] || ''}
-                    onChange={(e) =>
-                      setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.value })
-                    }
-                    className="border rounded px-2 py-1 w-full"
-                  />
-                )}
+{pergunta.tipo === 'checkbox' ? (
+  <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+    {pergunta.rotulo}
+    <input
+      type="checkbox"
+      checked={!!respostasAnamnese[key]}
+      onChange={(e) =>
+        setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.checked })
+      }
+      className="accent-nublia-primary"
+    />
+  </label>
+) : (
+  <>
+    <label className="block text-sm text-gray-700 mb-1">{pergunta.rotulo}</label>
+    <input
+      type={pergunta.tipo === 'numero' ? 'number' : 'text'}
+      value={respostasAnamnese[key] || ''}
+      onChange={(e) =>
+        setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.value })
+      }
+      className="border rounded px-2 py-1 w-full"
+    />
+  </>
+)}
+
               </div>
             )
           })}
