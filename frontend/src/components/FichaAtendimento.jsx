@@ -19,6 +19,11 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
   const [pacienteId, setPacienteId] = useState(paciente?.id || null)
 
+  const [modelos, setModelos] = useState([])
+  const [modeloSelecionado, setModeloSelecionado] = useState(null)
+  const [respostasAnamnese, setRespostasAnamnese] = useState({})
+
+
   // Atualiza paciente selecionado quando `paciente` muda via props
 useEffect(() => {
   if (paciente?.id) {
@@ -26,6 +31,27 @@ useEffect(() => {
     setPacienteId(paciente.id)
   }
 }, [paciente])
+
+  useEffect(() => {
+  const carregarModelos = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'))
+      const res = await axios.get(`https://nublia-backend.onrender.com/anamnese/modelos/${user.id}`)
+      const modelosConvertidos = res.data.map(m => ({
+        ...m,
+        blocos: typeof m.blocos === 'string' ? JSON.parse(m.blocos) : m.blocos
+      }))
+      setModelos(modelosConvertidos)
+      const padrao = modelosConvertidos.find(m => m.nome === 'Anamnese Padrão')
+      setModeloSelecionado(padrao || modelosConvertidos[0])
+    } catch {
+      toastErro('Erro ao carregar modelos de anamnese.')
+    }
+  }
+
+  carregarModelos()
+}, [])
+
 
   // 🧠 Memoriza o agendamentoId inicial
   const agendamentoIdRef = useRef(null)
@@ -120,7 +146,10 @@ useEffect(() => {
         paciente_id: pacienteSelecionado.id,
         prescritor_id: user?.id,
         agendamento_id: agendamentoIdRef.current,
-        anamnese: formulario.anamnese,
+        
+        anamnese: JSON.stringify(respostasAnamnese),
+        modelo_id: modeloSelecionado?.id,
+
         antropometria: formulario.antropometria,
         dieta: formulario.dieta,
         receita: formulario.receita,
@@ -290,12 +319,60 @@ useEffect(() => {
             )}
           </>
         ) : (
-          <textarea
-            placeholder={`Escreva as informações de ${abaAtiva}...`}
-            value={formulario[abaAtiva]}
-            onChange={handleChange}
-            className="w-full h-80 p-4 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
-          />
+{abaAtiva === 'anamnese' && (
+  <>
+    <div className="mb-4">
+      <label className="block text-sm font-semibold text-gray-700 mb-1">Modelo de Anamnese:</label>
+      <select
+        className="border border-gray-300 rounded px-3 py-2 text-sm w-full"
+        value={modeloSelecionado?.id || ''}
+        onChange={(e) => {
+          const modelo = modelos.find(m => m.id === Number(e.target.value))
+          setModeloSelecionado(modelo)
+          setRespostasAnamnese({}) // zera ao trocar modelo
+        }}
+      >
+        {modelos.map((m) => (
+          <option key={m.id} value={m.id}>{m.nome}</option>
+        ))}
+      </select>
+    </div>
+
+    {modeloSelecionado?.blocos.map((bloco, i) => (
+      <div key={i} className="mb-4">
+        <h4 className="text-nublia-accent font-semibold mb-2">{bloco.titulo}</h4>
+        {bloco.perguntas.map((pergunta, j) => {
+          const key = `${bloco.titulo}-${pergunta.campo}`
+          return (
+            <div key={j} className="mb-2">
+              <label className="block text-sm text-gray-700 mb-1">{pergunta.rotulo}</label>
+              {pergunta.tipo === 'checkbox' ? (
+                <input
+                  type="checkbox"
+                  checked={!!respostasAnamnese[key]}
+                  onChange={(e) =>
+                    setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.checked })
+                  }
+                  className="mr-2"
+                />
+              ) : (
+                <input
+                  type={pergunta.tipo === 'numero' ? 'number' : 'text'}
+                  value={respostasAnamnese[key] || ''}
+                  onChange={(e) =>
+                    setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.value })
+                  }
+                  className="border rounded px-2 py-1 w-full"
+                />
+              )}
+            </div>
+          )
+        })}
+      </div>
+    ))}
+  </>
+)}
+
         )}
       </div>
 
