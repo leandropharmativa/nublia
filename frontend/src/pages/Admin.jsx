@@ -231,11 +231,6 @@ const carregarModeloPadrao = async () => {
     <ListaCodigosGerados />
   </div>
 
-  <div className="mt-10 bg-white rounded shadow-md p-6 max-w-5xl">
-  <h3 className="text-base font-semibold text-gray-700 mb-4">Códigos gerados recentemente</h3>
-  <ListaCodigosGerados />
-</div>
-
   </Tab.Panel>
 
 
