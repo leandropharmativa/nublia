@@ -168,12 +168,15 @@ const carregarAtendimentos = async (id) => {
 
     const filtrados = data.filter(a => a.prescritor_id === id)
 
-    const comNomes = filtrados.map((a) => ({
-      ...a,
-      nomePaciente: mapaPacientes.get(a.paciente_id) || 'Paciente não encontrado',
-    }))
+const comNomes = filtrados
+  .sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em))
+  .map((a) => ({
+    ...a,
+    nomePaciente: mapaPacientes.get(a.paciente_id) || 'Paciente não encontrado',
+  }))
 
-    setAtendimentos(comNomes.reverse())
+setAtendimentos(comNomes)
+
     setPacientes(todosPacientes.filter(p => p.role === 'paciente'))
   } catch (err) {
     console.error('Erro ao carregar atendimentos:', err)
