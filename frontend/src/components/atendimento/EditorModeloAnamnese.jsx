@@ -164,7 +164,12 @@ const confirmarRemocaoElemento = () => {
 
   return (
     <>
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+      <div
+  className={`transition-all duration-300 ease-in-out overflow-hidden ${
+    expandido ? 'max-h-[2000px] opacity-100 scale-100' : 'max-h-0 opacity-0 scale-95'
+  }`}
+>
+
         <button
           onClick={() => setExpandido(!expandido)}
           className="w-full flex items-center justify-between px-4 py-3 text-left text-nublia-primary font-semibold hover:bg-gray-50 transition-all"
