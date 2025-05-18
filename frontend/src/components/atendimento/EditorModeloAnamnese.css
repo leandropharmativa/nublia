@@ -18,7 +18,7 @@
   transition: background-color 0.3s ease, border 0.3s ease;
 }
 .animar-exclusao {
-  animation: fadeOutRetrair 0.3s ease forwards;
+  animation: fadeOutRetrair 0.5s ease forwards;
 }
 
 @keyframes fadeOutRetrair {
