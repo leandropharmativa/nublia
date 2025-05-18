@@ -1,8 +1,11 @@
-import { useState } from 'react'
+// 📄 frontend/src/pages/AdminDashboard.jsx
+
+import { useState, useEffect } from 'react'
 import Layout from '../components/Layout'
 import CampoTexto from '../components/CampoTexto'
 import Botao from '../components/Botao'
 import { Tab } from '@headlessui/react'
+import { toastSucesso, toastErro } from '../utils/toastUtils'
 
 export default function AdminDashboard() {
   const [tipoUsuario, setTipoUsuario] = useState('prescritor')
@@ -12,11 +15,14 @@ export default function AdminDashboard() {
   const [sucesso, setSucesso] = useState('')
   const [carregando, setCarregando] = useState(false)
 
+  const [modeloPadrao, setModeloPadrao] = useState(null)
+  const [editandoModelo, setEditandoModelo] = useState(false)
+  const [modeloEditado, setModeloEditado] = useState(null)
+
   const gerarCodigo = async () => {
     setErro('')
     setSucesso('')
     setCarregando(true)
-
     try {
       const token = localStorage.getItem('token')
       if (!token) throw new Error("Token não encontrado.")
@@ -50,11 +56,46 @@ export default function AdminDashboard() {
     }
   }
 
+  const carregarModeloPadrao = async () => {
+    try {
+      const res = await fetch(`https://nublia-backend.onrender.com/anamnese/modelo_padrao`)
+      const data = await res.json()
+      setModeloPadrao(data)
+      setModeloEditado(JSON.parse(JSON.stringify(data))) // clone para edição
+    } catch (error) {
+      toastErro('Erro ao carregar modelo padrão.')
+    }
+  }
+
+  const salvarModeloPadrao = async () => {
+    try {
+      const res = await fetch('https://nublia-backend.onrender.com/anamnese/atualizar_padrao', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(modeloEditado)
+      })
+
+      if (res.ok) {
+        setModeloPadrao(modeloEditado)
+        setEditandoModelo(false)
+        toastSucesso('Modelo atualizado com sucesso!')
+      } else {
+        throw new Error()
+      }
+    } catch {
+      toastErro('Erro ao salvar modelo.')
+    }
+  }
+
+  useEffect(() => {
+    carregarModeloPadrao()
+  }, [])
+
   return (
     <Layout>
       <Tab.Group>
         <Tab.List className="flex gap-6 border-b pb-2 mb-6">
-          {['Visão Geral', 'Códigos de Acesso', 'Usuários', 'Relatórios'].map((label) => (
+          {['Visão Geral', 'Códigos de Acesso', 'Usuários', 'Relatórios', 'Anamnese Padrão'].map((label) => (
             <Tab key={label} className={({ selected }) =>
               selected
                 ? 'text-blue-600 border-b-2 border-blue-600 pb-1'
@@ -89,10 +130,9 @@ export default function AdminDashboard() {
           </Tab.Panel>
 
           <Tab.Panel>
-            {/* Geração de Código de Acesso */}
+            {/* Códigos de Acesso */}
             <div className="max-w-xl bg-white rounded shadow-md p-6 mb-12">
               <h2 className="text-title mb-4">Gerar Código de Acesso</h2>
-
               {erro && <div className="alert-warning mb-2">{erro}</div>}
               {sucesso && <div className="alert-success mb-2">{sucesso}</div>}
 
@@ -121,17 +161,7 @@ export default function AdminDashboard() {
               </div>
 
               <Botao onClick={gerarCodigo} disabled={carregando} className="mb-3">
-                {carregando && (
-                  <svg
-                    className="animate-spin h-5 w-5 text-blue-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
-                  </svg>
-                )}
+                {carregando && <span className="animate-spin h-5 w-5 mr-2">🔄</span>}
                 <span>Gerar Código</span>
               </Botao>
 
@@ -167,6 +197,45 @@ export default function AdminDashboard() {
                 <li>Exportar dados para análise</li>
                 <li>Visualização gráfica de acessos</li>
               </ul>
+            </div>
+          </Tab.Panel>
+
+          <Tab.Panel>
+            {/* Anamnese Padrão */}
+            <div className="bg-white p-6 rounded shadow-sm max-w-3xl">
+              <h3 className="text-lg font-semibold mb-4">Modelo de Anamnese Padrão</h3>
+              {modeloPadrao ? (
+                <div className="space-y-4">
+                  <CampoTexto
+                    label="Nome do modelo"
+                    value={modeloEditado?.nome || ''}
+                    onChange={(e) => setModeloEditado({ ...modeloEditado, nome: e.target.value })}
+                    disabled={!editandoModelo}
+                  />
+                  {modeloEditado?.blocos?.map((bloco, i) => (
+                    <div key={i} className="border rounded p-3 bg-gray-50">
+                      <h4 className="font-medium mb-2">{bloco.titulo}</h4>
+                      <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
+                        {bloco.perguntas.map((p, j) => (
+                          <li key={j}><strong>{p.rotulo}:</strong> ({p.tipo})</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                  <div className="mt-4 flex gap-3">
+                    {editandoModelo ? (
+                      <>
+                        <Botao onClick={salvarModeloPadrao}>Salvar alterações</Botao>
+                        <Botao onClick={() => setEditandoModelo(false)} variante="claro">Cancelar</Botao>
+                      </>
+                    ) : (
+                      <Botao onClick={() => setEditandoModelo(true)}>Editar modelo</Botao>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">Carregando modelo...</p>
+              )}
             </div>
           </Tab.Panel>
         </Tab.Panels>
