@@ -13,6 +13,7 @@ import {
   FileText,
 } from 'lucide-react'
 import { toastErro, toastSucesso } from '../utils/toastUtils'
+import ListaCodigosGerados from '../components/ListaCodigosGerados'
 
 export default function AdminDashboard() {
   const [tipoUsuario, setTipoUsuario] = useState('prescritor')
@@ -180,49 +181,63 @@ const carregarModeloPadrao = async () => {
           </Tab.Panel>
 
           {/* Códigos de Acesso */}
-          <Tab.Panel>
-            <div className="max-w-xl bg-white rounded shadow-md p-6 mb-12">
-              <h2 className="text-title mb-4">Gerar Código de Acesso</h2>
-              {erro && <div className="alert-warning mb-2">{erro}</div>}
-              {sucesso && <div className="alert-success mb-2">{sucesso}</div>}
 
-              <div className="grid sm:grid-cols-2 gap-4 mb-3">
-                <div>
-                  <label className="text-sm block mb-1">Tipo de usuário</label>
-                  <select
-                    value={tipoUsuario}
-                    onChange={(e) => setTipoUsuario(e.target.value)}
-                    className="input-base"
-                  >
-                    <option value="prescritor">Prescritor</option>
-                    <option value="clinica">Clínica</option>
-                    <option value="farmacia">Farmácia</option>
-                    <option value="academia">Academia</option>
-                  </select>
-                </div>
-                <CampoTexto
-                  type="email"
-                  name="emailUsuario"
-                  placeholder="Email do usuário"
-                  value={emailUsuario}
-                  onChange={(e) => setEmailUsuario(e.target.value)}
-                  required
-                />
-              </div>
+<Tab.Panel>
+  <div className="bg-white rounded shadow-md p-6 space-y-6 max-w-5xl">
+    <h2 className="text-lg font-semibold text-nublia-primary">Gerar Código de Acesso</h2>
 
-              <Botao onClick={gerarCodigo} disabled={carregando} className="mb-3">
-                {carregando && <span className="animate-spin h-5 w-5 mr-2">🔄</span>}
-                <span>Gerar Código</span>
-              </Botao>
+    {erro && <div className="alert-warning">{erro}</div>}
+    {sucesso && <div className="alert-success">{sucesso}</div>}
 
-              {codigo && (
-                <div className="mt-4 p-4 border border-dashed rounded bg-gray-50 text-center">
-                  <p className="text-sm text-gray-600">Código gerado:</p>
-                  <p className="font-mono font-bold text-lg">{codigo}</p>
-                </div>
-              )}
-            </div>
-          </Tab.Panel>
+    <div className="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label className="text-sm block mb-1">Tipo de usuário</label>
+        <select
+          value={tipoUsuario}
+          onChange={(e) => setTipoUsuario(e.target.value)}
+          className="input-base"
+        >
+          <option value="prescritor">Prescritor</option>
+          <option value="clinica">Clínica</option>
+          <option value="farmacia">Farmácia</option>
+          <option value="academia">Academia</option>
+        </select>
+      </div>
+      <CampoTexto
+        type="email"
+        name="emailUsuario"
+        placeholder="Email do usuário"
+        value={emailUsuario}
+        onChange={(e) => setEmailUsuario(e.target.value)}
+        required
+      />
+    </div>
+
+    <Botao onClick={gerarCodigo} disabled={carregando}>
+      {carregando && <span className="animate-spin h-5 w-5 mr-2">🔄</span>}
+      Gerar Código
+    </Botao>
+
+    {codigo && (
+      <div className="mt-4 p-4 border border-dashed rounded bg-gray-50 text-center">
+        <p className="text-sm text-gray-600">Código gerado:</p>
+        <p className="font-mono font-bold text-xl text-nublia-primary">{codigo}</p>
+      </div>
+    )}
+  </div>
+
+  <div className="mt-10 bg-white rounded shadow-md p-6 max-w-5xl">
+    <h3 className="text-base font-semibold text-gray-700 mb-4">Códigos gerados recentemente</h3>
+    <ListaCodigosGerados />
+  </div>
+
+  <div className="mt-10 bg-white rounded shadow-md p-6 max-w-5xl">
+  <h3 className="text-base font-semibold text-gray-700 mb-4">Códigos gerados recentemente</h3>
+  <ListaCodigosGerados />
+</div>
+
+  </Tab.Panel>
+
 
           {/* Usuários */}
           <Tab.Panel>
