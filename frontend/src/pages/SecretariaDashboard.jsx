@@ -1,3 +1,4 @@
+
 // 📄 pages/SecretariaDashboard.jsx
 
 import { useEffect, useState } from 'react'
@@ -217,6 +218,9 @@ export default function SecretariaDashboard() {
           {user?.nome &&
             user.nome.toLowerCase() !== 'secretaria' &&
             user.nome.toLowerCase() !== user.role?.toLowerCase() && (
+              <p className="text-sm text-gray-500 mt-1">
+                Secretária: {user.nome}
+              </p>
             )}
         </div>
       </div>
