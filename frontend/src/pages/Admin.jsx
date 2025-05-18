@@ -26,20 +26,26 @@ export default function AdminDashboard() {
   const [nome, setNome] = useState('')
   const [blocos, setBlocos] = useState([])
 
-  const carregarModeloPadrao = async () => {
-    try {
-      const res = await fetch(`https://nublia-backend.onrender.com/anamnese/modelo_padrao`)
-      const data = await res.json()
-      if (typeof data.blocos === 'string') {
-        data.blocos = JSON.parse(data.blocos)
-      }
-      setModeloPadrao(data)
-      setNome(data.nome)
-      setBlocos(data.blocos)
-    } catch {
-      toastErro('Erro ao carregar modelo padrão.')
+const carregarModeloPadrao = async () => {
+  try {
+    const res = await fetch(`https://nublia-backend.onrender.com/anamnese/modelos/0`)
+    const modelos = await res.json()
+    const padrao = modelos.find(m => m.id === '00000000-0000-0000-0000-000000000000')
+    if (!padrao) {
+      toastErro('Modelo padrão não encontrado.')
+      return
     }
+    if (typeof padrao.blocos === 'string') {
+      padrao.blocos = JSON.parse(padrao.blocos)
+    }
+    setModeloPadrao(padrao)
+    setNome(padrao.nome)
+    setBlocos(padrao.blocos)
+  } catch {
+    toastErro('Erro ao carregar modelo padrão.')
   }
+}
+
 
   useEffect(() => {
     carregarModeloPadrao()
@@ -80,11 +86,16 @@ export default function AdminDashboard() {
         blocos
       }
 
-      await fetch(`https://nublia-backend.onrender.com/anamnese/atualizar_padrao`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
+  await fetch(`https://nublia-backend.onrender.com/anamnese/modelos/00000000-0000-0000-0000-000000000000`, {
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    nome,
+    prescritor_id: 0,
+    blocos
+  })
+})
+
 
       toastSucesso('Modelo padrão salvo com sucesso!')
     } catch {
