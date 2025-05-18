@@ -21,7 +21,9 @@ export default function EditorModeloAnamnese() {
   const [modeloExpandido, setModeloExpandido] = useState(null)
   const [modeloParaExcluir, setModeloParaExcluir] = useState(null)
   const [mostrarPadrao, setMostrarPadrao] = useState(false)
-  const [animarExclusao, setAnimarExclusao] = useState(null)
+  const [confirmarRemocao, setConfirmarRemocao] = useState(null) 
+  const [aguardandoExclusao, setAguardandoExclusao] = useState(false)
+
 
   const conteudoRef = useRef(null)
   const user = JSON.parse(localStorage.getItem('user'))
@@ -91,25 +93,13 @@ export default function EditorModeloAnamnese() {
     setBlocos(novosBlocos)
   }
 
-  const removerPergunta = (blocoIndex, perguntaIndex) => {
-    setAnimarExclusao(`bloco-${blocoIndex}-pergunta-${perguntaIndex}`)
-    setTimeout(() => {
-      const novosBlocos = [...blocos]
-      novosBlocos[blocoIndex].perguntas.splice(perguntaIndex, 1)
-      setBlocos(novosBlocos)
-      setAnimarExclusao(null)
-    }, 300)
-  }
+const solicitarRemocaoPergunta = (blocoIndex, perguntaIndex) => {
+  setConfirmarRemocao({ tipo: 'pergunta', blocoIndex, perguntaIndex })
+}
 
-  const removerBloco = (blocoIndex) => {
-    setAnimarExclusao(`bloco-${blocoIndex}`)
-    setTimeout(() => {
-      const novosBlocos = [...blocos]
-      novosBlocos.splice(blocoIndex, 1)
-      setBlocos(novosBlocos)
-      setAnimarExclusao(null)
-    }, 300)
-  }
+const solicitarRemocaoBloco = (blocoIndex) => {
+  setConfirmarRemocao({ tipo: 'bloco', blocoIndex })
+}
 
   const salvarModelo = async () => {
     if (!nome.trim() || blocos.length === 0) {
@@ -138,6 +128,24 @@ export default function EditorModeloAnamnese() {
       console.error(err)
     }
   }
+
+  const confirmarRemocaoElemento = () => {
+  if (!confirmarRemocao) return
+  const { tipo, blocoIndex, perguntaIndex } = confirmarRemocao
+  setAguardandoExclusao(true)
+
+  setTimeout(() => {
+    const novosBlocos = [...blocos]
+    if (tipo === 'pergunta') {
+      novosBlocos[blocoIndex].perguntas.splice(perguntaIndex, 1)
+    } else if (tipo === 'bloco') {
+      novosBlocos.splice(blocoIndex, 1)
+    }
+    setBlocos(novosBlocos)
+    setConfirmarRemocao(null)
+    setAguardandoExclusao(false)
+  }, 200)
+}
 
   return (
     <>
@@ -287,9 +295,10 @@ export default function EditorModeloAnamnese() {
                           setBlocos(novosBlocos)
                         }}
                       />
-                      <button onClick={() => removerBloco(blocoIndex)}>
-                        <Trash size={16} className="text-red-500" />
-                      </button>
+<button onClick={() => solicitarRemocaoPergunta(blocoIndex, perguntaIndex)}>
+  <Trash size={16} className="text-red-500" />
+</button>
+
                     </div>
 
                     {bloco.perguntas.map((pergunta, perguntaIndex) => (
@@ -334,9 +343,10 @@ export default function EditorModeloAnamnese() {
                           <option value="numero">Número</option>
                           <option value="checkbox">Checkbox</option>
                         </select>
-                        <button onClick={() => removerPergunta(blocoIndex, perguntaIndex)}>
-                          <Trash size={16} className="text-red-500" />
-                        </button>
+<button onClick={() => solicitarRemocaoBloco(blocoIndex)}>
+  <Trash size={16} className="text-red-500" />
+</button>
+
                       </div>
                     ))}
 
@@ -425,6 +435,35 @@ export default function EditorModeloAnamnese() {
           </div>
         </div>
       )}
+
+{confirmarRemocao && (
+  <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+    <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-lg relative">
+      <h3 className="text-lg font-semibold text-gray-800 mb-2">Confirmar remoção</h3>
+      <p className="text-sm text-gray-600 mb-4">
+        Deseja realmente remover {confirmarRemocao.tipo === 'bloco' ? 'este bloco' : 'esta pergunta'}?
+      </p>
+      <div className="flex justify-end gap-3">
+        <Botao
+          onClick={() => setConfirmarRemocao(null)}
+          variante="claro"
+          className="rounded-full px-4 py-1"
+        >
+          Cancelar
+        </Botao>
+        <Botao
+          onClick={confirmarRemocaoElemento}
+          variante="danger"
+          className="rounded-full px-4 py-1"
+          desabilitado={aguardandoExclusao}
+        >
+          Confirmar
+        </Botao>
+      </div>
+    </div>
+  </div>
+)}
+
     </>
   )
 }
