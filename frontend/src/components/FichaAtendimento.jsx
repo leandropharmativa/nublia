@@ -273,108 +273,113 @@ useEffect(() => {
         ))}
       </div>
 
-      <div className="space-y-4">
-        {abaAtiva === 'paciente' ? (
-          <>
-            <div className="space-y-2 text-sm text-gray-700">
-              <div><strong>Email:</strong> {pacienteSelecionado?.email || 'Não informado'}</div>
-              <div><strong>Telefone:</strong> {pacienteSelecionado?.telefone || 'Não informado'}</div>
-              <div><strong>Sexo:</strong> {pacienteSelecionado?.sexo || 'Não informado'}</div>
-              <div><strong>Data de Nascimento:</strong> {pacienteSelecionado?.data_nascimento || 'Não informada'}</div>
-              <div><strong>Observações:</strong> {pacienteSelecionado?.observacoes || 'Nenhuma observação registrada.'}</div>
-            </div>
+<div className="space-y-4">
+  {abaAtiva === 'paciente' ? (
+    <>
+      <div className="space-y-2 text-sm text-gray-700">
+        <div><strong>Email:</strong> {pacienteSelecionado?.email || 'Não informado'}</div>
+        <div><strong>Telefone:</strong> {pacienteSelecionado?.telefone || 'Não informado'}</div>
+        <div><strong>Sexo:</strong> {pacienteSelecionado?.sexo || 'Não informado'}</div>
+        <div><strong>Data de Nascimento:</strong> {pacienteSelecionado?.data_nascimento || 'Não informada'}</div>
+        <div><strong>Observações:</strong> {pacienteSelecionado?.observacoes || 'Nenhuma observação registrada.'}</div>
+      </div>
 
-            {atendimentosAnteriores.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-nublia-accent mb-2 flex items-center gap-2">
-                  <List size={16} /> Atendimentos anteriores
-                </h3>
-                <ul className="text-sm text-gray-700 divide-y divide-gray-200">
-                  {(mostrarTodos ? atendimentosAnteriores : atendimentosAnteriores.slice(0, 5)).map((a) => (
-                    <li key={a.id} className="flex items-center justify-between py-1">
-                      <button
-                        className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1 text-sm"
-                        onClick={() => setModalVisualizar(a)}
-                      >
-                        <Eye size={16} />
-                        <span className="text-xs text-gray-600">
-                          {new Date(a.criado_em).toLocaleDateString('pt-BR')} •{' '}
-                          {new Date(a.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+      {atendimentosAnteriores.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-sm font-semibold text-nublia-accent mb-2 flex items-center gap-2">
+            <List size={16} /> Atendimentos anteriores
+          </h3>
+          <ul className="text-sm text-gray-700 divide-y divide-gray-200">
+            {(mostrarTodos ? atendimentosAnteriores : atendimentosAnteriores.slice(0, 5)).map((a) => (
+              <li key={a.id} className="flex items-center justify-between py-1">
+                <button
+                  className="text-nublia-accent hover:text-nublia-orange flex items-center gap-1 text-sm"
+                  onClick={() => setModalVisualizar(a)}
+                >
+                  <Eye size={16} />
+                  <span className="text-xs text-gray-600">
+                    {new Date(a.criado_em).toLocaleDateString('pt-BR')} •{' '}
+                    {new Date(a.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
 
-                {atendimentosAnteriores.length > 5 && (
-                  <button
-                    onClick={() => setMostrarTodos(!mostrarTodos)}
-                    className="mt-3 px-4 py-1 text-xs font-semibold rounded-full border border-nublia-accent text-nublia-accent hover:bg-nublia-accent hover:text-white transform hover:scale-[1.03] transition flex items-center gap-2"
-                  >
-                    {mostrarTodos ? <ListMinus size={14} /> : <ListPlus size={14} />}
-                    {mostrarTodos ? 'Mostrar menos' : 'Ver todos'}
-                  </button>
+          {atendimentosAnteriores.length > 5 && (
+            <button
+              onClick={() => setMostrarTodos(!mostrarTodos)}
+              className="mt-3 px-4 py-1 text-xs font-semibold rounded-full border border-nublia-accent text-nublia-accent hover:bg-nublia-accent hover:text-white transform hover:scale-[1.03] transition flex items-center gap-2"
+            >
+              {mostrarTodos ? <ListMinus size={14} /> : <ListPlus size={14} />}
+              {mostrarTodos ? 'Mostrar menos' : 'Ver todos'}
+            </button>
+          )}
+        </div>
+      )}
+    </>
+  ) : abaAtiva === 'anamnese' ? (
+    <>
+      <div className="mb-4">
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Modelo de Anamnese:</label>
+        <select
+          className="border border-gray-300 rounded px-3 py-2 text-sm w-full"
+          value={modeloSelecionado?.id || ''}
+          onChange={(e) => {
+            const modelo = modelos.find(m => m.id === Number(e.target.value))
+            setModeloSelecionado(modelo)
+            setRespostasAnamnese({})
+          }}
+        >
+          {modelos.map((m) => (
+            <option key={m.id} value={m.id}>{m.nome}</option>
+          ))}
+        </select>
+      </div>
+
+      {modeloSelecionado?.blocos.map((bloco, i) => (
+        <div key={i} className="mb-4">
+          <h4 className="text-nublia-accent font-semibold mb-2">{bloco.titulo}</h4>
+          {bloco.perguntas.map((pergunta, j) => {
+            const key = `${bloco.titulo}-${pergunta.campo}`
+            return (
+              <div key={j} className="mb-2">
+                <label className="block text-sm text-gray-700 mb-1">{pergunta.rotulo}</label>
+                {pergunta.tipo === 'checkbox' ? (
+                  <input
+                    type="checkbox"
+                    checked={!!respostasAnamnese[key]}
+                    onChange={(e) =>
+                      setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.checked })
+                    }
+                    className="mr-2"
+                  />
+                ) : (
+                  <input
+                    type={pergunta.tipo === 'numero' ? 'number' : 'text'}
+                    value={respostasAnamnese[key] || ''}
+                    onChange={(e) =>
+                      setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.value })
+                    }
+                    className="border rounded px-2 py-1 w-full"
+                  />
                 )}
               </div>
-            )}
-          </>
-        ) : (
-{abaAtiva === 'anamnese' && (
-  <>
-    <div className="mb-4">
-      <label className="block text-sm font-semibold text-gray-700 mb-1">Modelo de Anamnese:</label>
-      <select
-        className="border border-gray-300 rounded px-3 py-2 text-sm w-full"
-        value={modeloSelecionado?.id || ''}
-        onChange={(e) => {
-          const modelo = modelos.find(m => m.id === Number(e.target.value))
-          setModeloSelecionado(modelo)
-          setRespostasAnamnese({}) // zera ao trocar modelo
-        }}
-      >
-        {modelos.map((m) => (
-          <option key={m.id} value={m.id}>{m.nome}</option>
-        ))}
-      </select>
-    </div>
+            )
+          })}
+        </div>
+      ))}
+    </>
+  ) : (
+    <textarea
+      placeholder={`Escreva as informações de ${abaAtiva}...`}
+      value={formulario[abaAtiva]}
+      onChange={handleChange}
+      className="w-full h-80 p-4 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+    />
+  )}
+</div>
 
-    {modeloSelecionado?.blocos.map((bloco, i) => (
-      <div key={i} className="mb-4">
-        <h4 className="text-nublia-accent font-semibold mb-2">{bloco.titulo}</h4>
-        {bloco.perguntas.map((pergunta, j) => {
-          const key = `${bloco.titulo}-${pergunta.campo}`
-          return (
-            <div key={j} className="mb-2">
-              <label className="block text-sm text-gray-700 mb-1">{pergunta.rotulo}</label>
-              {pergunta.tipo === 'checkbox' ? (
-                <input
-                  type="checkbox"
-                  checked={!!respostasAnamnese[key]}
-                  onChange={(e) =>
-                    setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.checked })
-                  }
-                  className="mr-2"
-                />
-              ) : (
-                <input
-                  type={pergunta.tipo === 'numero' ? 'number' : 'text'}
-                  value={respostasAnamnese[key] || ''}
-                  onChange={(e) =>
-                    setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.value })
-                  }
-                  className="border rounded px-2 py-1 w-full"
-                />
-              )}
-            </div>
-          )
-        })}
-      </div>
-    ))}
-  </>
-)}
-
-        )}
-      </div>
 
       {modalVisualizar && (
         <VisualizarAtendimentoModal
