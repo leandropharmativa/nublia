@@ -318,7 +318,6 @@ const confirmarRemocaoElemento = () => {
 
         {/* Lista de perguntas do bloco */}
         {bloco.perguntas.map((pergunta, perguntaIndex) => (
-          <div
 <div
   key={perguntaIndex}
   className={`flex gap-2 items-center text-xs ${
