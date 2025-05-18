@@ -192,7 +192,7 @@ const confirmarRemocaoElemento = () => {
                   onClick={() => setMostrarPadrao(!mostrarPadrao)}
                   className="w-full flex justify-between items-center px-4 py-2 font-semibold text-nublia-accent hover:bg-gray-100"
                 >
-                  Modelo Padrão (somente leitura)
+                  Anamnese Padrão
                   {mostrarPadrao ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 </button>
                 {mostrarPadrao && (
