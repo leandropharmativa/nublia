@@ -1,4 +1,3 @@
-
 // 📄 frontend/src/components/CalendarioAgenda.jsx
 import { useState, useEffect, useRef } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
@@ -593,17 +592,24 @@ function CustomToolbar({
     return label
   }
 
-  const { agendados, disponiveis } = (() => {
-    const agora = new Date()
-    const filtrados = eventos.filter(e =>
-      view === 'week' ? isSameWeek(e.start, date, { weekStartsOn: 1 }) :
-      view === 'day' ? isSameDay(e.start, date) : true
-    )
-    return {
-      agendados: filtrados.filter(e => e.status === 'agendado').length,
-      disponiveis: filtrados.filter(e => e.status === 'disponivel' && new Date(e.start) > agora).length
-    }
-  })()
+const { agendados, disponiveis } = (() => {
+  const agora = new Date()
+  agora.setSeconds(0, 0) // 🔒 garante comparação sem milissegundos
+
+  const filtrados = eventos.filter(e =>
+    view === 'week' ? isSameWeek(e.start, date, { weekStartsOn: 1 }) :
+    view === 'day' ? isSameDay(e.start, date) : true
+  )
+
+  const agendados = filtrados.filter(e => e.status === 'agendado').length
+
+  const disponiveis = filtrados.filter(e => {
+    const inicio = new Date(e.start)
+    return e.status === 'disponivel' && inicio > agora
+  }).length
+
+  return { agendados, disponiveis }
+})()
 
   return (
     <div className="flex justify-between items-center px-2 pb-2 border-b border-gray-200 relative" ref={containerRef}>
