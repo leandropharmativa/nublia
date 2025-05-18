@@ -12,3 +12,8 @@
     transform: scale(0.95);
   }
 }
+.destacar-exclusao {
+  background-color: #FEF3C7; /* amarelo claro (Tailwind amber-100) */
+  border: 1px solid #F59E0B; /* amber-500 */
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
