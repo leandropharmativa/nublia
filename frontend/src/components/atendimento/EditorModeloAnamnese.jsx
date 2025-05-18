@@ -270,133 +270,137 @@ const solicitarRemocaoBloco = (blocoIndex) => {
               </div>
             )}
 
-            {/* ✏️ Formulário de edição */}
-            {blocos.length > 0 && (
-              <>
-                <div className="flex items-center gap-3 border border-nublia-primary rounded-full px-4 py-2 bg-gray-50">
-                  <FileText size={20} className="text-nublia-primary" />
-                  <input
-                    type="text"
-                    placeholder="Nome do modelo"
-                    className="bg-transparent focus:outline-none flex-1 text-base font-semibold text-gray-800"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                  />
-                </div>
+{/* ✏️ Formulário de edição */}
+{blocos.length > 0 && (
+  <>
+    <div className="flex items-center gap-3 border border-nublia-primary rounded-full px-4 py-2 bg-gray-50">
+      <FileText size={20} className="text-nublia-primary" />
+      <input
+        type="text"
+        placeholder="Nome do modelo"
+        className="bg-transparent focus:outline-none flex-1 text-base font-semibold text-gray-800"
+        value={nome}
+        onChange={(e) => setNome(e.target.value)}
+      />
+    </div>
 
-                {blocos.map((bloco, blocoIndex) => (
-                  <div
-                    key={blocoIndex}
-                    className="border p-3 rounded space-y-2 bg-gray-50 text-sm">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        placeholder="Título do bloco"
-                        className="border rounded p-1 flex-grow text-sm"
-                        value={bloco.titulo}
-                        onChange={(e) => {
-                          const novosBlocos = [...blocos]
-                          novosBlocos[blocoIndex].titulo = e.target.value
-                          setBlocos(novosBlocos)
-                        }}
-                      />
-<button onClick={() => solicitarRemocaoPergunta(blocoIndex, perguntaIndex)}>
-  <Trash size={16} className="text-red-500" />
-</button>
+    {blocos.map((bloco, blocoIndex) => (
+      <div
+        key={blocoIndex}
+        className="border p-3 rounded space-y-2 bg-gray-50 text-sm"
+      >
+        {/* Cabeçalho do bloco + botão de remover bloco */}
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            placeholder="Título do bloco"
+            className="border rounded p-1 flex-grow text-sm"
+            value={bloco.titulo}
+            onChange={(e) => {
+              const novosBlocos = [...blocos]
+              novosBlocos[blocoIndex].titulo = e.target.value
+              setBlocos(novosBlocos)
+            }}
+          />
+          <button onClick={() => solicitarRemocaoBloco(blocoIndex)}>
+            <Trash size={16} className="text-red-500" />
+          </button>
+        </div>
 
-                    </div>
+        {/* Lista de perguntas do bloco */}
+        {bloco.perguntas.map((pergunta, perguntaIndex) => (
+          <div
+            key={perguntaIndex}
+            className="flex gap-2 items-center text-xs"
+          >
+            <input
+              type="text"
+              placeholder="Campo"
+              className="border rounded p-1 w-1/3"
+              value={pergunta.campo}
+              onChange={(e) => {
+                const novosBlocos = [...blocos]
+                novosBlocos[blocoIndex].perguntas[perguntaIndex].campo = e.target.value
+                setBlocos(novosBlocos)
+              }}
+            />
+            <input
+              type="text"
+              placeholder="Rótulo"
+              className="border rounded p-1 w-1/3"
+              value={pergunta.rotulo}
+              onChange={(e) => {
+                const novosBlocos = [...blocos]
+                novosBlocos[blocoIndex].perguntas[perguntaIndex].rotulo = e.target.value
+                setBlocos(novosBlocos)
+              }}
+            />
+            <select
+              className="border rounded p-1 w-1/4"
+              value={pergunta.tipo}
+              onChange={(e) => {
+                const novosBlocos = [...blocos]
+                novosBlocos[blocoIndex].perguntas[perguntaIndex].tipo = e.target.value
+                setBlocos(novosBlocos)
+              }}
+            >
+              <option value="texto">Texto</option>
+              <option value="numero">Número</option>
+              <option value="checkbox">Checkbox</option>
+            </select>
+            <button onClick={() => solicitarRemocaoPergunta(blocoIndex, perguntaIndex)}>
+              <Trash size={16} className="text-red-500" />
+            </button>
+          </div>
+        ))}
 
-                    {bloco.perguntas.map((pergunta, perguntaIndex) => (
-                      <div
-                        key={perguntaIndex}
-                        className="flex gap-2 items-center text-xs">
-                        <input
-                          type="text"
-                          placeholder="Campo"
-                          className="border rounded p-1 w-1/3"
-                          value={pergunta.campo}
-                          onChange={(e) => {
-                            const novosBlocos = [...blocos]
-                            novosBlocos[blocoIndex].perguntas[perguntaIndex].campo = e.target.value
-                            setBlocos(novosBlocos)
-                          }}
-                        />
-                        <input
-                          type="text"
-                          placeholder="Rótulo"
-                          className="border rounded p-1 w-1/3"
-                          value={pergunta.rotulo}
-                          onChange={(e) => {
-                            const novosBlocos = [...blocos]
-                            novosBlocos[blocoIndex].perguntas[perguntaIndex].rotulo = e.target.value
-                            setBlocos(novosBlocos)
-                          }}
-                        />
-                        <select
-                          className="border rounded p-1 w-1/4"
-                          value={pergunta.tipo}
-                          onChange={(e) => {
-                            const novosBlocos = [...blocos]
-                            novosBlocos[blocoIndex].perguntas[perguntaIndex].tipo = e.target.value
-                            setBlocos(novosBlocos)
-                          }}
-                        >
-                          <option value="texto">Texto</option>
-                          <option value="numero">Número</option>
-                          <option value="checkbox">Checkbox</option>
-                        </select>
-<button onClick={() => solicitarRemocaoBloco(blocoIndex)}>
-  <Trash size={16} className="text-red-500" />
-</button>
+        <button
+          onClick={() => adicionarPergunta(blocoIndex)}
+          className="text-xs text-blue-600 hover:underline mt-1"
+        >
+          + Adicionar pergunta
+        </button>
+      </div>
+    ))}
 
-                      </div>
-                    ))}
+    {/* Botões finais */}
+    <div className="flex gap-2 flex-wrap">
+      <Botao
+        onClick={adicionarBloco}
+        variante="secundario"
+        className="rounded-full px-5 flex items-center gap-2"
+      >
+        <PlusCircle size={16} />
+        Adicionar Bloco
+      </Botao>
 
-                    <button
-                      onClick={() => adicionarPergunta(blocoIndex)}
-                      className="text-xs text-blue-600 hover:underline mt-1"
-                    >
-                      + Adicionar pergunta
-                    </button>
-                  </div>
-                ))}
+      <Botao
+        onClick={salvarModelo}
+        variante="primario"
+        className="rounded-full px-5 flex items-center gap-2"
+      >
+        <Save size={16} />
+        Salvar Modelo
+      </Botao>
 
-                <div className="flex gap-2 flex-wrap">
-                  <Botao
-                    onClick={adicionarBloco}
-                    variante="secundario"
-                    className="rounded-full px-5 flex items-center gap-2"
-                  >
-                    <PlusCircle size={16} />
-                    Adicionar Bloco
-                  </Botao>
+      <Botao
+        onClick={() => {
+          setNome('')
+          setBlocos([])
+          setModeloDuplicado(false)
+          setModeloSelecionadoId(null)
+          toastErro('Edição de modelo cancelada.')
+        }}
+        variante="claro"
+        className="rounded-full px-5 flex items-center gap-2"
+      >
+        <XCircle size={16} />
+        Cancelar
+      </Botao>
+    </div>
+  </>
+)}
 
-                  <Botao
-                    onClick={salvarModelo}
-                    variante="primario"
-                    className="rounded-full px-5 flex items-center gap-2"
-                  >
-                    <Save size={16} />
-                    Salvar Modelo
-                  </Botao>
-
-                  <Botao
-                    onClick={() => {
-                      setNome('')
-                      setBlocos([])
-                      setModeloDuplicado(false)
-                      setModeloSelecionadoId(null)
-                      toastErro('Edição de modelo cancelada.')
-                    }}
-                    variante="claro"
-                    className="rounded-full px-5 flex items-center gap-2"
-                  >
-                    <XCircle size={16} />
-                    Cancelar
-                  </Botao>
-                </div>
-              </>
-            )}
           </div>
         </div>
       </div>
