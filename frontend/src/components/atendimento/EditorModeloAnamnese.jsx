@@ -287,10 +287,7 @@ const solicitarRemocaoBloco = (blocoIndex) => {
                 {blocos.map((bloco, blocoIndex) => (
                   <div
                     key={blocoIndex}
-                    className={`border p-3 rounded space-y-2 bg-gray-50 text-sm ${
-                      animarExclusao === `bloco-${blocoIndex}` ? 'animar-exclusao' : ''
-                    }`}
-                  >
+                    className="border p-3 rounded space-y-2 bg-gray-50 text-sm">
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
@@ -312,10 +309,7 @@ const solicitarRemocaoBloco = (blocoIndex) => {
                     {bloco.perguntas.map((pergunta, perguntaIndex) => (
                       <div
                         key={perguntaIndex}
-                        className={`flex gap-2 items-center text-xs ${
-                          animarExclusao === `bloco-${blocoIndex}-pergunta-${perguntaIndex}` ? 'animar-exclusao' : ''
-                        }`}
-                      >
+                        className="flex gap-2 items-center text-xs">
                         <input
                           type="text"
                           placeholder="Campo"
