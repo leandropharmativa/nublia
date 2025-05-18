@@ -29,13 +29,21 @@ export default function EditorModeloAnamnese() {
   const user = JSON.parse(localStorage.getItem('user'))
   const [alturaMax, setAlturaMax] = useState('0px')
 
-  useEffect(() => {
-    if (expandido && conteudoRef.current) {
-      setAlturaMax(`${conteudoRef.current.scrollHeight}px`)
-    } else {
-      setAlturaMax('0px')
-    }
-  }, [expandido, blocos, nome, modeloDuplicado, modelosUsuario, modeloExpandido])
+useEffect(() => {
+  if (expandido && conteudoRef.current) {
+    setAlturaMax(`${conteudoRef.current.scrollHeight}px`)
+  } else {
+    setAlturaMax('0px')
+  }
+}, [
+  expandido,
+  blocos,
+  nome,
+  modeloDuplicado,
+  modelosUsuario,
+  modeloExpandido,
+  mostrarPadrao // ✅ nova dependência
+])
 
   const carregarModelos = async () => {
     try {
