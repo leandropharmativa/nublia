@@ -26,6 +26,44 @@ export default function AdminDashboard() {
   const [nome, setNome] = useState('')
   const [blocos, setBlocos] = useState([])
 
+  const gerarCodigo = async () => {
+  setErro('')
+  setSucesso('')
+  setCarregando(true)
+
+  try {
+    const token = localStorage.getItem('token')
+    if (!token) throw new Error("Token não encontrado.")
+
+    const payload = {
+      tipo_usuario: tipoUsuario,
+      email_usuario: emailUsuario
+    }
+
+    const response = await fetch('https://nublia-backend.onrender.com/generate_code', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+
+    const data = await response.json()
+    if (response.ok) {
+      setCodigo(data.codigo)
+      setSucesso("Código gerado com sucesso!")
+    } else {
+      throw new Error(data.detail || "Erro ao gerar código")
+    }
+  } catch (err) {
+    setErro("Erro ao gerar código. Verifique os dados.")
+    setCodigo('')
+  } finally {
+    setCarregando(false)
+  }
+}
+
 const carregarModeloPadrao = async () => {
   try {
     const res = await fetch(`https://nublia-backend.onrender.com/anamnese/modelos/0`)
@@ -172,7 +210,7 @@ const carregarModeloPadrao = async () => {
                 />
               </div>
 
-              <Botao onClick={() => {}} disabled={carregando} className="mb-3">
+              <Botao onClick={gerarCodigo} disabled={carregando} className="mb-3">
                 {carregando && <span className="animate-spin h-5 w-5 mr-2">🔄</span>}
                 <span>Gerar Código</span>
               </Botao>
