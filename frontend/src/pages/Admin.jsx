@@ -161,19 +161,19 @@ const carregarModeloPadrao = async () => {
           {/* Visão Geral */}
           <Tab.Panel>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white p-4 rounded shadow-sm">
+              <div className="bg-white p-4 rounded">
                 <p className="text-sm text-gray-500">Prescritores</p>
                 <p className="text-2xl font-bold">38</p>
               </div>
-              <div className="bg-white p-4 rounded shadow-sm">
+              <div className="bg-white p-4 rounded">
                 <p className="text-sm text-gray-500">Pacientes</p>
                 <p className="text-2xl font-bold">812</p>
               </div>
-              <div className="bg-white p-4 rounded shadow-sm">
+              <div className="bg-white p-4 rounded">
                 <p className="text-sm text-gray-500">Últimos acessos</p>
                 <p className="text-2xl font-bold">17 hoje</p>
               </div>
-              <div className="bg-white p-4 rounded shadow-sm">
+              <div className="bg-white p-4 rounded">
                 <p className="text-sm text-gray-500">Códigos gerados</p>
                 <p className="text-2xl font-bold">57</p>
               </div>
@@ -183,7 +183,7 @@ const carregarModeloPadrao = async () => {
           {/* Códigos de Acesso */}
 
 <Tab.Panel>
-  <div className="bg-white rounded shadow-md p-6 space-y-6 max-w-5xl">
+  <div className="bg-white rounded p-6 space-y-6 max-w-5xl">
     <h2 className="text-lg font-semibold text-nublia-primary">Gerar Código de Acesso</h2>
 
     {erro && <div className="alert-warning">{erro}</div>}
@@ -226,7 +226,7 @@ const carregarModeloPadrao = async () => {
     )}
   </div>
 
-  <div className="mt-10 bg-white rounded shadow-md p-6 max-w-5xl">
+  <div className="mt-10 bg-white rounded p-6 max-w-5xl">
     <h3 className="text-base font-semibold text-gray-700 mb-4">Códigos gerados recentemente</h3>
     <ListaCodigosGerados />
   </div>
@@ -236,7 +236,7 @@ const carregarModeloPadrao = async () => {
 
           {/* Usuários */}
           <Tab.Panel>
-            <div className="bg-white p-6 rounded shadow-sm">
+            <div className="bg-white p-6 rounded">
               <h3 className="text-lg font-semibold mb-4">Usuários cadastrados (em breve)</h3>
               <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
                 <li>Visualizar e filtrar usuários por tipo</li>
@@ -249,7 +249,7 @@ const carregarModeloPadrao = async () => {
 
           {/* Relatórios */}
           <Tab.Panel>
-            <div className="bg-white p-6 rounded shadow-sm">
+            <div className="bg-white p-6 rounded">
               <h3 className="text-lg font-semibold mb-4">Relatórios e registros (em breve)</h3>
               <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
                 <li>Log de geração de códigos</li>
@@ -262,7 +262,7 @@ const carregarModeloPadrao = async () => {
 
           {/* Anamnese Padrão */}
           <Tab.Panel>
-            <div className="bg-white p-6 rounded shadow-sm max-w-4xl space-y-6">
+            <div className="bg-white p-6 rounded max-w-4xl space-y-6">
               <h3 className="text-lg font-semibold text-nublia-primary">Editar Anamnese Padrão</h3>
 
               <input
