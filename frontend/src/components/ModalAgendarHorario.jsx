@@ -285,27 +285,18 @@ useEffect(() => {
 
 {user?.role !== 'secretaria' && (
   <button
-    onClick={async () => {
-      console.log('[DEBUG] Disparando evento global para iniciar ficha')
-      try {
-const res = await axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-const paciente = res.data  // ✅ agora correto
+onClick={() => {
+  if (!pacienteId) {
+    toastErro('Paciente não encontrado.')
+    return
+  }
 
-if (!paciente || !paciente.data_nascimento) {
-  toastErro('Paciente sem data de nascimento.')
-  return
-}
+  window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
+    detail: { pacienteId, agendamentoId }
+  }))
 
-window.dispatchEvent(new CustomEvent('IniciarFichaAtendimento', {
-  detail: { paciente, agendamentoId }
-}))
-
-        onCancelar()
-      } catch (err) {
-        console.error('[ERRO] Falha ao buscar paciente para ficha:', err)
-        toastErro('Erro ao iniciar atendimento.')
-      }
-    }}
+  onCancelar()
+}}
     className="text-nublia-accent hover:text-nublia-orange"
     title="Iniciar atendimento"
   >
