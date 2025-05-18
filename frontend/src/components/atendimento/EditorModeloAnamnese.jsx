@@ -287,7 +287,11 @@ const solicitarRemocaoBloco = (blocoIndex) => {
     {blocos.map((bloco, blocoIndex) => (
       <div
         key={blocoIndex}
-        className="border p-3 rounded space-y-2 bg-gray-50 text-sm"
+        className={`border p-3 rounded space-y-2 bg-gray-50 text-sm ${
+        confirmarRemocao?.tipo === 'bloco' && confirmarRemocao?.blocoIndex === blocoIndex
+        ? 'destacar-exclusao'
+        : ''
+        }`}
       >
         {/* Cabeçalho do bloco + botão de remover bloco */}
         <div className="flex items-center gap-2">
@@ -311,7 +315,13 @@ const solicitarRemocaoBloco = (blocoIndex) => {
         {bloco.perguntas.map((pergunta, perguntaIndex) => (
           <div
             key={perguntaIndex}
-            className="flex gap-2 items-center text-xs"
+              className={`flex gap-2 items-center text-xs ${
+              confirmarRemocao?.tipo === 'pergunta' &&
+              confirmarRemocao?.blocoIndex === blocoIndex &&
+              confirmarRemocao?.perguntaIndex === perguntaIndex
+              ? 'destacar-exclusao'
+              : ''
+              }`}
           >
             <input
               type="text"
