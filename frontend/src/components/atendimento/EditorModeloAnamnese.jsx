@@ -23,7 +23,7 @@ export default function EditorModeloAnamnese() {
   const [mostrarPadrao, setMostrarPadrao] = useState(false)
   const [confirmarRemocao, setConfirmarRemocao] = useState(null) 
   const [aguardandoExclusao, setAguardandoExclusao] = useState(false)
-
+  const [animandoExclusao, setAnimandoExclusao] = useState(null)
 
   const conteudoRef = useRef(null)
   const user = JSON.parse(localStorage.getItem('user'))
@@ -137,9 +137,15 @@ const solicitarRemocaoBloco = (blocoIndex) => {
     }
   }
 
-  const confirmarRemocaoElemento = () => {
+const confirmarRemocaoElemento = () => {
   if (!confirmarRemocao) return
   const { tipo, blocoIndex, perguntaIndex } = confirmarRemocao
+
+  const id = tipo === 'bloco'
+    ? `bloco-${blocoIndex}`
+    : `bloco-${blocoIndex}-pergunta-${perguntaIndex}`
+
+  setAnimandoExclusao(id)
   setAguardandoExclusao(true)
 
   setTimeout(() => {
@@ -151,8 +157,9 @@ const solicitarRemocaoBloco = (blocoIndex) => {
     }
     setBlocos(novosBlocos)
     setConfirmarRemocao(null)
+    setAnimandoExclusao(null)
     setAguardandoExclusao(false)
-  }, 200)
+  }, 300) // ⏱ tempo da animação
 }
 
   return (
@@ -285,14 +292,12 @@ const solicitarRemocaoBloco = (blocoIndex) => {
     </div>
 
     {blocos.map((bloco, blocoIndex) => (
-      <div
-        key={blocoIndex}
-        className={`border p-3 rounded space-y-2 bg-gray-50 text-sm ${
-        confirmarRemocao?.tipo === 'bloco' && confirmarRemocao?.blocoIndex === blocoIndex
-        ? 'destacar-exclusao'
-        : ''
-        }`}
-      >
+<div
+  key={blocoIndex}
+  className={`border p-3 rounded space-y-2 bg-gray-50 text-sm ${
+    animandoExclusao === `bloco-${blocoIndex}` ? 'animar-exclusao' : ''
+  }`}
+>
         {/* Cabeçalho do bloco + botão de remover bloco */}
         <div className="flex items-center gap-2">
           <input
@@ -314,15 +319,13 @@ const solicitarRemocaoBloco = (blocoIndex) => {
         {/* Lista de perguntas do bloco */}
         {bloco.perguntas.map((pergunta, perguntaIndex) => (
           <div
-            key={perguntaIndex}
-              className={`flex gap-2 items-center text-xs ${
-              confirmarRemocao?.tipo === 'pergunta' &&
-              confirmarRemocao?.blocoIndex === blocoIndex &&
-              confirmarRemocao?.perguntaIndex === perguntaIndex
-              ? 'destacar-exclusao'
-              : ''
-              }`}
-          >
+<div
+  key={perguntaIndex}
+  className={`flex gap-2 items-center text-xs ${
+    animandoExclusao === `bloco-${blocoIndex}-pergunta-${perguntaIndex}` ? 'animar-exclusao' : ''
+  }`}
+>
+
             <input
               type="text"
               placeholder="Campo"
