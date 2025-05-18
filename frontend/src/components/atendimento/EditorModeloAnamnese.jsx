@@ -159,7 +159,7 @@ const confirmarRemocaoElemento = () => {
     setConfirmarRemocao(null)
     setAnimandoExclusao(null)
     setAguardandoExclusao(false)
-  }, 600) // ⏱ tempo da animação
+  }, 300) // ⏱ tempo da animação
 }
 
   return (
