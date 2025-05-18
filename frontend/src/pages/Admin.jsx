@@ -184,26 +184,28 @@ const carregarModeloPadrao = async () => {
           {/* Códigos de Acesso */}
 
 <Tab.Panel>
-  <div className="bg-white rounded p-6 space-y-6 max-w-5xl">
-    <h2 className="text-lg font-semibold text-nublia-primary">Gerar Código de Acesso</h2>
+<div className="bg-white rounded border border-gray-200 p-6 space-y-6 max-w-3xl w-full">
+  <h2 className="text-lg font-semibold text-nublia-primary">Gerar Código de Acesso</h2>
 
-    {erro && <div className="alert-warning">{erro}</div>}
-    {sucesso && <div className="alert-success">{sucesso}</div>}
+  {erro && <div className="alert-warning">{erro}</div>}
+  {sucesso && <div className="alert-success">{sucesso}</div>}
 
-    <div className="grid sm:grid-cols-2 gap-4">
-      <div>
-        <label className="text-sm block mb-1">Tipo de usuário</label>
-        <select
-          value={tipoUsuario}
-          onChange={(e) => setTipoUsuario(e.target.value)}
-          className="input-base"
-        >
-          <option value="prescritor">Prescritor</option>
-          <option value="clinica">Clínica</option>
-          <option value="farmacia">Farmácia</option>
-          <option value="academia">Academia</option>
-        </select>
-      </div>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label className="text-sm font-medium text-gray-700 mb-1 block">Tipo de usuário</label>
+      <select
+        value={tipoUsuario}
+        onChange={(e) => setTipoUsuario(e.target.value)}
+        className="input-base w-full"
+      >
+        <option value="prescritor">Prescritor</option>
+        <option value="clinica">Clínica</option>
+        <option value="farmacia">Farmácia</option>
+        <option value="academia">Academia</option>
+      </select>
+    </div>
+
+    <div className="md:col-span-2">
       <CampoTexto
         type="email"
         name="emailUsuario"
@@ -211,21 +213,25 @@ const carregarModeloPadrao = async () => {
         value={emailUsuario}
         onChange={(e) => setEmailUsuario(e.target.value)}
         required
+        label="Email do usuário"
       />
     </div>
+  </div>
 
+  <div className="flex gap-4 items-center mt-2">
     <Botao onClick={gerarCodigo} disabled={carregando}>
       {carregando && <span className="animate-spin h-5 w-5 mr-2">🔄</span>}
       Gerar Código
     </Botao>
 
     {codigo && (
-      <div className="mt-4 p-4 border border-dashed rounded bg-gray-50 text-center">
+      <div className="px-4 py-2 border border-dashed rounded bg-gray-50 text-center">
         <p className="text-sm text-gray-600">Código gerado:</p>
-        <p className="font-mono font-bold text-xl text-nublia-primary">{codigo}</p>
+        <p className="font-mono font-bold text-lg text-nublia-primary">{codigo}</p>
       </div>
     )}
   </div>
+</div>
 
   <div className="mt-10 bg-white rounded p-6 max-w-5xl">
     <h3 className="text-base font-semibold text-gray-700 mb-4">Códigos gerados recentemente</h3>
