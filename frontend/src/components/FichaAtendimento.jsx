@@ -13,6 +13,7 @@ import axios from 'axios'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
+import EditorAntropometria from './atendimento/EditorAntropometria'
 import './FichaAtendimento.css'
 
 export default function FichaAtendimento({ paciente, agendamentoId = null, onFinalizar, onAtendimentoSalvo }) {
@@ -21,6 +22,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   const [modelos, setModelos] = useState([])
   const [modeloSelecionado, setModeloSelecionado] = useState(null)
   const [respostasAnamnese, setRespostasAnamnese] = useState({})
+  const [respostasAntropometria, setRespostasAntropometria] = useState({})
   const [animarTrocaModelo, setAnimarTrocaModelo] = useState(false)
 
   const abas = ['paciente', 'anamnese', 'antropometria', 'prescricao', 'exames', 'dieta', 'receitas']
@@ -146,7 +148,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         agendamento_id: agendamentoIdRef.current,
         anamnese: JSON.stringify(respostasAnamnese),
         modelo_id: modeloSelecionado?.id,
-        antropometria: formulario.antropometria,
+        antropometria: JSON.stringify(respostasAntropometria),
         prescricao: formulario.prescricao,
         exames: formulario.exames,
         dieta: formulario.dieta,
@@ -379,14 +381,15 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
               ))}
             </div>
           </>
-        ) : (
-          <textarea
-            placeholder={`Escreva as informações de ${abaAtiva}...`}
-            value={formulario[abaAtiva]}
-            onChange={handleChange}
-            className="w-full h-80 p-4 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
-          />
-        )}
+) : (
+  <textarea
+    placeholder={`Escreva as informações de ${abaAtiva}...`}
+    value={formulario[abaAtiva]}
+    onChange={handleChange}
+    className="w-full h-80 p-4 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
+  />
+)}
+
       </div>
 
       {/* 🔹 Modal de visualização de atendimento anterior */}
