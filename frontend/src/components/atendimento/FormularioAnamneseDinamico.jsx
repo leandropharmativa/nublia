@@ -57,8 +57,6 @@ export default function FormularioAnamneseDinamico({ atendimentoId, prescritorId
       <h2 className="text-lg font-bold flex items-center gap-2 text-nublia-primary">
         <FileText size={20} /> Anamnese
       </h2>
-<fieldset className="border border-gray-300 rounded-xl p-4 mb-4">
-  <legend className="text-sm font-semibold text-nublia-accent px-2">{bloco.titulo}</legend>
       {modelo.blocos.map((bloco, i) => (
         <div key={i} className="border p-3 rounded bg-gray-50 space-y-2">
           <h3 className="font-semibold text-gray-700">{bloco.titulo}</h3>
@@ -96,8 +94,6 @@ export default function FormularioAnamneseDinamico({ atendimentoId, prescritorId
           ))}
         </div>
       ))}
-  </fieldset>
-
       <Botao onClick={salvarRespostas} variante="primario" icone={<Save size={16} />}>
         Salvar Anamnese
       </Botao>
