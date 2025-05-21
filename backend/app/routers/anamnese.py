@@ -24,6 +24,7 @@ class BlocoModel(BaseModel):
 # 📦 Criar modelo de anamnese
 class ModeloAnamneseCreate(BaseModel):
     nome: str
+    tipo: str
     prescritor_id: int
     blocos: List[BlocoModel]
 
