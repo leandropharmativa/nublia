@@ -46,13 +46,16 @@ export default function FormularioAntropometriaVisual({ sexo = 'feminino', respo
             transform: 'translate(-50%, -50%)',
           }}
         >
-          <input
-            type="text"
-            placeholder={campo.nome}
-            value={respostas[campo.nome] || ''}
-            onChange={(e) => handleChange(campo.nome, e.target.value)}
-            className="w-20 px-2 py-1 text-xs rounded border border-gray-300 bg-white shadow focus:outline-none focus:ring-2 focus:ring-nublia-accent"
-          />
+<div className="flex flex-col items-center">
+  <span className="medida-label">{campo.nome}</span>
+  <input
+    type="text"
+    value={respostas[campo.nome] || ''}
+    onChange={(e) => handleChange(campo.nome, e.target.value)}
+    className="medida-input"
+  />
+</div>
+
         </div>
       ))}
     </div>
