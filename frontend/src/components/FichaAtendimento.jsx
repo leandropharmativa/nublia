@@ -1,4 +1,4 @@
-// 📄 components/FichaAtendimento.jsx
+// 📄 .components/FichaAtendimento.jsx
 import { useEffect, useState, useRef } from 'react'
 import {
   Save,
