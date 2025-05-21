@@ -19,7 +19,7 @@ export default function FormularioAntropometriaVisual({ sexo = 'feminino', respo
   }
 
   const campos = [
-    { nome: 'ombro', top: '8%', left: '45%' },
+    { nome: 'ombro', top: '16%', left: '75%' },
     { nome: 'peitoral', top: '18%', left: '45%' },
     { nome: 'cintura', top: '28%', left: '46%' },
     { nome: 'quadril', top: '38%', left: '45%' },
