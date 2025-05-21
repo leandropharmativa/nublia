@@ -68,7 +68,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         }))
         setModelos(modelosConvertidos)
         const padrao = modelosConvertidos.find(m => m.nome === 'Anamnese Padrão')
-        set(padrao || modelosConvertidos[0])
+        setModeloSelecionado(padrao || modelosConvertidos[0])
       } catch {
         toastErro('Erro ao carregar modelos de anamnese.')
       }
@@ -345,46 +345,43 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
               </select>
             </div>
             <div className={`${animarTrocaModelo ? 'animate-fadeIn' : ''}`}>
-{modeloSelecionado?.blocos.map((bloco, i) => (
-  <fieldset key={i} className="border border-gray-300 rounded-xl p-4 mb-4">
-    <legend className="text-sm font-semibold text-nublia-accent bg-white px-2">{bloco.titulo}</legend>
-    <div className="mt-2 space-y-3">
-      {bloco.perguntas.map((pergunta, j) => {
-        const key = `${bloco.titulo}-${pergunta.campo}`
-        return (
-          <div key={j} className="mb-2">
-            {pergunta.tipo === 'checkbox' ? (
-              <label className="inline-flex items-center gap-2 text-sm text-gray-700">
-                {pergunta.rotulo}
-                <input
-                  type="checkbox"
-                  checked={!!respostasAnamnese[key]}
-                  onChange={(e) =>
-                    setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.checked })
-                  }
-                  className="accent-nublia-primary"
-                />
-              </label>
-            ) : (
-              <>
-                <label className="block text-sm text-gray-700 mb-1">{pergunta.rotulo}</label>
-                <input
-                  type={pergunta.tipo === 'numero' ? 'number' : 'text'}
-                  value={respostasAnamnese[key] || ''}
-                  onChange={(e) =>
-                    setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.value })
-                  }
-                  className="border rounded px-2 py-1 w-full"
-                />
-              </>
-            )}
-          </div>
-        )
-      })}
-    </div>
-  </fieldset>
-))}
-
+              {modeloSelecionado?.blocos.map((bloco, i) => (
+                <div key={i} className="mb-4">
+                  <h4 className="text-nublia-accent font-semibold mb-2">{bloco.titulo}</h4>
+                  {bloco.perguntas.map((pergunta, j) => {
+                    const key = `${bloco.titulo}-${pergunta.campo}`
+                    return (
+                      <div key={j} className="mb-2">
+                        {pergunta.tipo === 'checkbox' ? (
+                          <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+                            {pergunta.rotulo}
+                            <input
+                              type="checkbox"
+                              checked={!!respostasAnamnese[key]}
+                              onChange={(e) =>
+                                setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.checked })
+                              }
+                              className="accent-nublia-primary"
+                            />
+                          </label>
+                        ) : (
+                          <>
+                            <label className="block text-sm text-gray-700 mb-1">{pergunta.rotulo}</label>
+                            <input
+                              type={pergunta.tipo === 'numero' ? 'number' : 'text'}
+                              value={respostasAnamnese[key] || ''}
+                              onChange={(e) =>
+                                setRespostasAnamnese({ ...respostasAnamnese, [key]: e.target.value })
+                              }
+                              className="border rounded px-2 py-1 w-full"
+                            />
+                          </>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              ))}
             </div>
           </>
 ) : abaAtiva === 'antropometria' ? (
