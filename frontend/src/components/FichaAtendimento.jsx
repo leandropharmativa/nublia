@@ -150,7 +150,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         prescritor_id: user?.id,
         agendamento_id: agendamentoIdRef.current,
         anamnese: JSON.stringify(respostasAnamnese),
-        modelo_id: ?.id,
+        modelo_id: modeloSelecionado?.id,
         antropometria: JSON.stringify(respostasAntropometria),
         prescricao: formulario.prescricao,
         exames: formulario.exames,
@@ -330,10 +330,10 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
               <label className="block text-sm font-semibold text-gray-700 mb-1">Modelo de Anamnese:</label>
               <select
                 className="border border-gray-300 rounded px-3 py-2 text-sm w-full"
-                value={String(?.id) || ''}
+                value={String(modeloSelecionado?.id) || ''}
                 onChange={(e) => {
                   const modelo = modelos.find(m => String(m.id) === e.target.value)
-                  set(modelo)
+                  setModeloSelecionado(modelo)
                   setRespostasAnamnese({})
                   setAnimarTrocaModelo(true)
                   setTimeout(() => setAnimarTrocaModelo(false), 400)
