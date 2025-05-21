@@ -46,12 +46,14 @@ def criar_modelo(modelo: ModeloAnamneseCreate):
 
 # ✅ Listar modelos por prescritor (incluindo padrão)
 @router.get("/anamnese/modelos/{prescritor_id}")
-def listar_modelos(prescritor_id: int):
+def listar_modelos(prescritor_id: int, tipo: Optional[str] = None):
     with Session(engine) as session:
         stmt = select(ModeloAnamnese).where(
             (ModeloAnamnese.prescritor_id == prescritor_id) |
             (ModeloAnamnese.prescritor_id == 0)
         )
+        if tipo:
+            stmt = stmt.where(ModeloAnamnese.tipo == tipo)
         modelos = session.exec(stmt).all()
         return modelos
 
