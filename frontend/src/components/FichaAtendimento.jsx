@@ -15,6 +15,7 @@ import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
 import EditorAntropometria from './atendimento/EditorAntropometria'
 import FormularioAntropometriaVisual from './atendimento/FormularioAntropometriaVisual'
+import FormularioAntropometriaCampos from './atendimento/FormularioAntropometriaCampos'
 
 import './FichaAtendimento.css'
 
@@ -384,8 +385,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
             </div>
           </>
 ) : abaAtiva === 'antropometria' ? (
-  <FormularioAntropometriaVisual
-    sexo={pacienteSelecionado?.sexo || 'feminino'}
+  <FormularioAntropometriaCampos
     respostas={respostasAntropometria}
     setRespostas={setRespostasAntropometria}
   />
@@ -398,7 +398,6 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   />
 )}
       </div>
-
       {/* 🔹 Modal de visualização de atendimento anterior */}
       {modalVisualizar && (
         <VisualizarAtendimentoModal
