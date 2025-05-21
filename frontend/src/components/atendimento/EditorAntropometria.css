@@ -26,3 +26,15 @@ img.antropometria-corpo {
 
 /* 🎯 Layout dos campos */
 .editor-antropo-bloco {
+  margin-bottom: 1.5rem;
+}
+
+.editor-antropo-bloco h4 {
+  color: #2563eb; /* azul nublia */
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.editor-antropo-campo {
+  margin-bottom: 0.75rem;
+}
