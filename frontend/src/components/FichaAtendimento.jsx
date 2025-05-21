@@ -217,7 +217,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
 // ... [todo o código anterior permanece igual até o return]
 
   return (
-    <div className="bg-white p-6 rounded-2xl w-full">
+    <div className="bg-white p-6 rounded-2xl w-full h-[calc(100vh-100px)] flex flex-col">
       {/* 🔹 Cabeçalho da ficha */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col gap-1">
@@ -260,7 +260,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
       </div>
 
       {/* 🔹 Tabs de navegação */}
-      <div className="flex border-b mb-6">
+      <div className="flex border-b mb-4">
         {abas.map((aba) => (
           <button
             key={aba}
@@ -277,7 +277,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
       </div>
 
       {/* 🔹 Conteúdo da aba ativa */}
-      <div className="space-y-4">
+      <div className="flex-1 overflow-y-auto pr-1 space-y-4">
         {abaAtiva === 'paciente' ? (
           <>
             <div className="space-y-2 text-sm text-gray-700">
