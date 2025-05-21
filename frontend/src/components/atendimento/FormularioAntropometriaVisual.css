@@ -1,0 +1,32 @@
+/* 📄 components/atendimento/FormularioAntropometriaVisual.css */
+
+/* Estilização do input */
+.medida-input {
+  width: 64px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 6px;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.medida-input:focus {
+  outline: none;
+  border-color: #2563eb; /* azul nublia */
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Label da medida */
+.medida-label {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #374151; /* gray-700 */
+  text-align: center;
+  margin-bottom: 2px;
+  background-color: rgba(255, 255, 255, 0.75);
+  padding: 1px 4px;
+  border-radius: 4px;
+  display: inline-block;
+}
