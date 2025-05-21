@@ -381,6 +381,12 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
               ))}
             </div>
           </>
+) : abaAtiva === 'antropometria' ? (
+  <EditorAntropometria
+    paciente={pacienteSelecionado}
+    respostas={respostasAntropometria}
+    setRespostas={setRespostasAntropometria}
+  />
 ) : (
   <textarea
     placeholder={`Escreva as informações de ${abaAtiva}...`}
@@ -389,7 +395,6 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
     className="w-full h-80 p-4 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-nublia-accent"
   />
 )}
-
       </div>
 
       {/* 🔹 Modal de visualização de atendimento anterior */}
