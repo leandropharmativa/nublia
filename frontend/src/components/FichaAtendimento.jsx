@@ -213,11 +213,8 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
     return idade
   }
 
-// 📄 components/FichaAtendimento.jsx
-// ... [todo o código anterior permanece igual até o return]
-
   return (
-    <div className="bg-white p-6 rounded-2xl w-full h-[calc(100vh-100px)] flex flex-col">
+    <div className="bg-white p-6 rounded-2xl w-full h-full flex flex-col overflow-hidden">
       {/* 🔹 Cabeçalho da ficha */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col gap-1">
