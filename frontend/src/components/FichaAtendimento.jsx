@@ -23,6 +23,28 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   const [respostasAnamnese, setRespostasAnamnese] = useState({})
   const [animarTrocaModelo, setAnimarTrocaModelo] = useState(false)
 
+  const abas = ['paciente', 'anamnese', 'antropometria', 'prescricao', 'exames', 'dieta', 'receitas']
+  const [abaAtiva, setAbaAtiva] = useState('paciente')
+
+  const [formulario, setFormulario] = useState({
+    anamnese: '',
+    antropometria: '',
+    prescricao: '',
+    exames: '',
+    dieta: '',
+    receitas: '',
+  })
+
+  const [atendimentoId, setAtendimentoId] = useState(null)
+  const [atendimentosAnteriores, setAtendimentosAnteriores] = useState([])
+  const [modalVisualizar, setModalVisualizar] = useState(null)
+  const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] = useState(false)
+  const [mostrarConfirmacaoFinalizar, setMostrarConfirmacaoFinalizar] = useState(false)
+  const [mostrarTodos, setMostrarTodos] = useState(false)
+  const [salvoUltimaVersao, setSalvoUltimaVersao] = useState(true)
+
+  const agendamentoIdRef = useRef(null)
+
   useEffect(() => {
     if (paciente?.id) {
       setPacienteSelecionado(paciente)
@@ -46,26 +68,31 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         toastErro('Erro ao carregar modelos de anamnese.')
       }
     }
+
     carregarModelos()
   }, [])
 
-  const agendamentoIdRef = useRef(null)
   useEffect(() => {
     if (agendamentoId && !agendamentoIdRef.current) {
       agendamentoIdRef.current = agendamentoId
+      console.log('✅ agendamentoId armazenado:', agendamentoId)
     }
   }, [agendamentoId])
 
   useEffect(() => {
     const handler = (e) => {
       const dados = e.detail
+      console.log('📩 Evento recebido: IniciarFichaAtendimento ', dados)
+
       if (dados?.paciente?.id) {
         setPacienteId(dados.paciente.id)
       } else if (dados?.pacienteId) {
         setPacienteId(dados.pacienteId)
       }
+
       if (dados?.agendamentoId) {
         agendamentoIdRef.current = dados.agendamentoId
+        console.log('✅ agendamentoId armazenado:', dados.agendamentoId)
       }
     }
 
@@ -76,29 +103,13 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   useEffect(() => {
     if (pacienteId && !pacienteSelecionado) {
       axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-        .then((res) => setPacienteSelecionado(res.data))
+        .then((res) => {
+          console.log('👤 Paciente carregado da API:', res.data)
+          setPacienteSelecionado(res.data)
+        })
         .catch(() => toastErro('Erro ao buscar dados do paciente.'))
     }
   }, [pacienteId])
-
-  const [abaAtiva, setAbaAtiva] = useState('paciente')
-  const [formulario, setFormulario] = useState({
-    anamnese: '',
-    antropometria: '',
-    prescrição: '',
-    exames: '',
-    dieta: '',
-    receitas: '',
-  })
-  const [atendimentoId, setAtendimentoId] = useState(null)
-  const [atendimentosAnteriores, setAtendimentosAnteriores] = useState([])
-  const [modalVisualizar, setModalVisualizar] = useState(null)
-  const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] = useState(false)
-  const [mostrarConfirmacaoFinalizar, setMostrarConfirmacaoFinalizar] = useState(false)
-  const [mostrarTodos, setMostrarTodos] = useState(false)
-  const [salvoUltimaVersao, setSalvoUltimaVersao] = useState(true)
-
-  const abas = ['paciente', 'anamnese', 'antropometria', 'prescrição', 'exames', 'dieta', 'receitas']
 
   useEffect(() => {
     const carregarAnteriores = async () => {
@@ -128,6 +139,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   const handleSalvar = async (mostrarToast = true) => {
     try {
       const user = JSON.parse(localStorage.getItem('user'))
+
       const dadosAtendimento = {
         paciente_id: pacienteSelecionado.id,
         prescritor_id: user?.id,
@@ -135,11 +147,13 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         anamnese: JSON.stringify(respostasAnamnese),
         modelo_id: modeloSelecionado?.id,
         antropometria: formulario.antropometria,
-        prescricao: formulario['prescrição'],
+        prescricao: formulario.prescricao,
         exames: formulario.exames,
         dieta: formulario.dieta,
         receita: formulario.receitas,
       }
+
+      console.log("🔍 Salvando atendimento com dados:", dadosAtendimento)
 
       if (!atendimentoId) {
         const response = await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
@@ -152,21 +166,29 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
       if (mostrarToast) toastSucesso('Atendimento salvo com sucesso!')
       if (onAtendimentoSalvo) onAtendimentoSalvo()
     } catch (error) {
-      toastErro('Erro ao salvar atendimento.')
+      console.error('Erro ao salvar atendimento:', error.response?.data || error.message)
+      toastErro('Erro ao salvar atendimento. Verifique os dados.')
     }
   }
 
   const handleFinalizar = async () => {
     try {
+      console.log('🟢 Finalizando atendimento...')
       await handleSalvar(false)
+
       if (agendamentoIdRef.current) {
+        console.log('📤 Enviando finalização do agendamento ID:', agendamentoIdRef.current)
         await axios.post('https://nublia-backend.onrender.com/agenda/finalizar', {
           id: agendamentoIdRef.current,
         })
+      } else {
+        console.warn('⚠️ Nenhum agendamentoId fornecido. Nada será finalizado.')
       }
+
       toastSucesso('Atendimento salvo e finalizado!')
       onFinalizar()
-    } catch {
+    } catch (err) {
+      console.error('❌ Erro ao finalizar atendimento/agendamento:', err)
       toastErro('Erro ao finalizar atendimento.')
     }
   }
@@ -191,7 +213,53 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
     return idade
   }
 
+// 📄 components/FichaAtendimento.jsx
+// ... [todo o código anterior permanece igual até o return]
+
   return (
+    <div className="bg-white p-6 rounded-2xl w-full">
+      {/* 🔹 Cabeçalho da ficha */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h2 className="text-2xl font-bold text-nublia-accent">Ficha de Atendimento</h2>
+
+            <button
+              onClick={() => handleSalvar()}
+              className="text-nublia-accent hover:text-nublia-orange transition"
+              title="Salvar atendimento"
+            >
+              <Save size={24} />
+            </button>
+
+            <button
+              onClick={() => setMostrarConfirmacaoFinalizar(true)}
+              className="text-white bg-nublia-accent hover:bg-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2"
+              title="Finalizar atendimento"
+            >
+              <CheckCircle size={18} /> Finalizar
+            </button>
+
+            {!atendimentoId && (
+              <button
+                onClick={handleDescartar}
+                className="text-nublia-accent hover:text-nublia-orange px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2 border border-nublia-accent"
+                title="Descartar atendimento"
+              >
+                <ClipboardX size={18} /> Descartar
+              </button>
+            )}
+          </div>
+          <p className="text-sm text-gray-700 font-semibold mt-1">
+            {pacienteSelecionado?.name}{' '}
+            {pacienteSelecionado?.data_nascimento && (
+              <>• {calcularIdade(pacienteSelecionado.data_nascimento)} anos</>
+            )}
+          </p>
+        </div>
+      </div>
+
+      {/* 🔹 Tabs de navegação */}
       <div className="flex border-b mb-6">
         {abas.map((aba) => (
           <button
@@ -208,6 +276,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         ))}
       </div>
 
+      {/* 🔹 Conteúdo da aba ativa */}
       <div className="space-y-4">
         {abaAtiva === 'paciente' ? (
           <>
@@ -323,6 +392,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         )}
       </div>
 
+      {/* 🔹 Modal de visualização de atendimento anterior */}
       {modalVisualizar && (
         <VisualizarAtendimentoModal
           atendimento={modalVisualizar}
@@ -330,6 +400,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         />
       )}
 
+      {/* 🔹 Modal de confirmação para saída */}
       <ModalConfirmacao
         aberto={mostrarConfirmacaoSaida}
         titulo="Descartar atendimento?"
@@ -343,6 +414,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
         onCancelar={() => setMostrarConfirmacaoSaida(false)}
       />
 
+      {/* 🔹 Modal de confirmação para finalização */}
       <ModalConfirmacao
         aberto={mostrarConfirmacaoFinalizar}
         titulo="Finalizar atendimento?"
