@@ -62,7 +62,7 @@ export default function FormularioAnamneseDinamico({ atendimentoId, prescritorId
 
       {modelo.blocos.map((bloco, i) => (
         <fieldset key={i} className="border border-gray-300 rounded-xl p-4">
-          <legend className="text-sm font-semibold text-nublia-accent px-2">{bloco.titulo}</legend>
+          <legend className="text-sm font-semibold text-nublia-accent px-2 -ml-1">{bloco.titulo}</legend>
           <div className="mt-2 space-y-4">
             {bloco.perguntas.map((p, j) => (
               <div key={j} className="flex flex-col">
