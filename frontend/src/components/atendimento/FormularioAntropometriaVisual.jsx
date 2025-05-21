@@ -1,7 +1,7 @@
 // 📄 components/atendimento/FormularioAntropometriaVisual.jsx
 import { useEffect, useState } from 'react'
-import imagemFeminina from '../../assets/antropometria-corpo-feminino.png' // use uma versão feminina
-import imagemMasculina from '../../assets/antropometria-corpo-masculino.png' // use uma versão masculina
+import imagemFeminina from '../../assets/antropometria-feminino.png' // use uma versão feminina
+import imagemMasculina from '../../assets/antropometria-masculino.png' // use uma versão masculina
 
 export default function FormularioAntropometriaVisual({ sexo = 'feminino', respostas, setRespostas }) {
   const [imagem, setImagem] = useState(imagemFeminina)
