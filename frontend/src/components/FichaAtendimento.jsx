@@ -26,8 +26,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   const [respostasAnamnese, setRespostasAnamnese] = useState({})
   const [respostasAntropometria, setRespostasAntropometria] = useState({})
   const [animarTrocaModelo, setAnimarTrocaModelo] = useState(false)
-  const [respostasAntropometria, setRespostasAntropometria] = useState({})
-
+  
   const abas = ['paciente', 'anamnese', 'antropometria', 'prescricao', 'exames', 'dieta', 'receitas']
   const [abaAtiva, setAbaAtiva] = useState('paciente')
 
