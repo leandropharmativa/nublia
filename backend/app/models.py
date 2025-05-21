@@ -125,7 +125,6 @@ class Secretaria(SQLModel, table=True):
 class ModeloAnamnese(SQLModel, table=True):
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     nome: str
-    tipo: str
     prescritor_id: int
     blocos: dict = Field(default_factory=dict, sa_column=Column(JSON))
 
