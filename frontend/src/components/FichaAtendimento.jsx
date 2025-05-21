@@ -14,6 +14,8 @@ import { toastSucesso, toastErro } from '../utils/toastUtils'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
 import EditorAntropometria from './atendimento/EditorAntropometria'
+import FormularioAntropometriaVisual from './atendimento/FormularioAntropometriaVisual'
+
 import './FichaAtendimento.css'
 
 export default function FichaAtendimento({ paciente, agendamentoId = null, onFinalizar, onAtendimentoSalvo }) {
@@ -24,6 +26,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
   const [respostasAnamnese, setRespostasAnamnese] = useState({})
   const [respostasAntropometria, setRespostasAntropometria] = useState({})
   const [animarTrocaModelo, setAnimarTrocaModelo] = useState(false)
+  const [respostasAntropometria, setRespostasAntropometria] = useState({})
 
   const abas = ['paciente', 'anamnese', 'antropometria', 'prescricao', 'exames', 'dieta', 'receitas']
   const [abaAtiva, setAbaAtiva] = useState('paciente')
@@ -382,8 +385,8 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
             </div>
           </>
 ) : abaAtiva === 'antropometria' ? (
-  <EditorAntropometria
-    paciente={pacienteSelecionado}
+  <FormularioAntropometriaVisual
+    sexo={pacienteSelecionado?.sexo || 'feminino'}
     respostas={respostasAntropometria}
     setRespostas={setRespostasAntropometria}
   />
