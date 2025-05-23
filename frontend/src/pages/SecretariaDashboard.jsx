@@ -1,4 +1,3 @@
-
 // 📄 pages/SecretariaDashboard.jsx
 
 import { useEffect, useState } from 'react'
@@ -11,6 +10,8 @@ import ModalAgendarHorario from '../components/ModalAgendarHorario'
 import ModalFinalizado from '../components/ModalFinalizado'
 import PerfilPacienteModal from '../components/PerfilPacienteModal'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
+
+import api from '../services/api'
 
 export default function SecretariaDashboard() {
   const [eventos, setEventos] = useState([])
@@ -55,8 +56,7 @@ export default function SecretariaDashboard() {
 
   const buscarPrescritor = async (id) => {
     try {
-      const res = await fetch(`https://nublia-backend.onrender.com/users/${id}`)
-      const data = await res.json()
+    const { data } = await api.get(`/users/${id}`)
       setNomePrescritor(data.name || 'Prescritor')
     } catch {
       console.warn('[WARN] Falha ao carregar prescritor.')
@@ -66,16 +66,14 @@ export default function SecretariaDashboard() {
 
   const carregarAgenda = async (prescritorId) => {
     try {
-      const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${prescritorId}`)
-      const data = await res.json()
+      const { data } = await api.get(`/agenda/prescritor/${prescritorId}`)
 
       const eventosFormatados = await Promise.all(
         data.map(async (e) => {
           let nome = e.paciente_nome || 'Agendado'
           if (e.status === 'agendado' && e.paciente_id && !e.paciente_nome) {
             try {
-              const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${e.paciente_id}`)
-              const paciente = await resPaciente.json()
+            const { data: paciente } = await api.get(`/users/${e.paciente_id}`)
               nome = paciente.name
             } catch {}
           }
@@ -112,10 +110,9 @@ export default function SecretariaDashboard() {
 
     if (evento.status === 'agendado' && evento.paciente_id) {
       try {
-        const res = await fetch(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
-        const data = await res.json()
-        setPacienteAtual(data.name)
-        setPacienteId(data.id)
+const { data } = await api.get(`/users/${evento.paciente_id}`)
+setPacienteAtual(data.name)
+setPacienteId(data.id)
       } catch {
         setPacienteAtual('Paciente não encontrado')
         setPacienteId(null)
@@ -138,16 +135,12 @@ export default function SecretariaDashboard() {
     const hora = horaDigitada
 
     try {
-      await fetch(`https://nublia-backend.onrender.com/agenda/disponibilizar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prescritor_id: user.prescritor_id,
-          data,
-          hora,
-          status: 'disponivel'
-        })
-      })
+await api.post('/agenda/disponibilizar', {
+  prescritor_id: user.prescritor_id,
+  data,
+  hora,
+  status: 'disponivel'
+})
       toastSucesso(`Horário ${hora} cadastrado com sucesso!`)
       carregarAgenda(user.prescritor_id)
       if (!manterAberto) {
@@ -161,11 +154,10 @@ export default function SecretariaDashboard() {
 
   const confirmarAgendamento = async (agendamentoId, pacienteId) => {
     try {
-      await fetch(`https://nublia-backend.onrender.com/agenda/agendar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: agendamentoId, paciente_id: pacienteId })
-      })
+await api.post('/agenda/agendar', {
+  id: agendamentoId,
+  paciente_id: pacienteId
+})
       toastSucesso('Paciente agendado com sucesso!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
@@ -177,11 +169,8 @@ export default function SecretariaDashboard() {
 
   const desagendarHorario = async (id) => {
     try {
-      await fetch(`https://nublia-backend.onrender.com/agenda/desagendar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      })
+await api.post('/agenda/desagendar', { id })
+
       toastSucesso('Paciente removido do horário!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
@@ -193,11 +182,8 @@ export default function SecretariaDashboard() {
 
   const removerHorario = async (id) => {
     try {
-      await fetch(`https://nublia-backend.onrender.com/agenda/remover`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      })
+await api.post('/agenda/remover', { id })
+
       toastSucesso('Horário removido com sucesso!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
