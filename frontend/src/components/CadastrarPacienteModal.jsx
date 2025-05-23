@@ -1,5 +1,6 @@
+//frontend/src/components/CadastrarPacienteModal.jsx
 import { useState } from 'react'
-import axios from 'axios'
+import api from '../services/api'
 import Botao from './Botao'
 
 export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }) {
@@ -33,7 +34,7 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
         codigo_ativacao: null
       }
 
-      const response = await axios.post('https://nublia-backend.onrender.com/register', payload)
+      const response = await api.post('/register', payload)
 
       if (response.data?.id) {
         const pacienteCriado = { ...payload.user, id: response.data.id }
