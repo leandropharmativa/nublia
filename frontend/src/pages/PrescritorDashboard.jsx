@@ -20,6 +20,8 @@ import {
   PlayCircle
 } from 'lucide-react'
 
+import api from '../services/api'
+
 import AgendaPrescritor from './AgendaPrescritor'
 import FormulasSugeridas from '../components/FormulasSugeridas'
 import MinhasFormulas from '../components/MinhasFormulas'
@@ -112,8 +114,8 @@ useEffect(() => {
 
     if (pacienteId) {
       try {
-        const res = await fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-        const paciente = await res.json()
+        const res = await api.get(`/users/${pacienteId}`)
+        const paciente = res.data
         setPacienteSelecionado(paciente)
       } catch (err) {
         console.error('❌ Erro ao buscar paciente:', err)
@@ -158,12 +160,12 @@ const carregarAtendimentos = async (id) => {
   setCarregandoAtendimentos(true) // ✅ ATIVA O LOADING
   try {
     const [resAtend, resPacientes] = await Promise.all([
-      fetch('https://nublia-backend.onrender.com/atendimentos/'),
-      fetch('https://nublia-backend.onrender.com/users/all'),
-    ])
+  api.get('/atendimentos/'),
+  api.get('/users/all'),
+])
+const data = resAtend.data
+const todosPacientes = resPacientes.data
 
-    const data = await resAtend.json()
-    const todosPacientes = await resPacientes.json()
     const mapaPacientes = new Map(todosPacientes.map(p => [p.id, p.name]))
 
     const filtrados = data.filter(a => a.prescritor_id === id)
@@ -187,8 +189,9 @@ setAtendimentos(comNomes)
 
   const carregarPacientes = async () => {
     try {
-      const res = await fetch('https://nublia-backend.onrender.com/users/all')
-      const data = await res.json()
+const res = await api.get('/users/all')
+const data = res.data
+
       setPacientes(data.filter(u => u.role === 'paciente'))
     } catch (err) {
       console.error('Erro ao carregar pacientes:', err)
@@ -198,15 +201,17 @@ setAtendimentos(comNomes)
 const carregarAgenda = async (id) => {
   setCarregandoAgendamentos(true)
   try {
-    const res = await fetch(`https://nublia-backend.onrender.com/agenda/prescritor/${id}`)
-    const data = await res.json()
+const res = await api.get(`/agenda/prescritor/${id}`)
+const data = res.data
+
     const eventos = await Promise.all(
       data.map(async (e) => {
         let nome = 'Agendado'
         if (e.status === 'agendado' && e.paciente_id) {
           try {
-            const resPaciente = await fetch(`https://nublia-backend.onrender.com/users/${e.paciente_id}`)
-            const paciente = await resPaciente.json()
+const resPaciente = await api.get(`/users/${e.paciente_id}`)
+const paciente = resPaciente.data
+
             nome = paciente.name
           } catch {}
         }
@@ -224,8 +229,9 @@ const carregarAgenda = async (id) => {
 
   const handleVerPerfil = async (pacienteId) => {
     try {
-      const res = await fetch(`https://nublia-backend.onrender.com/users/${pacienteId}`)
-      const paciente = await res.json()
+const res = await api.get(`/users/${pacienteId}`)
+const paciente = res.data
+
       if (!paciente || paciente.role !== 'paciente') throw new Error('Usuário inválido')
       setPacientePerfil(paciente)
       setMostrarPerfilPacienteModal(true)
@@ -498,25 +504,22 @@ const carregarAgenda = async (id) => {
       carregarAgenda(user.id)
       carregarPacientes() // ✅ garante que a lista de pacientes esteja atualizada
     }}
-    onRemover={(id) => {
-      fetch(`https://nublia-backend.onrender.com/agenda/${id}`, {
-        method: 'DELETE'
-      }).then(() => {
-        toastSucesso('Horário removido com sucesso!')
-        setAgendamentoSelecionado(null)
-        setMostrarAgendamentoModal(false)
-        carregarAgenda(user.id)
-        carregarPacientes() // ✅ necessário aqui também
-      }).catch(() => {
-        toastErro('Erro ao remover horário.')
-      })
-    }}
+onRemover={(id) => {
+  api.delete(`/agenda/${id}`)
+    .then(() => {
+      toastSucesso('Horário removido com sucesso!')
+      setAgendamentoSelecionado(null)
+      setMostrarAgendamentoModal(false)
+      carregarAgenda(user.id)
+      carregarPacientes()
+    })
+    .catch(() => {
+      toastErro('Erro ao remover horário.')
+    })
+}}
     onDesagendar={(id) => {
-      fetch(`https://nublia-backend.onrender.com/agenda/desagendar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      }).then(() => {
+api.post('/agenda/desagendar', { id })
+.then(() => {
         toastSucesso('Agendamento cancelado!')
         setAgendamentoSelecionado(null)
         setMostrarAgendamentoModal(false)
@@ -527,20 +530,17 @@ const carregarAgenda = async (id) => {
       })
     }}
     onConfirmar={(horarioId, pacienteId) => {
-      fetch('https://nublia-backend.onrender.com/agenda/agendar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error()
-          toastSucesso('Paciente agendado com sucesso!')
-          setMostrarAgendamentoModal(false)
-          setAgendamentoSelecionado(null)
-          carregarAgenda(user.id)
-          carregarPacientes() // ✅ recarrega após agendar
-        })
-        .catch(() => toastErro('Erro ao agendar paciente.'))
+api.post('/agenda/agendar', { id: horarioId, paciente_id: pacienteId })
+  .then(() => {
+    toastSucesso('Paciente agendado com sucesso!')
+    setMostrarAgendamentoModal(false)
+    setAgendamentoSelecionado(null)
+    carregarAgenda(user.id)
+    carregarPacientes()
+  })
+  .catch(() => {
+    toastErro('Erro ao agendar paciente.')
+  })
     }}
     onIniciarAtendimento={(pacienteId, agendamentoId) => {
       const paciente = pacientes.find(p => p.id === pacienteId)
@@ -585,22 +585,20 @@ const carregarAgenda = async (id) => {
       setOrigemNovoAgendamento(true)
       setMostrarCadastrarPaciente(true)
     }}
-    onConfirmar={async (horarioId, pacienteId) => {
-      try {
-        const res = await fetch('https://nublia-backend.onrender.com/agenda/agendar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: horarioId, paciente_id: pacienteId })
-        })
+onConfirmar={async (horarioId, pacienteId) => {
+  try {
+    await api.post('/agenda/agendar', {
+      id: horarioId,
+      paciente_id: pacienteId
+    })
+    toastSucesso('Paciente agendado com sucesso!')
+    setMostrarModalNovoAgendamento(false)
+    carregarAgenda(user.id)
+  } catch {
+    toastErro('Erro ao agendar paciente.')
+  }
+}}
 
-        if (!res.ok) throw new Error()
-        toastSucesso('Paciente agendado com sucesso!')
-        setMostrarModalNovoAgendamento(false)
-        carregarAgenda(user.id)
-      } catch {
-        toastErro('Erro ao agendar paciente.')
-      }
-    }}
   />
 )}
 
