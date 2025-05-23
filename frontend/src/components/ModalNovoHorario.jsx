@@ -1,6 +1,7 @@
+// 📄 src/components/ModalNovoHorario.jsx
 import { format, isSameDay } from 'date-fns'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../services/api' // ✅ substituição
 import { Trash, UserRoundCheck, CalendarPlus2, ClockPlus } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import Botao from './Botao'
@@ -15,8 +16,8 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
 
   const carregarHorariosDoDia = async () => {
     try {
-      const res = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${idPrescritor}`)
-      const lista = res.data
+      const { data } = await api.get(`/agenda/prescritor/${idPrescritor}`)
+      const lista = data
         .filter((item) =>
           isSameDay(new Date(`${item.data}T${item.hora}`), horario)
         )
@@ -68,7 +69,7 @@ export default function ModalNovoHorario({ horario, onConfirmar, onCancelar, onA
 
   const removerHorario = async (id) => {
     try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
+      await api.post('/agenda/remover', { id }) // ✅ substituído axios por api
       toastSucesso('Horário removido com sucesso!')
       carregarHorariosDoDia()
       onAtualizar?.()
