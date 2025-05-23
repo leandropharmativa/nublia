@@ -1,3 +1,4 @@
+//frontend/src/components/AtendimentosRecentes.jsx
 import { useEffect, useState } from 'react'
 import { User, FileText, Search, CalendarCheck2 } from 'lucide-react'
 
