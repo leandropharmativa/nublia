@@ -1,6 +1,6 @@
 //frontend/src/components/ModalAgendarHorario.jsx
 import { useEffect, useRef, useState } from 'react'
-import axios from 'axios'
+import api from '../services/api'
 import CadastrarPacienteModal from './CadastrarPacienteModal'
 import PerfilPacienteModal from './PerfilPacienteModal'
 import {
@@ -58,8 +58,8 @@ useEffect(() => {
   if (reagendando) {
     const idPrescritor = user?.role === 'secretaria' ? user.prescritor_id : user.id
 
-    axios
-      .get(`https://nublia-backend.onrender.com/agenda/prescritor/${idPrescritor}`)
+    api
+      .get(`/agenda/prescritor/${idPrescritor}`)
       .then(res => {
         const disponiveis = res.data.filter(h => h.paciente_id === null)
         setHorariosDisponiveis(disponiveis)
@@ -76,7 +76,7 @@ useEffect(() => {
 
     const buscarPacientes = async () => {
       try {
-        const res = await axios.get('https://nublia-backend.onrender.com/users/all')
+        const res = await api.get('/users/all')
         const apenasPacientes = res.data.filter(
           (p) => p.role === 'paciente' && p.name.toLowerCase().includes(filtro.toLowerCase())
         )
@@ -98,7 +98,7 @@ useEffect(() => {
     setCarregando(true)
 
     try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/trocar-paciente', {
+      await api.post('/agenda/trocar-paciente', {  
         id: agendamentoId,
         novo_paciente_id: selecionado.id,
       })
@@ -118,7 +118,7 @@ useEffect(() => {
     setCarregando(true)
 
     try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/reagendar', {
+      await api.post('/agenda/reagendar', {
         de_id: agendamentoId,
         para_id: novoHorarioId
       })
