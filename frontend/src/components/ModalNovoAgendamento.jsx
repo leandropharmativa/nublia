@@ -1,5 +1,6 @@
+// 📄 src/components/ModalNovoAgendamento.jsx
 import { useEffect, useRef, useState } from 'react'
-import axios from 'axios'
+import api from '../services/api' // ✅ Substituição de axios
 import {
   Search, User, X, Loader2, CalendarPlus, ArrowLeftRight, UserRoundPlus
 } from 'lucide-react'
@@ -30,7 +31,7 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadast
 
     const buscarPacientes = async () => {
       try {
-        const res = await axios.get('https://nublia-backend.onrender.com/users/all')
+        const res = await api.get('/users/all')
         const encontrados = res.data.filter(
           p => p.role === 'paciente' && p.name.toLowerCase().includes(filtro.toLowerCase())
         )
@@ -45,8 +46,8 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadast
 
   useEffect(() => {
     if (selecionado) {
-      axios
-        .get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+      api
+        .get(`/agenda/prescritor/${user.id}`)
         .then(res => {
           const disponiveis = res.data.filter(h => h.paciente_id === null)
           setHorarios(disponiveis)
@@ -56,14 +57,13 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadast
   }, [selecionado, user.id])
 
   useEffect(() => {
-  const listener = (e) => {
-    setSelecionado(e.detail)
-    setMostrarBusca(false)
-  }
-  window.addEventListener('PacienteCadastrado', listener)
-  return () => window.removeEventListener('PacienteCadastrado', listener)
-}, [])
-
+    const listener = (e) => {
+      setSelecionado(e.detail)
+      setMostrarBusca(false)
+    }
+    window.addEventListener('PacienteCadastrado', listener)
+    return () => window.removeEventListener('PacienteCadastrado', listener)
+  }, [])
 
   const confirmar = async () => {
     if (!selecionado?.id || !horarioId) {
@@ -191,26 +191,25 @@ export default function ModalNovoAgendamento({ onCancelar, onConfirmar, onCadast
               className="mt-1 w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-nublia-primary focus:border-nublia-primary"
             >
               <option value="">Selecione um horário disponível</option>
-{horarios
-  .filter(h => {
-    if (!h.data || !h.hora) return false
-    const [ano, mes, dia] = h.data.split('-').map(Number)
-    const [hora, minuto] = h.hora.split(':').map(Number)
-    const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
-    return dataHora > new Date() // ⏳ apenas horários futuros
-  })
-  .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
-  .map((h) => {
-    const [ano, mes, dia] = h.data.split('-').map(Number)
-    const [hora, minuto] = h.hora.split(':').map(Number)
-    const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
-    return (
-      <option key={h.id} value={h.id}>
-        {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
-      </option>
-    )
-  })}
-
+              {horarios
+                .filter(h => {
+                  if (!h.data || !h.hora) return false
+                  const [ano, mes, dia] = h.data.split('-').map(Number)
+                  const [hora, minuto] = h.hora.split(':').map(Number)
+                  const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
+                  return dataHora > new Date()
+                })
+                .sort((a, b) => new Date(`${a.data}T${a.hora}`) - new Date(`${b.data}T${b.hora}`))
+                .map((h) => {
+                  const [ano, mes, dia] = h.data.split('-').map(Number)
+                  const [hora, minuto] = h.hora.split(':').map(Number)
+                  const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
+                  return (
+                    <option key={h.id} value={h.id}>
+                      {dataHora.toLocaleDateString('pt-BR')} - {dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h
+                    </option>
+                  )
+                })}
             </select>
 
             <div className="flex justify-between gap-4 pt-6">
