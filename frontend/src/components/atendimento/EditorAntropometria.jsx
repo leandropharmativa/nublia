@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import './EditorAntropometria.css' // ➕ estilos opcionais para animações
+import api from '../../services/api'
 import imagemCorpo from '../../assets/antropometria-corpo.png' // substitua pelo caminho correto
 
 export default function EditorAntropometria({ paciente, respostas, setRespostas }) {
@@ -14,7 +15,7 @@ export default function EditorAntropometria({ paciente, respostas, setRespostas 
     const carregar = async () => {
       try {
         const user = JSON.parse(localStorage.getItem('user'))
-        const res = await axios.get(`https://nublia-backend.onrender.com/anamnese/modelos/${user.id}?tipo=antropometria`)
+        const res = await api.get(`/anamnese/modelos/${user.id}?tipo=antropometria`)
         setModelos(res.data)
         setModeloSelecionado(res.data[0])
       } catch (err) {
