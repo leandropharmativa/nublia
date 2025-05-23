@@ -1,6 +1,5 @@
 // 📄 components/atendimento/EditorAntropometria.jsx
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import './EditorAntropometria.css' // ➕ estilos opcionais para animações
 import api from '../../services/api'
 import imagemCorpo from '../../assets/antropometria-corpo.png' // substitua pelo caminho correto
