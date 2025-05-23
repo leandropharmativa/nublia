@@ -1,3 +1,4 @@
+//frontend/src/pages/FarmaciaDashboard.jsx
 import { useEffect, useState } from 'react'
 import { Package, FlaskConical, Building, Settings } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
@@ -6,7 +7,7 @@ import FormulaForm from '../components/FormulaForm'
 import ModalMensagem from '../components/ModalMensagem'
 import Layout from '../components/Layout'
 import { Tab } from '@headlessui/react'
-import axios from 'axios'
+import api from '../services/api'
 
 export default function FarmaciaDashboard() {
   const navigate = useNavigate()
@@ -38,7 +39,7 @@ export default function FarmaciaDashboard() {
 
   const carregarFormulas = async (farmaciaId) => {
     try {
-      const res = await axios.get(`https://nublia-backend.onrender.com/formulas/${farmaciaId}`)
+      const res = await api.get(`/formulas/${farmaciaId}`)
       setFormulas(res.data.reverse())
     } catch (error) {
       console.error('Erro ao carregar fórmulas:', error)
@@ -47,7 +48,7 @@ export default function FarmaciaDashboard() {
 
   const excluirFormula = async (id) => {
     try {
-      await axios.post('https://nublia-backend.onrender.com/formulas/delete', { id })
+      await api.post('/formulas/delete', { id })
       setMensagem('Fórmula excluída com sucesso!')
       setMensagemTipo('success')
       setMostrarModal(true)
