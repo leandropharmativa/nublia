@@ -1,4 +1,4 @@
-# 🚀 Nublia
+# 🚀 Nublia - dev
 
 Sistema de atendimento e gestão para prescritores de saúde (nutricionistas, médicos, biomédicos, esteticistas) com integração a farmácias, clínicas e academias.
 

@@ -8,7 +8,10 @@ app = FastAPI(title="Nublia Backend")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://nublia.vercel.app"],
+    allow_origins=[
+        "https://nublia.vercel.app",  # produção
+        "https://nublia-git-dev-leandros-projects-38418dd0.vercel.app",  # preview (dev)
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
