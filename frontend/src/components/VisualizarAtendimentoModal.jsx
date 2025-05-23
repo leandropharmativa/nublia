@@ -1,5 +1,7 @@
+// 📄 components/VisualizarAtendimentoModal.jsx
+
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../services/api' // ✅ substitui axios direto
 
 export default function VisualizarAtendimentoModal({ atendimento, onClose }) {
   const [paciente, setPaciente] = useState(null)
@@ -9,8 +11,8 @@ export default function VisualizarAtendimentoModal({ atendimento, onClose }) {
   useEffect(() => {
     const buscarPaciente = async () => {
       try {
-        const response = await axios.get(`https://nublia-backend.onrender.com/users/${atendimento.paciente_id}`)
-        setPaciente(response.data)
+        const { data } = await api.get(`/users/${atendimento.paciente_id}`) 
+        setPaciente(data)
       } catch (error) {
         console.error("Erro ao buscar paciente:", error)
         setErro("Paciente não encontrado.")
