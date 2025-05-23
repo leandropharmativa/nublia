@@ -1,6 +1,6 @@
 // 📄 frontend/src/pages/AgendaPrescritor.jsx
 import { useState, useEffect, memo } from 'react'
-import axios from 'axios'
+import api from '../services/api'
 import { addHours, addDays } from 'date-fns'
 import { Search, UserRoundCheck, Clock, UserRound } from 'lucide-react'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
@@ -46,7 +46,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
 
   const handleVerAtendimento = async (agendamentoId) => {
     try {
-      const { data } = await axios.get(`https://nublia-backend.onrender.com/atendimentos/por-agendamento/${agendamentoId}`)
+      const { data } = await api.get(`/atendimentos/por-agendamento/${agendamentoId}`)
       setAtendimentoSelecionado(data)
       setMostrarFicha(true)
     } catch (error) {
@@ -57,7 +57,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
 
   const carregarEventos = async () => {
     try {
-      const { data } = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor/${user.id}`)
+      const { data } = await api.get(`/agenda/prescritor/${user.id}`)
       const eventosFormatados = data.map(ev => {
         const start = new Date(`${ev.data}T${ev.hora}`)
         const end = addHours(start, 1)
@@ -89,7 +89,7 @@ function AgendaPrescritor({ mostrarAgenda }) {
 
   const carregarPacientes = async () => {
     try {
-      const res = await axios.get('https://nublia-backend.onrender.com/users/all')
+      const res = await api.get('/users/all')
       setPacientes(res.data.filter(p => p.role === 'paciente'))
     } catch {
       toastErro('Erro ao carregar pacientes.')
@@ -131,7 +131,7 @@ useEffect(() => {
     const hora = horaDigitada
 
     try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/disponibilizar', {
+      await api.post('/agenda/disponibilizar', {
         prescritor_id: user.id,
         data,
         hora,
@@ -155,7 +155,7 @@ useEffect(() => {
 
     if (evento.status === 'agendado' && evento.paciente_id) {
       try {
-        const res = await axios.get(`https://nublia-backend.onrender.com/users/${evento.paciente_id}`)
+        const res = await api.get(`/users/${evento.paciente_id}`)
         setPacienteAtual(res.data.name)
         setPacienteId(res.data.id)
       } catch {
@@ -172,7 +172,7 @@ useEffect(() => {
 
   const confirmarAgendamento = async (agendamentoId, pacienteId) => {
     try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/agendar', {
+      await api.post('/agenda/agendar', {
         id: agendamentoId,
         paciente_id: pacienteId
       })
@@ -187,7 +187,7 @@ useEffect(() => {
 
   const desagendarHorario = async (id) => {
     try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/desagendar', { id })
+      await api.post('/agenda/desagendar', { id })
       toastSucesso('Paciente removido do horário!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
@@ -199,7 +199,7 @@ useEffect(() => {
 
   const removerHorario = async (id) => {
     try {
-      await axios.post('https://nublia-backend.onrender.com/agenda/remover', { id })
+      await api.post('/agenda/remover', { id })
       toastSucesso('Horário removido com sucesso!')
       setModalAgendar(false)
       setAgendamentoSelecionado(null)
