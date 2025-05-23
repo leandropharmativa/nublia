@@ -1,6 +1,5 @@
 // 📄 frontend/src/components/CadastroSecretaria.jsx
-
-import axios from 'axios'
+import api from '../services/api'
 import { useEffect, useState } from 'react'
 import { toastErro, toastSucesso } from '../utils/toastUtils'
 import Botao from './Botao'
@@ -24,7 +23,7 @@ export default function CadastroSecretaria() {
 
   const carregarSecretarias = async () => {
     try {
-      const res = await axios.get(`https://nublia-backend.onrender.com/secretarias/prescritor/${prescritorId}`)
+      const res = await api.get(`/secretarias/prescritor/${prescritorId}`)
       setSecretarias(res.data)
     } catch {
       console.error('Erro ao carregar secretárias.')
@@ -43,7 +42,7 @@ export default function CadastroSecretaria() {
 
     setCarregando(true)
     try {
-      await axios.post('https://nublia-backend.onrender.com/secretarias/', {
+      await api.post('/secretarias/', {
         nome,
         email,
         senha,
@@ -63,7 +62,7 @@ export default function CadastroSecretaria() {
 
   const excluirSecretaria = async (id) => {
     try {
-      await axios.delete(`https://nublia-backend.onrender.com/secretarias/${id}`)
+      await api.delete(`/secretarias/${id}`)
       toastSucesso('Secretária removida com sucesso.')
       carregarSecretarias()
     } catch {
@@ -75,7 +74,7 @@ export default function CadastroSecretaria() {
     if (!novaSenha || !modalSenhaId) return
     setCarregandoSenha(true)
     try {
-      await axios.put(`https://nublia-backend.onrender.com/secretarias/${modalSenhaId}/senha`, {
+      await api.put(`/secretarias/${modalSenhaId}/senha`, {
         nova_senha: novaSenha
       })
       toastSucesso('Senha atualizada com sucesso.')
