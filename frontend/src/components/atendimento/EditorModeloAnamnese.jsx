@@ -1,6 +1,5 @@
 // 📄 frontend/src/components/atendimento/EditorModeloAnamnese.jsx
 import { useState, useRef, useEffect } from 'react'
-import axios from 'axios'
 import {
   Plus, Trash, Save, XCircle, PlusCircle, FolderPlus,
   FileText, FilePlus, ChevronDown, ChevronRight, Pencil
