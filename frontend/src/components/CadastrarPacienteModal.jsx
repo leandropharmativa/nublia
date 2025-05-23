@@ -19,37 +19,41 @@ export default function CadastrarPacienteModal({ onClose, onPacienteCadastrado }
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setErro('')
-    setCarregando(true)
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  setErro('')
+  setCarregando(true)
 
-    try {
-      const payload = {
-        user: {
-          ...form,
-          role: 'paciente',
-          password: null
-        },
-        codigo_ativacao: null
-      }
-
-      const response = await api.post('/register', payload)
-
-      if (response.data?.id) {
-        const pacienteCriado = { ...payload.user, id: response.data.id }
-        onPacienteCadastrado(pacienteCriado)
-        onClose()
-      } else {
-        setErro("Erro inesperado: resposta sem ID.")
-      }
-    } catch (error) {
-      console.error(error)
-      setErro("Erro ao cadastrar paciente. Verifique os dados.")
-    } finally {
-      setCarregando(false)
+  try {
+    const payload = {
+      user: {
+        ...form,
+        role: 'paciente',
+        password: null
+      },
+      codigo_ativacao: null
     }
+
+    const response = await api.post('/register', payload)
+
+    if (response.data?.id) {
+      const pacienteCriado = { ...payload.user, id: response.data.id }
+      onPacienteCadastrado(pacienteCriado)
+      onClose()
+    } else {
+      setErro("Erro inesperado: resposta sem ID.")
+    }
+  } catch (error) {
+    console.error(error)
+    if (error.response?.status === 409) {
+      setErro("Já existe um paciente com este e-mail.")
+    } else {
+      setErro("Erro ao cadastrar paciente. Verifique os dados.")
+    }
+  } finally {
+    setCarregando(false)
   }
+}
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
