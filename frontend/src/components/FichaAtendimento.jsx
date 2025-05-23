@@ -9,7 +9,7 @@ import {
   ListPlus,
   ListMinus,
 } from 'lucide-react'
-import axios from 'axios'
+import api from '../services/api'
 import { toastSucesso, toastErro } from '../utils/toastUtils'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
 import ModalConfirmacao from './ModalConfirmacao'
@@ -61,7 +61,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
     const carregarModelos = async () => {
       try {
         const user = JSON.parse(localStorage.getItem('user'))
-        const res = await axios.get(`https://nublia-backend.onrender.com/anamnese/modelos/${user.id}`)
+        const res = await api.get(`/anamnese/modelos/${user.id}`)
         const modelosConvertidos = res.data.map(m => ({
           ...m,
           blocos: typeof m.blocos === 'string' ? JSON.parse(m.blocos) : m.blocos
@@ -107,7 +107,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
 
   useEffect(() => {
     if (pacienteId && !pacienteSelecionado) {
-      axios.get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+      api.get(`/users/${pacienteId}`)
         .then((res) => {
           console.log('👤 Paciente carregado da API:', res.data)
           setPacienteSelecionado(res.data)
@@ -122,7 +122,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
       if (!user || !pacienteSelecionado?.id) return
 
       try {
-        const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
+        const response = await api.get('/atendimentos/')
         const anteriores = response.data
           .filter(a => a.paciente_id === pacienteSelecionado.id && a.prescritor_id === user.id)
           .sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em))
@@ -161,10 +161,10 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
       console.log("🔍 Salvando atendimento com dados:", dadosAtendimento)
 
       if (!atendimentoId) {
-        const response = await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
+        const response = await api.post('/atendimentos/', dadosAtendimento)
         setAtendimentoId(response.data.id)
       } else {
-        await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
+        await api.put(`/atendimentos/${atendimentoId}`, dadosAtendimento)
       }
 
       setSalvoUltimaVersao(true)
@@ -183,9 +183,7 @@ export default function FichaAtendimento({ paciente, agendamentoId = null, onFin
 
       if (agendamentoIdRef.current) {
         console.log('📤 Enviando finalização do agendamento ID:', agendamentoIdRef.current)
-        await axios.post('https://nublia-backend.onrender.com/agenda/finalizar', {
-          id: agendamentoIdRef.current,
-        })
+        await api.post('/agenda/finalizar', { id: agendamentoIdRef.current })
       } else {
         console.warn('⚠️ Nenhum agendamentoId fornecido. Nada será finalizado.')
       }
