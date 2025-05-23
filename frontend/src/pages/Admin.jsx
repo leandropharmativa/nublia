@@ -16,6 +16,8 @@ import {
 import { toastErro, toastSucesso } from '../utils/toastUtils'
 import ListaCodigosGerados from '../components/ListaCodigosGerados'
 
+import api from '../services/api'
+
 export default function AdminDashboard() {
   const [tipoUsuario, setTipoUsuario] = useState('prescritor')
   const [emailUsuario, setEmailUsuario] = useState('')
@@ -28,7 +30,7 @@ export default function AdminDashboard() {
   const [nome, setNome] = useState('')
   const [blocos, setBlocos] = useState([])
 
-  const gerarCodigo = async () => {
+const gerarCodigo = async () => {
   setErro('')
   setSucesso('')
   setCarregando(true)
@@ -42,22 +44,15 @@ export default function AdminDashboard() {
       email_usuario: emailUsuario
     }
 
-    const response = await fetch('https://nublia-backend.onrender.com/generate_code', {
-      method: 'POST',
+    const response = await api.post('/generate_code', payload, {
       headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
+        Authorization: `Bearer ${token}`
+      }
     })
 
-    const data = await response.json()
-    if (response.ok) {
-      setCodigo(data.codigo)
-      setSucesso("Código gerado com sucesso!")
-    } else {
-      throw new Error(data.detail || "Erro ao gerar código")
-    }
+    setCodigo(response.data.codigo)
+    setSucesso("Código gerado com sucesso!")
+
   } catch (err) {
     setErro("Erro ao gerar código. Verifique os dados.")
     setCodigo('')
@@ -68,8 +63,9 @@ export default function AdminDashboard() {
 
 const carregarModeloPadrao = async () => {
   try {
-    const res = await fetch(`https://nublia-backend.onrender.com/anamnese/modelos/0`)
-    const modelos = await res.json()
+const res = await api.get('/anamnese/modelos/0')
+const modelos = res.data
+
     const padrao = modelos.find(m => m.id === '00000000-0000-0000-0000-000000000000')
     if (!padrao) {
       toastErro('Modelo padrão não encontrado.')
@@ -126,15 +122,12 @@ const carregarModeloPadrao = async () => {
         blocos
       }
 
-  await fetch(`https://nublia-backend.onrender.com/anamnese/modelos/00000000-0000-0000-0000-000000000000`, {
-  method: 'PUT',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    nome,
-    prescritor_id: 0,
-    blocos
-  })
+await api.put('/anamnese/modelos/00000000-0000-0000-0000-000000000000', {
+  nome,
+  prescritor_id: 0,
+  blocos
 })
+
 
 
       toastSucesso('Modelo padrão salvo com sucesso!')
