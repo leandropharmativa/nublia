@@ -1,7 +1,6 @@
 // 📄 frontend/src/components/atendimento/FormularioAnamneseDinamico.jsx
-
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../../services/api'
 import Botao from '../Botao'
 import { Save, FileText } from 'lucide-react'
 import { toastSucesso, toastErro } from '../../utils/toastUtils'
@@ -15,7 +14,7 @@ export default function FormularioAnamneseDinamico({ atendimentoId, prescritorId
   useEffect(() => {
     const carregarModelo = async () => {
       try {
-        const res = await axios.get(`https://nublia-backend.onrender.com/anamnese/modelos/${prescritorId}`)
+        const res = await api.get(`/anamnese/modelos/${prescritorId}`)
         const modelos = res.data
         if (modelos.length > 0) {
           setModelo(modelos[0])
@@ -39,7 +38,7 @@ export default function FormularioAnamneseDinamico({ atendimentoId, prescritorId
   // ✅ Envia as respostas preenchidas
   const salvarRespostas = async () => {
     try {
-      await axios.post('https://nublia-backend.onrender.com/anamnese/respostas', {
+      await api.post('/anamnese/respostas', {
         atendimento_id: atendimentoId,
         modelo_id: modelo.id,
         respostas
