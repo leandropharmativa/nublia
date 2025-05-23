@@ -1,13 +1,15 @@
+// 📄 src/components/PerfilPacienteModal.jsx
+
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../services/api' // ✅ substituição do axios pelo api centralizado
 
 export default function PerfilPacienteModal({ paciente, pacienteId, onClose }) {
   const [dados, setDados] = useState(paciente)
 
   useEffect(() => {
     if (!paciente && pacienteId) {
-      axios
-        .get(`https://nublia-backend.onrender.com/users/${pacienteId}`)
+      api
+        .get(`/users/${pacienteId}`) // ✅ endpoint usando api
         .then(res => setDados(res.data))
         .catch(err => {
           console.error('Erro ao carregar paciente:', err)
