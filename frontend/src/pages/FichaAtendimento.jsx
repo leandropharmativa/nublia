@@ -1,6 +1,7 @@
+//frontend/src/pages/FichaAtendimento.jsx
 import { useEffect, useState } from 'react'
 import { Save, CheckCircle, ClipboardX, Eye } from 'lucide-react'
-import axios from 'axios'
+import api from '../services/api'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import VisualizarAtendimentoModal from './VisualizarAtendimentoModal'
@@ -28,7 +29,7 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
       if (!user || !paciente?.id) return
 
       try {
-        const response = await axios.get('https://nublia-backend.onrender.com/atendimentos/')
+        const response = await api.get('/atendimentos/')
         const anteriores = response.data
           .filter((a) => a.paciente_id === paciente.id && a.prescritor_id === user.id)
           .sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em))
@@ -61,10 +62,10 @@ export default function FichaAtendimento({ paciente, onFinalizar, onAtendimentoS
       }
 
       if (!atendimentoId) {
-        const response = await axios.post('https://nublia-backend.onrender.com/atendimentos/', dadosAtendimento)
+        const response = await api.post('/atendimentos/', dadosAtendimento)
         setAtendimentoId(response.data.id)
       } else {
-        await axios.put(`https://nublia-backend.onrender.com/atendimentos/${atendimentoId}`, dadosAtendimento)
+        await api.put(`/atendimentos/${atendimentoId}`, dadosAtendimento)
       }
 
       setMensagem({ tipo: 'sucesso', texto: 'Atendimento salvo com sucesso!' })
