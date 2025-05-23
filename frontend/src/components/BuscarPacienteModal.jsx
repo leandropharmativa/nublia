@@ -1,5 +1,6 @@
+//frontend/src/components/BuscarPacienteModal.jsx
 import { useState, useEffect, useRef } from 'react'
-import axios from 'axios'
+import api from '../services/api'
 import { Search, User, UserRoundPlus } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Botao from './Botao'
@@ -17,29 +18,30 @@ export default function BuscarPacienteModal({ onClose, onCadastrarNovo, onSeleci
     }
   }, [])
 
-  useEffect(() => {
-    const buscarPacientes = async () => {
-      if (!termoBusca.trim()) {
-        setPacientes([])
-        return
-      }
-
-      try {
-        const res = await axios.get('https://nublia-backend.onrender.com/users/all')
-        const pacientesFiltrados = res.data
-          .filter(u => u.role === 'paciente')
-          .filter(p =>
-            p.name?.toLowerCase().includes(termoBusca.toLowerCase())
-          )
-        setPacientes(pacientesFiltrados)
-      } catch (err) {
-        console.error('Erro ao buscar pacientes:', err)
-        setPacientes([])
-      }
+useEffect(() => {
+  const buscarPacientes = async () => {
+    if (!termoBusca.trim()) {
+      setPacientes([])
+      return
     }
 
-    buscarPacientes()
-  }, [termoBusca])
+    try {
+      const res = await api.get('/users/all')
+      const busca = termoBusca.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+      const pacientesFiltrados = res.data
+        .filter(u => u.role === 'paciente')
+        .filter(p =>
+          p.name?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(busca)
+        )
+      setPacientes(pacientesFiltrados)
+    } catch (err) {
+      console.error('Erro ao buscar pacientes:', err)
+      setPacientes([])
+    }
+  }
+
+  buscarPacientes()
+}, [termoBusca])
 
 useEffect(() => {
   const buscarAgendamentos = async () => {
@@ -49,11 +51,12 @@ useEffect(() => {
     }
 
     try {
-      const res = await axios.get(`https://nublia-backend.onrender.com/agenda/prescritor-com-pacientes/${user.id}`)
+      const res = await api.get(`/agenda/prescritor-com-pacientes/${user.id}`)
+      const busca = termoBusca.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
       const ags = res.data.filter(
         a =>
           a.status === 'agendado' &&
-          a.paciente?.name?.toLowerCase().includes(termoBusca.toLowerCase())
+          a.paciente?.name?.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(busca)
       )
 
       const ordenados = ags.sort((a, b) => {
@@ -71,7 +74,6 @@ useEffect(() => {
 
   buscarAgendamentos()
 }, [termoBusca, user])
-
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
