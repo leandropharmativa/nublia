@@ -1,6 +1,7 @@
+//src/pages/Register.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '../services/api'
 import { Feather } from 'lucide-react'
 import CampoTexto from '../components/CampoTexto'
 import Botao from '../components/Botao'
@@ -29,36 +30,40 @@ export default function Register() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setErro('')
-    setSucesso(false)
-    setCarregando(true)
+  e.preventDefault()
+  setErro('')
+  setSucesso(false)
+  setCarregando(true)
 
-    try {
-      const payload = {
-        user: {
-          name: form.name,
-          email: form.email,
-          password: form.password,
-          role: form.role,
-          phone: form.phone,
-          clinic_name: form.clinic_name,
-          clinic_address: form.clinic_address,
-          personal_address: form.personal_address,
-          crn: form.crn
-        },
-        codigo_ativacao: form.codigoAtivacao || null
-      }
-
-      await axios.post('https://nublia-backend.onrender.com/register', payload)
-      setSucesso(true)
-      setTimeout(() => navigate('/'), 1500)
-    } catch {
-      setErro("Erro ao registrar. Verifique os dados.")
-    } finally {
-      setCarregando(false)
+  try {
+    const payload = {
+      user: {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: form.role,
+        phone: form.phone,
+        clinic_name: form.clinic_name,
+        clinic_address: form.clinic_address,
+        personal_address: form.personal_address,
+        crn: form.crn
+      },
+      codigo_ativacao: form.codigoAtivacao || null
     }
+
+    await api.post('/register', payload)
+    setSucesso(true)
+    setTimeout(() => navigate('/'), 1500)
+  } catch (error) {
+    if (error.response?.status === 400 && error.response.data?.detail?.includes("email")) {
+      setErro("Este email já está em uso. Tente outro.")
+    } else {
+      setErro("Erro ao registrar. Verifique os dados.")
+    }
+  } finally {
+    setCarregando(false)
   }
+}
 
   const precisaDeCodigo = ["prescritor", "farmacia", "academia", "clinica"].includes(form.role)
 
@@ -145,7 +150,7 @@ export default function Register() {
       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
     </svg>
   )}
-  <span>Registrar</span>
+  <span>{carregando ? 'Registrando...' : 'Registrar'}</span>
 </Botao>
 
         </form>
