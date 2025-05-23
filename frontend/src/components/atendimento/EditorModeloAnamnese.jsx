@@ -1,6 +1,4 @@
-
 // 📄 frontend/src/components/atendimento/EditorModeloAnamnese.jsx
-
 import { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
 import {
@@ -10,6 +8,7 @@ import {
 import Botao from '../Botao'
 import { toastErro, toastSucesso } from '../../utils/toastUtils'
 import './EditorModeloAnamnese.css' // 🔧 deve conter animações .animar-exclusao
+import api from '../../services/api'
 
 export default function EditorModeloAnamnese() {
   const [nome, setNome] = useState('')
@@ -48,7 +47,7 @@ useEffect(() => {
 
   const carregarModelos = async () => {
     try {
-      const res = await axios.get(`https://nublia-backend.onrender.com/anamnese/modelos/${user.id}`)
+      const res = await api.get(`/anamnese/modelos/${user.id}`)
       const modelos = res.data
       const padrao = modelos.find(m => m.nome === 'Anamnese Padrão')
       const doUsuario = modelos.filter(m => m.prescritor_id === user.id)
@@ -120,10 +119,10 @@ const solicitarRemocaoBloco = (blocoIndex) => {
       const payload = { nome, prescritor_id: user.id, blocos }
 
       if (modeloSelecionadoId) {
-        await axios.put(`https://nublia-backend.onrender.com/anamnese/modelos/${modeloSelecionadoId}`, payload)
+        await api.put(`/anamnese/modelos/${modeloSelecionadoId}`, payload)
         toastSucesso('Modelo atualizado com sucesso!')
       } else {
-        await axios.post('https://nublia-backend.onrender.com/anamnese/modelos', payload)
+        await api.post('/anamnese/modelos', payload)
         toastSucesso('Modelo salvo com sucesso!')
       }
 
@@ -439,7 +438,7 @@ const confirmarRemocaoElemento = () => {
               <Botao
                 onClick={async () => {
                   try {
-                    await axios.delete(`https://nublia-backend.onrender.com/anamnese/modelos/${modeloParaExcluir.id}`)
+                    await api.delete(`/anamnese/modelos/${modeloParaExcluir.id}`)
                     toastSucesso('Modelo excluído com sucesso!')
                     await carregarModelos()
                     setModeloParaExcluir(null)
