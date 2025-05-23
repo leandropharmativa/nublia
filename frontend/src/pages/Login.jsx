@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '../services/api'
 import { Feather } from 'lucide-react'
 import CampoTexto from '../components/CampoTexto'
 import Botao from '../components/Botao'
@@ -16,15 +16,13 @@ export default function Login({ onLogin }) {
   const [mensagem, setMensagem] = useState('')
   const [tipoUsuario, setTipoUsuario] = useState(null) // 'usuario' ou 'secretaria'
 
-  const API_URL = "https://nublia-backend.onrender.com"
-
   const checarEmail = async () => {
     if (!email) return
     setCarregando(true)
     setErro('')
     setMensagem('')
     try {
-      const response = await axios.get(`${API_URL}/usuarios/checar-email/${email}`)
+      const response = await api.get(`/usuarios/checar-email/${email}`)
       setTemSenha(response.data.tem_senha)
       setTipoUsuario(response.data.tipo)
       setMensagem(response.data.tem_senha
@@ -50,7 +48,7 @@ export default function Login({ onLogin }) {
       let token
 
 if (tipoUsuario === 'secretaria') {
-  response = await axios.post(`${API_URL}/secretarias/login`, {
+  response = await api.post('/secretarias/login', {
     email,
     senha
   })
@@ -59,10 +57,12 @@ if (tipoUsuario === 'secretaria') {
   userData = response.data.user // ✅ agora sim inclui todos os campos corretamente
 }
        else {
-        response = await axios.post(`${API_URL}/login`,
-          new URLSearchParams({ username: email, password: senha }),
-          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-        )
+response = await api.post(
+  '/login',
+  new URLSearchParams({ username: email, password: senha }),
+  { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+)
+
 
         token = response.data.access_token
         userData = response.data.user
@@ -91,7 +91,7 @@ if (tipoUsuario === 'secretaria') {
     setErro('')
     try {
       setCarregando(true)
-      await axios.post(`${API_URL}/usuarios/criar-senha`, { email, nova_senha: novaSenha })
+      await api.post('/usuarios/criar-senha', { email, nova_senha: novaSenha })
       setMensagem("Senha criada com sucesso! Agora entre com sua senha.")
       setTemSenha(true)
       setNovaSenha('')
