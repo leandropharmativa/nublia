@@ -29,7 +29,7 @@ const handleSubmit = async (e) => {
       user: {
         ...form,
         role: 'paciente',
-        password: null
+        password: null // 🔒 senha nula pois login é feito por código
       },
       codigo_ativacao: null
     }
@@ -45,6 +45,7 @@ const handleSubmit = async (e) => {
     }
   } catch (error) {
     console.error(error)
+    // 🎯 Tratamento específico para e-mail já cadastrado
     if (error.response?.status === 409) {
       setErro("Já existe um paciente com este e-mail.")
     } else {
